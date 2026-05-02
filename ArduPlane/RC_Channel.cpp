@@ -186,6 +186,7 @@ void RC_Channel_Plane::init_aux_function(const RC_Channel::aux_func_t ch_option,
     case AUX_FUNC::SERVOS_AUTO_TRIM:
     case AUX_FUNC::EMERGENCY_LANDING_EN:
     case AUX_FUNC::FW_AUTOTUNE:
+    case AUX_FUNC::COURSE_HOLD:
         break;
 
     case AUX_FUNC::SOARING:
@@ -369,6 +370,10 @@ bool RC_Channel_Plane::do_aux_function(const aux_func_t ch_option, const AuxSwit
 
     case AUX_FUNC::CRUISE:
         do_aux_function_change_mode(Mode::Number::CRUISE, ch_flag);
+        break;
+
+    case AUX_FUNC::COURSE_HOLD:
+        do_aux_function_change_mode(Mode::Number::COURSE_HOLD, ch_flag);
         break;
 
 #if HAL_QUADPLANE_ENABLED

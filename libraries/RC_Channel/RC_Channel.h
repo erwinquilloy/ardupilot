@@ -228,6 +228,7 @@ public:
         WEATHER_VANE_ENABLE = 160, // enable/disable weathervaning
         TURBINE_START =       161, // initialize turbine start sequence
         SERVOS_AUTO_TRIM =   162, // servos auto trim
+        COURSE_HOLD =        163, // Course Hold mode (Plane)
 
         // inputs from 200 will eventually used to replace RCMAP
         ROLL =               201, // roll input
