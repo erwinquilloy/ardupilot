@@ -287,6 +287,7 @@ public:
     void Write_RCIN(void);
     void Write_RCOUT(void);
     void Write_RSSI();
+    void Write_CRSF_link_stats();
     void Write_Rally();
     void Write_Power(void);
     void Write_Radio(const mavlink_radio_t &packet);

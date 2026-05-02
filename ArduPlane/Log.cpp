@@ -241,6 +241,7 @@ void Plane::Log_Write_RC(void)
     if (rssi.enabled()) {
         logger.Write_RSSI();
     }
+    logger.Write_CRSF_link_stats();
     Log_Write_AETR();
 }
 

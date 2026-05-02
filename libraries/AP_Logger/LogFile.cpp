@@ -6,6 +6,7 @@
 #include <AP_Math/AP_Math.h>
 #include <AP_Param/AP_Param.h>
 #include <AP_RSSI/AP_RSSI.h>
+#include <AP_RCProtocol/AP_RCProtocol_CRSF.h>
 
 #include "AP_Logger.h"
 #include "AP_Logger_File.h"
@@ -212,6 +213,29 @@ void AP_Logger::Write_RSSI()
         time_us       : AP_HAL::micros64(),
         RXRSSI        : rssi->read_receiver_rssi(),
         RXLQ          : rssi->read_receiver_link_quality()
+    };
+    WriteBlock(&pkt, sizeof(pkt));
+}
+
+// Write a CRSF link statistics packet (link quality, TX power, RSSI dBm, SNR)
+void AP_Logger::Write_CRSF_link_stats()
+{
+    const AP_RCProtocol_CRSF *crsf = AP::crsf();
+    if (crsf == nullptr) {
+        return;
+    }
+    const AP_RCProtocol_CRSF::LinkStatus &link = crsf->get_link_status();
+    // only log if we have valid CRSF link data
+    if (link.link_quality < 0) {
+        return;
+    }
+    const struct log_CRSF pkt{
+        LOG_PACKET_HEADER_INIT(LOG_CRSF_MSG),
+        time_us   : AP_HAL::micros64(),
+        lq        : uint8_t(link.link_quality),
+        tx_power  : link.tx_power,
+        rssi_dbm  : link.rssi_dbm,
+        snr       : link.snr,
     };
     WriteBlock(&pkt, sizeof(pkt));
 }

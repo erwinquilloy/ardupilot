@@ -524,6 +524,7 @@ void Copter::ten_hz_logging_loop()
         if (rssi.enabled()) {
             logger.Write_RSSI();
         }
+        logger.Write_CRSF_link_stats();
     }
     if (should_log(MASK_LOG_RCOUT)) {
         logger.Write_RCOUT();

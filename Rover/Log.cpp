@@ -236,6 +236,7 @@ void Rover::Log_Write_RC(void)
     if (rssi.enabled()) {
         logger.Write_RSSI();
     }
+    logger.Write_CRSF_link_stats();
 }
 
 void Rover::Log_Write_Vehicle_Startup_Messages()

@@ -291,6 +291,15 @@ struct PACKED log_RSSI {
     float RXLQ;
 };
 
+struct PACKED log_CRSF {
+    LOG_PACKET_HEADER;
+    uint64_t time_us;
+    uint8_t lq;        // link quality (%)
+    int16_t tx_power;  // transmitter power (mW)
+    int8_t rssi_dbm;   // RSSI (dBm * -1, so positive means negative dBm)
+    int8_t snr;        // signal-to-noise ratio (dB)
+};
+
 struct PACKED log_Optflow {
     LOG_PACKET_HEADER;
     uint64_t time_us;
@@ -1398,7 +1407,9 @@ LOG_STRUCTURE_FROM_AIS, \
     { LOG_VER_MSG, sizeof(log_VER), \
       "VER",   "QBHBBBBIZH", "TimeUS,BT,BST,Maj,Min,Pat,FWT,GH,FWS,APJ", "s---------", "F---------", false }, \
     { LOG_MOTBATT_MSG, sizeof(log_MotBatt), \
-      "MOTB", "QffffB",  "TimeUS,LiftMax,BatVolt,ThLimit,ThrAvMx,FailFlags", "s-----", "F-----" , true }
+      "MOTB", "QffffB",  "TimeUS,LiftMax,BatVolt,ThLimit,ThrAvMx,FailFlags", "s-----", "F-----" , true }, \
+    { LOG_CRSF_MSG, sizeof(log_CRSF), \
+      "CRSF", "QBhbb", "TimeUS,LQ,TXPwr,RSSI,SNR", "s%---", "F0000", true }
 
 // message types 0 to 63 reserved for vehicle specific use
 
@@ -1483,6 +1494,7 @@ enum LogMessages : uint8_t {
     LOG_VIDEO_STABILISATION_MSG,
     LOG_MOTBATT_MSG,
     LOG_VER_MSG,
+    LOG_CRSF_MSG,
 
     _LOG_LAST_MSG_
 };
