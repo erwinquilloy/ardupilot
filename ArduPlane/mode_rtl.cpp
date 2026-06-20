@@ -66,11 +66,13 @@ void ModeRTL::update()
         plane.rtl.done_climb = true;
     }
     if (!plane.rtl.done_climb) {
-        // Constrain the roll limit as a failsafe, that way if something goes wrong the plane will
-        // eventually turn back and go to RTL instead of going perfectly straight. This also leaves
-        // some leeway for fighting wind.
-        plane.roll_limit_cd = MIN(plane.roll_limit_cd, plane.g.level_roll_limit*100);
-        plane.nav_roll_cd = constrain_int32(plane.nav_roll_cd, -plane.roll_limit_cd, plane.roll_limit_cd);
+        // Constrain the roll limit as a failsafe; without this if something
+        // went wrong the plane could keep going perfectly straight. Use the
+        // dedicated RTL_LVL_RLL_LMT so the climb-out can be more relaxed than
+        // the takeoff/landing leveling constraint set by LEVEL_ROLL_LIMIT.
+        const int level_roll_limit_cd = MIN(plane.roll_limit_cd, plane.g.rtl_level_roll_limit * 100);
+        plane.nav_roll_cd = constrain_int32(plane.nav_roll_cd,
+                                            -level_roll_limit_cd, level_roll_limit_cd);
     }
 }
 
