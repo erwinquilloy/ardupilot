@@ -28,8 +28,8 @@ void ModeCourseHold::update()
       rudder steers the locked heading rather than unlocking it).
     */
     const bool yaw_steers_heading = (plane.g2.flight_options & FlightOptions::COURSE_HOLD_HEADING_CONTROL_WITH_YAW_STICK) != 0;
-    if (!is_zero(plane.channel_roll->get_control_in()) ||
-        (!yaw_steers_heading && !is_zero(plane.channel_rudder->get_control_in()))) {
+    if (plane.channel_roll->get_control_in() != 0 ||
+        (!yaw_steers_heading && plane.channel_rudder->get_control_in() != 0)) {
         plane.course_hold.locked_heading = false;
         plane.course_hold.lock_timer_ms = 0;
     }
@@ -50,7 +50,7 @@ void ModeCourseHold::navigate()
 {
     const uint32_t now = millis();
     if (!plane.course_hold.locked_heading &&
-        is_zero(plane.channel_roll->get_control_in()) &&
+        plane.channel_roll->get_control_in() == 0 &&
         plane.rudder_input() == 0 &&
         plane.gps.status() >= AP_GPS::GPS_OK_FIX_2D &&
         plane.gps.ground_speed() >= 3 &&
