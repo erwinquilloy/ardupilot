@@ -155,10 +155,10 @@ const AP_Param::GroupInfo SRV_Channels::var_info[] = {
 #ifndef  HAL_BUILD_AP_PERIPH
     // @Param{Plane}: _AUTO_TRIM
     // @DisplayName: Automatic servo trim
-    // @Description: This enables automatic servo trim in flight. Servos will be trimed in stabilized flight modes when the aircraft is close to level. Changes to servo trim will be saved every 10 seconds and will persist between flights. The automatic trim won't go more than 20% away from a centered trim.
-    // @Values: 0:Disable,1:Enable
+    // @Description: This enables automatic servo trim in flight. Servos will be trimed in stabilized flight modes when the aircraft is close to level. Changes to servo trim (and ABS_MIN/MAX-bounded MIN/MAX) will be saved every 10 seconds and will persist between flights. The automatic trim won't go more than 25% away from a centered trim. 1=Once performs the trim then disables itself on the next save. 2=Permanent runs whenever the aircraft is level in flight.
+    // @Values: 0:Disable,1:Once,2:Enable permanently
     // @User: Advanced
-    AP_GROUPINFO_FRAME("_AUTO_TRIM",  17, SRV_Channels, auto_trim, 0, AP_PARAM_FRAME_PLANE),
+    AP_GROUPINFO_FRAME("_AUTO_TRIM",  17, SRV_Channels, auto_trim, SRV_Channels::SERVO_AUTO_TRIM_DISABLED, AP_PARAM_FRAME_PLANE),
 #endif
 
     // @Param: _RATE
@@ -374,16 +374,28 @@ void SRV_Channels::init(uint32_t motor_mask, AP_HAL::RCOutput::output_mode mode)
 }
 
 /*
-  save adjusted trims
+  save adjusted trims (and the ABS-bounded min/max that adjust_trim may have
+  shifted alongside)
  */
 void SRV_Channels::save_trim(void)
 {
     for (uint8_t i=0; i<NUM_SERVO_CHANNELS; i++) {
         if (trimmed_mask & (1U<<i)) {
             channels[i].servo_trim.set_and_save(channels[i].servo_trim.get());
+            channels[i].servo_min.set_and_save(channels[i].servo_min.get());
+            channels[i].servo_max.set_and_save(channels[i].servo_max.get());
         }
     }
     trimmed_mask = 0;
+}
+
+// if SERVO_AUTO_TRIM was set to ONCE, push it back to DISABLED so the next
+// boot doesn't re-run autotrim
+void SRV_Channels::disable_autotrim_if_temporary_enabled()
+{
+    if (auto_trim == SRV_Channels::SERVO_AUTO_TRIM_ONCE) {
+        auto_trim.set_and_save(SRV_Channels::SERVO_AUTO_TRIM_DISABLED);
+    }
 }
 
 void SRV_Channels::setup_failsafe_trim_all_non_motors(void)
