@@ -222,6 +222,7 @@ private:
     AP_OSD_Setting flightime{false, 23, 10};
     AP_OSD_Setting climbeff{false,0,0};
     AP_OSD_Setting eff{false, 22, 10};
+    AP_OSD_Setting eff_air{false, 22, 10};   // fork: separate airspeed-based efficiency element (Plane only)
     AP_OSD_Setting atemp;
     AP_OSD_Setting bat2_vlt;
     AP_OSD_Setting bat2used;
@@ -324,6 +325,8 @@ private:
     void draw_flightime(uint8_t x, uint8_t y);
     void draw_climbeff(uint8_t x, uint8_t y);
     void draw_eff(uint8_t x, uint8_t y);
+    void draw_eff_air(uint8_t x, uint8_t y);
+    void draw_eff_value(uint8_t x, uint8_t y, bool available, float efficiency);
     void draw_atemp(uint8_t x, uint8_t y);
     void draw_bat2_vlt(uint8_t x, uint8_t y);
     void draw_bat2used(uint8_t x, uint8_t y);
@@ -622,7 +625,13 @@ public:
         UNITS_LAST=4,
     };
 
+    enum efficiency_unit_base_t {
+        EFF_UNIT_BASE_MAH = 0,
+        EFF_UNIT_BASE_WH  = 1,
+    };
+
     AP_Int8 units;
+    AP_Int8 efficiency_unit_base;
 
     AP_OSD_Screen screen[AP_OSD_NUM_DISPLAY_SCREENS];
 

@@ -246,6 +246,13 @@ const AP_Param::GroupInfo AP_OSD::var_info[] = {
     AP_GROUPINFO("_SB_V_EXT", 36, AP_OSD, sidebar_v_ext, 0),
 #endif // HAL_OSD_SIDEBAR_ENABLE
 
+    // @Param: _EFF_UNIT
+    // @DisplayName: Efficiency base unit
+    // @Description: Base unit used by the efficiency elements (EFF / EFFG / EFFA). 0 = mAh (current-based, classic ArduPilot semantic). 1 = Wh (energy-based, uses battery.power_watts_without_losses).
+    // @Values: 0:mAh,1:Wh
+    // @User: Standard
+    AP_GROUPINFO("_EFF_UNIT", 37, AP_OSD, efficiency_unit_base, AP_OSD::EFF_UNIT_BASE_WH),
+
 #endif //osd enabled
 #if OSD_PARAM_ENABLED
     // @Group: 5_
