@@ -1245,6 +1245,7 @@ private:
     void force_flare();
     void throttle_watt_limiter(int8_t &min_throttle, int8_t &max_throttle);
     void throttle_slew_limit();
+    void apply_throttle_dz(void);
     bool suppress_throttle(void);
     void update_throttle_hover();
     void channel_function_mixer(SRV_Channel::Function func1_in, SRV_Channel::Function func2_in,
