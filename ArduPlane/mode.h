@@ -62,6 +62,7 @@ public:
 #if HAL_QUADPLANE_ENABLED
         LOITER_ALT_QLAND = 25,
 #endif
+        COURSE_HOLD   = 26,
     };
 
     // Constructor
@@ -568,6 +569,30 @@ public:
     bool mode_allows_autotuning() const override { return true; }
 
     void update_target_altitude() override {};
+
+protected:
+
+    bool _enter() override;
+};
+
+class ModeCourseHold : public Mode
+{
+public:
+
+    Number mode_number() const override { return Number::COURSE_HOLD; }
+    const char *name() const override { return "COURSE HOLD"; }
+    const char *name4() const override { return "CRSH"; }
+
+    bool allows_terrain_disable() const override { return true; }
+
+    // methods that affect movement of the vehicle in this mode
+    void update() override;
+
+    void navigate() override;
+
+    bool get_target_heading_cd(int32_t &target_heading) const;
+
+    void update_target_altitude() override {}
 
 protected:
 

@@ -154,6 +154,7 @@ public:
     friend class ModeAcro;
     friend class ModeFBWA;
     friend class ModeFBWB;
+    friend class ModeCourseHold;
     friend class ModeCruise;
     friend class ModeAutoTune;
     friend class ModeAuto;
@@ -307,6 +308,7 @@ private:
     ModeAcro mode_acro;
     ModeFBWA mode_fbwa;
     ModeFBWB mode_fbwb;
+    ModeCourseHold mode_course_hold;
     ModeCruise mode_cruise;
     ModeAutoTune mode_autotune;
     ModeAuto mode_auto;
@@ -815,6 +817,13 @@ private:
     struct {
         bool done_climb;
     } rtl;
+
+    struct {
+        bool locked_heading;
+        int32_t locked_heading_cd;
+        uint32_t lock_timer_ms;
+        uint32_t heading_update_tstamp;
+    } course_hold;
 
     // last time home was updated while disarmed
     uint32_t last_home_update_ms;

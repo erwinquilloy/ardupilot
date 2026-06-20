@@ -1302,7 +1302,16 @@ const AP_Param::GroupInfo ParametersG2::var_info[] = {
     // @Path: systemid.cpp
     AP_SUBGROUPINFO(systemid, "SID", 38, ParametersG2, AP_SystemID),
 #endif
-    
+
+    // @Param: CRUISE_YAW_RATE
+    // @DisplayName: Max yaw rate commanded with the rudder stick in CRUISE/COURSE_HOLD
+    // @Description: Maximum yaw rate commanded by the rudder channel when COURSE_HOLD_HEADING_CONTROL_WITH_YAW_STICK FLIGHT_OPTIONS bit is enabled. Used to steer the locked heading via rudder input.
+    // @Units: deg/s
+    // @Range: 5 360
+    // @Increment: 1
+    // @User: Standard
+    AP_GROUPINFO("CRUISE_YAW_RATE", 52, ParametersG2, cruise_yaw_rate, 18),
+
     AP_GROUPEND
 };
 
