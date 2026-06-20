@@ -8,6 +8,7 @@
 #include <AP_ESC_Telem/AP_ESC_Telem.h>
 #include <AP_RSSI/AP_RSSI.h>
 #include <AP_RCProtocol/AP_RCProtocol_CRSF.h>
+#include <AP_OSD/AP_OSD_config.h>   // for AP_OSD_LINK_STATS_EXTENSIONS_ENABLED gate
 #include <AP_Vehicle/AP_Vehicle.h>
 
 const extern AP_HAL::HAL& hal;
@@ -417,7 +418,11 @@ void AP_Stats::update_flying_rc(uint32_t old_flying_sample_count, uint32_t new_f
         _boot_min_rc_rssi = fminf(_boot_min_rc_rssi, ap_rssi->read_receiver_rssi());
     }
 
-    // minimum RSSI dBm
+#if AP_OSD_LINK_STATS_EXTENSIONS_ENABLED
+    // minimum RSSI dBm — only when the CRSF protocol carries extended link
+    // stats (gated by AP_OSD_LINK_STATS_EXTENSIONS_ENABLED). On SITL and
+    // other builds where the extension fields aren't compiled in, leave
+    // _boot_min_rc_rssi_dbm at its FLT_MAX sentinel.
     const int8_t rssi_dbm = AP::crsf()->get_link_status().rssi_dbm;
     if (rssi_dbm >= 0) {
         _boot_min_rc_rssi_dbm = MAX(_boot_min_rc_rssi_dbm, rssi_dbm);
@@ -426,6 +431,7 @@ void AP_Stats::update_flying_rc(uint32_t old_flying_sample_count, uint32_t new_f
     // maximum TX power
     const int16_t tx_power_mw = AP::crsf()->get_link_status().tx_power;
     _boot_max_rc_tx_power_mw = MAX(_boot_max_rc_tx_power_mw, tx_power_mw);
+#endif
 }
 
 #if HAL_WITH_ESC_TELEM
