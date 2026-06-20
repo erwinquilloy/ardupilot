@@ -858,6 +858,7 @@ private:
 
     struct {
         bool done_climb;
+        bool triggered_by_rc_failsafe;
     } rtl;
 
     struct {
