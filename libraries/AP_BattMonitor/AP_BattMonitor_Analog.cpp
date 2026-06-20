@@ -102,6 +102,25 @@ AP_BattMonitor_Analog::read()
     // get voltage
     _state.voltage = (_volt_pin_analog_source->voltage_average() - _volt_offset) * _volt_multiplier;
 
+    // cell-count autodetection. Inaccurate if the cell-detection threshold is
+    // misconfigured or the battery is far from fully charged when plugged in.
+    if (_params._cell_count >= 0) {
+        _state.cell_count = _params._cell_count;
+    } else if (_state.cell_count <= 0 && is_positive(_params._cell_detect_volt)) {
+        _state.cell_count = (int8_t)(_state.voltage / _params._cell_detect_volt + 1);
+    }
+
+    // "battery full when plugged in" — sampled once when cells are first detected
+    if (_state.cell_count > 0) {
+        if (_state.battery_full_when_plugged_in < 0) {
+            _state.battery_full_when_plugged_in =
+                (_state.voltage / _state.cell_count >= _params._cell_full_voltage) ? 1 : 0;
+        }
+    } else {
+        // no cell info: assume battery is full so we don't refuse to arm on first boot
+        _state.battery_full_when_plugged_in = 1;
+    }
+
     // read current
     if (has_current()) {
         // calculate time since last current read

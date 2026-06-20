@@ -127,6 +127,55 @@ float AP_BattMonitor_Backend::voltage_resting_estimate() const
     return MAX(_state.voltage, _state.voltage_resting_estimate);
 }
 
+/// cell_avg_voltage - returns average cell battery voltage in volts
+bool AP_BattMonitor_Backend::cell_avg_voltage(float &voltage) const
+{
+    if (_state.cell_count < 1) {
+        return false;
+    }
+
+    float cells_total = 0;
+    if (has_cell_voltages()) {
+        for (uint16_t i = 0; i < AP_BATT_MONITOR_CELLS_MAX; ++i) {
+            auto cell_voltage = _state.cell_voltages.cells[i];
+            if (cell_voltage != 0xFFFF) {
+                cells_total += cell_voltage;
+            }
+        }
+    } else {
+        cells_total = _state.voltage;
+    }
+
+    voltage = cells_total / _state.cell_count;
+
+    return true;
+}
+
+/// resting_cell_avg_voltage - returns average resting battery cell voltage in volts
+bool AP_BattMonitor_Backend::resting_cell_avg_voltage(float &voltage) const
+{
+    if (_state.cell_count < 1) {
+        return false;
+    }
+
+    voltage = voltage_resting_estimate() / _state.cell_count;
+
+    return true;
+}
+
+bool AP_BattMonitor_Backend::capacity_has_been_configured() const
+{
+    float pack_capacity;
+
+    if (_params._options & uint32_t(AP_BattMonitor_Params::Options::Use_Wh_for_remaining_percent_calc)) {
+        pack_capacity = _params._pack_capacity_wh;
+    } else {
+        pack_capacity = _params._pack_capacity;
+    }
+
+    return is_positive(pack_capacity);
+}
+
 AP_BattMonitor::Failsafe AP_BattMonitor_Backend::update_failsafes(void)
 {
     const uint32_t now = AP_HAL::millis();
@@ -340,7 +389,11 @@ void AP_BattMonitor_Backend::update_consumed(AP_BattMonitor::BattMonitor_State &
     if (state.last_time_micros != 0 && dt_us < 2000000) {
         const float mah = calculate_mah(state.current_amps, dt_us);
         state.consumed_mah += mah;
-        state.consumed_wh  += 0.001 * mah * state.voltage;
+        const float ah = mah * 0.001f;
+        // consumed_wh: energy drawn from the battery including internal resistive losses (uses resting estimate)
+        state.consumed_wh                  += ah * state.voltage_resting_estimate;
+        // consumed_wh_without_losses: energy delivered to load (uses terminal voltage)
+        state.consumed_wh_without_losses   += ah * state.voltage;
     }
 }
 

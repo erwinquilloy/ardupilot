@@ -136,11 +136,14 @@ public:
 
     // The BattMonitor_State structure is filled in by the backend driver
     struct BattMonitor_State {
+        int8_t      cell_count;
+        int8_t      battery_full_when_plugged_in = -1;
         cells       cell_voltages;             // battery cell voltages in millivolts, 10 cells matches the MAVLink spec
         float       voltage;                   // voltage in volts
         float       current_amps;              // current in amperes
         float       consumed_mah;              // total current draw in milliamp hours since start-up
         float       consumed_wh;               // total energy consumed in Wh since start-up
+        float       consumed_wh_without_losses;// total energy consumed in Wh not including battery losses
         uint32_t    last_time_micros;          // time when voltage and current was last read in microseconds
         uint32_t    low_voltage_start_ms;      // time when voltage dropped below the minimum in milliseconds
         uint32_t    critical_voltage_start_ms; // critical voltage failsafe start timer in milliseconds
@@ -191,6 +194,22 @@ public:
     float gcs_voltage(uint8_t instance) const;
     float gcs_voltage(void) const { return gcs_voltage(AP_BATT_PRIMARY_INSTANCE); }
 
+    /// cell_avg_voltage - returns average cell battery voltage in volts
+    bool cell_avg_voltage(uint8_t instance, float &voltage) const;
+    bool cell_avg_voltage(float &voltage) const { return cell_avg_voltage(AP_BATT_PRIMARY_INSTANCE, voltage); }
+
+    /// resting_cell_avg_voltage - returns average resting cell battery voltage in volts
+    bool resting_cell_avg_voltage(uint8_t instance, float &voltage) const;
+    bool resting_cell_avg_voltage(float &voltage) const { return resting_cell_avg_voltage(AP_BATT_PRIMARY_INSTANCE, voltage); }
+
+    /// battery_full_when_plugged_in - returns true if battery was fully charged when plugged in
+    bool full_when_plugged_in(uint8_t instance) const;
+    bool full_when_plugged_in() const { return full_when_plugged_in(AP_BATT_PRIMARY_INSTANCE); }
+
+    // returns cell count - result could be 0 if autodetection is enabled and not possible or -1 if autodetection is disabled
+    int8_t cell_count(uint8_t instance) const;
+    int8_t cell_count() const { return cell_count(AP_BATT_PRIMARY_INSTANCE); }
+
     /// get voltage with sag removed (based on battery current draw and resistance)
     /// this will always be greater than or equal to the raw voltage
     float voltage_resting_estimate(uint8_t instance) const;
@@ -199,11 +218,28 @@ public:
     /// current_amps - returns the instantaneous current draw in amperes
     bool current_amps(float &current, const uint8_t instance = AP_BATT_PRIMARY_INSTANCE) const WARN_IF_UNUSED;
 
+    /// power watt
+    float power_watts() const;
+    bool power_watts(float &power, const uint8_t instance = AP_BATT_PRIMARY_INSTANCE) const WARN_IF_UNUSED;
+
+    /// power watt without battery losses
+    float power_watts_without_losses() const;
+    bool power_watts_without_losses(float &power, const uint8_t instance = AP_BATT_PRIMARY_INSTANCE) const WARN_IF_UNUSED;
+
     /// consumed_mah - returns total current drawn since start-up in milliampere.hours
     bool consumed_mah(float &mah, const uint8_t instance = AP_BATT_PRIMARY_INSTANCE) const WARN_IF_UNUSED;
 
     /// consumed_wh - returns total energy drawn since start-up in watt.hours
     bool consumed_wh(float&wh, const uint8_t instance = AP_BATT_PRIMARY_INSTANCE) const WARN_IF_UNUSED;
+
+    /// remaining_mah - returns energy remaining in milliampere.hours
+    bool remaining_mah(float&mah, const uint8_t instance = AP_BATT_PRIMARY_INSTANCE) const WARN_IF_UNUSED;
+
+    /// remaining_wh - returns energy remaining in watt.hours
+    bool remaining_wh(float&wh, const uint8_t instance = AP_BATT_PRIMARY_INSTANCE) const WARN_IF_UNUSED;
+
+    /// consumed_wh_without_losses - returns total energy drawn not including battery losses since start-up in watt.hours
+    bool consumed_wh_without_losses(float&wh, const uint8_t instance = AP_BATT_PRIMARY_INSTANCE) const WARN_IF_UNUSED;
 
     /// capacity_remaining_pct - returns true if the percentage is valid and writes to percentage argument
     virtual bool capacity_remaining_pct(uint8_t &percentage, uint8_t instance) const WARN_IF_UNUSED;
@@ -212,9 +248,43 @@ public:
     /// time_remaining - returns remaining battery time
     bool time_remaining(uint32_t &seconds, const uint8_t instance = AP_BATT_PRIMARY_INSTANCE) const WARN_IF_UNUSED;
 
+    virtual bool capacity_has_been_configured(uint8_t instance) const;
+    bool capacity_has_been_configured() const { return capacity_has_been_configured(AP_BATT_PRIMARY_INSTANCE); }
+
     /// pack_capacity_mah - returns the capacity of the battery pack in mAh when the pack is full
     int32_t pack_capacity_mah(uint8_t instance) const;
     int32_t pack_capacity_mah() const { return pack_capacity_mah(AP_BATT_PRIMARY_INSTANCE); }
+
+    float low_capacity_mah(uint8_t instance) const;
+    float low_capacity_mah() const { return low_capacity_mah(AP_BATT_PRIMARY_INSTANCE); }
+    float critical_capacity_mah(uint8_t instance) const;
+    float critical_capacity_mah() const { return critical_capacity_mah(AP_BATT_PRIMARY_INSTANCE); }
+
+    /// pack_capacity_wh - returns the capacity of the battery pack in Wh when the pack is full
+    float pack_capacity_wh(uint8_t instance) const;
+    float pack_capacity_wh() const { return pack_capacity_wh(AP_BATT_PRIMARY_INSTANCE); }
+
+    float low_capacity_wh(uint8_t instance) const;
+    float low_capacity_wh() const { return low_capacity_wh(AP_BATT_PRIMARY_INSTANCE); }
+    float critical_capacity_wh(uint8_t instance) const;
+    float critical_capacity_wh() const { return critical_capacity_wh(AP_BATT_PRIMARY_INSTANCE); }
+
+    float low_voltage(uint8_t instance) const;
+    float low_voltage() const { return low_voltage(AP_BATT_PRIMARY_INSTANCE); }
+    float low_cell_voltage(uint8_t instance) const;
+    float low_cell_voltage() const { return low_cell_voltage(AP_BATT_PRIMARY_INSTANCE); }
+
+    bool voltage_is_low(uint8_t instance) const;
+    bool voltage_is_low() const { return voltage_is_low(AP_BATT_PRIMARY_INSTANCE); }
+
+    bool resting_voltage_is_low(uint8_t instance) const;
+    bool resting_voltage_is_low() const { return resting_voltage_is_low(AP_BATT_PRIMARY_INSTANCE); }
+
+    /// remaining_mah_is_low - returns true if the remaining mAh capacity is below the configured low value
+    bool remaining_mah_is_low(const uint8_t instance = AP_BATT_PRIMARY_INSTANCE) const;
+
+    /// remaining_wh_is_low - returns true if the remaining Wh capacity is below the configured low value
+    bool remaining_wh_is_low(const uint8_t instance = AP_BATT_PRIMARY_INSTANCE) const;
  
     /// returns true if a battery failsafe has ever been triggered
     bool has_failsafed(void) const { return _has_triggered_failsafe; };

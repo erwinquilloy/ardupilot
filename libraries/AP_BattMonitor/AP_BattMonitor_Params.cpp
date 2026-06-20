@@ -169,6 +169,77 @@ const AP_Param::GroupInfo AP_BattMonitor_Params::var_info[] = {
     AP_GROUPINFO("ESC_INDEX", 22, AP_BattMonitor_Params, _esc_telem_outbound_index, 0),
 #endif
 
+    // @Param: LOW_CV
+    // @DisplayName: Low battery cell voltage
+    // @Description: Cell voltage level used to trigger a low battery failsafe. Set to 0 to disable cell-voltage failsafe.
+    // @Units: V
+    // @Increment: 0.01
+    // @User: Advanced
+    AP_GROUPINFO("LOW_CV", 55, AP_BattMonitor_Params, _low_cell_voltage, 3.15f),
+
+    // @Param: CRT_CV
+    // @DisplayName: Critical battery cell voltage
+    // @Description: Cell voltage level used to trigger a critical battery failsafe. Set to 0 to disable cell-voltage failsafe.
+    // @Units: V
+    // @Increment: 0.01
+    // @User: Advanced
+    AP_GROUPINFO("CRT_CV", 56, AP_BattMonitor_Params, _critical_cell_voltage, 3.0f),
+
+    // @Param: CELL_VFULL
+    // @DisplayName: Minimum battery cell voltage to consider the battery full
+    // @Description: Minimum battery cell voltage to consider the battery full when plugged in
+    // @Units: V
+    // @Increment: 0.01
+    // @User: Advanced
+    AP_GROUPINFO("CELL_VFULL", 57, AP_BattMonitor_Params, _cell_full_voltage, 4.12f),
+
+    // @Param: CAPA_WH
+    // @DisplayName: Battery capacity in Wh
+    // @Description: Capacity of the battery in Wh when full
+    // @Units: Wh
+    // @Increment: 0.1
+    // @User: Standard
+    AP_GROUPINFO("CAPA_WH", 58, AP_BattMonitor_Params, _pack_capacity_wh, 0),
+
+    // @Param: LOW_WH
+    // @DisplayName: Low battery capacity in Wh
+    // @Description: Battery capacity (Wh) at which the low battery failsafe is triggered. Set to 0 to disable Wh-based low failsafe.
+    // @Units: Wh
+    // @Increment: 0.1
+    // @User: Standard
+    AP_GROUPINFO("LOW_WH", 59, AP_BattMonitor_Params, _low_capacity_wh, 0),
+
+    // @Param: CRT_WH
+    // @DisplayName: Critical battery capacity in Wh
+    // @Description: Battery capacity (Wh) at which the critical battery failsafe is triggered. Set to 0 to disable Wh-based critical failsafe.
+    // @Units: Wh
+    // @Increment: 0.1
+    // @User: Standard
+    AP_GROUPINFO("CRT_WH", 60, AP_BattMonitor_Params, _critical_capacity_wh, 0),
+
+    // @Param: ARM_WH
+    // @DisplayName: Required arming remaining capacity in Wh
+    // @Description: Wh capacity remaining required to arm. Set to 0 to disable.
+    // @Units: Wh
+    // @Increment: 0.1
+    // @User: Advanced
+    AP_GROUPINFO("ARM_WH", 61, AP_BattMonitor_Params, _arming_minimum_capacity_wh, 0),
+
+    // @Param: CELL_DT_V
+    // @DisplayName: Battery cell max voltage for autodetection
+    // @Description: Maximum plausible cell voltage; used by cell-count autodetection
+    // @Units: V
+    // @Increment: 0.01
+    // @User: Advanced
+    AP_GROUPINFO("CELL_DT_V", 62, AP_BattMonitor_Params, _cell_detect_volt, 4.25f),
+
+    // @Param: CELL_COUNT
+    // @DisplayName: Battery cell count
+    // @Description: Overrides cell count autodetection if not -1
+    // @Increment: 1
+    // @User: Advanced
+    AP_GROUPINFO("CELL_COUNT", 63, AP_BattMonitor_Params, _cell_count, -1),
+
     AP_GROUPEND
 
 };
