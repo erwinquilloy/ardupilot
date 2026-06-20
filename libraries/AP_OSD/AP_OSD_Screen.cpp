@@ -1174,6 +1174,22 @@ const AP_Param::GroupInfo AP_OSD_Screen::var_info2[] = {
     AP_GROUPINFO("ESC_IDX", 10, AP_OSD_Screen, esc_index, 0),
 #endif
 
+    // @Param: EFFA_EN
+    // @DisplayName: EFFA_EN
+    // @Description: Displays airspeed-based flight efficiency (Plane only). Unit follows OSDx _EFF_UNIT (mAh/km(mi) or Wh/km(mi)).
+    // @Values: 0:Disabled,1:Enabled
+
+    // @Param: EFFA_X
+    // @DisplayName: EFFA_X
+    // @Description: Horizontal position on screen
+    // @Range: 0 59
+
+    // @Param: EFFA_Y
+    // @DisplayName: EFFA_Y
+    // @Description: Vertical position on screen
+    // @Range: 0 21
+    AP_SUBGROUPINFO(eff_air, "EFFA", 11, AP_OSD_Screen, AP_OSD_Setting),
+
     AP_GROUPEND
 };
 
@@ -2310,6 +2326,28 @@ void  AP_OSD_Screen::draw_flightime(uint8_t x, uint8_t y)
 }
 
 #if AP_BATTERY_ENABLED
+// Render an efficiency value in either mAh-per-km/mi or Wh-per-km/mi, picked
+// by the OSDx _EFF_UNIT param. `available` lets the caller decide whether to
+// show a number or the "no data" dashes.
+void AP_OSD_Screen::draw_eff_value(uint8_t x, uint8_t y, bool available, float efficiency)
+{
+    const bool use_wh = (osd->efficiency_unit_base == AP_OSD::EFF_UNIT_BASE_WH);
+    const uint8_t unit_symbol = SYMBOL(use_wh ? SYM_WH : SYM_MAH);
+
+    if (!available || !isfinite(efficiency) || roundf(efficiency) > 999 || roundf(efficiency) < 0) {
+        backend->write(x, y, false, "%c---%c", SYMBOL(SYM_EFF), unit_symbol);
+        return;
+    }
+    if (use_wh) {
+        const char* fmt = (efficiency < 9.995f ? "%c%1.2f%c"
+                          : (efficiency < 99.95f ? "%c%2.1f%c" : "%c%3.0f%c"));
+        backend->write(x, y, false, fmt, SYMBOL(SYM_EFF), efficiency, unit_symbol);
+    } else {
+        backend->write(x, y, false, "%c%3d%c", SYMBOL(SYM_EFF),
+                       int(roundf(efficiency)), unit_symbol);
+    }
+}
+
 void AP_OSD_Screen::draw_eff(uint8_t x, uint8_t y)
 {
     AP_BattMonitor &battery = AP::battery();
@@ -2319,13 +2357,62 @@ void AP_OSD_Screen::draw_eff(uint8_t x, uint8_t y)
         WITH_SEMAPHORE(ahrs.get_semaphore());
         v = ahrs.groundspeed_vector();
     }
-    float speed = u_scale(SPEED,v.length());
-    float current_amps;
-    if ((speed > 2.0) && battery.current_amps(current_amps)) {
-        backend->write(x, y, false, "%c%3d%c", SYMBOL(SYM_EFF),int(1000.0f*current_amps/speed),SYMBOL(SYM_MAH));
-    } else {
-        backend->write(x, y, false, "%c---%c", SYMBOL(SYM_EFF),SYMBOL(SYM_MAH));
+    const float speed = u_scale(SPEED, v.length());
+
+    float efficiency = 0;
+    bool available = false;
+    if (speed > 2.0f) {
+        if (osd->efficiency_unit_base == AP_OSD::EFF_UNIT_BASE_WH) {
+            float power_w;
+            if (battery.power_watts_without_losses(power_w) && !is_negative(power_w)) {
+                efficiency = power_w / speed;
+                available = true;
+            }
+        } else {
+            float current_amps;
+            if (battery.current_amps(current_amps) && !is_negative(current_amps)) {
+                efficiency = 1000.0f * current_amps / speed;
+                available = true;
+            }
+        }
     }
+    draw_eff_value(x, y, available, efficiency);
+}
+
+void AP_OSD_Screen::draw_eff_air(uint8_t x, uint8_t y)
+{
+#if APM_BUILD_TYPE(APM_BUILD_ArduPlane)
+    AP_BattMonitor &battery = AP::battery();
+    bool have_airspeed;
+    float airspeed_mps;
+    {
+        AP_AHRS &ahrs = AP::ahrs();
+        WITH_SEMAPHORE(ahrs.get_semaphore());
+        have_airspeed = ahrs.airspeed_estimate(airspeed_mps);
+    }
+    const float speed = have_airspeed ? u_scale(SPEED, airspeed_mps) : 0;
+
+    float efficiency = 0;
+    bool available = false;
+    if (have_airspeed && speed > 2.0f) {
+        if (osd->efficiency_unit_base == AP_OSD::EFF_UNIT_BASE_WH) {
+            float power_w;
+            if (battery.power_watts_without_losses(power_w) && !is_negative(power_w)) {
+                efficiency = power_w / speed;
+                available = true;
+            }
+        } else {
+            float current_amps;
+            if (battery.current_amps(current_amps) && !is_negative(current_amps)) {
+                efficiency = 1000.0f * current_amps / speed;
+                available = true;
+            }
+        }
+    }
+    draw_eff_value(x, y, available, efficiency);
+#else
+    (void)x; (void)y;
+#endif
 }
 #endif  // AP_BATTERY_ENABLED
 
@@ -2639,6 +2726,7 @@ void AP_OSD_Screen::draw(void)
     DRAW_SETTING(stat);
     DRAW_SETTING(climbeff);
     DRAW_SETTING(eff);
+    DRAW_SETTING(eff_air);
     DRAW_SETTING(callsign);
     DRAW_SETTING(current2);
 
