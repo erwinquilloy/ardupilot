@@ -692,36 +692,78 @@ void SRV_Channels::set_esc_scaling_for(SRV_Channel::Aux_servo_function_t functio
 }
 
 /*
-  auto-adjust channel trim from an integrator value. Positive v means
-  adjust trim up. Negative means decrease
+  auto-adjust channel trim from an integrator value. Positive v shifts trim
+  up, negative down. Caller is told whether any wired channel was adjusted,
+  whether any saturated against its abs_min/max bound, and the +1/-1
+  cumulative adjustment used so the caller can detect convergence.
  */
-void SRV_Channels::adjust_trim(SRV_Channel::Aux_servo_function_t function, float v)
+SRV_Channels::TrimStatus SRV_Channels::adjust_trim(SRV_Channel::Aux_servo_function_t function,
+                                                  float v, int &adjustment, bool &saturation)
 {
     if (is_zero(v)) {
-        return;
+        return function_assigned(function) ? TrimStatus::NoChange : TrimStatus::FunctionUnused;
     }
+
+    saturation = false;
+    bool adjusted = false;
+    bool used = false;
+    const int8_t change = signbit(v) ? -1 : 1;
+
     for (uint8_t i=0; i<NUM_SERVO_CHANNELS; i++) {
         SRV_Channel &c = channels[i];
         if (function != c.function) {
             continue;
         }
-        float change = c.reversed?-v:v;
-        uint16_t new_trim = c.servo_trim;
-        if (c.servo_max <= c.servo_min) {
+
+        used = true;
+
+        // snapshot the original min/max on first adjustment so trim_ratio is
+        // computed against the pristine range, not the already-shifted one
+        if (!c.servo_min_backup) {
+            c.servo_min_backup = c.servo_min;
+            c.servo_max_backup = c.servo_max;
+        }
+
+        const int8_t servo_change = c.reversed ? -change : change;
+
+        const float range = c.servo_max_backup - c.servo_min_backup;
+        if (range <= 0) {
             continue;
         }
-        float trim_scaled = float(c.servo_trim - c.servo_min) / (c.servo_max - c.servo_min);
-        if (change > 0 && trim_scaled < 0.6f) {
-            new_trim++;
-        } else if (change < 0 && trim_scaled > 0.4f) {
-            new_trim--;
-        } else {
+        const float trim_ratio = (float(c.servo_trim) - (float(c.servo_min_backup) + range / 2)) / range;
+
+        // refuse to shift past +/-25% of the original range, or past the
+        // configured absolute PWM floor/ceiling
+        const bool hit_low_bound  = (servo_change < 0) &&
+            (trim_ratio <= -0.25f || (c.servo_abs_min != 0 && c.servo_min <= c.servo_abs_min));
+        const bool hit_high_bound = (servo_change > 0) &&
+            (trim_ratio >=  0.25f || (c.servo_abs_max != 0 && c.servo_max >= c.servo_abs_max));
+        if (hit_low_bound || hit_high_bound) {
+            saturation = true;
             continue;
         }
-        c.servo_trim.set(new_trim);
+
+        c.servo_trim.set(c.servo_trim + servo_change);
+        adjusted = true;
+
+        // if ABS limits are configured, slide the min/max along with trim so
+        // the usable range tracks the new neutral
+        if (c.servo_abs_min != 0 && c.servo_abs_max != 0) {
+            c.servo_min.set(c.servo_min + servo_change);
+            c.servo_max.set(c.servo_max + servo_change);
+        }
 
         trimmed_mask |= 1U<<i;
     }
+
+    if (!used) {
+        return TrimStatus::FunctionUnused;
+    }
+    if (adjusted) {
+        adjustment += change;
+        return TrimStatus::Adjusted;
+    }
+    return TrimStatus::NoChange;
 }
 
 // get pwm output for the first channel of the given function type.

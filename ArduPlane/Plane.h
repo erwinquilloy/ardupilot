@@ -809,9 +809,51 @@ private:
 
     // loop performance monitoring:
     AP::PerfInfo perf_info;
+
+    // ---- auto-trim infrastructure ----
+    typedef enum {
+        AdjustPitch,
+        AdjustRoll,
+        AdjustRollInverted,
+        AdjustPitchAndRoll,
+        AdjustPitchAndRollInverted,
+    } TrimAdjustmentType;
+
+    typedef struct {
+        SRV_Channel::Aux_servo_function_t function;
+        TrimAdjustmentType adjustment_type;
+        const char *channel_saturation_message;
+    } ServoTrimSetEntry;
+
+    static const ServoTrimSetEntry aileron_trim_set[3];
+    static const ServoTrimSetEntry elevator_trim_set[3];
+    static const ServoTrimSetEntry elevon_trim_set[2];
+    static const ServoTrimSetEntry dspoiler_outer_trim_set[2];
+    static const ServoTrimSetEntry dspoiler_inner_trim_set[2];
+
+    #define SERVOS_TRIM_SET_ENTRIES_COUNT(name) ARRAY_SIZE(name##_trim_set)
+    #define SERVOS_TRIM_SET_STATUS(name) auto_trim.set_status.name
+    #define SERVOS_TRIM_SET_EXT(name, apply_pitch) servos_auto_trim_set(name##_trim_set, SERVOS_TRIM_SET_ENTRIES_COUNT(name), pitch_I, roll_I, SERVOS_TRIM_SET_STATUS(name).adjustment, SERVOS_TRIM_SET_STATUS(name).saturation, apply_pitch)
+    #define SERVOS_TRIM_SET(name) SERVOS_TRIM_SET_EXT(name, true)
+    #define SERVOS_TRIM_SET_STATUS_DEF(name) \
+        struct { \
+            int adjustment; \
+            bool finished; \
+            bool saturation[SERVOS_TRIM_SET_ENTRIES_COUNT(name)]; \
+        } name
+
     struct {
         uint32_t last_trim_check;
         uint32_t last_trim_save;
+        bool run;             // fork: temporary one-flight enable (kept as a hook for RC option port)
+        struct {
+            SERVOS_TRIM_SET_STATUS_DEF(aileron);
+            SERVOS_TRIM_SET_STATUS_DEF(elevator);
+            SERVOS_TRIM_SET_STATUS_DEF(elevon);
+            SERVOS_TRIM_SET_STATUS_DEF(dspoiler_outer);
+            SERVOS_TRIM_SET_STATUS_DEF(dspoiler_inner);
+            bool dspoiler_finished;
+        } set_status;
     } auto_trim;
 
     struct {
@@ -1187,6 +1229,11 @@ private:
     void landing_neutral_control_surface_servos(void);
     void servos_output(void);
     void servos_auto_trim(void);
+    bool servos_auto_trim_set(const ServoTrimSetEntry *trim_set,
+                              uint trim_set_entries_count,
+                              float pitch_I, float roll_I,
+                              int &adjustment, bool *saturation_status,
+                              bool adjust_pitch_if_relevant);
     void servos_twin_engine_mix();
     void force_flare();
     void throttle_watt_limiter(int8_t &min_throttle, int8_t &max_throttle);

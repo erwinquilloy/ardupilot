@@ -160,6 +160,24 @@ const AP_Param::GroupInfo SRV_Channel::var_info[] = {
     // @RebootRequired: True
     AP_GROUPINFO("FUNCTION",  5, SRV_Channel, function, 0),
 
+    // @Param: ABS_MIN
+    // @DisplayName: Absolute minimum PWM
+    // @Description: Absolute minimum PWM pulse width in microseconds. Used as a hard floor when auto-trim shifts servo_min. Set to 0 to disable the limit.
+    // @Units: PWM
+    // @Range: 500 2500
+    // @Increment: 1
+    // @User: Advanced
+    AP_GROUPINFO("ABS_MIN",  6, SRV_Channel, servo_abs_min, 0),
+
+    // @Param: ABS_MAX
+    // @DisplayName: Absolute maximum PWM
+    // @Description: Absolute maximum PWM pulse width in microseconds. Used as a hard ceiling when auto-trim shifts servo_max. Set to 0 to disable the limit.
+    // @Units: PWM
+    // @Range: 500 2500
+    // @Increment: 1
+    // @User: Advanced
+    AP_GROUPINFO("ABS_MAX",  7, SRV_Channel, servo_abs_max, 0),
+
     AP_GROUPEND
 };
 

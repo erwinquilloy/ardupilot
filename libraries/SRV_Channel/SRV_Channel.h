@@ -290,8 +290,15 @@ public:
 
 private:
     AP_Int16 servo_min;
+    AP_Int16 servo_abs_min;     // fork: absolute floor for auto-trim (PWM µs); 0 = no abs limit
     AP_Int16 servo_max;
+    AP_Int16 servo_abs_max;     // fork: absolute ceiling for auto-trim (PWM µs); 0 = no abs limit
     AP_Int16 servo_trim;
+
+    // fork: snapshot of servo_min/max taken on first auto-trim adjustment so trim
+    // centring math stays referenced to the original range
+    uint16_t servo_min_backup;
+    uint16_t servo_max_backup;
     // reversal, following convention that 1 means reversed, 0 means normal
     AP_Int8 reversed;
     AP_Enum16<Aux_servo_function_t> function;
@@ -411,11 +418,28 @@ public:
     // setup output ESC scaling based on a channels MIN/MAX
     void set_esc_scaling_for(SRV_Channel::Aux_servo_function_t function);
 
-    // return true when auto_trim enabled
-    bool auto_trim_enabled(void) const { return auto_trim; }
+    // return auto-trim mode (0=disabled, 1=once, 2=permanent). Replaces the
+    // old bool auto_trim_enabled() — callers wanting the legacy bool can use
+    // `auto_trim_mode() != SERVO_AUTO_TRIM_DISABLED`.
+    int8_t auto_trim_mode(void) const { return auto_trim; }
 
-    // adjust trim of a channel by a small increment
-    void adjust_trim(SRV_Channel::Aux_servo_function_t function, float v);
+    // if SERVO_AUTO_TRIM was set to ONCE, push it back to DISABLED so the next
+    // boot doesn't re-run autotrim
+    void disable_autotrim_if_temporary_enabled();
+
+    // result of a single channel adjust_trim call (per-channel saturation/used info)
+    typedef enum {
+        FunctionUnused,
+        NoChange,
+        Adjusted,
+    } TrimStatus;
+
+    // adjust trim of all servo channels assigned to `function` by a small increment
+    // proportional to v. Returns per-call status and writes adjustment delta and a
+    // per-channel saturation array (caller-provided, sized to the number of channels
+    // wired to this function in the trim_set).
+    TrimStatus adjust_trim(SRV_Channel::Aux_servo_function_t function, float v,
+                           int &adjustment, bool &saturation);
 
     // set MIN/MAX parameters for a function
     static void set_output_min_max(SRV_Channel::Aux_servo_function_t function, uint16_t min_pwm, uint16_t max_pwm);
@@ -595,6 +619,12 @@ public:
         return false;
 #endif
     }
+
+    enum {
+        SERVO_AUTO_TRIM_DISABLED  = 0,
+        SERVO_AUTO_TRIM_ONCE      = 1,
+        SERVO_AUTO_TRIM_PERMANENT = 2,
+    };
 
 private:
 

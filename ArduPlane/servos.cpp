@@ -1025,7 +1025,7 @@ void Plane::servos_output(void)
 
     srv.push();
 
-    if (g2.servo_channels.auto_trim_enabled()) {
+    if (g2.servo_channels.auto_trim_mode() != SRV_Channels::SERVO_AUTO_TRIM_DISABLED || auto_trim.run) {
         servos_auto_trim();
     }
 }
@@ -1037,15 +1037,103 @@ void Plane::update_throttle_hover() {
 #endif
 }
 
+// static trim-set tables — list every channel function that participates in
+// auto-trim and how its trim should be derived from pitch_I / roll_I
+const Plane::ServoTrimSetEntry Plane::aileron_trim_set[] = {
+    {SRV_Channel::k_aileron,         TrimAdjustmentType::AdjustRoll,         "Aileron trim saturation"},
+    {SRV_Channel::k_flaperon_left,   TrimAdjustmentType::AdjustRollInverted, "Left flaperon trim saturation"},
+    {SRV_Channel::k_flaperon_right,  TrimAdjustmentType::AdjustRoll,         "Right flaperon trim saturation"},
+};
+
+const Plane::ServoTrimSetEntry Plane::elevator_trim_set[] = {
+    {SRV_Channel::k_elevator,        TrimAdjustmentType::AdjustPitch,        "Elevator trim saturation"},
+    {SRV_Channel::k_vtail_left,      TrimAdjustmentType::AdjustPitch,        "VTail left trim saturation"},
+    {SRV_Channel::k_vtail_right,     TrimAdjustmentType::AdjustPitch,        "VTail right trim saturation"},
+};
+
+const Plane::ServoTrimSetEntry Plane::elevon_trim_set[] = {
+    {SRV_Channel::k_elevon_left,     TrimAdjustmentType::AdjustPitchAndRollInverted, "Left elevon trim saturation"},
+    {SRV_Channel::k_elevon_right,    TrimAdjustmentType::AdjustPitchAndRoll,         "Right elevon trim saturation"},
+};
+
+const Plane::ServoTrimSetEntry Plane::dspoiler_outer_trim_set[] = {
+    {SRV_Channel::k_dspoilerLeft1,   TrimAdjustmentType::AdjustPitchAndRollInverted, "Left outer dspoil trim saturation"},
+    {SRV_Channel::k_dspoilerRight1,  TrimAdjustmentType::AdjustPitchAndRoll,         "Right outer dspoil trim saturation"},
+};
+
+const Plane::ServoTrimSetEntry Plane::dspoiler_inner_trim_set[] = {
+    {SRV_Channel::k_dspoilerLeft2,   TrimAdjustmentType::AdjustPitchAndRollInverted, "Left inner dspoil trim saturation"},
+    {SRV_Channel::k_dspoilerRight2,  TrimAdjustmentType::AdjustPitchAndRoll,         "Right inner dspoil trim saturation"},
+};
+
+// Apply one auto-trim pass across all channels in a trim set. Returns true if at
+// least one channel was wired to a function in the set (so the caller knows
+// whether to keep iterating in the ONCE-mode finished detection).
+bool Plane::servos_auto_trim_set(const Plane::ServoTrimSetEntry *const trim_set,
+                                 uint trim_set_entries_count,
+                                 float pitch_I, float roll_I,
+                                 int &adjustment, bool *saturation_status,
+                                 bool adjust_pitch_if_relevant)
+{
+    int adj_local = 0;
+    uint adj_count = 0;
+    bool used = false;
+
+    for (uint i = 0; i < trim_set_entries_count; i++) {
+        const ServoTrimSetEntry &entry = trim_set[i];
+        float trim = 0;
+        switch (entry.adjustment_type) {
+            case TrimAdjustmentType::AdjustPitch:
+                trim = adjust_pitch_if_relevant ? pitch_I : 0;
+                break;
+            case TrimAdjustmentType::AdjustRoll:
+                trim = roll_I;
+                break;
+            case TrimAdjustmentType::AdjustRollInverted:
+                trim = -roll_I;
+                break;
+            case TrimAdjustmentType::AdjustPitchAndRoll:
+                trim = (adjust_pitch_if_relevant ? pitch_I : 0) + roll_I;
+                break;
+            case TrimAdjustmentType::AdjustPitchAndRollInverted:
+                trim = (adjust_pitch_if_relevant ? pitch_I : 0) - roll_I;
+                break;
+        }
+
+        bool saturation = false;
+        const SRV_Channels::TrimStatus status =
+            g2.servo_channels.adjust_trim(entry.function, trim, adj_local, saturation);
+
+        if (status != SRV_Channels::TrimStatus::FunctionUnused) {
+            adj_count++;
+            used = true;
+            // surface the first new saturation on this channel via GCS
+            if (!saturation_status[i] && saturation) {
+                gcs().send_text(MAV_SEVERITY_INFO, "%s", entry.channel_saturation_message);
+            }
+            saturation_status[i] = saturation;
+        }
+    }
+
+    if (!used) {
+        return false;
+    }
+    if (adj_count > 0) {
+        adjustment += adj_local / int(adj_count);
+    }
+    return true;
+}
+
 /*
-  implement automatic persistent trim of control surfaces with
-  AUTO_TRIM=2, only available when SERVO_RNG_ENABLE=1 as otherwise it
-  would impact R/C transmitter calibration
+  implement automatic persistent trim of control surfaces. SERVO_AUTO_TRIM=1
+  runs once until converged then disables itself; =2 runs whenever the
+  aircraft is level in flight.
  */
 void Plane::servos_auto_trim(void)
 {
-    // only in auto modes and FBWA
-    if (!control_mode->does_auto_throttle() && control_mode != &mode_fbwa) {
+    // only in FBWA and auto-throttle modes, but not in AUTO or TAKEOFF (#204)
+    if ((!control_mode->does_auto_throttle() || control_mode == &mode_takeoff || control_mode == &mode_auto) &&
+        control_mode != &mode_fbwa) {
         return;
     }
     if (!arming.is_armed_and_safety_off()) {
@@ -1064,9 +1152,9 @@ void Plane::servos_auto_trim(void)
         // only when close to level
         return;
     }
-    uint32_t now = AP_HAL::millis();
+    const uint32_t now = AP_HAL::millis();
     if (now - auto_trim.last_trim_check < 500) {
-        // check twice a second. We want slow trim update
+        // check twice a second; we want a slow trim update
         return;
     }
     if (ahrs.groundspeed() < 8 || smoothed_airspeed < 8) {
@@ -1074,51 +1162,89 @@ void Plane::servos_auto_trim(void)
         return;
     }
 
-    // adjust trim on channels by a small amount according to I value
-    float roll_I = rollController.get_pid_info().I;
-    float pitch_I = pitchController.get_pid_info().I;
+    const float roll_I  = rollController.get_pid_info().I;
+    const float pitch_I = pitchController.get_pid_info().I;
 
-    g2.servo_channels.adjust_trim(SRV_Channel::k_aileron, roll_I);
-    g2.servo_channels.adjust_trim(SRV_Channel::k_elevator, pitch_I);
+    bool aileron_used = false, elevator_used = false, elevon_used = false;
+    bool dspoiler_outer_used = false, dspoiler_inner_used = false;
 
-    g2.servo_channels.adjust_trim(SRV_Channel::k_elevon_left,  pitch_I - roll_I);
-    g2.servo_channels.adjust_trim(SRV_Channel::k_elevon_right, pitch_I + roll_I);
+    if (!SERVOS_TRIM_SET_STATUS(aileron).finished)  aileron_used  = SERVOS_TRIM_SET(aileron);
+    if (!SERVOS_TRIM_SET_STATUS(elevator).finished) elevator_used = SERVOS_TRIM_SET(elevator);
+    if (!SERVOS_TRIM_SET_STATUS(elevon).finished)   elevon_used   = SERVOS_TRIM_SET(elevon);
 
-    g2.servo_channels.adjust_trim(SRV_Channel::k_vtail_left,  pitch_I);
-    g2.servo_channels.adjust_trim(SRV_Channel::k_vtail_right, pitch_I);
+    if (!auto_trim.set_status.dspoiler_finished) {
+        const int8_t bitmask = g2.crow_flap_options.get();
+        const bool flying_wing       = (bitmask & CrowFlapOptions::FLYINGWING) != 0;
+        const bool full_span_aileron = (bitmask & CrowFlapOptions::FULLSPAN) != 0;
 
-    g2.servo_channels.adjust_trim(SRV_Channel::k_flaperon_left,  roll_I);
-    g2.servo_channels.adjust_trim(SRV_Channel::k_flaperon_right, roll_I);
-
-    // cope with various dspoiler options
-    const int8_t bitmask = g2.crow_flap_options.get();
-    const bool flying_wing       = (bitmask & CrowFlapOptions::FLYINGWING) != 0;
-    const bool full_span_aileron = (bitmask & CrowFlapOptions::FULLSPAN) != 0;
-
-    float dspoiler_outer_left = - roll_I;
-    float dspoiler_inner_left = 0.0f;
-    float dspoiler_outer_right = roll_I;
-    float dspoiler_inner_right = 0.0f;
-
-    if (flying_wing) {
-        dspoiler_outer_left += pitch_I;
-        dspoiler_outer_right += pitch_I;
-    }
-    if (full_span_aileron) {
-        dspoiler_inner_left = dspoiler_outer_left;
-        dspoiler_inner_right = dspoiler_outer_right;
+        if (!SERVOS_TRIM_SET_STATUS(dspoiler_outer).finished) {
+            dspoiler_outer_used = SERVOS_TRIM_SET_EXT(dspoiler_outer, flying_wing);
+        }
+        if (!SERVOS_TRIM_SET_STATUS(dspoiler_inner).finished && full_span_aileron) {
+            dspoiler_inner_used = SERVOS_TRIM_SET_EXT(dspoiler_inner, flying_wing);
+        }
     }
 
-    g2.servo_channels.adjust_trim(SRV_Channel::k_dspoilerLeft1,  dspoiler_outer_left);
-    g2.servo_channels.adjust_trim(SRV_Channel::k_dspoilerLeft2,  dspoiler_inner_left);
-    g2.servo_channels.adjust_trim(SRV_Channel::k_dspoilerRight1, dspoiler_outer_right);
-    g2.servo_channels.adjust_trim(SRV_Channel::k_dspoilerRight2, dspoiler_inner_right);
+    // mark unused sets done so we don't keep iterating them
+    if (!aileron_used)        SERVOS_TRIM_SET_STATUS(aileron).finished = true;
+    if (!elevator_used)       SERVOS_TRIM_SET_STATUS(elevator).finished = true;
+    if (!elevon_used)         SERVOS_TRIM_SET_STATUS(elevon).finished = true;
+    if (!dspoiler_outer_used) SERVOS_TRIM_SET_STATUS(dspoiler_outer).finished = true;
+    if (!dspoiler_inner_used) SERVOS_TRIM_SET_STATUS(dspoiler_inner).finished = true;
+    if (SERVOS_TRIM_SET_STATUS(dspoiler_inner).finished &&
+        SERVOS_TRIM_SET_STATUS(dspoiler_outer).finished) {
+        auto_trim.set_status.dspoiler_finished = true;
+    }
 
     auto_trim.last_trim_check = now;
 
-    if (now - auto_trim.last_trim_save > 10000) {
+    if (!auto_trim.last_trim_save) {
         auto_trim.last_trim_save = now;
+    } else if (now - auto_trim.last_trim_save > 10000) {
+        if (g2.servo_channels.auto_trim_mode() == SRV_Channels::SERVO_AUTO_TRIM_ONCE) {
+            // ONCE mode: declare each set finished when its cumulative
+            // adjustment over the last 10 s is smaller than 4 PWM steps
+            if (!SERVOS_TRIM_SET_STATUS(aileron).finished &&
+                abs(SERVOS_TRIM_SET_STATUS(aileron).adjustment) < 4) {
+                SERVOS_TRIM_SET_STATUS(aileron).finished = true;
+                gcs().send_text(MAV_SEVERITY_INFO, "Ailerons trim finished");
+            }
+            if (!SERVOS_TRIM_SET_STATUS(elevator).finished &&
+                abs(SERVOS_TRIM_SET_STATUS(elevator).adjustment) < 4) {
+                SERVOS_TRIM_SET_STATUS(elevator).finished = true;
+                gcs().send_text(MAV_SEVERITY_INFO, "Elevator trim finished");
+            }
+            if (!SERVOS_TRIM_SET_STATUS(elevon).finished &&
+                abs(SERVOS_TRIM_SET_STATUS(elevon).adjustment) < 4) {
+                SERVOS_TRIM_SET_STATUS(elevon).finished = true;
+                gcs().send_text(MAV_SEVERITY_INFO, "Elevons trim finished");
+            }
+            if (!auto_trim.set_status.dspoiler_finished &&
+                abs(SERVOS_TRIM_SET_STATUS(dspoiler_outer).adjustment) < 4 &&
+                abs(SERVOS_TRIM_SET_STATUS(dspoiler_inner).adjustment) < 4) {
+                SERVOS_TRIM_SET_STATUS(dspoiler_inner).finished = true;
+                SERVOS_TRIM_SET_STATUS(dspoiler_outer).finished = true;
+                auto_trim.set_status.dspoiler_finished = true;
+                gcs().send_text(MAV_SEVERITY_INFO, "Dspoilers trim finished");
+            }
+
+            if (SERVOS_TRIM_SET_STATUS(aileron).finished &&
+                SERVOS_TRIM_SET_STATUS(elevator).finished &&
+                SERVOS_TRIM_SET_STATUS(elevon).finished &&
+                auto_trim.set_status.dspoiler_finished) {
+                auto_trim.run = false;
+                g2.servo_channels.disable_autotrim_if_temporary_enabled();
+                gcs().send_text(MAV_SEVERITY_INFO, "Servo auto trim finished");
+            }
+        }
+
+        SERVOS_TRIM_SET_STATUS(aileron).adjustment = 0;
+        SERVOS_TRIM_SET_STATUS(elevator).adjustment = 0;
+        SERVOS_TRIM_SET_STATUS(elevon).adjustment = 0;
+        SERVOS_TRIM_SET_STATUS(dspoiler_inner).adjustment = 0;
+        SERVOS_TRIM_SET_STATUS(dspoiler_outer).adjustment = 0;
+
         g2.servo_channels.save_trim();
+        auto_trim.last_trim_save = now;
     }
-    
 }
