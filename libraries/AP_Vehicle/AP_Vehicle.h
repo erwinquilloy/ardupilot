@@ -258,6 +258,11 @@ public:
     // zeroing the RC outputs can prevent unwanted motor movement:
     virtual bool should_zero_rc_outputs_on_reboot() const { return false; }
 
+    // true when the vehicle is currently in RC failsafe — used by the
+    // lost-vehicle alarm. Vehicles that track an RC failsafe state should
+    // override this to expose it.
+    virtual bool rc_failsafe(void) const { return false; }
+
     // reboot the vehicle in an orderly manner, doing various cleanups
     // and flashing LEDs as appropriate
     void reboot(bool hold_in_bootloader);
@@ -480,6 +485,10 @@ protected:
 #if AP_SCHEDULER_ENABLED
     static const struct AP_Scheduler::Task scheduler_tasks[];
 #endif
+
+    // update the lost-vehicle alarm at 1 Hz. Latches "once_armed" and
+    // toggles the audible/visual lost flag on the rising edge of RC failsafe
+    void lost_vehicle_alarm_update(void);
 
 #if OSD_ENABLED
     void publish_osd_info();

@@ -1189,6 +1189,10 @@ private:
     bool rc_throttle_value_ok(void) const;
     bool rc_failsafe_active(void) const;
 
+    // override AP_Vehicle::rc_failsafe() so the common lost-vehicle alarm
+    // can observe Plane's RC failsafe state
+    bool rc_failsafe(void) const override { return failsafe.rc_failsafe; }
+
 #if AP_RANGEFINDER_ENABLED
     // sensors.cpp
     void read_rangefinder(void);

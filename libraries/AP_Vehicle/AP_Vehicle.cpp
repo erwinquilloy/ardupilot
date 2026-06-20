@@ -665,6 +665,7 @@ const AP_Scheduler::Task AP_Vehicle::scheduler_tasks[] = {
     SCHED_TASK_CLASS(AP_Gripper,   &vehicle.gripper,        update,                   10,  75, 251),
 #endif
     SCHED_TASK(one_Hz_update,                                                         1, 100, 252),
+    SCHED_TASK(lost_vehicle_alarm_update,                                             1,  10, 253),
 #if HAL_WITH_ESC_TELEM && HAL_GYROFFT_ENABLED
     SCHED_TASK(check_motor_noise,      5,     50, 252),
 #endif
@@ -1042,6 +1043,27 @@ void AP_Vehicle::update_arming()
     AP::arming().update();
 }
 #endif
+
+/*
+  trigger the lost-vehicle notify flag once the vehicle has been armed at
+  some point and we're now in RC failsafe (so a crashed/landed aircraft can
+  be found by sound). Rising/falling edges of rc_failsafe() toggle the flag.
+ */
+void AP_Vehicle::lost_vehicle_alarm_update(void)
+{
+    static bool once_armed = false;
+    static bool prev_rc_failsafe = false;
+
+    if (notify.flags.armed) {
+        once_armed = true;
+    }
+
+    const bool now_rc_fs = rc_failsafe();
+    if (now_rc_fs != prev_rc_failsafe) {
+        notify.flags.vehicle_lost = once_armed && now_rc_fs;
+    }
+    prev_rc_failsafe = now_rc_fs;
+}
 
 /*
   one Hz checks common to all vehicles
