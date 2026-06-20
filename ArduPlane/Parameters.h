@@ -524,6 +524,8 @@ public:
     AP_Int16 waypoint_climb_slope_height_min;
     AP_Int16 cruise_yaw_rate;
 
+    AP_Int8 arming_mode_sw;
+
     AP_Int8 takeoff_throttle_accel_count;
     AP_Int8 takeoff_timeout;
 
