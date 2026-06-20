@@ -292,6 +292,13 @@ const AP_Param::GroupInfo AP_Vehicle::var_info[] = {
     AP_SUBGROUPINFO(rpm_sensor, "RPM", 32, AP_Vehicle, AP_RPM),
 #endif
 
+    // @Param: VEHICLE_UID
+    // @DisplayName: Vehicle unique ID
+    // @Description: User-set arbitrary integer identifying this specific vehicle. Surfaces via telemetry/OSD so multiple aircraft sharing the same GCS/build can be distinguished. Defaults to 0 (no ID).
+    // @Range: -1073741824 1073741824
+    // @User: Advanced
+    AP_GROUPINFO("VEHICLE_UID",     33, AP_Vehicle, vuid,   0),  // fork: was 32 on 4.6.3, upstream 4.7 took 32 for RPM
+
     AP_GROUPEND
 };
 
