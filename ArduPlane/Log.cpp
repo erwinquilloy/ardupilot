@@ -5,9 +5,13 @@
 // Write an attitude packet
 void Plane::Log_Write_Attitude(void)
 {
+    // Bias the logged pitch target by PTCH_TRIM_DEG so the ATT log shows the
+    // demanded attitude expressed in the same frame the user sees on the GCS
+    // and OSD (where TRIM_PITCH offsets the horizon). Without this, ATT.DesPitch
+    // is biased low/high by the trim pitch when reviewing logs.
     Vector3f targets {       // Package up the targets into a vector for commonality with Copter usage of Log_Wrote_Attitude
         nav_roll_cd * 0.01f,
-        nav_pitch_cd * 0.01f,
+        nav_pitch_cd * 0.01f + g.pitch_trim,
         0 //Plane does not have the concept of navyaw. This is a placeholder.
     };
 
