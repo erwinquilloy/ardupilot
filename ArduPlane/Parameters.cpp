@@ -108,10 +108,10 @@ const AP_Param::Info Plane::var_info[] = {
 
     // @Param: STICK_MIXING
     // @DisplayName: Stick Mixing
-    // @Description: When enabled, this adds user stick input to the control surfaces in auto modes, allowing the user to have some degree of flight control without changing modes.  There are two types of stick mixing available. If you set STICK_MIXING to 1 then it will use "fly by wire" mixing, which controls the roll and pitch in the same way that the FBWA mode does. This is the safest option if you usually fly ArduPlane in FBWA or FBWB mode. If you set STICK_MIXING to 3 then it will apply to the yaw while in quadplane modes only, such as while doing an automatic VTOL takeoff or landing.
+    // @Description: When enabled, this adds user stick input to the control surfaces in auto modes, allowing the user to have some degree of flight control without changing modes. Default is 0 (Disabled) in this build — pilot stick input is ignored in AUTO/RTL/GUIDED. Set to 1 to use "fly by wire" mixing, which controls the roll and pitch in the same way that the FBWA mode does. Set to 3 to apply yaw only while in quadplane modes, such as during automatic VTOL takeoff/landing.
     // @Values: 0:Disabled,1:FBWMixing,3:VTOL Yaw only
     // @User: Advanced
-    GSCALAR(stick_mixing,           "STICK_MIXING",   uint8_t(StickMixing::FBW)),
+    GSCALAR(stick_mixing,           "STICK_MIXING",   uint8_t(StickMixing::NONE)),
 
     // @Param: TKOFF_THR_MINSPD
     // @DisplayName: Takeoff throttle min speed
