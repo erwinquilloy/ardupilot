@@ -62,6 +62,7 @@ public:
         TELEMETRY_DISABLE_DJI_WORKAROUNDS = 1U<<1,
         DISPLAYPORT_BTFL_SYMBOLS = 1U<<2,
         DISPLAYPORT_INAV_SYMBOLS = 1U<<3,
+        LQ_INSTEAD_OF_RSSI = 1U<<6,    // fork: report link quality instead of RSSI on the MSP RSSI field
     };
 
     bool is_option_enabled(const Option option) const;

@@ -308,8 +308,9 @@ void AP_MSP_Telem_Backend::update_flight_mode_str(char *flight_mode_str, uint8_t
         units = osd->units == AP_OSD::UNITS_IMPERIAL ?  OSD_UNIT_IMPERIAL : OSD_UNIT_METRIC;
 #endif
         // if needed convert m/s to ft/s
-        const float v_length = (units == OSD_UNIT_METRIC) ? v.length() : v.length() * 3.28084;
-        const char* unit = (units == OSD_UNIT_METRIC) ? "m/s" : "f/s";
+        // fork: report metric wind in km/h rather than m/s; imperial stays ft/s
+        const float v_length = (units == OSD_UNIT_METRIC) ? v.length() * 3.6f : v.length() * 3.28084;
+        const char* unit = (units == OSD_UNIT_METRIC) ? "kmh" : "f/s";
 
         if (v_length > 1.0f) {
             const int32_t angle = wrap_360_cd(DEGX100 * atan2f(v.y, v.x) - ahrs.yaw_sensor);
@@ -1318,7 +1319,13 @@ bool AP_MSP_Telem_Backend::get_rssi(float &rssi) const
     if (!ap_rssi->enabled()) {
         return false;
     }
-    rssi =  ap_rssi->read_receiver_rssi(); // range is [0-1]
+    if (AP::msp() != nullptr && AP::msp()->is_option_enabled(AP_MSP::Option::LQ_INSTEAD_OF_RSSI)) {
+        // fork: when LQ_INSTEAD_OF_RSSI option is set, report link quality
+        // (0-100) on the MSP RSSI field rescaled to the 0-1 expected range
+        rssi = ap_rssi->read_receiver_link_quality() * 0.01f;
+    } else {
+        rssi = ap_rssi->read_receiver_rssi(); // range is [0-1]
+    }
     return true;
 #else
     return false;

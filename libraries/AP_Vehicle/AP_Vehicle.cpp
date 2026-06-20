@@ -286,6 +286,13 @@ const AP_Param::GroupInfo AP_Vehicle::var_info[] = {
     AP_SUBGROUPINFO(serial_manager, "SERIAL", 31, AP_Vehicle, AP_SerialManager),
 #endif
 
+    // @Param: VEHICLE_UID
+    // @DisplayName: Vehicle unique ID
+    // @Description: User-set arbitrary integer identifying this specific vehicle. Surfaces via telemetry/OSD so multiple aircraft sharing the same GCS/build can be distinguished. Defaults to 0 (no ID).
+    // @Range: -1073741824 1073741824
+    // @User: Advanced
+    AP_GROUPINFO("VEHICLE_UID",     32, AP_Vehicle, vuid,   0),
+
     AP_GROUPEND
 };
 

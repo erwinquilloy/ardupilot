@@ -564,6 +564,9 @@ private:
 
     uint32_t _last_internal_errors;  // backup of AP_InternalError::internal_errors bitmask
 
+    // VEHICLE_UID — user-set arbitrary integer identifying this vehicle
+    AP_Int32 vuid;
+
 #if AP_CUSTOMROTATIONS_ENABLED
     AP_CustomRotations custom_rotations;
 #endif
