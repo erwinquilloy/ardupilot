@@ -1402,7 +1402,10 @@ static const AP_Param::ConversionInfo conversion_table[] = {
     { Parameters::k_param_land_flap_percent,  0,      AP_PARAM_INT8,  "LAND_FLAP_PERCENT" },
 
     // battery failsafes
-    { Parameters::k_param_fs_batt_voltage,    0,      AP_PARAM_FLOAT, "BATT_LOW_VOLT" },
+    // (BATT_LOW_VOLT conversion dropped: 8d58fcbeee reclaimed the
+    // k_param_fs_batt_voltage slot for THR_DZ, so the conversion entry
+    // would point at the wrong field. Existing users had already migrated
+    // away from BATT_LOW_VOLT in the AP_BattMonitor move.)
     { Parameters::k_param_fs_batt_mah,        0,      AP_PARAM_FLOAT, "BATT_LOW_MAH" },
 
     { Parameters::k_param_arming,             3,      AP_PARAM_INT8,  "ARMING_RUDDER" },
