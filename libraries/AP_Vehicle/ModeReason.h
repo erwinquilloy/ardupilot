@@ -73,4 +73,6 @@ enum class ModeReason : uint8_t {
   AUX_FUNCTION = 53,
   FIXED_WING_AUTOLAND = 54,
   FENCE_REENABLE = 55,
+  ARMING_MODE_SW = 56,    // fork: auto-switch to TKOFF/AUTO after arming
+  DISARMED = 57,          // fork: reverting to MANUAL after disarming
 };
