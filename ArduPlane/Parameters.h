@@ -268,7 +268,7 @@ public:
         k_param_throttle_suppress_manual,
         k_param_throttle_passthru_stabilize,
         k_param_rc_12_old,
-        k_param_fs_batt_voltage, // unused - moved to AP_BattMonitor
+        k_param_throttle_dz,     // was k_param_fs_batt_voltage (unused — moved to AP_BattMonitor); reclaimed for THR_DZ
         k_param_fs_batt_mah,     // unused - moved to AP_BattMonitor
         k_param_fs_timeout_short,
         k_param_fs_timeout_long,
@@ -473,6 +473,8 @@ public:
     AP_Int8 override_channel;
 #endif
     AP_Int16 gcs_pid_mask;
+
+    AP_Float throttle_dz;
 };
 
 /*

@@ -380,6 +380,15 @@ const AP_Param::Info Plane::var_info[] = {
     // @User: Standard
     ASCALAR(throttle_max,           "THR_MAX",        THROTTLE_MAX),
 
+    // @Param: THR_DZ
+    // @DisplayName: Throttle output deadzone
+    // @Description: If the absolute commanded throttle is below this value the throttle output is forced to zero. Useful with ESCs that don't fully stop the motor at low non-zero commands. Defaults to 4%. Set to 0 to disable.
+    // @Units: %
+    // @Range: 0 100
+    // @Increment: 1
+    // @User: Advanced
+    GSCALAR(throttle_dz,            "THR_DZ",         4),
+
     // @Param: TKOFF_THR_MAX
     // @DisplayName: Maximum Throttle for takeoff
     // @Description: The maximum throttle setting during automatic takeoff. If this is zero then THR_MAX is used for takeoff as well.

@@ -512,6 +512,18 @@ void Plane::throttle_watt_limiter(int8_t &min_throttle, int8_t &max_throttle)
 #endif // #if AP_BATTERY_WATT_MAX_ENABLED
 
 /*
+  Zero the throttle output if the commanded magnitude is below THR_DZ%.
+  Useful when an ESC won't fully stop the motor at low non-zero commands.
+ */
+void Plane::apply_throttle_dz(void)
+{
+    if (g.throttle_dz > 0 &&
+        fabsf(SRV_Channels::get_output_scaled(SRV_Channel::k_throttle)) < g.throttle_dz) {
+        SRV_Channels::set_output_scaled(SRV_Channel::k_throttle, 0.0f);
+    }
+}
+
+/*
   Apply min/max safety limits to throttle.
  */
 float Plane::apply_throttle_limits(float throttle_in)
@@ -1018,6 +1030,10 @@ void Plane::servos_output(void)
     if (g2.manual_rc_mask.get() != 0 && control_mode == &mode_manual) {
         SRV_Channels::copy_radio_in_out_mask(uint32_t(g2.manual_rc_mask.get()));
     }
+
+    // fork PR #35: force throttle output to zero when commanded magnitude is
+    // below THR_DZ% (helps ESCs that don't fully stop at low non-zero commands)
+    apply_throttle_dz();
 
     SRV_Channels::calc_pwm();
 
