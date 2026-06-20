@@ -70,6 +70,16 @@ public:
     /// this will always be greater than or equal to the raw voltage
     float voltage_resting_estimate() const;
 
+    /// cell_avg_voltage - returns average cell battery voltage in volts
+    bool cell_avg_voltage(float &voltage) const;
+
+    /// resting_cell_avg_voltage - returns average resting battery cell voltage in volts
+    bool resting_cell_avg_voltage(float &voltage) const;
+
+    bool full_when_plugged_in() const { return _state.battery_full_when_plugged_in == 1; }
+
+    bool capacity_has_been_configured() const;
+
     // update battery resistance estimate and voltage_resting_estimate
     virtual void update_resistance_estimate();
 
@@ -101,7 +111,7 @@ public:
 
     // check if a option is set
     bool option_is_set(const AP_BattMonitor_Params::Options option) const {
-        return (uint16_t(_params._options.get()) & uint16_t(option)) != 0;
+        return (uint32_t(_params._options.get()) & uint32_t(option)) != 0;
     }
     
 #if AP_BATTERY_SCRIPTING_ENABLED
