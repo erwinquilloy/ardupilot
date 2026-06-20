@@ -672,7 +672,7 @@ const AP_Scheduler::Task AP_Vehicle::scheduler_tasks[] = {
     SCHED_TASK_CLASS(AP_Filters,   &vehicle.filters,        update,                   1, 100, 252),
 #endif
 #if AP_STATS_ENABLED
-    SCHED_TASK_CLASS(AP_Stats,             &vehicle.stats,            update,           1, 100, 252),
+    SCHED_TASK_CLASS(AP_Stats,             &vehicle.stats,            update,         100, 200, 252),
 #endif
 #if AP_ARMING_ENABLED
     SCHED_TASK(update_arming,          1,     50, 253),
