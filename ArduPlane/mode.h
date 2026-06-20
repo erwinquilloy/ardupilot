@@ -17,8 +17,14 @@
 #define AP_QUICKTUNE_ENABLED HAL_QUADPLANE_ENABLED
 #endif
 
+// fork: upstream's AUTOLAND mode is compiled out. Its mode number (26) is
+// COURSE_HOLD here, and wind-aware landing is done via RTL_AUTOLAND +
+// DO_LAND_START (landing_sequence_wind.cpp) instead.
 #ifndef MODE_AUTOLAND_ENABLED
-#define MODE_AUTOLAND_ENABLED 1
+#define MODE_AUTOLAND_ENABLED 0
+#endif
+#if MODE_AUTOLAND_ENABLED
+#error "MODE_AUTOLAND_ENABLED collides with COURSE_HOLD (mode 26) on this fork"
 #endif
 
 #include <AP_Quicktune/AP_Quicktune.h>
@@ -70,6 +76,7 @@ public:
 #if MODE_AUTOLAND_ENABLED
         AUTOLAND      = 26,
 #endif
+        COURSE_HOLD   = 26,
 
     // Mode number 30 reserved for "offboard" for external/lua control.
     };
@@ -656,6 +663,30 @@ public:
     bool mode_allows_autotuning() const override { return true; }
 
     void update_target_altitude() override {};
+
+protected:
+
+    bool _enter() override;
+};
+
+class ModeCourseHold : public Mode
+{
+public:
+
+    Number mode_number() const override { return Number::COURSE_HOLD; }
+    const char *name() const override { return "COURSE HOLD"; }
+    const char *name4() const override { return "CRSH"; }
+
+    bool allows_terrain_disable() const override { return true; }
+
+    // methods that affect movement of the vehicle in this mode
+    void update() override;
+
+    void navigate() override;
+
+    bool get_target_heading_cd(int32_t &target_heading) const;
+
+    void update_target_altitude() override {}
 
 protected:
 
