@@ -6,6 +6,10 @@ bool ModeRTL::_enter()
     plane.prev_WP_loc = plane.current_loc;
     plane.do_RTL(plane.get_RTL_altitude_cm());
     plane.rtl.done_climb = false;
+    // remember whether this RTL was triggered by RC failsafe so the
+    // RTL_CLIMB_FIRST_ONLY_IN_FS option can keep applying the climb-first
+    // logic for the duration of this RTL even if the link recovers
+    plane.rtl.triggered_by_rc_failsafe = plane.failsafe.rc_failsafe;
 #if HAL_QUADPLANE_ENABLED
     plane.vtol_approach_s.approach_stage = Plane::VTOLApproach::Stage::RTL;
 
@@ -45,6 +49,15 @@ void ModeRTL::update()
     plane.calc_nav_roll();
     plane.calc_nav_pitch();
     plane.calc_throttle();
+
+    // RTL_CLIMB_FIRST_ONLY_IN_FS: if set, skip the initial-climb / bank-limit
+    // behaviour unless this RTL was triggered by RC failsafe or we are
+    // currently in RC failsafe. Lets manually-commanded RTLs turn straight
+    // back without first stair-stepping up to altitude.
+    if (plane.flight_option_enabled(FlightOptions::RTL_CLIMB_FIRST_ONLY_IN_FS) &&
+        !plane.failsafe.rc_failsafe && !plane.rtl.triggered_by_rc_failsafe) {
+        return;
+    }
 
     bool alt_threshold_reached = false;
     if (plane.flight_option_enabled(FlightOptions::CLIMB_BEFORE_TURN)) {
