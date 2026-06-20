@@ -169,6 +169,7 @@ enum FlightOptions {
     ENABLE_LOITER_ALT_CONTROL = (1<<12),
     INDICATE_WAITING_FOR_RUDDER_NEUTRAL = (1<<13),
     IMMEDIATE_CLIMB_IN_AUTO = (1<<14),
+    MODE_AUTO_MANUAL_AIRSPEED_CONTROL = (1<<19),    // pilot throttle stick maps to target airspeed in AUTO when set
     COURSE_HOLD_HEADING_CONTROL_WITH_YAW_STICK = (1<<20),
     RTL_CLIMB_FIRST_ONLY_IN_FS = (1<<22),
 };

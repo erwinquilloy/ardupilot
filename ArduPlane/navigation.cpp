@@ -157,8 +157,16 @@ void Plane::calc_airspeed_errors()
     surface_speed_scaler += calc_lowpass_alpha_dt(dt, cutoff_Hz) * (speed_scaler - surface_speed_scaler);
 
 
-    // FBW_B/cruise airspeed target
-    if (!failsafe.rc_failsafe && (control_mode == &mode_fbwb || control_mode == &mode_cruise)) {
+    // Throttle-stick → target airspeed mapping. Originally just FBW_B and
+    // CRUISE; fork PRs #178/#181/#201 extend it to RTL, LOITER, CIRCLE
+    // unconditionally and to AUTO when FLIGHT_OPTIONS bit 19
+    // (MODE_AUTO_MANUAL_AIRSPEED_CONTROL) is set. Lets the pilot trim target
+    // airspeed in nav modes without leaving the mode.
+    if (!failsafe.rc_failsafe &&
+        (control_mode == &mode_fbwb || control_mode == &mode_cruise ||
+         control_mode == &mode_loiter || control_mode == &mode_rtl ||
+         control_mode == &mode_circle ||
+         (control_mode == &mode_auto && flight_option_enabled(FlightOptions::MODE_AUTO_MANUAL_AIRSPEED_CONTROL)))) {
         if (flight_option_enabled(FlightOptions::CRUISE_TRIM_AIRSPEED)) {
             target_airspeed_cm = aparm.airspeed_cruise*100;
         } else if (flight_option_enabled(FlightOptions::CRUISE_TRIM_THROTTLE)) {
