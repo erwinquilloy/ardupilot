@@ -327,6 +327,11 @@ bool AP_Arming_Plane::arm(const AP_Arming::Method method, const bool do_arming_c
 
     send_arm_disarm_statustext("Throttle armed");
 
+    // ARMING_MODE_SW: record arming time so the main loop can schedule a
+    // delayed mode switch (3 s) into TKOFF or AUTO
+    plane.armed_tstamp_ms = AP_HAL::millis();
+    plane.disarmed_tstamp_ms = 0;
+
     return true;
 }
 
@@ -372,6 +377,10 @@ bool AP_Arming_Plane::disarm(const AP_Arming::Method method, bool do_disarm_chec
 
     //only log if disarming was successful
     change_arm_state();
+
+    // record disarm time for any post-disarm scheduled actions (mirrors arm())
+    plane.armed_tstamp_ms = 0;
+    plane.disarmed_tstamp_ms = AP_HAL::millis();
 
 #if QAUTOTUNE_ENABLED
     // Possibly save auto tuned parameters

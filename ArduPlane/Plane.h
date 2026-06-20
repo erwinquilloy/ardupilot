@@ -870,6 +870,10 @@ private:
     // last time home was updated while disarmed
     uint32_t last_home_update_ms;
 
+    // timestamps used by ARMING_MODE_SW to schedule a delayed mode switch
+    uint32_t armed_tstamp_ms    = 0;
+    uint32_t disarmed_tstamp_ms = 0;
+
     // Camera/Antenna mount tracking and stabilisation stuff
 #if HAL_MOUNT_ENABLED
     AP_Mount camera_mount;

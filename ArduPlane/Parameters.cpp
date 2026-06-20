@@ -1312,6 +1312,13 @@ const AP_Param::GroupInfo ParametersG2::var_info[] = {
     // @User: Standard
     AP_GROUPINFO("CRUISE_YAW_RATE", 52, ParametersG2, cruise_yaw_rate, 18),
 
+    // @Param: ARMING_MODE_SW
+    // @DisplayName: Mode to switch to ~3 s after arming
+    // @Description: After arming, wait 3 s then switch to the selected mode. Lets a single aux-switch arm and start a TKOFF or AUTO mission without a second mode switch.
+    // @Values: 0:Disabled, 1:Takeoff, 2:Auto
+    // @User: Advanced
+    AP_GROUPINFO("ARMING_MODE_SW", 44, ParametersG2, arming_mode_sw, ARMING_MODE_SWITCH_DISABLED),
+
     AP_GROUPEND
 };
 

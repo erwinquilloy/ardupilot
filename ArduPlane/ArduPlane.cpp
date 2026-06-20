@@ -508,6 +508,24 @@ void Plane::update_control_mode(void)
     takeoff_state.throttle_lim_max = 100.0f;
     takeoff_state.throttle_lim_min = -100.0f;
 
+    // ARMING_MODE_SW: 3 s after arming, jump to TKOFF or AUTO so a single
+    // aux-switch arm can start a takeoff / mission without a second mode flip
+    const uint32_t now = AP_HAL::millis();
+    if (armed_tstamp_ms && now - armed_tstamp_ms > 3000) {
+        switch (g2.arming_mode_sw) {
+        case ARMING_MODE_SWITCH_TKOFF:
+            set_mode(mode_takeoff, ModeReason::ARMING_MODE_SW);
+            break;
+        case ARMING_MODE_SWITCH_AUTO:
+            set_mode(mode_auto, ModeReason::ARMING_MODE_SW);
+            break;
+        case ARMING_MODE_SWITCH_DISABLED:
+        default:
+            break;
+        }
+        armed_tstamp_ms = 0;
+    }
+
     update_fly_forward();
 
     control_mode->update();

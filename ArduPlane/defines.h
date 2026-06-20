@@ -199,6 +199,12 @@ enum class FenceAutoEnable : uint8_t {
     WhenArmed=3
 };
 
+enum ArmingModeSwitch {
+    ARMING_MODE_SWITCH_DISABLED = 0,
+    ARMING_MODE_SWITCH_TKOFF    = 1,
+    ARMING_MODE_SWITCH_AUTO     = 2,
+};
+
 /*
   bitmask of options for RGFND_LANDING
  */
