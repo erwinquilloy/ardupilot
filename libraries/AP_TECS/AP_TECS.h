@@ -370,6 +370,8 @@ private:
     // Maximum and minimum floating point throttle limits
     float _THRmaxf;
     float _THRminf;
+    // _THRminf clamped to [0, _THRmaxf] for response calcs against the positive throttle range.
+    float _THRminf_clipped_to_zero;
     // Maximum and minimum throttle safety limits, set externally, typically by servos.cpp:apply_throttle_limits()
     float _THRmaxf_ext = 1.0f;
     float _THRminf_ext = -1.0f;

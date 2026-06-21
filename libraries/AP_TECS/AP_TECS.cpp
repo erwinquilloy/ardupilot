@@ -28,7 +28,7 @@ const AP_Param::GroupInfo AP_TECS::var_info[] = {
 
     // @Param: SINK_MIN
     // @DisplayName: Minimum Sink Rate (metres/sec)
-    // @Description: Minimum sink rate when at THR_MIN and AIRSPEED_CRUISE.
+    // @Description: Minimum sink rate when at THR_MIN (or zero throttle when THR_MIN < 0) and AIRSPEED_CRUISE.
     // @Increment: 0.1
     // @Range: 0.1 10.0
     // @User: Standard
@@ -108,7 +108,7 @@ const AP_Param::GroupInfo AP_TECS::var_info[] = {
 
     // @Param: SINK_MAX
     // @DisplayName: Maximum Descent Rate (metres/sec)
-    // @Description: Maximum demanded descent rate. Do not set higher than the vertical speed the aircraft can maintain at THR_MIN, TECS_PITCH_MIN, and AIRSPEED_MAX.
+    // @Description: Maximum demanded descent rate. Do not set higher than the vertical speed the aircraft can maintain at THR_MIN (or zero throttle when THR_MIN < 0), TECS_PITCH_MIN, and AIRSPEED_MAX.
     // @Increment: 0.1
     // @Range: 0.0 20.0
     // @User: Standard
@@ -738,7 +738,7 @@ void AP_TECS::_update_throttle_with_airspeed(void)
         _throttle_dem = 0.0f;
     } else {
         // Calculate gain scaler from specific energy error to throttle
-        const float K_thr2STE = (_STEdot_max - _STEdot_min) / (_THRmaxf - _THRminf); // This is the derivative of STEdot wrt throttle measured across the max allowed throttle range.
+        const float K_thr2STE = (_STEdot_max - _STEdot_min) / (_THRmaxf - _THRminf_clipped_to_zero); // This is the derivative of STEdot wrt throttle measured across the max allowed throttle range.
         const float K_STE2Thr = 1 / (timeConstant() * K_thr2STE);
 
         // Calculate feed-forward throttle
@@ -758,12 +758,10 @@ void AP_TECS::_update_throttle_with_airspeed(void)
         }
         _throttle_dem = (_STE_error + STEdot_error * throttle_damp) * K_STE2Thr + ff_throttle;
 
-        float THRminf_clipped_to_zero = constrain_float(_THRminf, 0, _THRmaxf);
-
         // Calculate integrator state upper and lower limits
         // Set to a value that will allow 0.1 (10%) throttle saturation to allow for noise on the demand
         // Additionally constrain the integrator state amplitude so that the integrator comes off limits faster.
-        const float maxAmp = 0.5f*(_THRmaxf - THRminf_clipped_to_zero);
+        const float maxAmp = 0.5f*(_THRmaxf - _THRminf_clipped_to_zero);
         const float integ_max = constrain_float((_THRmaxf - _throttle_dem + 0.1f),-maxAmp,maxAmp);
         const float integ_min = constrain_float((_THRminf - _throttle_dem - 0.1f),-maxAmp,maxAmp);
 
@@ -790,7 +788,7 @@ void AP_TECS::_update_throttle_with_airspeed(void)
         }
 
         if (throttle_slewrate != 0) {
-            const float thrRateIncr = _DT * (_THRmaxf - THRminf_clipped_to_zero) * throttle_slewrate * 0.01f;
+            const float thrRateIncr = _DT * (_THRmaxf - _THRminf_clipped_to_zero) * throttle_slewrate * 0.01f;
 
             _throttle_dem = constrain_float(_throttle_dem,
                                             _last_throttle_dem - thrRateIncr,
@@ -903,7 +901,7 @@ void AP_TECS::_update_throttle_without_airspeed(int16_t throttle_nudge, float pi
     // drag increase during turns.
     float cosPhi = sqrtf((rotMat.a.y*rotMat.a.y) + (rotMat.b.y*rotMat.b.y));
     float STEdot_dem = _rollComp * (1.0f/constrain_float(cosPhi * cosPhi, 0.1f, 1.0f) - 1.0f);
-    _throttle_dem = _throttle_dem + STEdot_dem / (_STEdot_max - _STEdot_min) * (_THRmaxf - _THRminf);
+    _throttle_dem = _throttle_dem + STEdot_dem / (_STEdot_max - _STEdot_min) * (_THRmaxf - _THRminf_clipped_to_zero);
 
     constrain_throttle();
 }
@@ -1391,7 +1389,9 @@ void AP_TECS::_update_throttle_limits() {
     } else {
         _flag_throttle_forced = false;
     }
-    
+
+    _THRminf_clipped_to_zero = constrain_float(_THRminf, 0, _THRmaxf);
+
     // Reset the external throttle limits.
     // Caller will have to reset them in the next iteration.
     _THRminf_ext = -1.0f;
