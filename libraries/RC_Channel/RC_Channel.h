@@ -96,14 +96,14 @@ public:
     int16_t    get_radio_in() const { return radio_in;}
     void       set_radio_in(int16_t val) {radio_in = val;}
 
-    int16_t    get_control_in() const { return control_in;}
-    void       set_control_in(int16_t val) { control_in = val;}
+    float      get_control_in() const { return control_in;}
+    void       set_control_in(float val) { control_in = val;}
 
     void       clear_override();
     void       set_override(const uint16_t v, const uint32_t timestamp_ms);
     bool       has_override() const;
 
-    float    stick_mixing(const float servo_in);
+    float      stick_mixing(const float servo_in);
 
     // get control input with zero deadzone
     float      get_control_in_zero_dz(void) const;
@@ -526,7 +526,7 @@ private:
     int16_t     radio_in;
 
     // value generated from PWM normalised to configured scale
-    int16_t    control_in;
+    float    control_in;
 
     AP_Int16    radio_min;
     AP_Int16    radio_trim;

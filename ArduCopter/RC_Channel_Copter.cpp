@@ -218,7 +218,7 @@ bool RC_Channel_Copter::do_aux_function(const AuxFuncTrigger &trigger)
         case AUX_FUNC::SAVE_TRIM:
             if ((ch_flag == AuxSwitchPos::HIGH) &&
                 (copter.flightmode->allows_save_trim()) &&
-                (copter.channel_throttle->get_control_in() == 0)) {
+                is_zero(copter.channel_throttle->get_control_in())) {
                 copter.g2.rc_channels.save_trim();
             }
             break;
@@ -234,7 +234,7 @@ bool RC_Channel_Copter::do_aux_function(const AuxFuncTrigger &trigger)
                 }
 
                 // do not allow saving the first waypoint with zero throttle
-                if (!copter.mode_auto.mission.present() && (copter.channel_throttle->get_control_in() == 0)) {
+                if (!copter.mode_auto.mission.present() && is_zero(copter.channel_throttle->get_control_in())) {
                     break;
                 }
 

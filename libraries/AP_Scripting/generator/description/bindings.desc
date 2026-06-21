@@ -317,7 +317,7 @@ singleton GCS method set_message_interval MAV_RESULT'enum uint8_t'skip_check uin
 singleton GCS method send_named_float void string float'skip_check
 singleton GCS method send_named_string void string string
 singleton GCS method frame_type MAV_TYPE'enum
-singleton GCS method get_hud_throttle int16_t
+singleton GCS method get_hud_throttle float
 singleton GCS method sysid_mygcs_last_seen_time_ms uint32_t
 singleton GCS method sysid_mygcs_last_seen_time_ms rename last_seen
 
