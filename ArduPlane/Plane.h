@@ -1208,7 +1208,7 @@ private:
     void check_short_failsafe();
     void startup_INS(void);
     bool should_log(uint32_t mask);
-    int8_t throttle_percentage(void);
+    float throttle_percentage(void);
     void notify_mode(const Mode& mode);
     bool gcs_mode_enabled(const Mode::Number mode_num) const;
 

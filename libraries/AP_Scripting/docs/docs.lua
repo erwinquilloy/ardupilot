@@ -2931,7 +2931,7 @@ function gcs:set_message_interval(port_num, msg_id, interval_us) end
 function gcs:frame_type() end
 
 -- get the throttle value in %
----@return integer
+---@return number
 function gcs:get_hud_throttle() end
 
 -- set high latency control state. Analogous to MAV_CMD_CONTROL_HIGH_LATENCY

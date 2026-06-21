@@ -801,7 +801,7 @@ bool AP_Arming::rc_arm_checks(AP_Arming::Method method)
             };
             for (const auto &channel_to_check : channels_to_check) {
                 const auto *c = channel_to_check.channel;
-                if (c->get_control_in() != 0) {
+                if (!is_zero(c->get_control_in())) {
                     if ((method != Method::RUDDER) || (c != rc().get_arming_channel())) { // ignore the yaw input channel if rudder arming
                         check_failed(ARMING_CHECK_RC, true, "%s (RC%d) is not neutral", channel_to_check.name, c->ch());
                         check_passed = false;
@@ -813,7 +813,7 @@ bool AP_Arming::rc_arm_checks(AP_Arming::Method method)
         // if throttle check is enabled, require zero input
         if (rc().arming_check_throttle()) {
             const RC_Channel *c = &rc().get_throttle_channel();
-                if (c->get_control_in() != 0) {
+                if (!is_zero(c->get_control_in())) {
                     check_failed(ARMING_CHECK_RC, true, "%s (RC%d) is not neutral", "Throttle", c->ch());
                     check_passed = false;
                 }

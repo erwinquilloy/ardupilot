@@ -723,7 +723,7 @@ protected:
 
     virtual float vfr_hud_climbrate() const;
     virtual float vfr_hud_airspeed() const;
-    virtual int16_t vfr_hud_throttle() const { return 0; }
+    virtual float vfr_hud_throttle() const { return 0; }
 #if AP_AHRS_ENABLED
     virtual float vfr_hud_alt() const;
 #endif
@@ -1250,7 +1250,7 @@ public:
     bool install_alternative_protocol(mavlink_channel_t chan, GCS_MAVLINK::protocol_handler_fn_t handler);
 
     // get the VFR_HUD throttle
-    int16_t get_hud_throttle(void) const {
+    float get_hud_throttle(void) const {
         const GCS_MAVLINK *link = chan(0);
         if (link == nullptr) {
             return 0;
