@@ -120,7 +120,7 @@ void GCS_MAVLINK_Rover::send_nav_controller_output() const
         control_mode->crosstrack_error());
 }
 
-int16_t GCS_MAVLINK_Rover::vfr_hud_throttle() const
+float GCS_MAVLINK_Rover::vfr_hud_throttle() const
 {
     return rover.g2.motors.get_throttle();
 }
