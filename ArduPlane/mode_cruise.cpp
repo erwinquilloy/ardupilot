@@ -23,7 +23,7 @@ void ModeCruise::update()
       roll when heading is locked. Heading becomes unlocked on
       any aileron or rudder input
     */
-    if (plane.channel_roll->get_control_in() != 0 || plane.channel_rudder->get_control_in() != 0) {
+    if (!is_zero(plane.channel_roll->get_control_in()) || !is_zero(plane.channel_rudder->get_control_in())) {
         locked_heading = false;
         lock_timer_ms = 0;
     }
@@ -64,7 +64,7 @@ void ModeCruise::navigate()
     const bool moving_forwards = fabsf(wrap_PI(cd_to_rad(ground_course_cd) - plane.ahrs.get_yaw_rad())) < M_PI_2;
 
     if (!locked_heading &&
-        plane.channel_roll->get_control_in() == 0 &&
+        is_zero(plane.channel_roll->get_control_in()) &&
         plane.rudder_input() == 0 &&
         plane.gps.status() >= AP_GPS::GPS_OK_FIX_2D &&
         plane.gps.ground_speed() >= GPS_GND_CRS_MIN_SPD &&
