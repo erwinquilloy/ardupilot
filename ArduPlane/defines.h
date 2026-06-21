@@ -172,6 +172,7 @@ enum FlightOptions {
     MODE_AUTO_MANUAL_AIRSPEED_CONTROL = (1<<19),    // pilot throttle stick maps to target airspeed in AUTO when set
     COURSE_HOLD_HEADING_CONTROL_WITH_YAW_STICK = (1<<20),
     RTL_CLIMB_FIRST_ONLY_IN_FS = (1<<22),
+    ALLOW_GLIDING_IN_AUTO_THR_MODES = (1<<23),
 };
 
 enum CrowFlapOptions {

@@ -526,6 +526,20 @@ void Plane::update_control_mode(void)
         armed_tstamp_ms = 0;
     }
 
+    // ALLOW_GLIDING_IN_AUTO_THR_MODES (FlightOptions bit 23): in auto-throttle
+    // modes other than TAKEOFF/AUTO, route a throttle stick below THR_DZ into
+    // TECS as gliding_requested so the throttle drops to zero and pitch holds
+    // total energy at AIRSPEED_MIN.
+    if (flight_option_enabled(FlightOptions::ALLOW_GLIDING_IN_AUTO_THR_MODES) &&
+        control_mode->does_auto_throttle() &&
+        control_mode != &mode_takeoff &&
+        control_mode != &mode_auto) {
+        auto_throttle_gliding = !failsafe.rc_failsafe && get_throttle_input() < g.throttle_dz;
+    } else {
+        auto_throttle_gliding = false;
+    }
+    TECS_controller.set_gliding_requested_flag(auto_throttle_gliding);
+
     update_fly_forward();
 
     control_mode->update();

@@ -1143,6 +1143,8 @@ const AP_Param::GroupInfo ParametersG2::var_info[] = {
     // @Bitmask: 12: Enable FBWB style loiter altitude control
     // @Bitmask: 13: Indicate takeoff waiting for neutral rudder with flight control surfaces
     // @Bitmask: 14: In AUTO - climb to next waypoint altitude immediately instead of linear climb
+    // @Bitmask: 22: In RTL failsafe only, climb first then turn (fork)
+    // @Bitmask: 23: In auto-throttle modes other than TAKEOFF/AUTO, glide (throttle=0, target airspeed AIRSPEED_MIN) when throttle stick is below THR_DZ (fork)
     // @User: Advanced
     AP_GROUPINFO("FLIGHT_OPTIONS", 13, ParametersG2, flight_options, 0),
 

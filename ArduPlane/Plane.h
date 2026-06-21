@@ -875,6 +875,9 @@ private:
     uint32_t armed_tstamp_ms    = 0;
     uint32_t disarmed_tstamp_ms = 0;
 
+    // Set when FLIGHT_OPTIONS ALLOW_GLIDING_IN_AUTO_THR_MODES is engaged.
+    bool auto_throttle_gliding = false;
+
     // Camera/Antenna mount tracking and stabilisation stuff
 #if HAL_MOUNT_ENABLED
     AP_Mount camera_mount;
