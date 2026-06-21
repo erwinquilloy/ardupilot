@@ -787,9 +787,9 @@ void ToyMode::action_arm(void)
     // don't arm if sticks aren't in deadzone, to prevent pot problems
     // on TX causing flight control issues
     bool sticks_centered =
-        copter.channel_roll->get_control_in() == 0 &&
-        copter.channel_pitch->get_control_in() == 0 &&
-        copter.channel_yaw->get_control_in() == 0;
+        is_zero(copter.channel_roll->get_control_in()) &&
+        is_zero(copter.channel_pitch->get_control_in()) &&
+        is_zero(copter.channel_yaw->get_control_in());
 
     if (!sticks_centered) {
         gcs().send_text(MAV_SEVERITY_ERROR, "Tmode: sticks not centered");
