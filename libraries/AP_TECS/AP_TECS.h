@@ -149,6 +149,9 @@ public:
         _use_synthetic_airspeed_once = true;
     }
 
+    AP_Float &thr_ff_damp(void) { return _thr_ff_damp; }
+    AP_Float &thr_ff_filter(void) { return _thr_ff_filter; }
+
     // reset on next loop
     void reset(void) {
         _need_reset = true;
@@ -209,6 +212,8 @@ private:
     AP_Int32 _options;
     AP_Float _flare_holdoff_hgt;
     AP_Float _hgt_dem_tconst;
+    AP_Float _thr_ff_damp;
+    AP_Float _thr_ff_filter;
 
     enum {
         OPTION_GLIDER_ONLY=(1<<0),
@@ -269,6 +274,9 @@ private:
 
     // pitch demand rate limiter state
     float _last_pitch_dem;
+
+    // Filtered FF throttle state, persists across iterations under THR_FF_FILT < 1.
+    float _throttle_ff;
 
     // Rate of change of speed along X axis
     float _vel_dot;

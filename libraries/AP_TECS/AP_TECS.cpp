@@ -283,6 +283,22 @@ const AP_Param::GroupInfo AP_TECS::var_info[] = {
     // @User: Advanced
     AP_GROUPINFO("HDEM_TCONST", 33, AP_TECS, _hgt_dem_tconst, 3.0f),
 
+    // @Param: THR_FF_FILT
+    // @DisplayName: Throttle FF component filter
+    // @Description: Throttle FF component low-pass filter. 1.0 = use newly calculated FF value 100% (no filtering); lower values blend in prior state.
+    // @Range: 0.2 1.0
+    // @Increment: 0.1
+    // @User: Advanced
+    AP_GROUPINFO("THR_FF_FILT", 59, AP_TECS, _thr_ff_filter, 1.0f),
+
+    // @Param: THR_FF_DAMP
+    // @DisplayName: Throttle FF component dampening factor
+    // @Description: Throttle FF component dampening factor. 0 disables FF in throttle calculation; 1 uses the full computed FF value.
+    // @Range: 0.0 1.0
+    // @Increment: 0.1
+    // @User: Advanced
+    AP_GROUPINFO("THR_FF_DAMP", 60, AP_TECS, _thr_ff_damp, 1.0f),
+
     AP_GROUPEND
 };
 
@@ -750,13 +766,14 @@ void AP_TECS::_update_throttle_with_airspeed(void)
         const float cosPhi = sqrtf((rotMat.a.y*rotMat.a.y) + (rotMat.b.y*rotMat.b.y));
         STEdot_dem = STEdot_dem + _rollComp * (1.0f/constrain_float(cosPhi * cosPhi, 0.1f, 1.0f) - 1.0f);
         const float ff_throttle = nomThr + STEdot_dem / K_thr2STE;
+        _throttle_ff = (1.0f - _thr_ff_filter) * _throttle_ff + _thr_ff_filter * ff_throttle;
 
         // Calculate PD + FF throttle
         float throttle_damp = _thrDamp;
         if (_flags.is_doing_auto_land && !is_zero(_land_throttle_damp)) {
             throttle_damp = _land_throttle_damp;
         }
-        _throttle_dem = (_STE_error + STEdot_error * throttle_damp) * K_STE2Thr + ff_throttle;
+        _throttle_dem = (_STE_error + STEdot_error * throttle_damp) * K_STE2Thr + _thr_ff_damp * _throttle_ff;
 
         // Calculate integrator state upper and lower limits
         // Set to a value that will allow 0.1 (10%) throttle saturation to allow for noise on the demand
