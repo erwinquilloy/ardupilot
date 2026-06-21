@@ -481,6 +481,9 @@ private:
     // Update Demanded Throttle Non-Airspeed
     void _update_throttle_without_airspeed(int16_t throttle_nudge, float pitch_trim_deg);
 
+    // Apply throttle slewrate to _throttle_dem
+    void _apply_throttle_slewrate(void);
+
     // Constrain throttle demand and record clipping
     void constrain_throttle();
 
