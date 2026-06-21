@@ -1138,7 +1138,9 @@ void AP_TECS::_initialise_states(float hgt_afe)
         _integTHR_state       = 0.0f;
         _integSEBdot          = 0.0f;
         _integKE              = 0.0f;
-        _last_throttle_dem    = aparm.throttle_cruise * 0.01f;
+        if (AP_HAL::millis() - _throttle_dem_ext_update_last_msec > 200) {
+            _throttle_dem = aparm.throttle_cruise * 0.01f;
+        }
         _last_pitch_dem       = _ahrs.get_pitch();
         _hgt_dem_in_prev      = hgt_afe;
         _hgt_dem_lpf          = hgt_afe;

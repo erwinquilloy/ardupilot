@@ -638,6 +638,9 @@ void Plane::set_throttle(void)
         }
     }
 
+    if (suppress_throttle() || !control_mode->does_auto_throttle()) {
+        TECS_controller.set_throttle_demand(SRV_Channels::get_output_scaled(SRV_Channel::k_throttle));
+    }
 }
 
 /*
