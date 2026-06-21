@@ -1092,6 +1092,8 @@ const AP_Param::GroupInfo ParametersG2::var_info[] = {
     // @Bitmask: 14: In AUTO - climb to next waypoint altitude immediately instead of linear climb
     // @Bitmask: 15: Enable autoflap in manual modes and use minimum of target and actual speed for flap setting
     // @Bitmask: 16: Enable full aerodynamic load factor-based roll limits when an airspeed sensor is enabled and AIRSPEED_STALL is set
+    // @Bitmask: 22: In RTL failsafe only, climb first then turn (fork)
+    // @Bitmask: 23: In auto-throttle modes other than TAKEOFF/AUTO, glide (throttle=0, target airspeed AIRSPEED_MIN) when throttle stick is below THR_DZ (fork)
     // @User: Advanced
     AP_GROUPINFO("FLIGHT_OPTIONS", 13, ParametersG2, flight_options, 0),
 
