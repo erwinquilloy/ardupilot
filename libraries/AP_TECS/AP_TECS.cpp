@@ -536,8 +536,8 @@ void AP_TECS::_update_speed_demand(void)
 
 void AP_TECS::_update_height_demand(void)
 {
-    _climb_rate_limit = _maxClimbRate * _max_climb_scaler;
-    _sink_rate_limit = _maxSinkRate * _max_sink_scaler;
+    _climb_rate_limit = _max_climb_rate * _max_climb_scaler;
+    _sink_rate_limit = _max_sink_rate * _max_sink_scaler;
     if (_maxSinkRate_approach > 0 && _flags.is_doing_auto_land) {
         // special sink rate for approach to accommodate steep slopes and reverse thrust.
         // A special check must be done to see if we're LANDing on approach but also if
@@ -1232,7 +1232,9 @@ void AP_TECS::update_pitch_throttle(int32_t hgt_dem_cm,
                                     int16_t throttle_nudge,
                                     float hgt_afe,
                                     float load_factor,
-                                    float pitch_trim_deg)
+                                    float pitch_trim_deg,
+                                    float max_climb_rate,
+                                    float max_sink_rate)
 {
     uint64_t now = AP_HAL::micros64();
     // check how long since we last did the 50Hz update; do nothing in
@@ -1249,6 +1251,9 @@ void AP_TECS::update_pitch_throttle(int32_t hgt_dem_cm,
     _DT = (now - _update_pitch_throttle_last_usec) * 1.0e-6f;
     _DT = MAX(_DT, 0.001f);
     _update_pitch_throttle_last_usec = now;
+
+    _max_climb_rate = is_zero(max_climb_rate) ? _maxClimbRate : MIN(max_climb_rate, _maxClimbRate.get());
+    _max_sink_rate = is_zero(max_sink_rate) ? _maxSinkRate : MIN(max_sink_rate, _maxSinkRate.get());
 
     _flags.is_gliding = _flags.gliding_requested || _flags.propulsion_failed || aparm.throttle_max==0;
     _flags.is_doing_auto_land = (flight_stage == AP_FixedWing::FlightStage::LAND);

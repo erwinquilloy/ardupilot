@@ -53,7 +53,9 @@ public:
                                int16_t throttle_nudge,
                                float hgt_afe,
                                float load_factor,
-                               float pitch_trim_deg);
+                               float pitch_trim_deg,
+                               float max_climb_rate = 0,
+                               float max_sink_rate = 0);
 
     // demanded throttle in percentage
     // should return -100 to 100, usually positive unless reverse thrust is enabled via _THRminf < 0
@@ -250,6 +252,12 @@ private:
     // climb and sink rate limits
     float _climb_rate_limit;
     float _sink_rate_limit;
+
+    // Per-call effective rates: caller's max_climb_rate / max_sink_rate
+    // clamped to the TECS_CLMB_MAX / TECS_SINK_MAX globals. 0 falls back
+    // to the globals. Used in _update_height_demand.
+    float _max_climb_rate;
+    float _max_sink_rate;
 
     /*
       a filter to estimate climb rate if we don't have it from the EKF

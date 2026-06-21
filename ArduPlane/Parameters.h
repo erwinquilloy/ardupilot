@@ -524,6 +524,12 @@ public:
 
     AP_Int16 cruise_yaw_rate;
 
+    // Per-mode vertical-rate ceilings; 0 = fall back to TECS_CLMB_MAX/TECS_SINK_MAX.
+    AP_Float auto_climb_max;
+    AP_Float auto_sink_max;
+    AP_Float rtl_climb_max;
+    AP_Float rtl_sink_max;
+
     AP_Int8 arming_mode_sw;
 
     AP_Int8 takeoff_throttle_accel_count;
