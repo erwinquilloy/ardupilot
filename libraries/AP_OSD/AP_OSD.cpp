@@ -36,6 +36,7 @@
 #include <AP_Notify/AP_Notify.h>
 #include <AP_Terrain/AP_Terrain.h>
 #include <AP_RSSI/AP_RSSI.h>
+#include <AP_Vehicle/AP_Vehicle.h>
 #include <GCS_MAVLink/GCS.h>
 #if AP_OSD_EXTENDED_LNK_STATS && AP_RCPROTOCOL_CRSF_ENABLED
 #include <AP_RCProtocol/AP_RCProtocol_CRSF.h>
@@ -442,36 +443,53 @@ void AP_OSD::update_osd()
 }
 
 //update maximums and totals
+bool AP_OSD::have_stats() const
+{
+    return _stats_samples > 0;
+}
+
 void AP_OSD::update_stats()
 {
     // allow other threads to consume stats info
     WITH_SEMAPHORE(_sem);
 
+#if AP_BATTERY_ENABLED
+    AP_BattMonitor &battery = AP::battery();
+#endif
+
     uint32_t now = AP_HAL::millis();
     if (!AP_Notify::flags.armed) {
         _stats.last_update_ms = now;
+
+        // capture pre-arm consumed_mah/wh as the baseline so the in-flight
+        // armed-relative values start at zero on arming (#129).
+#if AP_BATTERY_ENABLED
+        _stats.consumed_mah_available = battery.consumed_mah(_stats_last_consumed_mah);
+        _stats.consumed_wh_available = battery.consumed_wh_without_losses(_stats_last_consumed_wh);
+#endif
+
+        _stats_have_been_flying_for_a_while = false;
+        _stats_first_seen_flying_ms = 0;
         return;
     }
 
     uint32_t delta_ms = now - _stats.last_update_ms;
     _stats.last_update_ms = now;
-    uint32_t new_samples = _stats.samples + 1;
+    uint32_t new_samples = _stats_samples + 1;
 
 #if AP_BATTERY_ENABLED
-    AP_BattMonitor &battery = AP::battery();
-
     // maximum and average current
     float amps;
     if (battery.current_amps(amps)) {
         _stats.max_current_a = fmaxf(_stats.max_current_a, amps);
-        _stats.avg_current_a = (_stats.avg_current_a * _stats.samples + amps) / new_samples;
+        _stats.avg_current_a = (_stats.avg_current_a * _stats_samples + amps) / new_samples;
     }
 
     // maximum and average power
     float power;
     if (battery.power_watts(power)) {
         _stats.max_power_w = fmaxf(_stats.max_power_w, power);
-        _stats.avg_power_w = (_stats.avg_power_w * _stats.samples + power) / new_samples;
+        _stats.avg_power_w = (_stats.avg_power_w * _stats_samples + power) / new_samples;
     }
 
     // minimum voltage
@@ -486,9 +504,19 @@ void AP_OSD::update_stats()
         _stats.min_cell_voltage_v = fminf(_stats.min_cell_voltage_v, cell_voltage);
     }
 
-    // armed consumed mAh / Wh
-    _stats.consumed_mah_available = battery.consumed_mah(_stats.consumed_mah);
-    _stats.consumed_wh_available = battery.consumed_wh(_stats.consumed_wh);
+    // armed-relative consumed mAh / Wh (#129 -- subtract the pre-arm baseline
+    // captured in the !armed branch above)
+    float consumed_mah_now, consumed_wh_now;
+    _stats.consumed_mah_available = battery.consumed_mah(consumed_mah_now);
+    _stats.consumed_wh_available = battery.consumed_wh_without_losses(consumed_wh_now);
+    if (_stats.consumed_mah_available) {
+        _stats.consumed_mah += consumed_mah_now - _stats_last_consumed_mah;
+        _stats_last_consumed_mah = consumed_mah_now;
+    }
+    if (_stats.consumed_wh_available) {
+        _stats.consumed_wh += consumed_wh_now - _stats_last_consumed_wh;
+        _stats_last_consumed_wh = consumed_wh_now;
+    }
 #endif
 
     Vector2f ground_speed_vector;
@@ -523,12 +551,28 @@ void AP_OSD::update_stats()
     float dist_ground_m = (ground_speed_mps * delta_ms) * 0.001;
     _stats.last_ground_distance_m += dist_ground_m;
 
-    // maximum ground and wind speed
+    // maximum ground speed
     _stats.max_ground_speed_mps = fmaxf(_stats.max_ground_speed_mps, ground_speed_mps);
-    _stats.max_wind_speed_mps = fmaxf(_stats.max_wind_speed_mps, wind_speed_mps);
 
-    // average wind speed
-    _stats.avg_wind_speed_mps = (_stats.avg_wind_speed_mps * _stats.samples + wind_speed_mps) / new_samples;
+    // #129: wait until we've been flying for ~30s before collecting wind stats
+    // so the wind estimator has time to settle (otherwise max_wind_speed_mps
+    // captures the startup-transient spike, not the actual flight wind).
+    if (!_stats_have_been_flying_for_a_while) {
+        if (AP::vehicle()->get_likely_flying()) {
+            if (_stats_first_seen_flying_ms == 0) {
+                _stats_first_seen_flying_ms = now;
+            } else if (now - _stats_first_seen_flying_ms > 30000) {
+                _stats_have_been_flying_for_a_while = true;
+            }
+        } else {
+            _stats_first_seen_flying_ms = 0;
+        }
+    }
+    if (_stats_have_been_flying_for_a_while) {
+        _stats.max_wind_speed_mps = fmaxf(_stats.max_wind_speed_mps, wind_speed_mps);
+        _stats.avg_wind_speed_mps = (_stats.avg_wind_speed_mps * _stats_samples + wind_speed_mps) / new_samples;
+        _stats.wind_speeds_available = true;
+    }
 
     // maximum distance from home
     if (home_is_set) {
@@ -576,11 +620,11 @@ void AP_OSD::update_stats()
     if (_stats.esc_temperature_available) {
         highest_temperature /= 100;
         _stats.max_esc_temp = MAX(_stats.max_esc_temp, highest_temperature);
-        _stats.avg_esc_temp = (int32_t(_stats.avg_esc_temp) * _stats.samples + highest_temperature) / new_samples;
+        _stats.avg_esc_temp = (int32_t(_stats.avg_esc_temp) * _stats_samples + highest_temperature) / new_samples;
     }
 #endif
 
-    _stats.samples = new_samples;
+    _stats_samples = new_samples;
 }
 
 //Thanks to minimosd authors for the multiple osd screen idea
