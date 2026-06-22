@@ -616,6 +616,7 @@ public:
 #endif
         OPTION_TWO_DECIMALS_VERTICAL_SPEED = 1U<<18,
         OPTION_ONE_DECIMAL_ATTITUDE = 1U<<21,
+        OPTION_SHORTEN_PLUSCODE = 1U<<23,
     };
 
     enum {
