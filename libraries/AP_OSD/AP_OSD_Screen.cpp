@@ -2496,7 +2496,7 @@ void AP_OSD_Screen::draw_avg_eff_air(uint8_t x, uint8_t y, bool draw_eff_symbol)
 void AP_OSD_Screen::draw_stat(uint8_t x, uint8_t y)
 {
     const auto &s = osd->_stats;
-    const bool have_stats = s.samples > 0;
+    const bool have_stats = osd->have_stats();
     const uint8_t c = 11; // value column offset
     const uint32_t flight_time_s = (AP::stats() != nullptr) ? AP::stats()->get_flight_time_s() : 0;
 
@@ -2548,7 +2548,7 @@ void AP_OSD_Screen::draw_stat(uint8_t x, uint8_t y)
     backend->write(x+c+5, y, false, "/");
     draw_speed_value(x+c+6, y, have_stats, avg_ground_speed);
     backend->write(x+c+10, y, false, "/");
-    draw_speed_value(x+c+11, y, have_stats, s.avg_wind_speed_mps);
+    draw_speed_value(x+c+11, y, have_stats && s.wind_speeds_available, s.avg_wind_speed_mps);
     y++;
 
     // line 5: MAX A/G/W
@@ -2557,7 +2557,7 @@ void AP_OSD_Screen::draw_stat(uint8_t x, uint8_t y)
     backend->write(x+c+5, y, false, "/");
     draw_speed_value(x+c+6, y, have_stats, s.max_ground_speed_mps);
     backend->write(x+c+10, y, false, "/");
-    draw_speed_value(x+c+11, y, have_stats, s.max_wind_speed_mps);
+    draw_speed_value(x+c+11, y, have_stats && s.wind_speeds_available, s.max_wind_speed_mps);
     y++;
 
 #if AP_BATTERY_ENABLED
