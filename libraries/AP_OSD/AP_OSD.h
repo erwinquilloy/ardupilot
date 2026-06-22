@@ -164,10 +164,6 @@ private:
     static const uint8_t message_scroll_time_ms = 200;
     static const uint8_t message_scroll_delay = 5;
 
-    static constexpr float ah_max_pitch = DEG_TO_RAD * 20;
-    //typical fpv camera has 80deg vertical field of view, 16 row of chars
-    static constexpr float ah_pitch_rad_to_char = 16.0f/(DEG_TO_RAD * 80);
-
     enum class VoltageType {
         VOLTAGE,
         RESTING_VOLTAGE,
@@ -588,6 +584,7 @@ public:
     AP_Float warn_avgcellrestvolt;
     AP_Float warn_batvolt;
     AP_Float warn_bat2volt;
+    AP_Int8 ah_pitch_max;
     AP_Int8 msgtime_s;
     AP_Int8 arm_scr;
     AP_Int8 disarm_scr;

@@ -1736,7 +1736,11 @@ void AP_OSD_Screen::draw_horizon(uint8_t x, uint8_t y)
         roll = -roll;
     }
 
-    pitch = constrain_float(pitch, -ah_max_pitch, ah_max_pitch);
+    const float ah_pitch_max = ToRad(osd->ah_pitch_max);
+    // 9 lines but remove a little bit so that half of the line doesn't disappear for very small roll angles
+    const float ah_pitch_rad_to_char = 8.8f / (2 * ah_pitch_max);
+
+    pitch = constrain_float(pitch, -ah_pitch_max, ah_pitch_max);
     float ky = sinf(roll);
     float kx = cosf(roll);
 
