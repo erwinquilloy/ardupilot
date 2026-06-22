@@ -2395,6 +2395,10 @@ void AP_OSD_Screen::draw_eff(uint8_t x, uint8_t y)
             }
         }
     }
+    if (available) {
+        osd->eff_ground_state += (efficiency - osd->eff_ground_state) * 0.2f;
+        efficiency = osd->eff_ground_state;
+    }
     draw_eff_value(x, y, available, efficiency);
 }
 
@@ -2428,6 +2432,10 @@ void AP_OSD_Screen::draw_eff_air(uint8_t x, uint8_t y)
             }
         }
     }
+    if (available) {
+        osd->eff_air_state += (efficiency - osd->eff_air_state) * 0.2f;
+        efficiency = osd->eff_air_state;
+    }
     draw_eff_value(x, y, available, efficiency);
 #else
     (void)x; (void)y;
@@ -2460,7 +2468,9 @@ void AP_OSD_Screen::draw_climbeff(uint8_t x, uint8_t y)
     AP_BattMonitor &battery = AP::battery();
     float amps;
     if (battery.current_amps(amps) && is_positive(amps)) {
-        backend->write(x, y, false,"%c%c%3.1f%c",SYMBOL(SYM_PTCHUP),SYMBOL(SYM_EFF),(double)(3.6f * u_scale(VSPEED,vspd)/amps),unit_icon);
+        const float computed = 3.6f * u_scale(VSPEED, vspd) / amps;
+        osd->climb_eff_state += (computed - osd->climb_eff_state) * 0.2f;
+        backend->write(x, y, false,"%c%c%3.1f%c",SYMBOL(SYM_PTCHUP),SYMBOL(SYM_EFF),(double)osd->climb_eff_state,unit_icon);
     } else {
         backend->write(x, y, false,"%c%c---%c",SYMBOL(SYM_PTCHUP),SYMBOL(SYM_EFF),unit_icon);
     }
