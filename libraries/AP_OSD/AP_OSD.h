@@ -613,6 +613,7 @@ public:
         OPTION_RF_MODE_ALONG_WITH_LQ = 1U<<7,
 #endif
         OPTION_TWO_DECIMALS_VERTICAL_SPEED = 1U<<18,
+        OPTION_ONE_DECIMAL_ATTITUDE = 1U<<21,
     };
 
     enum {
