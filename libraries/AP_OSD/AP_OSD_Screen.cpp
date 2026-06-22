@@ -2253,34 +2253,42 @@ void AP_OSD_Screen::draw_gps_longitude(uint8_t x, uint8_t y)
 
 void AP_OSD_Screen::draw_roll_angle(uint8_t x, uint8_t y)
 {
-    float roll_rad, pitch_rad, yaw_rad;
-    AP::vehicle()->get_osd_attitude_rad(roll_rad, pitch_rad, yaw_rad);
-    const float roll_deg = degrees(roll_rad);
+    AP_AHRS &ahrs = AP::ahrs();
+    const float roll = abs(ahrs.roll_sensor) / 100.0f;
     char r;
-    if (roll_deg > 0.5) {
+    if (ahrs.roll_sensor > 50) {
         r = SYMBOL(SYM_ROLLR);
-    } else if (roll_deg < -0.5) {
+    } else if (ahrs.roll_sensor < -50) {
         r = SYMBOL(SYM_ROLLL);
     } else {
         r = SYMBOL(SYM_ROLL0);
     }
-    backend->write(x, y, false, "%c%3d%c", r, int(fabsf(roll_deg)), SYMBOL(SYM_DEGR));
+    if (osd->options & AP_OSD::OPTION_ONE_DECIMAL_ATTITUDE) {
+        const char *format = roll < 9.95f ? "%c  %.1f%c" : (roll < 99.95f ? "%c %.1f%c" : "%c%.1f%c");
+        backend->write(x, y, false, format, r, roll, SYMBOL(SYM_DEGR));
+    } else {
+        backend->write(x, y, false, "%c%3d%c", r, (int16_t)lrintf(roll), SYMBOL(SYM_DEGR));
+    }
 }
 
 void AP_OSD_Screen::draw_pitch_angle(uint8_t x, uint8_t y)
 {
-    float roll_rad, pitch_rad, yaw_rad;
-    AP::vehicle()->get_osd_attitude_rad(roll_rad, pitch_rad, yaw_rad);
-    const float pitch_deg = degrees(pitch_rad);
+    AP_AHRS &ahrs = AP::ahrs();
+    const float pitch = abs(ahrs.pitch_sensor) / 100.0f;
     char p;
-    if (pitch_deg > 0.5) {
+    if (ahrs.pitch_sensor > 50) {
         p = SYMBOL(SYM_PTCHUP);
-    } else if (pitch_deg < -0.5) {
+    } else if (ahrs.pitch_sensor < -50) {
         p = SYMBOL(SYM_PTCHDWN);
     } else {
         p = SYMBOL(SYM_PTCH0);
     }
-    backend->write(x, y, false, "%c%3d%c", p, int(fabsf(pitch_deg)), SYMBOL(SYM_DEGR));
+    if (osd->options & AP_OSD::OPTION_ONE_DECIMAL_ATTITUDE) {
+        const char *format = pitch < 9.95f ? "%c %.1f%c" : "%c%.1f%c";
+        backend->write(x, y, false, format, p, pitch, SYMBOL(SYM_DEGR));
+    } else {
+        backend->write(x, y, false, "%c%2d%c", p, (int16_t)lrintf(pitch), SYMBOL(SYM_DEGR));
+    }
 }
 
 void AP_OSD_Screen::draw_temp(uint8_t x, uint8_t y)
