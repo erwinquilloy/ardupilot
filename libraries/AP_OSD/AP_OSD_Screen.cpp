@@ -1190,6 +1190,22 @@ const AP_Param::GroupInfo AP_OSD_Screen::var_info2[] = {
     // @Range: 0 21
     AP_SUBGROUPINFO(eff_air, "EFFA", 11, AP_OSD_Screen, AP_OSD_Setting),
 
+    // @Param: RC_FS_EN
+    // @DisplayName: RC_FS_EN
+    // @Description: Displays the RC failsafe status. Shows "!!! RC FS !!!" (blinking) when armed and in failsafe; "--- RC FS ---" when disarmed (placement aid).
+    // @Values: 0:Disabled,1:Enabled
+
+    // @Param: RC_FS_X
+    // @DisplayName: RC_FS_X
+    // @Description: Horizontal position on screen
+    // @Range: 0 59
+
+    // @Param: RC_FS_Y
+    // @DisplayName: RC_FS_Y
+    // @Description: Vertical position on screen
+    // @Range: 0 21
+    AP_SUBGROUPINFO(rc_failsafe, "RC_FS", 12, AP_OSD_Screen, AP_OSD_Setting),
+
     AP_GROUPEND
 };
 
@@ -2443,6 +2459,18 @@ void AP_OSD_Screen::draw_eff_air(uint8_t x, uint8_t y)
 }
 #endif  // AP_BATTERY_ENABLED
 
+void AP_OSD_Screen::draw_rc_failsafe(uint8_t x, uint8_t y)
+{
+    if (AP::vehicle()->rc_failsafe()) {
+        backend->write(x, y, true, "!!! RC FS !!!");
+        return;
+    }
+
+    if (!AP_Notify::flags.armed) {
+        backend->write(x, y, false, "--- RC FS ---");
+    }
+}
+
 #if AP_BATTERY_ENABLED
 void AP_OSD_Screen::draw_climbeff(uint8_t x, uint8_t y)
 {
@@ -2756,6 +2784,7 @@ void AP_OSD_Screen::draw(void)
     DRAW_SETTING(climbeff);
     DRAW_SETTING(eff);
     DRAW_SETTING(eff_air);
+    DRAW_SETTING(rc_failsafe);
     DRAW_SETTING(callsign);
     DRAW_SETTING(current2);
 

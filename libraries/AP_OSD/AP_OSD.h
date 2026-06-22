@@ -219,6 +219,7 @@ private:
     AP_OSD_Setting climbeff{false,0,0};
     AP_OSD_Setting eff{false, 22, 10};
     AP_OSD_Setting eff_air{false, 22, 10};   // fork: separate airspeed-based efficiency element (Plane only)
+    AP_OSD_Setting rc_failsafe{false, 0, 0}; // fork: RC failsafe indicator
     AP_OSD_Setting atemp;
     AP_OSD_Setting bat2_vlt;
     AP_OSD_Setting bat2used;
@@ -323,6 +324,7 @@ private:
     void draw_eff(uint8_t x, uint8_t y);
     void draw_eff_air(uint8_t x, uint8_t y);
     void draw_eff_value(uint8_t x, uint8_t y, bool available, float efficiency);
+    void draw_rc_failsafe(uint8_t x, uint8_t y);
     void draw_atemp(uint8_t x, uint8_t y);
     void draw_bat2_vlt(uint8_t x, uint8_t y);
     void draw_bat2used(uint8_t x, uint8_t y);
