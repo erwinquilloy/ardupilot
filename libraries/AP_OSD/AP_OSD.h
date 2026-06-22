@@ -52,6 +52,10 @@ class AP_MSP;
 #define AP_OSD_NUM_SYMBOLS 107
 #define OSD_MAX_INSTANCES 2
 
+#ifndef OSD_DEBUG_ELEMENT
+#define OSD_DEBUG_ELEMENT 0
+#endif
+
 #if AP_OSD_LINK_STATS_EXTENSIONS_ENABLED
 // For the moment, these extra panels only work with CRSF protocol based RC systems
 #define AP_OSD_EXTENDED_LNK_STATS 1
@@ -220,6 +224,9 @@ private:
     AP_OSD_Setting eff{false, 22, 10};
     AP_OSD_Setting eff_air{false, 22, 10};   // fork: separate airspeed-based efficiency element (Plane only)
     AP_OSD_Setting rc_failsafe{false, 0, 0}; // fork: RC failsafe indicator
+#if OSD_DEBUG_ELEMENT
+    AP_OSD_Setting debug{false, 0, 0};       // fork: debug-value element (off by default, opt-in build flag)
+#endif
     AP_OSD_Setting atemp;
     AP_OSD_Setting bat2_vlt;
     AP_OSD_Setting bat2used;
@@ -325,6 +332,9 @@ private:
     void draw_eff_air(uint8_t x, uint8_t y);
     void draw_eff_value(uint8_t x, uint8_t y, bool available, float efficiency);
     void draw_rc_failsafe(uint8_t x, uint8_t y);
+#if OSD_DEBUG_ELEMENT
+    void draw_debug(uint8_t x, uint8_t y);
+#endif
     void draw_atemp(uint8_t x, uint8_t y);
     void draw_bat2_vlt(uint8_t x, uint8_t y);
     void draw_bat2used(uint8_t x, uint8_t y);
@@ -704,6 +714,13 @@ public:
         return _sem;
     }
 
+#if OSD_DEBUG_ELEMENT
+    void set_debug(float value) {
+        WITH_SEMAPHORE(_sem);
+        _debug = value;
+    }
+#endif
+
 private:
     void osd_thread();
 #if OSD_ENABLED
@@ -728,6 +745,10 @@ private:
     float eff_ground_state;
     float eff_air_state;
     float climb_eff_state;
+
+#if OSD_DEBUG_ELEMENT
+    float _debug = 0;
+#endif
 
     StatsInfo _stats;
 #endif

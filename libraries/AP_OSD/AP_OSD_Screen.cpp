@@ -1206,6 +1206,24 @@ const AP_Param::GroupInfo AP_OSD_Screen::var_info2[] = {
     // @Range: 0 21
     AP_SUBGROUPINFO(rc_failsafe, "RC_FS", 12, AP_OSD_Screen, AP_OSD_Setting),
 
+#if OSD_DEBUG_ELEMENT
+    // @Param: DEBUG_EN
+    // @DisplayName: DEBUG_EN
+    // @Description: Displays a developer-set debug value (call AP::osd()->set_debug(value) from code).
+    // @Values: 0:Disabled,1:Enabled
+
+    // @Param: DEBUG_X
+    // @DisplayName: DEBUG_X
+    // @Description: Horizontal position on screen
+    // @Range: 0 59
+
+    // @Param: DEBUG_Y
+    // @DisplayName: DEBUG_Y
+    // @Description: Vertical position on screen
+    // @Range: 0 21
+    AP_SUBGROUPINFO(debug, "DEBUG", 13, AP_OSD_Screen, AP_OSD_Setting),
+#endif
+
     AP_GROUPEND
 };
 
@@ -2487,6 +2505,14 @@ void AP_OSD_Screen::draw_rc_failsafe(uint8_t x, uint8_t y)
     }
 }
 
+#if OSD_DEBUG_ELEMENT
+void AP_OSD_Screen::draw_debug(uint8_t x, uint8_t y)
+{
+    WITH_SEMAPHORE(osd->get_semaphore());
+    backend->write(x, y, false, "%.1f", osd->_debug);
+}
+#endif
+
 #if AP_BATTERY_ENABLED
 void AP_OSD_Screen::draw_climbeff(uint8_t x, uint8_t y)
 {
@@ -2801,6 +2827,9 @@ void AP_OSD_Screen::draw(void)
     DRAW_SETTING(eff);
     DRAW_SETTING(eff_air);
     DRAW_SETTING(rc_failsafe);
+#if OSD_DEBUG_ELEMENT
+    DRAW_SETTING(debug);
+#endif
     DRAW_SETTING(callsign);
     DRAW_SETTING(current2);
 
