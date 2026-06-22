@@ -655,17 +655,38 @@ public:
     };
 
     struct StatsInfo {
+        uint32_t samples;
         uint32_t last_update_ms;
-        float last_distance_m;
+        float last_ground_distance_m;
+        float last_air_distance_m;
         float max_dist_m;
         float max_alt_m;
-        float max_speed_mps;
-        float max_airspeed_mps;
+        float max_ground_speed_mps;
+        float max_air_speed_mps;
+        float max_wind_speed_mps;
+        float avg_wind_speed_mps;
         float max_current_a;
         float avg_current_a;
+        float max_power_w;
+        float avg_power_w;
         float min_voltage_v = FLT_MAX;
+        float min_cell_voltage_v = FLT_MAX;
         float min_rssi = FLT_MAX;   // 0-1
+        float consumed_mah;
+        float consumed_wh;
+        bool consumed_mah_available;
+        bool consumed_wh_available;
+#if AP_OSD_EXTENDED_LNK_STATS
+        int8_t min_rssi_dbm = -1;
+        int16_t max_tx_power;
+#endif
+#if HAL_WITH_ESC_TELEM
+        bool esc_temperature_available;
         int16_t max_esc_temp;
+        int16_t avg_esc_temp;
+#else
+        int16_t max_esc_temp;
+#endif
     };
 
     void set_nav_info(NavInfo &nav_info);
