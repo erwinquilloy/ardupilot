@@ -2021,7 +2021,10 @@ void AP_OSD_Screen::draw_vspeed(uint8_t x, uint8_t y)
         sym = SYMBOL(SYM_DOWN_DOWN);
     }
     vs_scaled = u_scale(VSPEED, fabsf(vspd));
-    if ((osd->units != AP_OSD::UNITS_AVIATION) && (vs_scaled < 9.95f)) {
+    if (osd->options & AP_OSD::OPTION_TWO_DECIMALS_VERTICAL_SPEED) {
+        const char *fmt = (vs_scaled < 9.995f) ? "%c%.2f%c" : "%c%.1f%c";
+        backend->write(x, y, false, fmt, sym, (float)vs_scaled, u_icon(VSPEED));
+    } else if ((osd->units != AP_OSD::UNITS_AVIATION) && (vs_scaled < 9.95f)) {
         backend->write(x, y, false, "%c%.1f%c", sym, (float)vs_scaled, u_icon(VSPEED));
     } else {
         const char *fmt = osd->units == AP_OSD::UNITS_AVIATION ? "%c%4d%c" : "%c%2d%c";
