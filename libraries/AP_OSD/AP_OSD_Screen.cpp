@@ -2612,7 +2612,7 @@ void AP_OSD_Screen::draw_pluscode(uint8_t x, uint8_t y)
     if (gps.status() == AP_GPS::NO_GPS || gps.status() == AP_GPS::NO_FIX){
         backend->write(x, y, false, "--------+--");
     } else {
-        AP_OLC::olc_encode(loc.lat, loc.lng, 10, buff, sizeof(buff));
+        AP_OLC::olc_encode(loc.lat, loc.lng, 10, buff, sizeof(buff), osd->options & AP_OSD::OPTION_SHORTEN_PLUSCODE);
         backend->write(x, y, false, "%s", buff);
     }
 }
