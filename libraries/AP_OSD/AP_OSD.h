@@ -331,6 +331,18 @@ private:
     void draw_eff(uint8_t x, uint8_t y);
     void draw_eff_air(uint8_t x, uint8_t y);
     void draw_eff_value(uint8_t x, uint8_t y, bool available, float efficiency);
+    // helpers used by the stats grid (#121 phase 2). _value-suffix variants
+    // render "---" when not available so the grid can show partial data.
+    void draw_voltage_value(uint8_t x, uint8_t y, bool available, float voltage, bool two_decimals, bool show_batt_symbol);
+    void draw_current_value(uint8_t x, uint8_t y, bool available, float value);
+    void draw_power_value(uint8_t x, uint8_t y, bool available, float value);
+    void draw_mah_value(uint8_t x, uint8_t y, bool available, float mah);
+    void draw_energy_value(uint8_t x, uint8_t y, bool available, float wh);
+    void draw_speed_value(uint8_t x, uint8_t y, bool available, float magnitude);
+    void draw_altitude_value(uint8_t x, uint8_t y, bool available, float alt);
+    void draw_distance_value(uint8_t x, uint8_t y, bool available, float distance);
+    void draw_avg_eff_ground(uint8_t x, uint8_t y, bool draw_eff_symbol);
+    void draw_avg_eff_air(uint8_t x, uint8_t y, bool draw_eff_symbol);
     void draw_rc_failsafe(uint8_t x, uint8_t y);
 #if OSD_DEBUG_ELEMENT
     void draw_debug(uint8_t x, uint8_t y);
