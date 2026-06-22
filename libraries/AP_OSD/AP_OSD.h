@@ -719,6 +719,8 @@ private:
     bool was_failsafe;
     bool _disable;
 
+    float vspd_state;
+
     StatsInfo _stats;
 #endif
     AP_OSD_Backend *_backends[OSD_MAX_INSTANCES];
