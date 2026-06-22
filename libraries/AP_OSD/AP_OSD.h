@@ -722,6 +722,9 @@ private:
     bool _disable;
 
     float vspd_state;
+    float eff_ground_state;
+    float eff_air_state;
+    float climb_eff_state;
 
     StatsInfo _stats;
 #endif
