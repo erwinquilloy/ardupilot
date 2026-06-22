@@ -17,6 +17,7 @@
 
 #include "AP_OLC.h"
 #include <cmath>
+#include <cstring>
 #include <AP_Math/AP_Math.h>
 
 #if HAL_PLUSCODE_ENABLE
@@ -183,7 +184,7 @@ int32_t AP_OLC::encode_grid(uint32_t lat, uint32_t lon, uint8_t length,
     return pos;
 }
 
-uint32_t AP_OLC::olc_encode(int32_t lat, int32_t lon, uint8_t length, char *buf, uint8_t bufsize)
+uint32_t AP_OLC::olc_encode(int32_t lat, int32_t lon, uint8_t length, char *buf, uint8_t bufsize, bool shorten)
 {
     uint32_t pos = 0;
 
@@ -197,6 +198,12 @@ uint32_t AP_OLC::olc_encode(int32_t lat, int32_t lon, uint8_t length, char *buf,
     // If the requested length indicates we want grid refined codes.
     if (length > PAIR_CODE_LEN) {
         pos += encode_grid(alat, alon, length - PAIR_CODE_LEN, buf + pos, bufsize - pos);
+    }
+    // Drop the leading 4 digits when a "local" plus code is wanted.
+    const uint32_t digits_removed = (shorten && pos > 4) ? 4 : 0;
+    if (digits_removed > 0) {
+        memmove(buf, buf + digits_removed, pos - digits_removed);
+        pos -= digits_removed;
     }
     buf[pos] = '\0';
     return pos;

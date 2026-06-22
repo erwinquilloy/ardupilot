@@ -32,7 +32,7 @@ public:
     // olc_encodes the given coordinates in lat and lon (deg * OLC_DEG_MULTIPLIER)
     // as an OLC code of the given length. It returns the number of characters
     // written to buf.
-    static uint32_t olc_encode(int32_t lat, int32_t lon, uint8_t length, char *buf, uint8_t bufsize);
+    static uint32_t olc_encode(int32_t lat, int32_t lon, uint8_t length, char *buf, uint8_t bufsize, bool shorten = false);
 
 private:
     static const int32_t INITIAL_EXPONENT;
