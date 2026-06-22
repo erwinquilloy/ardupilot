@@ -612,6 +612,7 @@ public:
 #if AP_OSD_EXTENDED_LNK_STATS
         OPTION_RF_MODE_ALONG_WITH_LQ = 1U<<7,
 #endif
+        OPTION_TWO_DECIMALS_VERTICAL_SPEED = 1U<<18,
     };
 
     enum {
