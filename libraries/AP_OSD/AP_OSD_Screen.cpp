@@ -2008,6 +2008,8 @@ void AP_OSD_Screen::draw_vspeed(uint8_t x, uint8_t y)
         WITH_SEMAPHORE(baro.get_semaphore());
         vspd = baro.get_climb_rate();
     }
+    osd->vspd_state += (vspd - osd->vspd_state) * 0.33f;
+    vspd = osd->vspd_state;
     char sym;
     if (vspd > 3.0f) {
         sym = SYMBOL(SYM_UP_UP);
