@@ -2366,17 +2366,233 @@ void AP_OSD_Screen::draw_xtrack_error(uint8_t x, uint8_t y)
     draw_distance(x+1, y, osd->nav_info.wp_xtrack_error);
 }
 
+// ---- stats grid helpers (#121 phase 2) ----
+// Each renders "---<unit>" when `available` is false so the grid can show
+// partial data without bogus zeros.
+
+void AP_OSD_Screen::draw_voltage_value(uint8_t x, uint8_t y, bool available, float voltage, bool two_decimals, bool show_batt_symbol)
+{
+    if (show_batt_symbol) {
+        backend->write(x++, y, false, "%c", SYMBOL(SYM_BATT_FULL));
+    }
+    if (!available || !isfinite(voltage)) {
+        backend->write(x, y, false, two_decimals ? "-----%c" : "----%c", SYMBOL(SYM_VOLT));
+        return;
+    }
+    backend->write(x, y, false, two_decimals ? "%4.2f%c" : "%4.1f%c", voltage, SYMBOL(SYM_VOLT));
+}
+
+void AP_OSD_Screen::draw_current_value(uint8_t x, uint8_t y, bool available, float value)
+{
+    if (!available) {
+        backend->write(x, y, false, "---%c", SYMBOL(SYM_AMP));
+        return;
+    }
+    backend->write(x, y, false, "%4.1f%c", value, SYMBOL(SYM_AMP));
+}
+
+void AP_OSD_Screen::draw_power_value(uint8_t x, uint8_t y, bool available, float value)
+{
+    if (!available) {
+        backend->write(x, y, false, "---%c", SYMBOL(SYM_WATT));
+        return;
+    }
+    backend->write(x, y, false, "%3.0f%c", value, SYMBOL(SYM_WATT));
+}
+
+void AP_OSD_Screen::draw_mah_value(uint8_t x, uint8_t y, bool available, float mah)
+{
+    if (!available) {
+        backend->write(x, y, false, "----%c", SYMBOL(SYM_MAH));
+        return;
+    }
+    backend->write(x, y, false, "%4d%c", int(roundf(mah)), SYMBOL(SYM_MAH));
+}
+
+void AP_OSD_Screen::draw_energy_value(uint8_t x, uint8_t y, bool available, float wh)
+{
+    if (!available) {
+        backend->write(x, y, false, "----%c", SYMBOL(SYM_WH));
+        return;
+    }
+    backend->write(x, y, false, "%4.1f%c", wh, SYMBOL(SYM_WH));
+}
+
+void AP_OSD_Screen::draw_speed_value(uint8_t x, uint8_t y, bool available, float magnitude)
+{
+    if (!available) {
+        backend->write(x, y, false, "---%c", u_icon(SPEED));
+        return;
+    }
+    const float scaled = u_scale(SPEED, magnitude);
+    const char *fmt = scaled < 9.95f ? "%.1f%c" : "%3.0f%c";
+    backend->write(x, y, false, fmt, scaled, u_icon(SPEED));
+}
+
+void AP_OSD_Screen::draw_altitude_value(uint8_t x, uint8_t y, bool available, float alt)
+{
+    if (!available) {
+        backend->write(x, y, false, "----%c", u_icon(ALTITUDE));
+        return;
+    }
+    backend->write(x, y, false, "%4d%c", int(u_scale(ALTITUDE, alt)), u_icon(ALTITUDE));
+}
+
+void AP_OSD_Screen::draw_distance_value(uint8_t x, uint8_t y, bool available, float distance)
+{
+    if (!available) {
+        backend->write(x, y, false, "----%c", u_icon(DISTANCE));
+        return;
+    }
+    draw_distance(x, y, distance);
+}
+
+#if AP_BATTERY_ENABLED
+// shared rendering: total_consumed / total_distance over the flight.
+// `draw_eff_symbol` controls whether the SYM_EFF prefix is rendered
+// (off when called from the stats grid which prints its own label).
+#define DRAW_AVG_EFF_BODY(distance_m) do {                                      \
+    const bool use_wh = (osd->efficiency_unit_base == AP_OSD::EFF_UNIT_BASE_WH); \
+    const uint8_t unit_symbol = SYMBOL(use_wh ? SYM_WH : SYM_MAH);              \
+    const float dist_long = u_scale(DISTANCE_LONG, (distance_m));               \
+    bool available = false;                                                     \
+    float efficiency = 0;                                                       \
+    if (dist_long > 0.001f) {                                                   \
+        if (use_wh && osd->_stats.consumed_wh_available) {                      \
+            efficiency = osd->_stats.consumed_wh / dist_long;                   \
+            available = true;                                                   \
+        } else if (!use_wh && osd->_stats.consumed_mah_available) {             \
+            efficiency = osd->_stats.consumed_mah / dist_long;                  \
+            available = true;                                                   \
+        }                                                                       \
+    }                                                                           \
+    const uint8_t prefix = draw_eff_symbol ? 1 : 0;                             \
+    if (draw_eff_symbol) {                                                      \
+        backend->write(x, y, false, "%c", SYMBOL(SYM_EFF));                     \
+    }                                                                           \
+    if (!available || !isfinite(efficiency) || roundf(efficiency) > 999 || roundf(efficiency) < 0) { \
+        backend->write(x + prefix, y, false, "---%c", unit_symbol);             \
+    } else if (use_wh) {                                                        \
+        const char *fmt = efficiency < 9.995f ? "%1.2f%c" : (efficiency < 99.95f ? "%2.1f%c" : "%3.0f%c"); \
+        backend->write(x + prefix, y, false, fmt, efficiency, unit_symbol);     \
+    } else {                                                                    \
+        backend->write(x + prefix, y, false, "%3d%c", int(roundf(efficiency)), unit_symbol); \
+    }                                                                           \
+} while (0)
+
+void AP_OSD_Screen::draw_avg_eff_ground(uint8_t x, uint8_t y, bool draw_eff_symbol)
+{
+    DRAW_AVG_EFF_BODY(osd->_stats.last_ground_distance_m);
+}
+
+void AP_OSD_Screen::draw_avg_eff_air(uint8_t x, uint8_t y, bool draw_eff_symbol)
+{
+    DRAW_AVG_EFF_BODY(osd->_stats.last_air_distance_m);
+}
+
+#undef DRAW_AVG_EFF_BODY
+#endif
+
 void AP_OSD_Screen::draw_stat(uint8_t x, uint8_t y)
 {
-    backend->write(x+2, y, false, "%c%c%c", 0x4d,0x41,0x58);
-    backend->write(x, y+1, false, "%c",SYMBOL(SYM_GSPD));
-    backend->write(x+1, y+1, false, "%4d%c", (int)u_scale(SPEED, osd->_stats.max_ground_speed_mps), u_icon(SPEED));
-    backend->write(x, y+2, false, "%5.1f%c", (double)osd->_stats.max_current_a, SYMBOL(SYM_AMP));
-    backend->write(x, y+3, false, "%5d%c", (int)u_scale(ALTITUDE, osd->_stats.max_alt_m), u_icon(ALTITUDE));
-    backend->write(x, y+4, false, "%c", SYMBOL(SYM_HOME));
-    draw_distance(x+1, y+4, osd->_stats.max_dist_m);
-    backend->write(x, y+5, false, "%c", SYMBOL(SYM_DIST));
-    draw_distance(x+1, y+5, osd->_stats.last_ground_distance_m);
+    const auto &s = osd->_stats;
+    const bool have_stats = s.samples > 0;
+    const uint8_t c = 11; // value column offset
+    const uint32_t flight_time_s = (AP::stats() != nullptr) ? AP::stats()->get_flight_time_s() : 0;
+
+#if AP_BATTERY_ENABLED
+    AP_BattMonitor &battery = AP::battery();
+
+    // line 0: MIN BAV [ / BCV ]
+    backend->write(x, y, false, "MIN BAV");
+    draw_voltage_value(x+c, y, have_stats && s.min_voltage_v < FLT_MAX, s.min_voltage_v, false, false);
+    float cell_voltage;
+    const bool cell_voltage_is_available = battery.cell_avg_voltage(cell_voltage);
+    if (cell_voltage_is_available) {
+        backend->write(x+7, y, false, "/BCV");
+        backend->write(x+c+5, y, false, "/");
+        draw_voltage_value(x+c+6, y, have_stats && s.min_cell_voltage_v < FLT_MAX, s.min_cell_voltage_v, true, false);
+    }
+    y++;
+
+    // line 1: AVG CUR/POW
+    backend->write(x, y, false, "AVG CUR/POW");
+    draw_current_value(x+c+1, y, have_stats, s.avg_current_a);
+    backend->write(x+c+5, y, false, "/");
+    draw_power_value(x+c+6, y, have_stats, s.avg_power_w);
+    y++;
+
+    // line 2: MAX CUR/POW
+    backend->write(x, y, false, "MAX CUR/POW");
+    draw_current_value(x+c+1, y, have_stats, s.max_current_a);
+    backend->write(x+c+5, y, false, "/");
+    draw_power_value(x+c+6, y, have_stats, s.max_power_w);
+    y++;
+
+    // line 3: USD CAPA
+    backend->write(x, y, false, "USD CAPA");
+    draw_mah_value(x+c, y, s.consumed_mah_available, s.consumed_mah);
+    backend->write(x+c+5, y, false, "/");
+    draw_energy_value(x+c+6, y, s.consumed_wh_available, s.consumed_wh);
+    y++;
+#endif
+
+    // line 4: AVG A/G/W
+    float avg_ground_speed = 0, avg_air_speed = 0;
+    if (flight_time_s > 0) {
+        avg_ground_speed = s.last_ground_distance_m / flight_time_s;
+        avg_air_speed = s.last_air_distance_m / flight_time_s;
+    }
+    backend->write(x, y, false, "AVG %c/%c/%c", SYMBOL(SYM_ASPD), SYMBOL(SYM_GSPD), SYMBOL(SYM_WSPD));
+    draw_speed_value(x+c+1, y, have_stats, avg_air_speed);
+    backend->write(x+c+5, y, false, "/");
+    draw_speed_value(x+c+6, y, have_stats, avg_ground_speed);
+    backend->write(x+c+10, y, false, "/");
+    draw_speed_value(x+c+11, y, have_stats, s.avg_wind_speed_mps);
+    y++;
+
+    // line 5: MAX A/G/W
+    backend->write(x, y, false, "MAX %c/%c/%c", SYMBOL(SYM_ASPD), SYMBOL(SYM_GSPD), SYMBOL(SYM_WSPD));
+    draw_speed_value(x+c+1, y, have_stats, s.max_air_speed_mps);
+    backend->write(x+c+5, y, false, "/");
+    draw_speed_value(x+c+6, y, have_stats, s.max_ground_speed_mps);
+    backend->write(x+c+10, y, false, "/");
+    draw_speed_value(x+c+11, y, have_stats, s.max_wind_speed_mps);
+    y++;
+
+#if AP_BATTERY_ENABLED
+    // line 6: EFF A/G
+    backend->write(x, y, false, "EFF A/G");
+    draw_avg_eff_air(x+c+1, y, false);
+    backend->write(x+c+5, y, false, "/");
+    draw_avg_eff_ground(x+c+6, y, false);
+    y++;
+#endif
+
+    // line 7: TRV A/G
+    backend->write(x, y, false, "TRV A/G");
+    draw_distance_value(x+c, y, have_stats, s.last_air_distance_m);
+    backend->write(x+c+5, y, false, "/");
+    draw_distance_value(x+c+6, y, have_stats, s.last_ground_distance_m);
+    y++;
+
+    // line 8: MAX <HOME> DIST
+    backend->write(x, y, false, "MAX %cDIST", SYMBOL(SYM_HOME));
+    draw_distance_value(x+c, y, have_stats, s.max_dist_m);
+    y++;
+
+    // line 9: MAX ALT
+    backend->write(x, y, false, "MAX ALT");
+    draw_altitude_value(x+c, y, have_stats, s.max_alt_m);
+    y++;
+
+    // line 10: FLT TIME
+    backend->write(x, y, false, "FLT TIME");
+    if (flight_time_s < 1) {
+        backend->write(x+c+1, y, false, "---:--");
+    } else {
+        backend->write(x+c+1, y, false, "%3u:%02u", unsigned(flight_time_s/60), unsigned(flight_time_s%60));
+    }
 }
 
 void AP_OSD_Screen::draw_dist(uint8_t x, uint8_t y)
