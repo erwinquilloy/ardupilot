@@ -234,6 +234,7 @@ private:
     AP_OSD_Setting tuned_param_name{false, 0, 0};  // fork #124: tuned param name
     AP_OSD_Setting tuned_param_value{false, 0, 0}; // fork #124: tuned param value
     AP_OSD_Setting loiter_radius{false, 0, 0};     // fork: current loiter radius (Plane only, LOITER/RTL-loitering)
+    AP_OSD_Setting aoa{false, 0, 0};               // fork #70: angle of attack from AHRS
     AP_OSD_Setting atemp;
     AP_OSD_Setting bat2_vlt;
     AP_OSD_Setting bat2used;
@@ -324,6 +325,8 @@ private:
     void draw_gps_longitude(uint8_t x, uint8_t y);
     void draw_roll_angle(uint8_t x, uint8_t y);
     void draw_pitch_angle(uint8_t x, uint8_t y);
+    void draw_pitch(uint8_t x, uint8_t y, float pitch_deg);  // fork #70 helper, shared by draw_pitch_angle + draw_aoa
+    void draw_aoa(uint8_t x, uint8_t y);
     void draw_peak_roll_rate(uint8_t x, uint8_t y);
     void draw_peak_pitch_rate(uint8_t x, uint8_t y);
     void draw_auto_flaps(uint8_t x, uint8_t y);
