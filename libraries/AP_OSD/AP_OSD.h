@@ -239,6 +239,8 @@ private:
     AP_OSD_Setting acc_long{false, 0, 0};          // fork #46: longitudinal acceleration (g)
     AP_OSD_Setting acc_lat{false, 0, 0};           // fork #46: lateral acceleration (g)
     AP_OSD_Setting acc_vert{false, 0, 0};          // fork #46: vertical acceleration (g)
+    AP_OSD_Setting avg_eff_ground{false, 0, 0};    // fork: flight-long avg efficiency over ground distance (Plane only via AP_Stats)
+    AP_OSD_Setting avg_eff_air{false, 0, 0};       // fork: flight-long avg efficiency over air distance (Plane only via AP_Stats)
     AP_OSD_Setting atemp;
     AP_OSD_Setting bat2_vlt;
     AP_OSD_Setting bat2used;
@@ -368,8 +370,9 @@ private:
     void draw_speed_value(uint8_t x, uint8_t y, bool available, float magnitude);
     void draw_altitude_value(uint8_t x, uint8_t y, bool available, float alt);
     void draw_distance_value(uint8_t x, uint8_t y, bool available, float distance);
-    void draw_avg_eff_ground(uint8_t x, uint8_t y, bool draw_eff_symbol);
-    void draw_avg_eff_air(uint8_t x, uint8_t y, bool draw_eff_symbol);
+    // Default draw_eff_symbol=true for standalone OSD elements; stats grid passes false to suppress the prefix.
+    void draw_avg_eff_ground(uint8_t x, uint8_t y, bool draw_eff_symbol = true);
+    void draw_avg_eff_air(uint8_t x, uint8_t y, bool draw_eff_symbol = true);
     void draw_rc_failsafe(uint8_t x, uint8_t y);
 #if OSD_DEBUG_ELEMENT
     void draw_debug(uint8_t x, uint8_t y);
