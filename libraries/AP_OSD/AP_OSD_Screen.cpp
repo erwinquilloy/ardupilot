@@ -1344,6 +1344,22 @@ const AP_Param::GroupInfo AP_OSD_Screen::var_info2[] = {
     AP_SUBGROUPINFO(loiter_radius, "LOIT_RAD", 20, AP_OSD_Screen, AP_OSD_Setting),
 #endif
 
+    // @Param: AOA_EN
+    // @DisplayName: AOA_EN
+    // @Description: Displays the estimated angle of attack from AHRS (fork #70)
+    // @Values: 0:Disabled,1:Enabled
+
+    // @Param: AOA_X
+    // @DisplayName: AOA_X
+    // @Description: Horizontal position on screen
+    // @Range: 0 29
+
+    // @Param: AOA_Y
+    // @DisplayName: AOA_Y
+    // @Description: Vertical position on screen
+    // @Range: 0 15
+    AP_SUBGROUPINFO(aoa, "AOA", 21, AP_OSD_Screen, AP_OSD_Setting),
+
     AP_GROUPEND
 };
 
@@ -2426,16 +2442,8 @@ void AP_OSD_Screen::draw_roll_angle(uint8_t x, uint8_t y)
     }
 }
 
-void AP_OSD_Screen::draw_pitch_angle(uint8_t x, uint8_t y)
+void AP_OSD_Screen::draw_pitch(uint8_t x, uint8_t y, float pitch)
 {
-    float roll;
-    float pitch;
-    {
-        AP_AHRS &ahrs = AP::ahrs();
-        WITH_SEMAPHORE(ahrs.get_semaphore());
-        AP::vehicle()->get_osd_roll_pitch_rad(roll, pitch);
-    }
-    pitch = ToDeg(pitch);
     const bool one_decimal = osd->options & AP_OSD::OPTION_ONE_DECIMAL_ATTITUDE;
     const float level_symbol_max_angle = one_decimal ? 0.049f : 0.45f;
     const float pitch_abs = fabsf(pitch);
@@ -2452,6 +2460,29 @@ void AP_OSD_Screen::draw_pitch_angle(uint8_t x, uint8_t y)
         const char *format = pitch_abs < 9.5f ? "%c %.0f%c" : "%c%.0f%c";
         backend->write(x, y, false, format, p, pitch_abs, SYMBOL(SYM_DEGR));
     }
+}
+
+void AP_OSD_Screen::draw_pitch_angle(uint8_t x, uint8_t y)
+{
+    float roll;
+    float pitch;
+    {
+        AP_AHRS &ahrs = AP::ahrs();
+        WITH_SEMAPHORE(ahrs.get_semaphore());
+        AP::vehicle()->get_osd_roll_pitch_rad(roll, pitch);
+    }
+    draw_pitch(x, y, ToDeg(pitch));
+}
+
+void AP_OSD_Screen::draw_aoa(uint8_t x, uint8_t y)
+{
+    float aoa_deg;
+    {
+        AP_AHRS &ahrs = AP::ahrs();
+        WITH_SEMAPHORE(ahrs.get_semaphore());
+        aoa_deg = ahrs.getAOA();
+    }
+    draw_pitch(x, y, aoa_deg);
 }
 
 void AP_OSD_Screen::draw_temp(uint8_t x, uint8_t y)
@@ -3376,6 +3407,7 @@ void AP_OSD_Screen::draw(void)
 #if APM_BUILD_TYPE(APM_BUILD_ArduPlane)
     DRAW_SETTING(loiter_radius);
 #endif
+    DRAW_SETTING(aoa);
     DRAW_SETTING(callsign);
     DRAW_SETTING(current2);
 
