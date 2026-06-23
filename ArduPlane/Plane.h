@@ -1387,6 +1387,9 @@ public:
     bool is_landing() const override;
     bool is_taking_off() const override;
     float auto_flap_percent() const override { return SRV_Channels::get_output_scaled(SRV_Channel::k_flap_auto); }
+#if AP_TUNING_ENABLED
+    AP_Tuning *get_tuning_object() override { return &tuning; }
+#endif
 #if AP_SCRIPTING_ENABLED || AP_EXTERNAL_CONTROL_ENABLED
     bool set_target_location(const Location& target_loc) override;
 #endif //AP_SCRIPTING_ENABLED || AP_EXTERNAL_CONTROL_ENABLED

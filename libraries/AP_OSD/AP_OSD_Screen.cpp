@@ -44,6 +44,10 @@
 #include <AP_RangeFinder/AP_RangeFinder.h>
 #include <AP_Vehicle/AP_Vehicle.h>
 #include <AP_RPM/AP_RPM.h>
+#include <AP_Tuning/AP_Tuning_config.h>
+#if AP_TUNING_ENABLED
+#include <AP_Tuning/AP_Tuning.h>
+#endif
 #include <AP_MSP/AP_MSP.h>
 #if APM_BUILD_TYPE(APM_BUILD_Rover)
 #include <AP_WindVane/AP_WindVane.h>
@@ -1287,6 +1291,40 @@ const AP_Param::GroupInfo AP_OSD_Screen::var_info2[] = {
     // @Description: Vertical position on screen
     // @Range: 0 15
     AP_SUBGROUPINFO(rc_throttle, "RC_THR", 17, AP_OSD_Screen, AP_OSD_Setting),
+
+#if AP_TUNING_ENABLED
+    // @Param: TUNED_PN_EN
+    // @DisplayName: TUNED_PN_EN
+    // @Description: Displays the name of the parameter currently being tuned (fork #124). Reverts to "---" after OSD_TUNE_DTMOUT seconds.
+    // @Values: 0:Disabled,1:Enabled
+
+    // @Param: TUNED_PN_X
+    // @DisplayName: TUNED_PN_X
+    // @Description: Horizontal position on screen
+    // @Range: 0 29
+
+    // @Param: TUNED_PN_Y
+    // @DisplayName: TUNED_PN_Y
+    // @Description: Vertical position on screen
+    // @Range: 0 15
+    AP_SUBGROUPINFO(tuned_param_name, "TUNED_PN", 18, AP_OSD_Screen, AP_OSD_Setting),
+
+    // @Param: TUNED_PV_EN
+    // @DisplayName: TUNED_PV_EN
+    // @Description: Displays the value of the parameter currently being tuned (fork #124). Reverts to "-----" after OSD_TUNE_DTMOUT seconds.
+    // @Values: 0:Disabled,1:Enabled
+
+    // @Param: TUNED_PV_X
+    // @DisplayName: TUNED_PV_X
+    // @Description: Horizontal position on screen
+    // @Range: 0 29
+
+    // @Param: TUNED_PV_Y
+    // @DisplayName: TUNED_PV_Y
+    // @Description: Vertical position on screen
+    // @Range: 0 15
+    AP_SUBGROUPINFO(tuned_param_value, "TUNED_PV", 19, AP_OSD_Screen, AP_OSD_Setting),
+#endif
 
     AP_GROUPEND
 };
@@ -3073,6 +3111,92 @@ void AP_OSD_Screen::draw_rc_throttle(uint8_t x, uint8_t y)
     backend->write(x, y, false, "%3ld%c", lrintf(AP::vehicle()->get_throttle_input(true)), SYMBOL(SYM_PCNT));
 }
 
+#if AP_TUNING_ENABLED
+bool AP_OSD_Screen::has_tuned_param_changed()
+{
+    static uint32_t last_changed;
+    static float last_value;
+    static const AP_Float *last_param_pointer = nullptr;
+    const uint32_t now = AP_HAL::millis();
+    AP_Tuning *tuning_object = AP::vehicle()->get_tuning_object();
+
+    if (tuning_object == nullptr) {
+        return false;
+    }
+
+    const AP_Float *param_pointer = tuning_object->get_param_pointer();
+
+    if (param_pointer != last_param_pointer) {
+        last_param_pointer = param_pointer;
+        last_changed = now;
+        if (param_pointer != nullptr) {
+            last_value = param_pointer->get();
+        }
+        return true;
+    } else if (param_pointer != nullptr) {
+        const float value = param_pointer->get();
+        if (fabsf(value - last_value) > FLT_EPSILON) {
+            last_value = value;
+            last_changed = now;
+            return true;
+        }
+    }
+
+    return now - last_changed < uint32_t(osd->tune_display_timeout * 1000);
+}
+
+void AP_OSD_Screen::draw_tuned_param_name(uint8_t x, uint8_t y)
+{
+    if (has_tuned_param_changed()) {
+        AP_Tuning *tuning_object = AP::vehicle()->get_tuning_object();
+        if (tuning_object == nullptr) {
+            return;
+        }
+        const char *tuned_name = tuning_object->get_tuning_name();
+        if (tuned_name == nullptr) {
+            return;
+        }
+        char buffer[AP_OSD::max_tuned_pn_display_len + 1] = {};
+        strncpy(buffer, tuned_name, sizeof(buffer) - 1);
+        const int16_t name_len = strnlen(buffer, sizeof(buffer));
+
+        for (int16_t i = 0; i < name_len; ++i) {
+            // converted to uppercase because our font has no lowercase letters
+            buffer[i] = toupper(buffer[i]);
+            if (isspace(buffer[i])) {
+                buffer[i] = ' ';
+            }
+        }
+
+        const uint8_t spaces = check_option(AP_OSD::OPTION_RIGHT_JUSTIFY_TUNED_PN) ? AP_OSD::max_tuned_pn_display_len - name_len : 0;
+        backend->write(x + spaces, y, false, "%s", buffer);
+    } else if (!AP_Notify::flags.armed) {
+        for (int i = 0; i < AP_OSD::max_tuned_pn_display_len; ++i) {
+            backend->write(x + i, y, false, "-");
+        }
+    }
+}
+
+void AP_OSD_Screen::draw_tuned_param_value(uint8_t x, uint8_t y)
+{
+    if (has_tuned_param_changed()) {
+        AP_Tuning *tuning_object = AP::vehicle()->get_tuning_object();
+        if (tuning_object == nullptr) {
+            return;
+        }
+        const AP_Float *const param_value_ptr = tuning_object->get_param_pointer();
+        if (param_value_ptr != nullptr) {
+            const float value = param_value_ptr->get();
+            const char *const fmt = (value < 9.9995f ? "%1.3f" : (value < 99.995f ? "%2.2f" : (value < 999.95f ? "%3.1f" : "%4.0f")));
+            const uint8_t spaces = signbit(value) ? 0 : 1;
+            backend->write(x + spaces, y, false, fmt, value);
+        }
+    } else if (!AP_Notify::flags.armed) {
+        backend->write(x, y, false, "-----");
+    }
+}
+#endif // AP_TUNING_ENABLED
+
 #define DRAW_SETTING(n) if (n.enabled) draw_ ## n(n.xpos, n.ypos)
 
 #if HAL_WITH_OSD_BITMAP || HAL_WITH_MSP_DISPLAYPORT
@@ -3171,6 +3295,10 @@ void AP_OSD_Screen::draw(void)
     DRAW_SETTING(peak_pitch_rate);
     DRAW_SETTING(auto_flaps);
     DRAW_SETTING(rc_throttle);
+#if AP_TUNING_ENABLED
+    DRAW_SETTING(tuned_param_name);
+    DRAW_SETTING(tuned_param_value);
+#endif
     DRAW_SETTING(callsign);
     DRAW_SETTING(current2);
 

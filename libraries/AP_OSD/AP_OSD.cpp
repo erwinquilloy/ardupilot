@@ -89,7 +89,7 @@ const AP_Param::GroupInfo AP_OSD::var_info[] = {
     // @Param: _OPTIONS
     // @DisplayName: OSD Options
     // @Description: This sets options that change the display
-    // @Bitmask: 0:UseDecimalPack, 1:InvertedWindArrow, 2:InvertedAHRoll, 3:Convert feet to miles at 5280ft instead of 10000ft, 4:DisableCrosshair, 5:TranslateArrows, 6:AviationStyleAH, 7:Prefix LQ with RF Mode, 18:TwoDecimalsVerticalSpeed, 21:OneDecimalAttitude, 23:ShortenPluscode
+    // @Bitmask: 0:UseDecimalPack, 1:InvertedWindArrow, 2:InvertedAHRoll, 3:Convert feet to miles at 5280ft instead of 10000ft, 4:DisableCrosshair, 5:TranslateArrows, 6:AviationStyleAH, 7:Prefix LQ with RF Mode, 18:TwoDecimalsVerticalSpeed, 19:RightJustifyTunedParamName, 21:OneDecimalAttitude, 23:ShortenPluscode
     // @User: Standard
     AP_GROUPINFO("_OPTIONS", 8, AP_OSD, options, OPTION_DECIMAL_PACK | OPTION_ONE_DECIMAL_ATTITUDE),
 
@@ -232,6 +232,14 @@ const AP_Param::GroupInfo AP_OSD::var_info[] = {
     // @Units: s
     // @User: Standard
     AP_GROUPINFO("_PEAKR_TMOUT", 56, AP_OSD, peak_rate_timeout, 3.0f),
+
+    // @Param: _TUNE_DTMOUT
+    // @DisplayName: Tuned-param display timeout
+    // @Description: Seconds the TUNED_PN/TUNED_PV elements stay shown after a tuning change (fork #124)
+    // @Range: 0.5 60
+    // @Units: s
+    // @User: Standard
+    AP_GROUPINFO("_TUNE_DTMOUT", 57, AP_OSD, tune_display_timeout, 4.0f),
 
 #if AP_OSD_EXTENDED_LNK_STATS
     // @Param: _W_LQ

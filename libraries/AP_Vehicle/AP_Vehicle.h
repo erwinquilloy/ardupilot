@@ -43,6 +43,10 @@
 #include <AP_Param/AP_Param.h>
 #include <AP_RangeFinder/AP_RangeFinder.h>
 #include <AP_Relay/AP_Relay.h>                      // APM relay
+#include <AP_Tuning/AP_Tuning_config.h>
+#if AP_TUNING_ENABLED
+#include <AP_Tuning/AP_Tuning.h>
+#endif
 #include <AP_RSSI/AP_RSSI.h>                        // RSSI Library
 #include <AP_Scheduler/AP_Scheduler.h>
 #include <AP_SerialManager/AP_SerialManager.h>      // Serial manager library
@@ -176,6 +180,11 @@ public:
 
     // returns pilot input throttle 0-100% (Plane/Copter override; 0 elsewhere). Fork #31 OSD input-throttle element.
     virtual float get_throttle_input(bool no_deadzone=false) const { return 0; }
+
+#if AP_TUNING_ENABLED
+    // returns the vehicle's AP_Tuning instance (Plane override; nullptr elsewhere). Fork #124 OSD tuned-param element.
+    virtual AP_Tuning *get_tuning_object() { return nullptr; }
+#endif
 
 #if AP_SCRIPTING_ENABLED || AP_EXTERNAL_CONTROL_ENABLED
     // Method to takeoff for use by external control
