@@ -231,6 +231,8 @@ private:
     AP_OSD_Setting peak_pitch_rate{false, 0, 0}; // fork #131: peak pitch rate over OSD_PEAKR_TMOUT seconds
     AP_OSD_Setting auto_flaps{false, 0, 0};      // fork #199 (stub-port of #55): displays auto-flap deployment %
     AP_OSD_Setting rc_throttle{false, 0, 0};     // fork #31: displays pilot input throttle %
+    AP_OSD_Setting tuned_param_name{false, 0, 0};  // fork #124: tuned param name
+    AP_OSD_Setting tuned_param_value{false, 0, 0}; // fork #124: tuned param value
     AP_OSD_Setting atemp;
     AP_OSD_Setting bat2_vlt;
     AP_OSD_Setting bat2used;
@@ -325,6 +327,9 @@ private:
     void draw_peak_pitch_rate(uint8_t x, uint8_t y);
     void draw_auto_flaps(uint8_t x, uint8_t y);
     void draw_rc_throttle(uint8_t x, uint8_t y);
+    void draw_tuned_param_name(uint8_t x, uint8_t y);
+    void draw_tuned_param_value(uint8_t x, uint8_t y);
+    bool has_tuned_param_changed();
     void draw_temp(uint8_t x, uint8_t y);
 #if BARO_MAX_INSTANCES > 1
     void draw_btemp(uint8_t x, uint8_t y);
@@ -577,6 +582,9 @@ public:
     // User settable parameters
     static const struct AP_Param::GroupInfo var_info[];
 
+    // fork #124: max character width of the tuned-param-name OSD element
+    static constexpr uint8_t max_tuned_pn_display_len = 16;
+
     enum osd_types {
         OSD_NONE=0,
         OSD_MAX7456=1,
@@ -618,6 +626,7 @@ public:
     AP_Float warn_bat2volt;
     AP_Int8 ah_pitch_max;
     AP_Float peak_rate_timeout;
+    AP_Float tune_display_timeout;
     AP_Int8 msgtime_s;
     AP_Int8 arm_scr;
     AP_Int8 disarm_scr;
@@ -646,6 +655,7 @@ public:
         OPTION_RF_MODE_ALONG_WITH_LQ = 1U<<7,
 #endif
         OPTION_TWO_DECIMALS_VERTICAL_SPEED = 1U<<18,
+        OPTION_RIGHT_JUSTIFY_TUNED_PN = 1U<<19,  // fork #124
         OPTION_ONE_DECIMAL_ATTITUDE = 1U<<21,
         OPTION_SHORTEN_PLUSCODE = 1U<<23,
     };
