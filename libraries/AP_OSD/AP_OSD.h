@@ -227,6 +227,8 @@ private:
 #if OSD_DEBUG_ELEMENT
     AP_OSD_Setting debug{false, 0, 0};       // fork: debug-value element (off by default, opt-in build flag)
 #endif
+    AP_OSD_Setting peak_roll_rate{false, 0, 0};  // fork #131: peak roll rate over OSD_PEAKR_TMOUT seconds
+    AP_OSD_Setting peak_pitch_rate{false, 0, 0}; // fork #131: peak pitch rate over OSD_PEAKR_TMOUT seconds
     AP_OSD_Setting atemp;
     AP_OSD_Setting bat2_vlt;
     AP_OSD_Setting bat2used;
@@ -317,6 +319,8 @@ private:
     void draw_gps_longitude(uint8_t x, uint8_t y);
     void draw_roll_angle(uint8_t x, uint8_t y);
     void draw_pitch_angle(uint8_t x, uint8_t y);
+    void draw_peak_roll_rate(uint8_t x, uint8_t y);
+    void draw_peak_pitch_rate(uint8_t x, uint8_t y);
     void draw_temp(uint8_t x, uint8_t y);
 #if BARO_MAX_INSTANCES > 1
     void draw_btemp(uint8_t x, uint8_t y);
@@ -609,6 +613,7 @@ public:
     AP_Float warn_batvolt;
     AP_Float warn_bat2volt;
     AP_Int8 ah_pitch_max;
+    AP_Float peak_rate_timeout;
     AP_Int8 msgtime_s;
     AP_Int8 arm_scr;
     AP_Int8 disarm_scr;
