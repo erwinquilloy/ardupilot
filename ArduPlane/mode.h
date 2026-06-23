@@ -544,6 +544,7 @@ public:
 protected:
 
     bool _enter() override;
+    void _exit() override;
     bool _pre_arm_checks(size_t buflen, char *buffer) const override { return false; }
 
 private:
