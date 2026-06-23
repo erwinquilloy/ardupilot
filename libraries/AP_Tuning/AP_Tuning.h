@@ -40,7 +40,11 @@ public:
 
     // base parameter number for tuning sets of parameters in one flight
     const uint8_t set_base = 100;
-    
+
+    // fork #124: public no-arg accessors over the current tuning slot, for OSD display
+    const char *get_tuning_name() { return get_tuning_name(current_parm); }
+    AP_Float *get_param_pointer() { return get_param_pointer(current_parm); }
+
 private:
     AP_Int8 channel;
     AP_Int16 channel_min;
