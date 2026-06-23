@@ -186,6 +186,9 @@ public:
     virtual AP_Tuning *get_tuning_object() { return nullptr; }
 #endif
 
+    // returns true and fills radius (m) when actively loitering (Plane override). Fork loiter-radius OSD element.
+    virtual bool get_loiter_radius_target(uint16_t &radius) const { return false; }
+
 #if AP_SCRIPTING_ENABLED || AP_EXTERNAL_CONTROL_ENABLED
     // Method to takeoff for use by external control
     virtual bool start_takeoff(const float alt) { return false; }

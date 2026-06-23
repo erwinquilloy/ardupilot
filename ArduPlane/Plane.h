@@ -859,6 +859,7 @@ private:
     struct {
         bool done_climb;
         bool triggered_by_rc_failsafe;
+        bool loitering = false;  // fork loiter-radius OSD: true when RTL has reached the home loiter
     } rtl;
 
     struct {
@@ -1291,6 +1292,7 @@ private:
     bool allow_reverse_thrust(void) const;
     bool have_reverse_thrust(void) const;
     float get_throttle_input(bool no_deadzone=false) const override;
+    bool get_loiter_radius_target(uint16_t &radius) const override;
     float get_adjusted_throttle_input(bool no_deadzone=false) const;
 
 #if AP_SCRIPTING_ENABLED

@@ -1326,6 +1326,24 @@ const AP_Param::GroupInfo AP_OSD_Screen::var_info2[] = {
     AP_SUBGROUPINFO(tuned_param_value, "TUNED_PV", 19, AP_OSD_Screen, AP_OSD_Setting),
 #endif
 
+#if APM_BUILD_TYPE(APM_BUILD_ArduPlane)
+    // @Param: LOIT_RAD_EN
+    // @DisplayName: LOIT_RAD_EN
+    // @Description: Displays the current loiter radius briefly when it changes (Plane only, LOITER and RTL-loitering)
+    // @Values: 0:Disabled,1:Enabled
+
+    // @Param: LOIT_RAD_X
+    // @DisplayName: LOIT_RAD_X
+    // @Description: Horizontal position on screen
+    // @Range: 0 29
+
+    // @Param: LOIT_RAD_Y
+    // @DisplayName: LOIT_RAD_Y
+    // @Description: Vertical position on screen
+    // @Range: 0 15
+    AP_SUBGROUPINFO(loiter_radius, "LOIT_RAD", 20, AP_OSD_Screen, AP_OSD_Setting),
+#endif
+
     AP_GROUPEND
 };
 
@@ -3197,6 +3215,54 @@ void AP_OSD_Screen::draw_tuned_param_value(uint8_t x, uint8_t y)
 }
 #endif // AP_TUNING_ENABLED
 
+bool AP_OSD_Screen::loiter_radius_changed(uint16_t &radius)
+{
+#if APM_BUILD_TYPE(APM_BUILD_ArduPlane)
+    static uint32_t last_changed;
+    static uint16_t last_value;
+    const bool relevant = AP::vehicle()->get_loiter_radius_target(radius);
+
+    if (!relevant) {
+        last_changed = 0;
+        return false;
+    }
+
+    const uint32_t now = AP_HAL::millis();
+    if (radius != last_value) {
+        if (last_changed) {
+            last_value = radius;
+        }
+        last_changed = now;
+    }
+    if (!last_changed || now - last_changed > 2000) {
+        return false;
+    }
+
+    return true;
+#else
+    (void)radius;
+    return false;
+#endif
+}
+
+void AP_OSD_Screen::draw_loiter_radius(uint8_t x, uint8_t y)
+{
+#if APM_BUILD_TYPE(APM_BUILD_ArduPlane)
+    if (!AP_Notify::flags.armed) {
+        backend->write(x, y, false, "%c---%c", SYMBOL(SYM_RADIUS), u_icon(DISTANCE));
+        return;
+    }
+
+    uint16_t radius;
+    if (loiter_radius_changed(radius)) {
+        backend->write(x, y, false, "%c", SYMBOL(SYM_RADIUS));
+        draw_distance(x + 1, y, radius);
+    }
+#else
+    (void)x; (void)y;
+#endif
+}
+
 #define DRAW_SETTING(n) if (n.enabled) draw_ ## n(n.xpos, n.ypos)
 
 #if HAL_WITH_OSD_BITMAP || HAL_WITH_MSP_DISPLAYPORT
@@ -3298,6 +3364,9 @@ void AP_OSD_Screen::draw(void)
 #if AP_TUNING_ENABLED
     DRAW_SETTING(tuned_param_name);
     DRAW_SETTING(tuned_param_value);
+#endif
+#if APM_BUILD_TYPE(APM_BUILD_ArduPlane)
+    DRAW_SETTING(loiter_radius);
 #endif
     DRAW_SETTING(callsign);
     DRAW_SETTING(current2);
