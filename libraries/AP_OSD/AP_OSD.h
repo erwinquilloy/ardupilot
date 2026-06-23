@@ -233,6 +233,7 @@ private:
     AP_OSD_Setting rc_throttle{false, 0, 0};     // fork #31: displays pilot input throttle %
     AP_OSD_Setting tuned_param_name{false, 0, 0};  // fork #124: tuned param name
     AP_OSD_Setting tuned_param_value{false, 0, 0}; // fork #124: tuned param value
+    AP_OSD_Setting loiter_radius{false, 0, 0};     // fork: current loiter radius (Plane only, LOITER/RTL-loitering)
     AP_OSD_Setting atemp;
     AP_OSD_Setting bat2_vlt;
     AP_OSD_Setting bat2used;
@@ -330,6 +331,8 @@ private:
     void draw_tuned_param_name(uint8_t x, uint8_t y);
     void draw_tuned_param_value(uint8_t x, uint8_t y);
     bool has_tuned_param_changed();
+    void draw_loiter_radius(uint8_t x, uint8_t y);
+    bool loiter_radius_changed(uint16_t &radius);
     void draw_temp(uint8_t x, uint8_t y);
 #if BARO_MAX_INSTANCES > 1
     void draw_btemp(uint8_t x, uint8_t y);
