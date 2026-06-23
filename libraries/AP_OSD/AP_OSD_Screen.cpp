@@ -1272,6 +1272,22 @@ const AP_Param::GroupInfo AP_OSD_Screen::var_info2[] = {
     // @Range: 0 15
     AP_SUBGROUPINFO(auto_flaps, "AUTO_FLP", 16, AP_OSD_Screen, AP_OSD_Setting),
 
+    // @Param: RC_THR_EN
+    // @DisplayName: RC_THR_EN
+    // @Description: Displays pilot input throttle percentage (fork #31)
+    // @Values: 0:Disabled,1:Enabled
+
+    // @Param: RC_THR_X
+    // @DisplayName: RC_THR_X
+    // @Description: Horizontal position on screen
+    // @Range: 0 29
+
+    // @Param: RC_THR_Y
+    // @DisplayName: RC_THR_Y
+    // @Description: Vertical position on screen
+    // @Range: 0 15
+    AP_SUBGROUPINFO(rc_throttle, "RC_THR", 17, AP_OSD_Screen, AP_OSD_Setting),
+
     AP_GROUPEND
 };
 
@@ -3052,6 +3068,11 @@ void AP_OSD_Screen::draw_auto_flaps(uint8_t x, uint8_t y)
     }
 }
 
+void AP_OSD_Screen::draw_rc_throttle(uint8_t x, uint8_t y)
+{
+    backend->write(x, y, false, "%3ld%c", lrintf(AP::vehicle()->get_throttle_input(true)), SYMBOL(SYM_PCNT));
+}
+
 #define DRAW_SETTING(n) if (n.enabled) draw_ ## n(n.xpos, n.ypos)
 
 #if HAL_WITH_OSD_BITMAP || HAL_WITH_MSP_DISPLAYPORT
@@ -3149,6 +3170,7 @@ void AP_OSD_Screen::draw(void)
     DRAW_SETTING(peak_roll_rate);
     DRAW_SETTING(peak_pitch_rate);
     DRAW_SETTING(auto_flaps);
+    DRAW_SETTING(rc_throttle);
     DRAW_SETTING(callsign);
     DRAW_SETTING(current2);
 
