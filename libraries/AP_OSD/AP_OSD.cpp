@@ -257,6 +257,14 @@ const AP_Param::GroupInfo AP_OSD::var_info[] = {
     // @User: Standard
     AP_GROUPINFO("_W_ASPD_HIGH", 62, AP_OSD, warn_aspd_high, 0),
 
+    // @Param: _W_VERT_ACC
+    // @DisplayName: Vertical acceleration warn threshold
+    // @Description: ACC_VERT OSD item flashes when |vertical acceleration| exceeds this value. 0 disables. Fork #46 + #95 doc fix.
+    // @Range: 0 20
+    // @Units: g
+    // @User: Standard
+    AP_GROUPINFO("_W_VERT_ACC", 60, AP_OSD, warn_vert_acc, 0),
+
 #if AP_OSD_EXTENDED_LNK_STATS
     // @Param: _W_LQ
     // @DisplayName: RC link quality warn level (in %)

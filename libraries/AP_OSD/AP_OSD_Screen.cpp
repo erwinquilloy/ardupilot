@@ -44,6 +44,7 @@
 #include <AP_RangeFinder/AP_RangeFinder.h>
 #include <AP_Vehicle/AP_Vehicle.h>
 #include <AP_RPM/AP_RPM.h>
+#include <AP_InertialSensor/AP_InertialSensor.h>
 #include <AP_Tuning/AP_Tuning_config.h>
 #if AP_TUNING_ENABLED
 #include <AP_Tuning/AP_Tuning.h>
@@ -1360,6 +1361,54 @@ const AP_Param::GroupInfo AP_OSD_Screen::var_info2[] = {
     // @Range: 0 15
     AP_SUBGROUPINFO(aoa, "AOA", 21, AP_OSD_Screen, AP_OSD_Setting),
 
+    // @Param: ACC_LONG_EN
+    // @DisplayName: ACC_LONG_EN
+    // @Description: Displays longitudinal acceleration in g (fork #46)
+    // @Values: 0:Disabled,1:Enabled
+
+    // @Param: ACC_LONG_X
+    // @DisplayName: ACC_LONG_X
+    // @Description: Horizontal position on screen
+    // @Range: 0 29
+
+    // @Param: ACC_LONG_Y
+    // @DisplayName: ACC_LONG_Y
+    // @Description: Vertical position on screen
+    // @Range: 0 15
+    AP_SUBGROUPINFO(acc_long, "ACC_LONG", 22, AP_OSD_Screen, AP_OSD_Setting),
+
+    // @Param: ACC_LAT_EN
+    // @DisplayName: ACC_LAT_EN
+    // @Description: Displays lateral acceleration in g (fork #46)
+    // @Values: 0:Disabled,1:Enabled
+
+    // @Param: ACC_LAT_X
+    // @DisplayName: ACC_LAT_X
+    // @Description: Horizontal position on screen
+    // @Range: 0 29
+
+    // @Param: ACC_LAT_Y
+    // @DisplayName: ACC_LAT_Y
+    // @Description: Vertical position on screen
+    // @Range: 0 15
+    AP_SUBGROUPINFO(acc_lat, "ACC_LAT", 23, AP_OSD_Screen, AP_OSD_Setting),
+
+    // @Param: ACC_VERT_EN
+    // @DisplayName: ACC_VERT_EN
+    // @Description: Displays vertical acceleration in g (fork #46). Flashes when |value| > OSD_W_VERT_ACC.
+    // @Values: 0:Disabled,1:Enabled
+
+    // @Param: ACC_VERT_X
+    // @DisplayName: ACC_VERT_X
+    // @Description: Horizontal position on screen
+    // @Range: 0 29
+
+    // @Param: ACC_VERT_Y
+    // @DisplayName: ACC_VERT_Y
+    // @Description: Vertical position on screen
+    // @Range: 0 15
+    AP_SUBGROUPINFO(acc_vert, "ACC_VERT", 24, AP_OSD_Screen, AP_OSD_Setting),
+
     AP_GROUPEND
 };
 
@@ -2485,6 +2534,57 @@ void AP_OSD_Screen::draw_aoa(uint8_t x, uint8_t y)
     draw_pitch(x, y, aoa_deg);
 }
 
+// fork #46 + #96: shared helper for ACC_LAT and ACC_VERT (which use a +/- indicator symbol)
+void AP_OSD_Screen::draw_acc(uint8_t x, uint8_t y, float acc, uint8_t neg_symbol, uint8_t zero_symbol, uint8_t pos_symbol, float warn)
+{
+    const float acc_abs = fabsf(acc);
+    const char *format = acc_abs < 9.95f ? "%c %1.1f%c" : "%c%2.1f%c";
+    const uint8_t symbol = SYMBOL(acc_abs < 0.05f ? zero_symbol : (signbit(acc) ? neg_symbol : pos_symbol));
+    backend->write(x, y, warn > 0 && acc_abs > warn, format, symbol, acc_abs, SYMBOL(SYM_G));
+}
+
+// fork #46: longitudinal accel (signed; uses signbit-aware padding, no symbol prefix)
+void AP_OSD_Screen::draw_acc_long(uint8_t x, uint8_t y)
+{
+    AP_AHRS &ahrs = AP::ahrs();
+    WITH_SEMAPHORE(ahrs.get_semaphore());
+    const Matrix3f &rotMat = ahrs.get_rotation_body_to_ned();
+    const float acc = _acc_long_filter.apply(rotMat.c.x * GRAVITY_MSS + AP::ins().get_accel().x) / GRAVITY_MSS;
+
+    const char *format;
+    uint8_t spaces;
+    const float acc_abs = fabsf(acc);
+    if (acc_abs < 9.95f) {
+        spaces = 2;
+        format = "%1.1f%c";
+    } else {
+        spaces = 1;
+        format = "%2.1f%c";
+    }
+    if (signbit(acc)) {
+        spaces -= 1;
+    }
+    backend->write(x + spaces, y, false, format, acc, SYMBOL(SYM_G));
+}
+
+void AP_OSD_Screen::draw_acc_lat(uint8_t x, uint8_t y)
+{
+    AP_AHRS &ahrs = AP::ahrs();
+    WITH_SEMAPHORE(ahrs.get_semaphore());
+    const Matrix3f &rotMat = ahrs.get_rotation_body_to_ned();
+    const float acc = _acc_lat_filter.apply(rotMat.c.y * GRAVITY_MSS + AP::ins().get_accel().y) / GRAVITY_MSS;
+    draw_acc(x, y, acc, SYM_ROLLR, SYM_ROLL0, SYM_ROLLL, 0);
+}
+
+void AP_OSD_Screen::draw_acc_vert(uint8_t x, uint8_t y)
+{
+    AP_AHRS &ahrs = AP::ahrs();
+    WITH_SEMAPHORE(ahrs.get_semaphore());
+    const Matrix3f &rotMat = ahrs.get_rotation_body_to_ned();
+    const float acc = _acc_vert_filter.apply(rotMat.c.z * GRAVITY_MSS + AP::ins().get_accel().z) / GRAVITY_MSS;
+    draw_acc(x, y, acc, SYM_PTCHUP, SYM_PTCH0, SYM_PTCHDWN, osd->warn_vert_acc);
+}
+
 void AP_OSD_Screen::draw_temp(uint8_t x, uint8_t y)
 {
     AP_Baro &barometer = AP::baro();
@@ -3413,6 +3513,9 @@ void AP_OSD_Screen::draw(void)
     DRAW_SETTING(loiter_radius);
 #endif
     DRAW_SETTING(aoa);
+    DRAW_SETTING(acc_long);
+    DRAW_SETTING(acc_lat);
+    DRAW_SETTING(acc_vert);
     DRAW_SETTING(callsign);
     DRAW_SETTING(current2);
 
