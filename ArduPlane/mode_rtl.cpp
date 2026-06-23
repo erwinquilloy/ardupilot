@@ -44,6 +44,12 @@ bool ModeRTL::_enter()
     return true;
 }
 
+void ModeRTL::_exit()
+{
+    // clear loitering flag so the OSD loiter-radius element hides when leaving RTL
+    plane.rtl.loitering = false;
+}
+
 void ModeRTL::update()
 {
     plane.calc_nav_roll();
@@ -113,6 +119,11 @@ void ModeRTL::navigate()
     uint16_t radius = abs(plane.g.rtl_radius);
     if (radius > 0) {
         plane.loiter.direction = (plane.g.rtl_radius < 0) ? -1 : 1;
+    }
+
+    // OSD loiter-radius element wants to know when RTL has actually settled into its loiter
+    if (plane.reached_loiter_target()) {
+        plane.rtl.loitering = true;
     }
 
     plane.update_loiter(radius);
