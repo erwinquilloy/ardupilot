@@ -171,6 +171,9 @@ public:
     // returns true if the vehicle has crashed
     virtual bool is_crashed() const;
 
+    // returns auto-flap deployment percentage (Plane override; 0 elsewhere). Fork #55 stub-port for #199 OSD flap element.
+    virtual float auto_flap_percent() const { return 0; }
+
 #if AP_SCRIPTING_ENABLED || AP_EXTERNAL_CONTROL_ENABLED
     // Method to takeoff for use by external control
     virtual bool start_takeoff(const float alt) { return false; }
