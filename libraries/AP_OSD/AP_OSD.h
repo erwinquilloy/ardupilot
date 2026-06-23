@@ -628,6 +628,8 @@ public:
     AP_Float warn_batvolt;
     AP_Float warn_bat2volt;
     AP_Int8 ah_pitch_max;
+    AP_Float warn_aspd_low;   // fork b10dc936be: underspeed warn threshold
+    AP_Float warn_aspd_high;  // fork b10dc936be: overspeed warn threshold
     AP_Float peak_rate_timeout;
     AP_Float tune_display_timeout;
     AP_Int8 msgtime_s;
