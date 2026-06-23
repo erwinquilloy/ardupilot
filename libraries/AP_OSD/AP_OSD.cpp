@@ -225,6 +225,14 @@ const AP_Param::GroupInfo AP_OSD::var_info[] = {
     // @User: Standard
     AP_GROUPINFO("_W_ACRVOLT", 31, AP_OSD, warn_avgcellrestvolt, 3.6f),
 
+    // @Param: _PEAKR_TMOUT
+    // @DisplayName: Peak rate display timeout
+    // @Description: Time the peak rate stays displayed for PEAK_RR and PEAK_PR elements before resetting (fork #131)
+    // @Range: 0.5 60
+    // @Units: s
+    // @User: Standard
+    AP_GROUPINFO("_PEAKR_TMOUT", 56, AP_OSD, peak_rate_timeout, 3.0f),
+
 #if AP_OSD_EXTENDED_LNK_STATS
     // @Param: _W_LQ
     // @DisplayName: RC link quality warn level (in %)

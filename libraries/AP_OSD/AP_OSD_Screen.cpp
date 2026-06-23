@@ -1224,6 +1224,38 @@ const AP_Param::GroupInfo AP_OSD_Screen::var_info2[] = {
     AP_SUBGROUPINFO(debug, "DEBUG", 13, AP_OSD_Screen, AP_OSD_Setting),
 #endif
 
+    // @Param: PEAK_RR_EN
+    // @DisplayName: PEAK_RR_EN
+    // @Description: Displays the peak roll rate over the last OSD_PEAKR_TMOUT seconds (fork #131)
+    // @Values: 0:Disabled,1:Enabled
+
+    // @Param: PEAK_RR_X
+    // @DisplayName: PEAK_RR_X
+    // @Description: Horizontal position on screen
+    // @Range: 0 29
+
+    // @Param: PEAK_RR_Y
+    // @DisplayName: PEAK_RR_Y
+    // @Description: Vertical position on screen
+    // @Range: 0 15
+    AP_SUBGROUPINFO(peak_roll_rate, "PEAK_RR", 14, AP_OSD_Screen, AP_OSD_Setting),
+
+    // @Param: PEAK_PR_EN
+    // @DisplayName: PEAK_PR_EN
+    // @Description: Displays the peak pitch rate over the last OSD_PEAKR_TMOUT seconds (fork #131)
+    // @Values: 0:Disabled,1:Enabled
+
+    // @Param: PEAK_PR_X
+    // @DisplayName: PEAK_PR_X
+    // @Description: Horizontal position on screen
+    // @Range: 0 29
+
+    // @Param: PEAK_PR_Y
+    // @DisplayName: PEAK_PR_Y
+    // @Description: Vertical position on screen
+    // @Range: 0 15
+    AP_SUBGROUPINFO(peak_pitch_rate, "PEAK_PR", 15, AP_OSD_Screen, AP_OSD_Setting),
+
     AP_GROUPEND
 };
 
@@ -2952,6 +2984,48 @@ void AP_OSD_Screen::draw_rngf(uint8_t x, uint8_t y)
 }
 #endif
 
+void AP_OSD_Screen::draw_peak_roll_rate(uint8_t x, uint8_t y)
+{
+    static float last_max_roll_rate;
+    static uint32_t last_peak_tstamp;
+    float rate_x_abs;
+
+    {
+        AP_AHRS &ahrs = AP::ahrs();
+        WITH_SEMAPHORE(ahrs.get_semaphore());
+        rate_x_abs = fabsf(ahrs.get_gyro().x);
+    }
+
+    uint32_t now = AP_HAL::millis();
+    if ((rate_x_abs > last_max_roll_rate) || (now - last_peak_tstamp > osd->peak_rate_timeout * 1000)) {
+        last_peak_tstamp = now;
+        last_max_roll_rate = rate_x_abs;
+    }
+
+    backend->write(x, y, false, "%c%3u%c", SYMBOL(SYM_ROLL), (unsigned)lrintf(degrees(last_max_roll_rate)), SYMBOL(SYM_DPS));
+}
+
+void AP_OSD_Screen::draw_peak_pitch_rate(uint8_t x, uint8_t y)
+{
+    static float last_max_pitch_rate;
+    static uint32_t last_peak_tstamp;
+    float rate_y_abs;
+
+    {
+        AP_AHRS &ahrs = AP::ahrs();
+        WITH_SEMAPHORE(ahrs.get_semaphore());
+        rate_y_abs = fabsf(ahrs.get_gyro().y);
+    }
+
+    uint32_t now = AP_HAL::millis();
+    if ((rate_y_abs > last_max_pitch_rate) || (now - last_peak_tstamp > osd->peak_rate_timeout * 1000)) {
+        last_peak_tstamp = now;
+        last_max_pitch_rate = rate_y_abs;
+    }
+
+    backend->write(x, y, false, "%c%3u%c", SYMBOL(SYM_PITCH), (unsigned)lrintf(degrees(last_max_pitch_rate)), SYMBOL(SYM_DPS));
+}
+
 #define DRAW_SETTING(n) if (n.enabled) draw_ ## n(n.xpos, n.ypos)
 
 #if HAL_WITH_OSD_BITMAP || HAL_WITH_MSP_DISPLAYPORT
@@ -3046,6 +3120,8 @@ void AP_OSD_Screen::draw(void)
 #if OSD_DEBUG_ELEMENT
     DRAW_SETTING(debug);
 #endif
+    DRAW_SETTING(peak_roll_rate);
+    DRAW_SETTING(peak_pitch_rate);
     DRAW_SETTING(callsign);
     DRAW_SETTING(current2);
 
