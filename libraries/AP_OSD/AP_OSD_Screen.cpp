@@ -3103,10 +3103,15 @@ void AP_OSD_Screen::draw_rngf(uint8_t x, uint8_t y)
        return;
     }
     if (rangefinder->status_orient(ROTATION_PITCH_270) < RangeFinder::Status::Good) {
-        backend->write(x, y, false, "%c---%c", SYMBOL(SYM_RNGFD), u_icon(DISTANCE));
+        // Fork #89: order is value <unit-icon> <rangefinder-symbol>; use ALTITUDE unit so the icon scales
+        backend->write(x, y, false, "----%c%c", u_icon(ALTITUDE), SYMBOL(SYM_RNGFD));
     } else {
-        const float distance = rangefinder->distance_orient(ROTATION_PITCH_270);
-        backend->write(x, y, false, "%c%4.1f%c", SYMBOL(SYM_RNGFD), u_scale(DISTANCE, distance), u_icon(DISTANCE));
+        // Fork c7c3a53af5: attitude-correct the slant range into vertical altitude
+        AP_AHRS &ahrs = AP::ahrs();
+        WITH_SEMAPHORE(ahrs.get_semaphore());
+        const float distance = rangefinder->distance_orient(ROTATION_PITCH_270) * ahrs.get_rotation_body_to_ned().c.z;
+        const char *format = distance < 9.995f ? " %1.2f%c%c" : "%2.2f%c%c";
+        backend->write(x, y, false, format, u_scale(ALTITUDE, distance), u_icon(ALTITUDE), SYMBOL(SYM_RNGFD));
     }
 }
 #endif
