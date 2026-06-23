@@ -1409,6 +1409,40 @@ const AP_Param::GroupInfo AP_OSD_Screen::var_info2[] = {
     // @Range: 0 15
     AP_SUBGROUPINFO(acc_vert, "ACC_VERT", 24, AP_OSD_Screen, AP_OSD_Setting),
 
+#if AP_BATTERY_ENABLED
+    // @Param: AVG_EFG_EN
+    // @DisplayName: AVG_EFG_EN
+    // @Description: Displays flight-long average efficiency over ground distance (uses AP_Stats; fork). Reads "---" until AP_Stats has consumed-mAh/Wh and ground distance.
+    // @Values: 0:Disabled,1:Enabled
+
+    // @Param: AVG_EFG_X
+    // @DisplayName: AVG_EFG_X
+    // @Description: Horizontal position on screen
+    // @Range: 0 29
+
+    // @Param: AVG_EFG_Y
+    // @DisplayName: AVG_EFG_Y
+    // @Description: Vertical position on screen
+    // @Range: 0 15
+    AP_SUBGROUPINFO(avg_eff_ground, "AVG_EFG", 25, AP_OSD_Screen, AP_OSD_Setting),
+
+    // @Param: AVG_EFA_EN
+    // @DisplayName: AVG_EFA_EN
+    // @Description: Displays flight-long average efficiency over air distance (uses AP_Stats; fork; Plane only). Reads "---" until air distance available.
+    // @Values: 0:Disabled,1:Enabled
+
+    // @Param: AVG_EFA_X
+    // @DisplayName: AVG_EFA_X
+    // @Description: Horizontal position on screen
+    // @Range: 0 29
+
+    // @Param: AVG_EFA_Y
+    // @DisplayName: AVG_EFA_Y
+    // @Description: Vertical position on screen
+    // @Range: 0 15
+    AP_SUBGROUPINFO(avg_eff_air, "AVG_EFA", 26, AP_OSD_Screen, AP_OSD_Setting),
+#endif
+
     AP_GROUPEND
 };
 
@@ -3516,6 +3550,10 @@ void AP_OSD_Screen::draw(void)
     DRAW_SETTING(acc_long);
     DRAW_SETTING(acc_lat);
     DRAW_SETTING(acc_vert);
+#if AP_BATTERY_ENABLED
+    DRAW_SETTING(avg_eff_ground);
+    DRAW_SETTING(avg_eff_air);
+#endif
     DRAW_SETTING(callsign);
     DRAW_SETTING(current2);
 
