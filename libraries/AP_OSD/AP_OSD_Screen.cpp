@@ -1256,6 +1256,22 @@ const AP_Param::GroupInfo AP_OSD_Screen::var_info2[] = {
     // @Range: 0 15
     AP_SUBGROUPINFO(peak_pitch_rate, "PEAK_PR", 15, AP_OSD_Screen, AP_OSD_Setting),
 
+    // @Param: AUTO_FLP_EN
+    // @DisplayName: AUTO_FLP_EN
+    // @Description: Displays the auto-flap deployment percentage (Plane only; fork #199 stub-port of #55)
+    // @Values: 0:Disabled,1:Enabled
+
+    // @Param: AUTO_FLP_X
+    // @DisplayName: AUTO_FLP_X
+    // @Description: Horizontal position on screen
+    // @Range: 0 29
+
+    // @Param: AUTO_FLP_Y
+    // @DisplayName: AUTO_FLP_Y
+    // @Description: Vertical position on screen
+    // @Range: 0 15
+    AP_SUBGROUPINFO(auto_flaps, "AUTO_FLP", 16, AP_OSD_Screen, AP_OSD_Setting),
+
     AP_GROUPEND
 };
 
@@ -3026,6 +3042,16 @@ void AP_OSD_Screen::draw_peak_pitch_rate(uint8_t x, uint8_t y)
     backend->write(x, y, false, "%c%3u%c", SYMBOL(SYM_PITCH), (unsigned)lrintf(degrees(last_max_pitch_rate)), SYMBOL(SYM_DPS));
 }
 
+void AP_OSD_Screen::draw_auto_flaps(uint8_t x, uint8_t y)
+{
+    if (!AP_Notify::flags.armed) {
+        backend->write(x, y, false, "%c---%c", SYMBOL(SYM_FLAP), SYMBOL(SYM_PCNT));
+    } else {
+        const float flaps_pcnt = AP::vehicle()->auto_flap_percent();
+        backend->write(x, y, false, "%c%3u%c", SYMBOL(SYM_FLAP), (unsigned)lrintf(flaps_pcnt), SYMBOL(SYM_PCNT));
+    }
+}
+
 #define DRAW_SETTING(n) if (n.enabled) draw_ ## n(n.xpos, n.ypos)
 
 #if HAL_WITH_OSD_BITMAP || HAL_WITH_MSP_DISPLAYPORT
@@ -3122,6 +3148,7 @@ void AP_OSD_Screen::draw(void)
 #endif
     DRAW_SETTING(peak_roll_rate);
     DRAW_SETTING(peak_pitch_rate);
+    DRAW_SETTING(auto_flaps);
     DRAW_SETTING(callsign);
     DRAW_SETTING(current2);
 
