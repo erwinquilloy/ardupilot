@@ -27,6 +27,7 @@
 #include <GCS_MAVLink/GCS_config.h>
 #include <AP_OLC/AP_OLC.h>
 #include <AP_MSP/msp.h>
+#include <Filter/AverageFilter.h>  // fork #46 OSD accel elements
 #include <AP_Baro/AP_Baro.h>
 #include <AP_RPM/AP_RPM_config.h>
 #if HAL_GCS_ENABLED
@@ -235,6 +236,9 @@ private:
     AP_OSD_Setting tuned_param_value{false, 0, 0}; // fork #124: tuned param value
     AP_OSD_Setting loiter_radius{false, 0, 0};     // fork: current loiter radius (Plane only, LOITER/RTL-loitering)
     AP_OSD_Setting aoa{false, 0, 0};               // fork #70: angle of attack from AHRS
+    AP_OSD_Setting acc_long{false, 0, 0};          // fork #46: longitudinal acceleration (g)
+    AP_OSD_Setting acc_lat{false, 0, 0};           // fork #46: lateral acceleration (g)
+    AP_OSD_Setting acc_vert{false, 0, 0};          // fork #46: vertical acceleration (g)
     AP_OSD_Setting atemp;
     AP_OSD_Setting bat2_vlt;
     AP_OSD_Setting bat2used;
@@ -327,6 +331,10 @@ private:
     void draw_pitch_angle(uint8_t x, uint8_t y);
     void draw_pitch(uint8_t x, uint8_t y, float pitch_deg);  // fork #70 helper, shared by draw_pitch_angle + draw_aoa
     void draw_aoa(uint8_t x, uint8_t y);
+    void draw_acc(uint8_t x, uint8_t y, float acc, uint8_t neg_symbol, uint8_t zero_symbol, uint8_t pos_symbol, float warn);
+    void draw_acc_long(uint8_t x, uint8_t y);
+    void draw_acc_lat(uint8_t x, uint8_t y);
+    void draw_acc_vert(uint8_t x, uint8_t y);
     void draw_peak_roll_rate(uint8_t x, uint8_t y);
     void draw_peak_pitch_rate(uint8_t x, uint8_t y);
     void draw_auto_flaps(uint8_t x, uint8_t y);
@@ -395,6 +403,11 @@ private:
         bool load_attempted;
         const char *str;
     } callsign_data;
+
+    // fork #46: 10-sample average for the acceleration elements to damp display jitter
+    AverageFilter<float, float, 10> _acc_long_filter;
+    AverageFilter<float, float, 10> _acc_lat_filter;
+    AverageFilter<float, float, 10> _acc_vert_filter;
 };
 #endif // OSD_ENABLED
 
@@ -633,6 +646,7 @@ public:
     AP_Int8 ah_pitch_max;
     AP_Float warn_aspd_low;   // fork b10dc936be: underspeed warn threshold
     AP_Float warn_aspd_high;  // fork b10dc936be: overspeed warn threshold
+    AP_Float warn_vert_acc;   // fork #46: vertical accel warn threshold (g)
     AP_Float peak_rate_timeout;
     AP_Float tune_display_timeout;
     AP_Int8 msgtime_s;
