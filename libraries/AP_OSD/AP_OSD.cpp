@@ -241,6 +241,22 @@ const AP_Param::GroupInfo AP_OSD::var_info[] = {
     // @User: Standard
     AP_GROUPINFO("_TUNE_DTMOUT", 57, AP_OSD, tune_display_timeout, 4.0f),
 
+    // @Param: _W_ASPD_LOW
+    // @DisplayName: Underspeed warn threshold
+    // @Description: Airspeed below which ASPD/ASPD1/ASPD2 OSD items flash. 0 disables. Fork port (b10dc936be).
+    // @Range: 0 1000
+    // @Units: m/s
+    // @User: Standard
+    AP_GROUPINFO("_W_ASPD_LOW", 61, AP_OSD, warn_aspd_low, 0),
+
+    // @Param: _W_ASPD_HIGH
+    // @DisplayName: Overspeed warn threshold
+    // @Description: Airspeed above which ASPD/ASPD1/ASPD2 OSD items flash. 0 disables. Fork port (b10dc936be).
+    // @Range: 0 1000
+    // @Units: m/s
+    // @User: Standard
+    AP_GROUPINFO("_W_ASPD_HIGH", 62, AP_OSD, warn_aspd_high, 0),
+
 #if AP_OSD_EXTENDED_LNK_STATS
     // @Param: _W_LQ
     // @DisplayName: RC link quality warn level (in %)
