@@ -80,6 +80,10 @@ const AP_Param::GroupInfo AP_OSD::var_info[] = {
     // @Path: AP_OSD_Screen.cpp
     AP_SUBGROUPINFO(screen[3], "4_", 6, AP_OSD, AP_OSD_Screen),
 
+    // @Group: 5_
+    // @Path: AP_OSD_Screen.cpp
+    AP_SUBGROUPINFO(screen[4], "5_", 58, AP_OSD, AP_OSD_Screen),
+
     // @Param: _SW_METHOD
     // @DisplayName: Screen switch method
     // @Description: This sets the method used to switch different OSD screens.
@@ -307,13 +311,13 @@ const AP_Param::GroupInfo AP_OSD::var_info[] = {
 
 #endif //osd enabled
 #if OSD_PARAM_ENABLED
-    // @Group: 5_
-    // @Path: AP_OSD_ParamScreen.cpp
-    AP_SUBGROUPINFO(param_screen[0], "5_", 21, AP_OSD, AP_OSD_ParamScreen),
-
     // @Group: 6_
     // @Path: AP_OSD_ParamScreen.cpp
-    AP_SUBGROUPINFO(param_screen[1], "6_", 22, AP_OSD, AP_OSD_ParamScreen),
+    AP_SUBGROUPINFO(param_screen[0], "6_", 21, AP_OSD, AP_OSD_ParamScreen),
+
+    // @Group: 7_
+    // @Path: AP_OSD_ParamScreen.cpp
+    AP_SUBGROUPINFO(param_screen[1], "7_", 22, AP_OSD, AP_OSD_ParamScreen),
 #endif
 
 #if OSD_ENABLED
@@ -322,6 +326,7 @@ const AP_Param::GroupInfo AP_OSD::var_info[] = {
     AP_SUBGROUPINFO2(screen[1], "2_", 28, AP_OSD, AP_OSD_Screen),
     AP_SUBGROUPINFO2(screen[2], "3_", 29, AP_OSD, AP_OSD_Screen),
     AP_SUBGROUPINFO2(screen[3], "4_", 30, AP_OSD, AP_OSD_Screen),
+    AP_SUBGROUPINFO2(screen[4], "5_", 38, AP_OSD, AP_OSD_Screen),  // fork #122: slot 35 conflicts with our _SB_H_OFS, use 38
 #endif
 
     // @Param: _TYPE2
