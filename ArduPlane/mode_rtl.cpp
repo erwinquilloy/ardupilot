@@ -10,6 +10,10 @@ bool ModeRTL::_enter()
     // RTL_CLIMB_FIRST_ONLY_IN_FS option can keep applying the climb-first
     // logic for the duration of this RTL even if the link recovers
     plane.rtl.triggered_by_rc_failsafe = plane.failsafe.rc_failsafe;
+    // fork PR #150: reset the emergency-landing state on each fresh RTL entry
+    plane.auto_state.reached_home_in_fs_ms = 0;
+    plane.auto_state.emergency_landing = false;
+    plane.auto_state.reached_emergency_landing_no_return_altitude = false;
 #if HAL_QUADPLANE_ENABLED
     plane.vtol_approach_s.approach_stage = Plane::VTOLApproach::Stage::RTL;
 
@@ -97,6 +101,8 @@ void ModeRTL::update()
 
 void ModeRTL::navigate()
 {
+    const uint32_t now = AP_HAL::millis();
+
 #if HAL_QUADPLANE_ENABLED
     if (plane.quadplane.available()) {
         if (plane.quadplane.rtl_mode == QuadPlane::RTL_MODE::VTOL_APPROACH_QRTL) {
@@ -110,11 +116,49 @@ void ModeRTL::navigate()
             return;
         }
 
-        if ((AP_HAL::millis() - plane.last_mode_change_ms > 1000) && switch_QRTL()) {
+        if ((now - plane.last_mode_change_ms > 1000) && switch_QRTL()) {
             return;
         }
     }
 #endif
+
+    // Fork PR #150: emergency-land if we've been in RC failsafe loitering above home for >2 min.
+    // Skips the trigger when an explicit landing sequence (DO_LAND_START) is configured -- the
+    // mission's autoland takes priority in that case.
+    if (plane.failsafe.rc_failsafe &&
+        !(plane.mission.contains_item(MAV_CMD_DO_LAND_START) &&
+          (plane.g.rtl_autoland == RtlAutoland::RTL_THEN_DO_LAND_START ||
+           plane.g.rtl_autoland == RtlAutoland::RTL_IMMEDIATE_DO_LAND_START)) &&
+        plane.flight_option_enabled(FlightOptions::RTL_FAILSAFE_LAND_AFTER_2MIN) &&
+        plane.reached_loiter_target()) {
+        if (plane.auto_state.reached_home_in_fs_ms) {
+            if (now - plane.auto_state.reached_home_in_fs_ms > 120000) {
+                // 2-minute hold elapsed -- request TECS gliding (throttle 0, hold AIRSPEED_MIN)
+                plane.TECS_controller.set_gliding_requested_flag(true);
+                if (!plane.auto_state.emergency_landing) {
+                    plane.auto_state.emergency_landing = true;
+                    GCS_SEND_TEXT(MAV_SEVERITY_WARNING, "Emergency landing started");
+                }
+            }
+        } else {
+            plane.auto_state.reached_home_in_fs_ms = now;
+        }
+
+        if (plane.auto_state.emergency_landing && plane.relative_altitude < 10) {
+            // committed below the no-return altitude -- don't recover even if FS clears
+            plane.auto_state.reached_emergency_landing_no_return_altitude = true;
+        }
+    } else if (!plane.auto_state.reached_emergency_landing_no_return_altitude) {
+        // FS cleared (or option disabled) before the no-return altitude -- abort the eland
+        plane.TECS_controller.set_gliding_requested_flag(false);
+        plane.auto_state.emergency_landing = false;
+        plane.auto_state.reached_home_in_fs_ms = 0;
+    }
+
+    if (plane.auto_state.reached_emergency_landing_no_return_altitude && !plane.is_flying()) {
+        // post-flare detection -- auto-disarm using the same hook autoland uses
+        plane.disarm_if_autoland_complete();
+    }
 
     uint16_t radius = abs(plane.g.rtl_radius);
     if (radius > 0) {
