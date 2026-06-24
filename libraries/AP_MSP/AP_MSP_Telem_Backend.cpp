@@ -27,6 +27,7 @@
 #include <AP_RangeFinder/AP_RangeFinder.h>
 #include <AP_RSSI/AP_RSSI.h>
 #include <AP_RTC/AP_RTC.h>
+#include <AP_Vehicle/AP_Vehicle.h>
 #include <GCS_MAVLink/GCS.h>
 
 #include "AP_MSP.h"
@@ -897,17 +898,28 @@ MSPCommandResult AP_MSP_Telem_Backend::msp_process_out_osd_config(sbuf_t *dst)
 
 MSPCommandResult AP_MSP_Telem_Backend::msp_process_out_attitude(sbuf_t *dst)
 {
-    AP_AHRS &ahrs = AP::ahrs();
-    WITH_SEMAPHORE(ahrs.get_semaphore());
+    // Fork 265d252283: read pitch/roll through AP_Vehicle's OSD helper so the
+    //                  DJI FPV / HDZero numeric attitude matches the OSD horizon
+    //                  view (Plane subtracts PTCH_TRIM_DEG; VTOL also overrides).
+    //                  Use lrintf for proper rounding instead of float truncation.
+    float roll;
+    float pitch;
+    float yaw_cd;
+    {
+        AP_AHRS &ahrs = AP::ahrs();
+        WITH_SEMAPHORE(ahrs.get_semaphore());
+        AP::vehicle()->get_osd_roll_pitch_rad(roll, pitch);
+        yaw_cd = ahrs.yaw_sensor;
+    }
 
     const struct PACKED {
         int16_t roll;
         int16_t pitch;
         int16_t yaw;
     } attitude {
-        roll : int16_t(ahrs.roll_sensor * 0.1),     // centidegress to decidegrees
-        pitch : int16_t(ahrs.pitch_sensor * 0.1),   // centidegress to decidegrees
-        yaw : int16_t(ahrs.yaw_sensor * 0.01)       // centidegress to degrees
+        roll : int16_t(lrintf(degrees(roll) * 10)),   // rad -> decidegrees
+        pitch : int16_t(lrintf(degrees(pitch) * 10)), // rad -> decidegrees
+        yaw : int16_t(lrintf(yaw_cd * 0.01f))         // centidegrees -> degrees
     };
 
     sbuf_write_data(dst, &attitude, sizeof(attitude));
