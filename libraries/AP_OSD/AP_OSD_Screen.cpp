@@ -3434,7 +3434,7 @@ void AP_OSD_Screen::draw_tuned_param_value(uint8_t x, uint8_t y)
         const AP_Float *const param_value_ptr = tuning_object->get_param_pointer();
         if (param_value_ptr != nullptr) {
             const float value = param_value_ptr->get();
-            const char *const fmt = (value < 9.9995f ? "%1.3f" : (value < 99.995f ? "%2.2f" : (value < 999.95f ? "%3.1f" : "%4.0f")));
+            const char *const fmt = (value < 9.995f ? "%1.2f" : (value < 99.995f ? "%2.2f" : (value < 999.95f ? "%3.1f" : "%4.0f")));
             const uint8_t spaces = signbit(value) ? 0 : 1;
             backend->write(x + spaces, y, false, fmt, value);
         }
