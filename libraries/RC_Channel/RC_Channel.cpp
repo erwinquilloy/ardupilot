@@ -653,14 +653,6 @@ void RC_Channel::init_aux_function(const AUX_FUNC ch_option, const AuxSwitchPos 
     case AUX_FUNC::LANDING_GEAR:
 #endif
     case AUX_FUNC::LOST_VEHICLE_SOUND:
-#if AP_SERVORELAYEVENTS_ENABLED && AP_RELAY_ENABLED
-    case AUX_FUNC::RELAY:
-    case AUX_FUNC::RELAY2:
-    case AUX_FUNC::RELAY3:
-    case AUX_FUNC::RELAY4:
-    case AUX_FUNC::RELAY5:
-    case AUX_FUNC::RELAY6:
-#endif
 #if HAL_VISUALODOM_ENABLED
     case AUX_FUNC::VISODOM_ALIGN:
 #endif
@@ -773,6 +765,31 @@ void RC_Channel::init_aux_function(const AUX_FUNC ch_option, const AuxSwitchPos 
 #if AP_AHRS_ENABLED
     case AUX_FUNC::AHRS_TYPE:
         run_aux_function(ch_option, ch_flag, AuxFuncTriggerSource::INIT);
+        break;
+#endif
+#if AP_SERVORELAYEVENTS_ENABLED && AP_RELAY_ENABLED
+    // RELAY1-6 (ArduCustom v11.2 71b0e55624): boot-time relay state
+    // mirrors RCx_REVERSED so the relay starts HIGH iff REVERSED=1.
+    // Solves "VTX powered on at boot" on Matek FCs where the video-power
+    // pad is active-low; set RCx_REVERSED=1 on that channel and the VTX
+    // stays off until you flip the switch.
+    case AUX_FUNC::RELAY:
+        do_aux_function_relay(0, reversed);
+        break;
+    case AUX_FUNC::RELAY2:
+        do_aux_function_relay(1, reversed);
+        break;
+    case AUX_FUNC::RELAY3:
+        do_aux_function_relay(2, reversed);
+        break;
+    case AUX_FUNC::RELAY4:
+        do_aux_function_relay(3, reversed);
+        break;
+    case AUX_FUNC::RELAY5:
+        do_aux_function_relay(4, reversed);
+        break;
+    case AUX_FUNC::RELAY6:
+        do_aux_function_relay(5, reversed);
         break;
 #endif
     default:
@@ -942,6 +959,24 @@ bool RC_Channel::read_aux()
         }
         return false;
 #endif  // AP_VIDEOTX_ENABLED
+#if AP_SERVORELAYEVENTS_ENABLED && AP_RELAY_ENABLED
+    } else if (_option == AUX_FUNC::RELAY ||
+               (_option >= AUX_FUNC::RELAY2 && _option <= AUX_FUNC::RELAY4) ||
+               (_option >= AUX_FUNC::RELAY5 && _option <= AUX_FUNC::RELAY6)) {
+        // RELAY1-6 (ArduCustom v11.2 bf3308d13f): the relay is HIGH when
+        // the RC input falls within [RCx_MIN, RCx_MAX], LOW otherwise.
+        // RCx_REVERSED (gated by RC_OPTIONS bit 7) inverts the in-range test
+        // so a 1 puts the relay HIGH on out-of-range inputs at boot.
+        const uint16_t in = get_radio_in();
+        if (in <= RC_MIN_LIMIT_PWM || in >= RC_MAX_LIMIT_PWM) {
+            return false;
+        }
+        const bool switch_reversed = reversed && rc().option_is_enabled(RC_Channels::Option::ALLOW_SWITCH_REV);
+        const bool in_range = in >= radio_min && in <= radio_max;
+        const bool high = switch_reversed ? !in_range : in_range;
+        run_aux_function(_option, high ? AuxSwitchPos::HIGH : AuxSwitchPos::LOW, AuxFuncTriggerSource::RC);
+        return true;
+#endif
     }
 
     AuxSwitchPos new_position;
