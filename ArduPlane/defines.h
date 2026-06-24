@@ -171,6 +171,7 @@ enum FlightOptions {
     IMMEDIATE_CLIMB_IN_AUTO = (1<<14),
     MODE_AUTO_MANUAL_AIRSPEED_CONTROL = (1<<19),    // pilot throttle stick maps to target airspeed in AUTO when set
     COURSE_HOLD_HEADING_CONTROL_WITH_YAW_STICK = (1<<20),
+    RTL_FAILSAFE_LAND_AFTER_2MIN = (1<<21),          // fork PR #150: emergency-land if RTL FS has loitered above home for 2 minutes
     RTL_CLIMB_FIRST_ONLY_IN_FS = (1<<22),
     ALLOW_GLIDING_IN_AUTO_THR_MODES = (1<<23),
 };

@@ -561,6 +561,14 @@ private:
 
         // have we finished the takeoff ratation (when it applies)?
         bool rotation_complete;
+
+        // fork PR #150: emergency-landing trigger state (RTL FS for >2 min above home)
+        // millis() timestamp of when we reached the home loiter target while in RC FS, 0 when reset
+        uint32_t reached_home_in_fs_ms;
+        // true once the 2-minute timer has elapsed and we've committed to emergency-land
+        bool emergency_landing;
+        // true once we have descended below the no-return altitude (10 m AGL) during emergency-land
+        bool reached_emergency_landing_no_return_altitude;
     } auto_state;
 
 #if AP_SCRIPTING_ENABLED
