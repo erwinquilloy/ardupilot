@@ -1419,6 +1419,13 @@ const AP_Param::GroupInfo ParametersG2::var_info[] = {
     // @User: Advanced
     AP_GROUPINFO("ARMING_MODE_SW", 44, ParametersG2, arming_mode_sw, ARMING_MODE_SWITCH_DISABLED),
 
+    // @Param: SAT_FINISHTHRESH
+    // @DisplayName: Servo autotrim finished threshold
+    // @Description: ONCE-mode servo autotrim declares a control surface trimmed when the absolute cumulative trim adjustment in the last 10 s is below this value, expressed in PWM microseconds. Lower = stricter (autotrim takes longer to settle); higher = more lenient.
+    // @Range: 0 255
+    // @User: Advanced
+    AP_GROUPINFO("SAT_FINISHTHRESH", 43, ParametersG2, servos_auto_trim_finished_threshold, 20),
+
     // @Param: TKOFF_IDL_SRATE
     // @DisplayName: Takeoff idle throttle slew rate
     // @Description: Slew rate for the pre-launch takeoff idle throttle. When zero the throttle reaches TKOFF_THR_IDLE instantly the moment the throttle stick is raised.
