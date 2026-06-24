@@ -59,13 +59,11 @@ void ModeRTL::update()
     plane.calc_nav_pitch();
     plane.calc_throttle();
 
-    // Fork PR #194 (supersedes #190): hold wings level once we're in the GLIDING / GLIDING_NO_RETURN
+    // Fork PR #194 + 2d1ec0e331: hold wings level once we're in the GLIDING / GLIDING_NO_RETURN
     // phases of the emergency-landing state machine, either because FS_ELAND_UPWIND is set (the
     // plane glides straight into wind) or because we've descended below FS_ELAND_LVLALT.
-    const bool in_gliding_phase =
-        plane.rtl.emergency_landing_status == Plane::FSEmergencyLandingStatus::GLIDING ||
-        plane.rtl.emergency_landing_status == Plane::FSEmergencyLandingStatus::GLIDING_NO_RETURN;
-    if (in_gliding_phase) {
+    // Use >= GLIDING comparison so future intermediate states inherit the level-out behaviour.
+    if (plane.rtl.emergency_landing_status >= Plane::FSEmergencyLandingStatus::GLIDING) {
         float altitude = plane.relative_altitude;
 #if AP_TERRAIN_AVAILABLE
         if (!plane.terrain_disabled()) {
@@ -254,16 +252,18 @@ void ModeRTL::navigate()
                 plane.disarm_if_autoland_complete();
                 break;
         }
-    } else if (plane.rtl.emergency_landing_status != Plane::FSEmergencyLandingStatus::GLIDING_NO_RETURN) {
-        // FS cleared (or param disabled) before the no-return altitude -- abort the eland.
+    } else if (plane.rtl.emergency_landing_status != Plane::FSEmergencyLandingStatus::INACTIVE &&
+               plane.rtl.emergency_landing_status != Plane::FSEmergencyLandingStatus::GLIDING_NO_RETURN) {
+        // FS cleared (or param disabled) before the no-return altitude -- abort the eland and
+        // restore the normal RTL loiter radius (fork 2d1ec0e331) so the plane returns to a
+        // standard RTL circle instead of staying on the smaller eland radius.
+        const int16_t radius = plane.g.rtl_radius != 0 ? plane.g.rtl_radius.get() : plane.aparm.loiter_radius.get();
+        plane.loiter.radius = abs(radius);
+        plane.loiter.direction = radius < 0 ? -1 : 1;
         plane.rtl.emergency_landing_status = Plane::FSEmergencyLandingStatus::INACTIVE;
         plane.rtl.emergency_landing_tstamp_ms = 0;
     }
-
-    if (plane.auto_state.reached_emergency_landing_no_return_altitude && !plane.is_flying()) {
-        // post-flare detection -- auto-disarm using the same hook autoland uses
-        plane.disarm_if_autoland_complete();
-    }
+    // (auto-disarm on touchdown is now driven from inside the GLIDING_NO_RETURN case)
 
     uint16_t radius = abs(plane.g.rtl_radius);
     if (radius > 0) {
@@ -273,6 +273,20 @@ void ModeRTL::navigate()
     // OSD loiter-radius element wants to know when RTL has actually settled into its loiter
     if (plane.reached_loiter_target()) {
         plane.rtl.loitering = true;
+    }
+
+    // Fork 2d1ec0e331: during RC failsafe, override loiter radius to FS_ELAND_LOTRAD once we're
+    // past the SINKING_TO_GLIDE_ALTITUDE state (i.e. actively descending/gliding/aligned). A
+    // smaller radius descends faster but may overshoot in strong wind -- the param lets the
+    // user pick the trade-off. FS_ELAND_LOTRAD = 0 falls back to RTL_RADIUS / WP_LOITER_RAD.
+    if (plane.failsafe.rc_failsafe) {
+        int16_t override_radius = plane.g.rtl_radius != 0 ? plane.g.rtl_radius.get() : plane.aparm.loiter_radius.get();
+        if (plane.rtl.emergency_landing_status >= Plane::FSEmergencyLandingStatus::SINKING_TO_GLIDE_ALTITUDE &&
+            plane.g.fs_emergency_landing_loiter_radius != 0) {
+            override_radius = plane.g.fs_emergency_landing_loiter_radius;
+        }
+        radius = abs(override_radius);
+        plane.loiter.direction = override_radius < 0 ? -1 : 1;
     }
 
     plane.update_loiter(radius);
