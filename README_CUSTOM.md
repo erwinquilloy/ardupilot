@@ -103,6 +103,38 @@ during the tune.
 - **Note:** AP_Tuning scales multiplicatively, so seed `PTCH_TRIM_DEG`
   non-zero. To search the negative side, seed negative.
 
+### Three switchable tuning sets — `TUNE_PARAM` / `PARAM2` / `PARAM3`
+
+Two extra tuning-set slots and a new RC aux function to switch
+between them in flight, so you can run three different tuning
+workflows from a single 3-position switch without landing to
+change `TUNE_PARAM`.
+
+- `TUNE_PARAM` (existing) — active when the selector aux switch is **low**
+- `TUNE_PARAM2` (new) — active in the **middle** position
+- `TUNE_PARAM3` (new) — active in the **high** position
+- Assign `RCx_OPTION = 250` (`TUNE_PARAM_SELECT`) to a 3-position switch
+- All three default to `0` (disabled); set any/all to a non-zero
+  tuning ID to enable
+
+When the switch moves, the new set re-centres the knob and the GCS
+announces the active parameter — no reboot needed.
+
+### Faster tuning selector timing
+
+The tuning *selector* channel (`TUNE_SELECTOR`) used to need full
+seconds of hold time per action. Now:
+
+| Action            | Old        | New        |
+|-------------------|-----------:|-----------:|
+| Save tune         | > 5000 ms  | > 3000 ms  |
+| Debounce window   | < 200 ms   | < 50 ms    |
+| Re-centre         | 200–2000   | 50–500     |
+| Next parameter    | 2000–5000  | 500–3000   |
+
+Interactions feel responsive in fractions of a second instead of
+multi-second holds.
+
 ### ATT log uses trim-corrected pitch target
 The logged `ATT.DesPitch` channel now has `PTCH_TRIM_DEG` subtracted
 out, so log replay matches the value the controller actually targets
