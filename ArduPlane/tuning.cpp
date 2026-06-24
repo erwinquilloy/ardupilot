@@ -99,6 +99,7 @@ const AP_Tuning_Plane::tuning_name AP_Tuning_Plane::tuning_names[] = {
     { TUNING_Q_FWD_THR,    "QModeFwdThr" },
     { TUNING_TECS_THR_FF_DAMP, "TTHR_FF_DAMP" },
     { TUNING_TECS_THR_FF_FILT, "TTHR_FF_FILT" },
+    { TUNING_PITCH_TRIM,   "PitchTrim" },
     { TUNING_NONE, nullptr }
 };
 
@@ -230,6 +231,9 @@ AP_Float *AP_Tuning_Plane::get_param_pointer(uint8_t parm)
 
     case TUNING_TECS_THR_FF_FILT:
         return &plane.TECS_controller.thr_ff_filter();
+
+    case TUNING_PITCH_TRIM:
+        return &plane.g.pitch_trim;
     }
     return nullptr;
 }
