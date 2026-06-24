@@ -10,10 +10,9 @@ bool ModeRTL::_enter()
     // RTL_CLIMB_FIRST_ONLY_IN_FS option can keep applying the climb-first
     // logic for the duration of this RTL even if the link recovers
     plane.rtl.triggered_by_rc_failsafe = plane.failsafe.rc_failsafe;
-    // fork PR #150: reset the emergency-landing state on each fresh RTL entry
-    plane.auto_state.reached_home_in_fs_ms = 0;
-    plane.auto_state.emergency_landing = false;
-    plane.auto_state.reached_emergency_landing_no_return_altitude = false;
+    // fork PR #194: reset the emergency-landing state machine on each fresh RTL entry
+    plane.rtl.emergency_landing_status = Plane::FSEmergencyLandingStatus::INACTIVE;
+    plane.rtl.emergency_landing_tstamp_ms = 0;
 #if HAL_QUADPLANE_ENABLED
     plane.vtol_approach_s.approach_stage = Plane::VTOLApproach::Stage::RTL;
 
@@ -60,18 +59,22 @@ void ModeRTL::update()
     plane.calc_nav_pitch();
     plane.calc_throttle();
 
-    // Fork PR #190: once we've committed to emergency landing AND descended below
-    // FS_ELAND_LVLALT, force nav_roll to 0 so the plane levels its wings before touchdown.
-    // FS_ELAND_LVLALT < 0 disables the level-out (spiral all the way down). Terrain-aware
-    // when AP_Terrain is available; otherwise falls back to relative_altitude.
-    if (plane.auto_state.emergency_landing && plane.g.fs_emergency_landing_leveling_altitude > -1) {
+    // Fork PR #194 (supersedes #190): hold wings level once we're in the GLIDING / GLIDING_NO_RETURN
+    // phases of the emergency-landing state machine, either because FS_ELAND_UPWIND is set (the
+    // plane glides straight into wind) or because we've descended below FS_ELAND_LVLALT.
+    const bool in_gliding_phase =
+        plane.rtl.emergency_landing_status == Plane::FSEmergencyLandingStatus::GLIDING ||
+        plane.rtl.emergency_landing_status == Plane::FSEmergencyLandingStatus::GLIDING_NO_RETURN;
+    if (in_gliding_phase) {
         float altitude = plane.relative_altitude;
 #if AP_TERRAIN_AVAILABLE
         if (!plane.terrain_disabled()) {
             plane.terrain.height_above_terrain(altitude, true);
         }
 #endif
-        if (altitude < plane.g.fs_emergency_landing_leveling_altitude.get()) {
+        const bool below_lvlalt = plane.g.fs_emergency_landing_leveling_altitude > -1 &&
+                                  altitude < plane.g.fs_emergency_landing_leveling_altitude.get();
+        if (plane.g.fs_emergency_landing_land_upwind || below_lvlalt) {
             plane.nav_roll_cd = 0;
             return;
         }
@@ -139,48 +142,122 @@ void ModeRTL::navigate()
     }
 #endif
 
-    // Fork PR #150 + #182: emergency-land if RC failsafe persists after reaching the home
-    // loiter target for FS_ELAND_DELAY seconds. FS_ELAND_DELAY == -1 disables. Skips when an
-    // explicit landing sequence (DO_LAND_START) is configured -- the mission's autoland
-    // takes priority in that case.
+    // Fork PR #194: emergency-landing state machine, replacing the boolean trigger from #150.
+    // Flow: INACTIVE -> DELAY (timer starts at home) -> SINKING_TO_GLIDE_ALTITUDE (sink to
+    //   FS_ELAND_GLDALT + 2 m) -> ALIGNMENT_INTO_WIND (heading into wind, or skipped if
+    //   FS_ELAND_UPWIND=0) -> GLIDING (TECS gliding flag) -> GLIDING_NO_RETURN (below 10 m AGL).
+    // Skips when an explicit landing sequence (DO_LAND_START) is configured.
     if (plane.failsafe.rc_failsafe &&
         !(plane.mission.contains_item(MAV_CMD_DO_LAND_START) &&
           (plane.g.rtl_autoland == RtlAutoland::RTL_THEN_DO_LAND_START ||
            plane.g.rtl_autoland == RtlAutoland::RTL_IMMEDIATE_DO_LAND_START)) &&
-        plane.g.fs_emergency_landing_delay > -1 &&
-        plane.reached_loiter_target()) {
-        if (plane.auto_state.reached_home_in_fs_ms) {
-            const uint32_t delay_ms = uint32_t(MAX(0, plane.g.fs_emergency_landing_delay.get())) * 1000;
-            if (now - plane.auto_state.reached_home_in_fs_ms > delay_ms) {
-                // delay elapsed -- request TECS gliding (throttle 0, hold AIRSPEED_MIN)
-                plane.TECS_controller.set_gliding_requested_flag(true);
-                if (!plane.auto_state.emergency_landing) {
-                    plane.auto_state.emergency_landing = true;
-                    GCS_SEND_TEXT(MAV_SEVERITY_WARNING, "Emergency landing started");
-                }
-            }
-        } else {
-            plane.auto_state.reached_home_in_fs_ms = now;
+        plane.g.fs_emergency_landing_delay > -1) {
+
+        // glide target altitude clamped above FS_ELAND_LVLALT so the level-out never starts mid-sink
+        float emergency_landing_gliding_altitude_m = plane.g.fs_emergency_landing_gliding_altitude;
+        if (plane.g.fs_emergency_landing_leveling_altitude > -1 &&
+            plane.g.fs_emergency_landing_leveling_altitude > emergency_landing_gliding_altitude_m) {
+            emergency_landing_gliding_altitude_m = plane.g.fs_emergency_landing_leveling_altitude;
         }
 
-        // Fork PR #190: use terrain-aware altitude for the 10 m no-return check so
-        // hilly terrain doesn't fool a commitment based on home-relative altitude alone.
-        float no_return_alt = plane.relative_altitude;
+        switch (plane.rtl.emergency_landing_status) {
+            case Plane::FSEmergencyLandingStatus::INACTIVE:
+                // ADAPTATION: fork uses (reached_loiter_target && rtl.reached_home_altitude),
+                //  but rtl.reached_home_altitude is tied to RTL_MANUAL_ALT_CONTROL which we
+                //  haven't ported. reached_loiter_target() alone is close enough -- the plane
+                //  is at the home loiter point when this fires.
+                if (plane.reached_loiter_target()) {
+                    plane.rtl.emergency_landing_tstamp_ms = now;
+                    plane.rtl.emergency_landing_status = Plane::FSEmergencyLandingStatus::DELAY;
+                } else {
+                    break;
+                }
+                FALLTHROUGH;
+
+            case Plane::FSEmergencyLandingStatus::DELAY:
+                if (now - plane.rtl.emergency_landing_tstamp_ms > uint32_t(MAX(0, plane.g.fs_emergency_landing_delay.get())) * 1000) {
+                    // start the controlled sink to gliding altitude
+                    plane.next_WP_loc.set_alt_cm(emergency_landing_gliding_altitude_m * 100, Location::AltFrame::ABOVE_HOME);
+                    plane.setup_terrain_target_alt(plane.next_WP_loc);
+                    plane.set_target_altitude_location(plane.next_WP_loc);
+                    plane.rtl.emergency_landing_status = Plane::FSEmergencyLandingStatus::SINKING_TO_GLIDE_ALTITUDE;
+                    GCS_SEND_TEXT(MAV_SEVERITY_WARNING, "Emergency landing started");
+                } else {
+                    break;
+                }
+                FALLTHROUGH;
+
+            case Plane::FSEmergencyLandingStatus::SINKING_TO_GLIDE_ALTITUDE: {
+                float altitude = plane.relative_altitude;
 #if AP_TERRAIN_AVAILABLE
-        if (!plane.terrain_disabled()) {
-            plane.terrain.height_above_terrain(no_return_alt, true);
-        }
+                if (!plane.terrain_disabled()) {
+                    plane.terrain.height_above_terrain(altitude, true);
+                }
 #endif
-        if (plane.auto_state.emergency_landing && no_return_alt < 10) {
-            // committed below the no-return altitude -- don't recover even if FS clears
-            plane.auto_state.reached_emergency_landing_no_return_altitude = true;
+                if (altitude < emergency_landing_gliding_altitude_m + 2.0f) {
+                    plane.rtl.emergency_landing_tstamp_ms = now;
+                    plane.rtl.emergency_landing_status = Plane::FSEmergencyLandingStatus::ALIGNMENT_INTO_WIND;
+                } else {
+                    break;
+                }
+                FALLTHROUGH;
+            }
+
+            case Plane::FSEmergencyLandingStatus::ALIGNMENT_INTO_WIND:
+                if (plane.g.fs_emergency_landing_land_upwind) {
+                    float yaw_rad;
+                    Vector3f wind_v;
+                    {
+                        AP_AHRS &ahrs = AP::ahrs();
+                        WITH_SEMAPHORE(ahrs.get_semaphore());
+                        wind_v = ahrs.wind_estimate();
+                        yaw_rad = ahrs.get_yaw();
+                    }
+                    const float wind_speed_mps = wind_v.length();
+                    float wind_angle = 0;
+                    if (wind_speed_mps > 1.0f) {
+                        wind_angle = degrees(wrap_2PI(atan2f(wind_v.y, wind_v.x) - yaw_rad));
+                    }
+                    // target = 180 deg + small bias on loiter direction so the heading converges
+                    // from the side the plane is already circling toward
+                    const float wind_target_angle = 180 + plane.loiter.direction * 2;
+
+                    if (now - plane.rtl.emergency_landing_tstamp_ms > 120000 ||
+                        wind_speed_mps <= 1.0f ||
+                        (wind_angle > wind_target_angle - 2 && wind_angle < wind_target_angle + 2)) {
+                        plane.rtl.emergency_landing_status = Plane::FSEmergencyLandingStatus::GLIDING;
+                    } else {
+                        break;
+                    }
+                } else {
+                    plane.rtl.emergency_landing_status = Plane::FSEmergencyLandingStatus::GLIDING;
+                }
+                FALLTHROUGH;
+
+            case Plane::FSEmergencyLandingStatus::GLIDING: {
+                plane.TECS_controller.set_gliding_requested_flag(true);
+                float altitude = plane.relative_altitude;
+#if AP_TERRAIN_AVAILABLE
+                if (!plane.terrain_disabled()) {
+                    plane.terrain.height_above_terrain(altitude, true);
+                }
+#endif
+                if (altitude < 10) {
+                    // committed below the no-return altitude
+                    plane.rtl.emergency_landing_status = Plane::FSEmergencyLandingStatus::GLIDING_NO_RETURN;
+                }
+                FALLTHROUGH;
+            }
+
+            case Plane::FSEmergencyLandingStatus::GLIDING_NO_RETURN:
+                plane.TECS_controller.set_gliding_requested_flag(true);
+                plane.disarm_if_autoland_complete();
+                break;
         }
-    } else if (!plane.auto_state.reached_emergency_landing_no_return_altitude) {
+    } else if (plane.rtl.emergency_landing_status != Plane::FSEmergencyLandingStatus::GLIDING_NO_RETURN) {
         // FS cleared (or param disabled) before the no-return altitude -- abort the eland.
-        // Don't blanket-clear gliding here; bit-23 ALLOW_GLIDING_IN_AUTO_THR_MODES manages
-        // the flag independently in update_flight_mode().
-        plane.auto_state.emergency_landing = false;
-        plane.auto_state.reached_home_in_fs_ms = 0;
+        plane.rtl.emergency_landing_status = Plane::FSEmergencyLandingStatus::INACTIVE;
+        plane.rtl.emergency_landing_tstamp_ms = 0;
     }
 
     if (plane.auto_state.reached_emergency_landing_no_return_altitude && !plane.is_flying()) {
