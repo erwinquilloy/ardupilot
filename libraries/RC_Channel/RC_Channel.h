@@ -398,6 +398,8 @@ public:
         TRANSMITTER_TUNING2 = 220, // use another transmitter knob or slider for in-flight tuning
 #endif  // AP_RC_TRANSMITTER_TUNING_ENABLED
 
+        TUNE_PARAM_SELECT  = 250, // 3-position switch selects TUNE_PARAM / PARAM2 / PARAM3 (plane only)
+
         // inputs 248-249 are reserved for the Skybrush fork at
         // https://github.com/skybrush-io/ardupilot
 
