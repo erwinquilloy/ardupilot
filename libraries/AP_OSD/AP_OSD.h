@@ -322,7 +322,7 @@ private:
 #endif
     //helper functions
     void draw_speed(uint8_t x, uint8_t y, float angle_rad, float magnitude);
-    void draw_distance(uint8_t x, uint8_t y, float distance);
+    void draw_distance(uint8_t x, uint8_t y, float distance, bool can_only_be_positive);
     char get_arrow_font_index (int32_t angle_cd);
 #if HAL_WITH_ESC_TELEM
     void draw_esc_temp(uint8_t x, uint8_t y);
