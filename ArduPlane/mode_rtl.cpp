@@ -206,7 +206,6 @@ void ModeRTL::navigate()
                     float yaw_rad;
                     Vector3f wind_v;
                     {
-                        AP_AHRS &ahrs = AP::ahrs();
                         WITH_SEMAPHORE(ahrs.get_semaphore());
                         wind_v = ahrs.wind_estimate();
                         yaw_rad = ahrs.get_yaw();
