@@ -38,6 +38,7 @@
 #include <AP_RSSI/AP_RSSI.h>
 #include <AP_Vehicle/AP_Vehicle.h>
 #include <GCS_MAVLink/GCS.h>
+#include <AP_RCProtocol/AP_RCProtocol_config.h>
 #if AP_OSD_EXTENDED_LNK_STATS && AP_RCPROTOCOL_CRSF_ENABLED
 #include <AP_RCProtocol/AP_RCProtocol_CRSF.h>
 #endif
