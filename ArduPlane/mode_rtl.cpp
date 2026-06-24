@@ -122,18 +122,20 @@ void ModeRTL::navigate()
     }
 #endif
 
-    // Fork PR #150: emergency-land if we've been in RC failsafe loitering above home for >2 min.
-    // Skips the trigger when an explicit landing sequence (DO_LAND_START) is configured -- the
-    // mission's autoland takes priority in that case.
+    // Fork PR #150 + #182: emergency-land if RC failsafe persists after reaching the home
+    // loiter target for FS_ELAND_DELAY seconds. FS_ELAND_DELAY == -1 disables. Skips when an
+    // explicit landing sequence (DO_LAND_START) is configured -- the mission's autoland
+    // takes priority in that case.
     if (plane.failsafe.rc_failsafe &&
         !(plane.mission.contains_item(MAV_CMD_DO_LAND_START) &&
           (plane.g.rtl_autoland == RtlAutoland::RTL_THEN_DO_LAND_START ||
            plane.g.rtl_autoland == RtlAutoland::RTL_IMMEDIATE_DO_LAND_START)) &&
-        plane.flight_option_enabled(FlightOptions::RTL_FAILSAFE_LAND_AFTER_2MIN) &&
+        plane.g.fs_emergency_landing_delay > -1 &&
         plane.reached_loiter_target()) {
         if (plane.auto_state.reached_home_in_fs_ms) {
-            if (now - plane.auto_state.reached_home_in_fs_ms > 120000) {
-                // 2-minute hold elapsed -- request TECS gliding (throttle 0, hold AIRSPEED_MIN)
+            const uint32_t delay_ms = uint32_t(MAX(0, plane.g.fs_emergency_landing_delay.get())) * 1000;
+            if (now - plane.auto_state.reached_home_in_fs_ms > delay_ms) {
+                // delay elapsed -- request TECS gliding (throttle 0, hold AIRSPEED_MIN)
                 plane.TECS_controller.set_gliding_requested_flag(true);
                 if (!plane.auto_state.emergency_landing) {
                     plane.auto_state.emergency_landing = true;
@@ -149,8 +151,9 @@ void ModeRTL::navigate()
             plane.auto_state.reached_emergency_landing_no_return_altitude = true;
         }
     } else if (!plane.auto_state.reached_emergency_landing_no_return_altitude) {
-        // FS cleared (or option disabled) before the no-return altitude -- abort the eland
-        plane.TECS_controller.set_gliding_requested_flag(false);
+        // FS cleared (or param disabled) before the no-return altitude -- abort the eland.
+        // Don't blanket-clear gliding here; bit-23 ALLOW_GLIDING_IN_AUTO_THR_MODES manages
+        // the flag independently in update_flight_mode().
         plane.auto_state.emergency_landing = false;
         plane.auto_state.reached_home_in_fs_ms = 0;
     }
