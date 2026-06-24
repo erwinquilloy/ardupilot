@@ -37,24 +37,38 @@ void Plane::throttle_slew_limit(SRV_Channel::Aux_servo_function_t func)
     }
 
     uint8_t slewrate = aparm.throttle_slewrate;
-    if (control_mode == &mode_auto) {
-        if (auto_state.takeoff_complete == false && g.takeoff_throttle_slewrate != 0) {
-            slewrate = g.takeoff_throttle_slewrate;
-        } else if (landing.get_throttle_slewrate() != 0 && flight_stage == AP_FixedWing::FlightStage::LAND) {
-            slewrate = landing.get_throttle_slewrate();
+
+    const bool in_pre_takeoff_suppressed =
+        suppress_throttle() &&
+        ((control_mode == &mode_auto &&
+          flight_stage == AP_FixedWing::FlightStage::NORMAL &&
+          mission.get_current_nav_cmd().id == MAV_CMD_NAV_TAKEOFF) ||
+         control_mode == &mode_takeoff);
+
+    if (in_pre_takeoff_suppressed) {
+        // Pre-launch idle throttle: snap to zero instantly when the stick
+        // is at zero, otherwise climb at TKOFF_IDL_SRATE towards TKOFF_THR_IDLE.
+        slewrate = is_zero(get_throttle_input(false)) ? 0 : MAX<int8_t>(0, g2.takeoff_idle_thr_slewrate);
+    } else {
+        if (control_mode == &mode_auto) {
+            if (auto_state.takeoff_complete == false && g.takeoff_throttle_slewrate != 0) {
+                slewrate = g.takeoff_throttle_slewrate;
+            } else if (landing.get_throttle_slewrate() != 0 && flight_stage == AP_FixedWing::FlightStage::LAND) {
+                slewrate = landing.get_throttle_slewrate();
+            }
         }
-    }
-    if (g.takeoff_throttle_slewrate != 0 &&
-        (flight_stage == AP_FixedWing::FlightStage::TAKEOFF ||
-         flight_stage == AP_FixedWing::FlightStage::VTOL)) {
-        // for VTOL we use takeoff slewrate, which helps with transition
-        slewrate = g.takeoff_throttle_slewrate;
-    }
+        if (g.takeoff_throttle_slewrate != 0 &&
+            (flight_stage == AP_FixedWing::FlightStage::TAKEOFF ||
+             flight_stage == AP_FixedWing::FlightStage::VTOL)) {
+            // for VTOL we use takeoff slewrate, which helps with transition
+            slewrate = g.takeoff_throttle_slewrate;
+        }
 #if HAL_QUADPLANE_ENABLED
-    if (g.takeoff_throttle_slewrate != 0 && quadplane.in_frwd_transition()) {
-        slewrate = g.takeoff_throttle_slewrate;
-    }
+        if (g.takeoff_throttle_slewrate != 0 && quadplane.in_frwd_transition()) {
+            slewrate = g.takeoff_throttle_slewrate;
+        }
 #endif
+    }
     SRV_Channels::set_slew_rate(func, slewrate, 100, G_Dt);
 }
 
@@ -623,6 +637,10 @@ void Plane::set_throttle(void)
     }
 
     if (suppress_throttle()) {
+        const bool in_pre_takeoff = ((control_mode == &mode_auto &&
+                                      flight_stage == AP_FixedWing::FlightStage::NORMAL &&
+                                      mission.get_current_nav_cmd().id == MAV_CMD_NAV_TAKEOFF) ||
+                                     control_mode == &mode_takeoff);
         if (g.throttle_suppress_manual) {
             // manual pass through of throttle while throttle is suppressed
             SRV_Channels::set_output_scaled(SRV_Channel::k_throttle, get_throttle_input(true));
@@ -630,6 +648,11 @@ void Plane::set_throttle(void)
         } else if (landing.is_flaring() && landing.use_thr_min_during_flare() ) {
             // throttle is suppressed (above) to zero in final flare in auto mode, but we allow instead thr_min if user prefers, eg turbines:
             SRV_Channels::set_output_scaled(SRV_Channel::k_throttle, aparm.throttle_min.get());
+
+        } else if (in_pre_takeoff && !is_zero(g2.takeoff_idle_thr) && !is_zero(get_throttle_input(false))) {
+            // Pre-launch idle throttle: hold TKOFF_THR_IDLE while the stick is raised,
+            // climbing to it at TKOFF_IDL_SRATE (slew rate applied via throttle_slew_limit()).
+            SRV_Channels::set_output_scaled(SRV_Channel::k_throttle, g2.takeoff_idle_thr.get());
 
         } else {
             // default

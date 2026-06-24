@@ -540,6 +540,11 @@ public:
     AP_Int8 takeoff_throttle_accel_count;
     AP_Int8 takeoff_timeout;
 
+    // Pre-launch idle throttle: when armed in an auto-takeoff state, hold
+    // a small throttle the moment the pilot raises the stick.
+    AP_Float takeoff_idle_thr;
+    AP_Int8  takeoff_idle_thr_slewrate;
+
 #if AP_LANDINGGEAR_ENABLED
     AP_LandingGear landing_gear;
 #endif

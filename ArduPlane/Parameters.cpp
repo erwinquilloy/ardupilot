@@ -1419,6 +1419,24 @@ const AP_Param::GroupInfo ParametersG2::var_info[] = {
     // @User: Advanced
     AP_GROUPINFO("ARMING_MODE_SW", 44, ParametersG2, arming_mode_sw, ARMING_MODE_SWITCH_DISABLED),
 
+    // @Param: TKOFF_IDL_SRATE
+    // @DisplayName: Takeoff idle throttle slew rate
+    // @Description: Slew rate for the pre-launch takeoff idle throttle. When zero the throttle reaches TKOFF_THR_IDLE instantly the moment the throttle stick is raised.
+    // @Units: %/s
+    // @Range: -1 127
+    // @Increment: 1
+    // @User: Standard
+    AP_GROUPINFO("TKOFF_IDL_SRATE", 46, ParametersG2, takeoff_idle_thr_slewrate, 0),
+
+    // @Param: TKOFF_THR_IDLE
+    // @DisplayName: Idle throttle for takeoff
+    // @Description: Throttle to hold before launch when the throttle stick is raised, while in an auto-takeoff state of AUTO (NAV_TAKEOFF) or TAKEOFF mode. Useful for keeping an ICE engine running at idle before launch or for spinning an electric motor at a low RPM ready to launch. When 0 (default) this feature is disabled and the throttle stays at 0 until takeoff is triggered.
+    // @Units: %
+    // @Range: 0 100
+    // @Increment: 1
+    // @User: Advanced
+    AP_GROUPINFO("TKOFF_THR_IDLE", 47, ParametersG2, takeoff_idle_thr, 0),
+
     AP_GROUPEND
 };
 
