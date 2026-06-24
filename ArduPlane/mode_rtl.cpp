@@ -60,6 +60,23 @@ void ModeRTL::update()
     plane.calc_nav_pitch();
     plane.calc_throttle();
 
+    // Fork PR #190: once we've committed to emergency landing AND descended below
+    // FS_ELAND_LVLALT, force nav_roll to 0 so the plane levels its wings before touchdown.
+    // FS_ELAND_LVLALT < 0 disables the level-out (spiral all the way down). Terrain-aware
+    // when AP_Terrain is available; otherwise falls back to relative_altitude.
+    if (plane.auto_state.emergency_landing && plane.g.fs_emergency_landing_leveling_altitude > -1) {
+        float altitude = plane.relative_altitude;
+#if AP_TERRAIN_AVAILABLE
+        if (!plane.terrain_disabled()) {
+            plane.terrain.height_above_terrain(altitude, true);
+        }
+#endif
+        if (altitude < plane.g.fs_emergency_landing_leveling_altitude.get()) {
+            plane.nav_roll_cd = 0;
+            return;
+        }
+    }
+
     // RTL_CLIMB_FIRST_ONLY_IN_FS: if set, skip the initial-climb / bank-limit
     // behaviour unless this RTL was triggered by RC failsafe or we are
     // currently in RC failsafe. Lets manually-commanded RTLs turn straight
@@ -146,7 +163,15 @@ void ModeRTL::navigate()
             plane.auto_state.reached_home_in_fs_ms = now;
         }
 
-        if (plane.auto_state.emergency_landing && plane.relative_altitude < 10) {
+        // Fork PR #190: use terrain-aware altitude for the 10 m no-return check so
+        // hilly terrain doesn't fool a commitment based on home-relative altitude alone.
+        float no_return_alt = plane.relative_altitude;
+#if AP_TERRAIN_AVAILABLE
+        if (!plane.terrain_disabled()) {
+            plane.terrain.height_above_terrain(no_return_alt, true);
+        }
+#endif
+        if (plane.auto_state.emergency_landing && no_return_alt < 10) {
             // committed below the no-return altitude -- don't recover even if FS clears
             plane.auto_state.reached_emergency_landing_no_return_altitude = true;
         }
