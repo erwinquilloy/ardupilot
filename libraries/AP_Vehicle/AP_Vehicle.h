@@ -189,6 +189,12 @@ public:
     // returns true and fills radius (m) when actively loitering (Plane override). Fork loiter-radius OSD element.
     virtual bool get_loiter_radius_target(uint16_t &radius) const { return false; }
 
+    // returns true when the active flight mode is an auto-throttle mode (Plane override; false elsewhere). Fork #38 OSD demanded-airspeed element.
+    virtual bool control_mode_does_auto_throttle() const { return false; }
+
+    // returns the active demanded airspeed in m/s (Plane override; 0 elsewhere). Fork #38 OSD demanded-airspeed element.
+    virtual float demanded_airspeed() const { return 0; }
+
 #if AP_SCRIPTING_ENABLED || AP_EXTERNAL_CONTROL_ENABLED
     // Method to takeoff for use by external control
     virtual bool start_takeoff(const float alt) { return false; }

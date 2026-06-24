@@ -1389,6 +1389,8 @@ public:
     bool is_landing() const override;
     bool is_taking_off() const override;
     float auto_flap_percent() const override { return SRV_Channels::get_output_scaled(SRV_Channel::k_flap_auto); }
+    bool control_mode_does_auto_throttle() const override { return control_mode->does_auto_throttle(); }
+    float demanded_airspeed() const override { return target_airspeed_cm * 0.01f; }
 #if AP_TUNING_ENABLED
     AP_Tuning *get_tuning_object() override { return &tuning; }
 #endif
