@@ -168,15 +168,20 @@ void AP_Tuning::check_input(uint8_t flightmode)
         range.set(1.1f);
     }
 
+    // cope with user changing parmset while tuning. Reset current_parm so
+    // next_parameter() picks up the new parmset; otherwise current_parm stays
+    // stuck on a value from the previous set (e.g. switching from a tuning
+    // set like 101 back to a single-param like 59 used to leave current_parm
+    // at the old set's first param, and set_value(old_parm, ...) wouldn't
+    // reach the param the user is now trying to tune).
+    if (current_set != parmset) {
+        current_parm = 0;
+    }
+    current_set = parmset;
+
     if (current_parm == 0) {
         next_parameter();
     }
-
-    // cope with user changing parmset while tuning
-    if (current_set != parmset) {
-        re_center();
-    }
-    current_set = parmset;
     
     check_selector_switch();
 
