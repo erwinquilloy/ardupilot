@@ -548,6 +548,7 @@ public:
         USE_CRSF_LQ_AS_RSSI     = (1U << 11), // returns CRSF link quality as RSSI value, instead of RSSI
         CRSF_FM_DISARM_STAR     = (1U << 12), // when disarmed, add a star at the end of the flight mode in CRSF telemetry
         ELRS_420KBAUD           = (1U << 13), // use 420kbaud for ELRS protocol
+        AUTO_SWITCH_TO_FBWA_WITH_STICKS = (1U << 20), // plane only: switch from AUTO to FBWA when pitch or roll stick moves > 10% deflection
     };
 
     bool option_is_enabled(Option option) const {

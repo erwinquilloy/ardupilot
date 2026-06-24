@@ -68,6 +68,13 @@ void ModeAuto::_exit()
 
 void ModeAuto::update()
 {
+    if (plane.g2.rc_channels.auto_switch_to_fbwa_with_sticks() &&
+        (fabsf(plane.channel_pitch->norm_input()) > 0.1f ||
+         fabsf(plane.channel_roll->norm_input()) > 0.1f)) {
+        plane.set_mode(plane.mode_fbwa, ModeReason::RC_COMMAND);
+        return;
+    }
+
     if (plane.mission.state() != AP_Mission::MISSION_RUNNING) {
         // this could happen if AP_Landing::restart_landing_sequence() returns false which would only happen if:
         // restart_landing_sequence() is called when not executing a NAV_LAND or there is no previous nav point
