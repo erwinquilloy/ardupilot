@@ -246,6 +246,29 @@ Below `THR_DZ` % output, the throttle is forced to 0. Keeps the
 motor truly off when TECS commands a low but non-zero value (typical
 under glide / descent). Default 4 %.
 
+## Smarter RC relays
+
+The relay aux functions (`RCx_OPTION = RELAY1..6`) now treat your
+configured `RCx_MIN` / `RCx_MAX` as the **PWM range that activates
+the relay**, instead of the default ArduPilot behaviour where the
+relay only turned on past the 3-position-switch HIGH threshold
+(~1700 µs).
+
+You can now use one RC channel to control both the relay (e.g. VTX
+power pad) and an OSD layout / mode, as long as the relay-active
+PWM band is what you set via `RCx_MIN/MAX`.
+
+`RCx_REVERSED = 1` inverts the in-range test — handy when the
+hardware pad is active-low (Matek video-power pads behave this way).
+Gated by `RC_OPTIONS` bit 7 (`ALLOW_SWITCH_REV`) as before.
+
+**Boot-time relay state now mirrors `RCx_REVERSED`.** Previously
+the relay was left at the HAL default until the first RC frame
+arrived (usually LOW). Now `RCx_REVERSED=0` → relay starts LOW on
+boot, `RCx_REVERSED=1` → starts HIGH. Solves the "VTX powered on
+at boot before the radio is turned on" problem on Matek FCs where
+the video-power pad is active-low.
+
 ## `is_flying` heuristic — fixed thresholds
 
 The internal "is this thing actually airborne" detector
