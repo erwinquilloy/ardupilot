@@ -241,6 +241,7 @@ private:
     AP_OSD_Setting acc_vert{false, 0, 0};          // fork #46: vertical acceleration (g)
     AP_OSD_Setting avg_eff_ground{false, 0, 0};    // fork: flight-long avg efficiency over ground distance (Plane only via AP_Stats)
     AP_OSD_Setting avg_eff_air{false, 0, 0};       // fork: flight-long avg efficiency over air distance (Plane only via AP_Stats)
+    AP_OSD_Setting aspd_dem{false, 0, 0};          // fork #38: demanded airspeed in auto-throttle modes (Plane only)
     AP_OSD_Setting atemp;
     AP_OSD_Setting bat2_vlt;
     AP_OSD_Setting bat2used;
@@ -314,6 +315,7 @@ private:
     void draw_aspeed(uint8_t x, uint8_t y);
     void draw_aspd1(uint8_t x, uint8_t y);
     void draw_aspd2(uint8_t x, uint8_t y);
+    void draw_aspd_dem(uint8_t x, uint8_t y);
     void draw_vspeed(uint8_t x, uint8_t y);
 #if HAL_PLUSCODE_ENABLE
     void draw_pluscode(uint8_t x, uint8_t y);
