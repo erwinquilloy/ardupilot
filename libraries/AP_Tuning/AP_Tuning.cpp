@@ -87,7 +87,7 @@ void AP_Tuning::check_selector_switch(void)
             selector_start_ms = AP_HAL::millis();
         }
         uint32_t hold_time = AP_HAL::millis() - selector_start_ms;
-        if (hold_time > 5000 && changed) {
+        if (hold_time > 3000 && changed) {
             // save tune
             save_parameters();
             re_center();
@@ -100,13 +100,13 @@ void AP_Tuning::check_selector_switch(void)
         // low selector
         if (selector_start_ms != 0) {
             uint32_t hold_time = AP_HAL::millis() - selector_start_ms;
-            if (hold_time < 200) {
+            if (hold_time < 50) {
                 // debounce!
-            } else if (hold_time < 2000) {
+            } else if (hold_time < 500) {
                 // re-center the value
                 re_center();
                 GCS_SEND_TEXT(MAV_SEVERITY_INFO, "Tuning: recentered %s", get_tuning_name(current_parm));
-            } else if (hold_time < 5000) {
+            } else if (hold_time < 3000) {
                 // change parameter
                 next_parameter();
             }
@@ -132,7 +132,7 @@ void AP_Tuning::re_center(void)
  */
 void AP_Tuning::check_input(uint8_t flightmode)
 {
-    if (channel <= 0 || parmset <= 0) {
+    if (channel <= 0 || current_parmset <= 0) {
         // disabled
         return;
     }
@@ -174,10 +174,10 @@ void AP_Tuning::check_input(uint8_t flightmode)
     // set like 101 back to a single-param like 59 used to leave current_parm
     // at the old set's first param, and set_value(old_parm, ...) wouldn't
     // reach the param the user is now trying to tune).
-    if (current_set != parmset) {
+    if (current_set != current_parmset) {
         current_parm = 0;
     }
-    current_set = parmset;
+    current_set = current_parmset;
 
     if (current_parm == 0) {
         next_parameter();
@@ -257,7 +257,7 @@ void AP_Tuning::Log_Write_Parameter_Tuning(float value)
 // @Field: CenterValue: Center value (startpoint of current modifications) of parameter being tuned
     AP::logger().Write("PRTN", "TimeUS,Set,Parm,Value,CenterValue", "QBBff",
                                            AP_HAL::micros64(),
-                                           parmset,
+                                           current_parmset,
                                            current_parm,
                                            (double)value,
                                            (double)center_value);
@@ -269,7 +269,7 @@ void AP_Tuning::Log_Write_Parameter_Tuning(float value)
  */
 void AP_Tuning::save_parameters(void)
 {
-    uint8_t set = (uint8_t)parmset.get();
+    uint8_t set = (uint8_t)current_parmset;
     if (set < set_base) {
         // single parameter tuning
         save_value(set);
@@ -292,7 +292,7 @@ void AP_Tuning::save_parameters(void)
  */
 void AP_Tuning::revert_parameters(void)
 {
-    uint8_t set = (uint8_t)parmset.get();
+    uint8_t set = (uint8_t)current_parmset;
     if (set < set_base) {
         // single parameter tuning
         reload_value(set);
@@ -316,7 +316,7 @@ void AP_Tuning::revert_parameters(void)
  */
 void AP_Tuning::next_parameter(void)
 {
-    uint8_t set = (uint8_t)parmset.get();
+    uint8_t set = (uint8_t)current_parmset;
     if (set < set_base) {
         // nothing to do but re-center
         current_parm = set;
@@ -334,6 +334,30 @@ void AP_Tuning::next_parameter(void)
             re_center();
             GCS_SEND_TEXT(MAV_SEVERITY_INFO, "Tuning: started %s", get_tuning_name(current_parm));
             AP_Notify::events.tune_next = current_parm_index+1;
+            break;
+        }
+    }
+}
+
+/*
+  switch to a different tuning set at runtime (TUNE_PARAM_SELECT aux)
+ */
+void AP_Tuning::set_current_parmset(int16_t value)
+{
+    current_parmset = value;
+    if (current_parmset < set_base) {
+        // single-parameter tune: just re-center
+        current_parm = current_parmset;
+        re_center();
+        return;
+    }
+    for (uint8_t i = 0; tuning_sets[i].num_parms != 0; i++) {
+        if (tuning_sets[i].set + set_base == current_parmset) {
+            current_parm_index = 0;
+            current_parm = tuning_sets[i].parms[current_parm_index];
+            re_center();
+            GCS_SEND_TEXT(MAV_SEVERITY_INFO, "Tuning: started %s", get_tuning_name(current_parm));
+            AP_Notify::events.tune_next = current_parm_index + 1;
             break;
         }
     }

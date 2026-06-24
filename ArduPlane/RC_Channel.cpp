@@ -170,6 +170,9 @@ void RC_Channel_Plane::init_aux_function(const RC_Channel::AUX_FUNC ch_option,
     case AUX_FUNC::TRIM_TO_CURRENT_SERVO_RC:
     case AUX_FUNC::EMERGENCY_LANDING_EN:
     case AUX_FUNC::FW_AUTOTUNE:
+#if AP_TUNING_ENABLED
+    case AUX_FUNC::TUNE_PARAM_SELECT:
+#endif
     case AUX_FUNC::VFWD_THR_OVERRIDE:
     case AUX_FUNC::PRECISION_LOITER:
 #if AP_ICENGINE_ENABLED
@@ -451,9 +454,25 @@ bool RC_Channel_Plane::do_aux_function(const AUX_FUNC ch_option, const AuxSwitch
         } else if (ch_flag == AuxSwitchPos::HIGH) {
            GCS_SEND_TEXT(MAV_SEVERITY_WARNING, "Autotuning not allowed in this mode!");
         } else {
-           plane.autotune_enable(false); 
+           plane.autotune_enable(false);
         }
         break;
+
+#if AP_TUNING_ENABLED
+    case AUX_FUNC::TUNE_PARAM_SELECT:
+        switch (ch_flag) {
+        case AuxSwitchPos::LOW:
+            plane.tuning.set_current_parmset(plane.tuning.get_parmset1());
+            break;
+        case AuxSwitchPos::MIDDLE:
+            plane.tuning.set_current_parmset(plane.tuning.get_parmset2());
+            break;
+        case AuxSwitchPos::HIGH:
+            plane.tuning.set_current_parmset(plane.tuning.get_parmset3());
+            break;
+        }
+        break;
+#endif
 
     case AUX_FUNC::PRECISION_LOITER:
         // handled by lua scripting, just ignore here

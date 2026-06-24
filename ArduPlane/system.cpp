@@ -175,6 +175,10 @@ void Plane::init_ardupilot()
     g2.ice_control.init();
 #endif
 
+#if AP_TUNING_ENABLED
+    tuning.init();
+#endif
+
 }
 
 #if AP_FENCE_ENABLED

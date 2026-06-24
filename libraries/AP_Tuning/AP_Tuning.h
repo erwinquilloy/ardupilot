@@ -45,6 +45,15 @@ public:
     const char *get_tuning_name() { return get_tuning_name(current_parm); }
     AP_Float *get_param_pointer() { return get_param_pointer(current_parm); }
 
+    // ArduCustom v11.2: 3 selectable tuning sets switchable via the
+    // TUNE_PARAM_SELECT aux function. init() seeds current_parmset from
+    // PARAM on boot; set_current_parmset() switches in flight.
+    void init() { set_current_parmset(get_parmset1()); }
+    int16_t get_parmset1() { return parmset.get(); }
+    int16_t get_parmset2() { return parmset2.get(); }
+    int16_t get_parmset3() { return parmset3.get(); }
+    void set_current_parmset(int16_t value);
+
 private:
     AP_Int8 channel;
     AP_Int16 channel_min;
@@ -105,8 +114,15 @@ protected:
     virtual void reload_value(uint8_t parm) = 0;
     virtual void set_value(uint8_t parm, float value) = 0;
 
-    // parmset is in vehicle subclass var table
+    // active tuning set: seeded from parmset by init(), switched at
+    // runtime by set_current_parmset() (TUNE_PARAM_SELECT aux function)
+    int16_t current_parmset = 0;
+
+    // parmset is in vehicle subclass var table; parmset2/3 are also
+    // defined per-vehicle for documentation of valid IDs
     AP_Int16 parmset;
+    AP_Int16 parmset2;
+    AP_Int16 parmset3;
 };
 
 #endif  // AP_TUNING_ENABLED

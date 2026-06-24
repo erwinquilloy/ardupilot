@@ -284,6 +284,8 @@ public:
         LOWEHEISER_THROTTLE= 218,  // allows for throttle on slider
         TRANSMITTER_TUNING = 219, // use a transmitter knob or slider for in-flight tuning
 
+        TUNE_PARAM_SELECT  = 250, // 3-position switch selects TUNE_PARAM / PARAM2 / PARAM3 (plane only)
+
         // inputs 248-249 are reserved for the Skybrush fork at
         // https://github.com/skybrush-io/ardupilot
 
