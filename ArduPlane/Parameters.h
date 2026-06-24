@@ -253,7 +253,7 @@ public:
         k_param_rc_8_old,
         k_param_rc_9_old,
         k_param_rc_10_old,
-        k_param_rc_11_old,
+        k_param_fs_emergency_landing_loiter_radius,  // was k_param_rc_11_old (unused legacy); reclaimed for FS_ELAND_LOTRAD (2d1ec0e331)
 
         k_param_throttle_min,
         k_param_throttle_max,
@@ -418,6 +418,7 @@ public:
     AP_Float fs_emergency_landing_leveling_altitude;  // fork #190: altitude AGL below which we level wings before flare. -1 disables (full spiral to ground).
     AP_Float fs_emergency_landing_gliding_altitude;   // fork #194: altitude AGL at which the controlled descent ends and gliding begins (default 15 m).
     AP_Int8  fs_emergency_landing_land_upwind;        // fork #194: 1 = wait for heading to align with wind before gliding (default 1).
+    AP_Int16 fs_emergency_landing_loiter_radius;      // fork 2d1ec0e331: override RTL_RADIUS during the eland sink/glide. 0 = use RTL_RADIUS as normal.
 
     // Flight modes
     //
