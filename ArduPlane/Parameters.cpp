@@ -476,6 +476,15 @@ const AP_Param::Info Plane::var_info[] = {
     // @User: Standard
     GSCALAR(fs_timeout_long,        "FS_LONG_TIMEOUT", 5),
 
+    // @Param: FS_ELAND_DELAY
+    // @DisplayName: Failsafe emergency landing delay
+    // @Description: Seconds the RC failsafe must persist after the plane has reached the home loiter target before an emergency landing begins. The FS long action must trigger RTL for this to fire. -1 disables (default).
+    // @Units: s
+    // @Range: -1 600
+    // @Increment: 1
+    // @User: Standard
+    GSCALAR(fs_emergency_landing_delay, "FS_ELAND_DELAY", -1),
+
     // @Param: FS_GCS_ENABL
     // @DisplayName: GCS failsafe enable
     // @Description: Enable ground control station telemetry failsafe. Failsafe will trigger after FS_LONG_TIMEOUT seconds of no MAVLink heartbeat messages. There are three possible enabled settings. Setting FS_GCS_ENABL to 1 means that GCS failsafe will be triggered when the aircraft has not received a MAVLink HEARTBEAT message. Note that heartbeat tracking only becomes active after having received the first heartbeat from the MAV_GCS_SYSID primary GCS system. Setting FS_GCS_ENABL to 2 means that GCS failsafe will be triggered on either a loss of HEARTBEAT messages, or a RADIO_STATUS message from a MAVLink enabled telemetry adio indicating that the primary ground station is not receiving status updates from the aircraft, which is indicated by the RADIO_STATUS.remrssi field being zero (this may happen if you have a one way link due to asymmetric noise on the ground station and aircraft radios).Setting FS_GCS_ENABL to 3 means that GCS failsafe will be triggered by Heartbeat(like option one), but only in AUTO mode. WARNING: Enabling this option opens up the possibility of your plane going into failsafe mode and running the motor on the ground it it loses contact with your ground station. If this option is enabled on an electric plane then you should enable ARMING_REQUIRED.
@@ -1092,7 +1101,6 @@ const AP_Param::GroupInfo ParametersG2::var_info[] = {
     // @Bitmask: 14: In AUTO - climb to next waypoint altitude immediately instead of linear climb
     // @Bitmask: 15: Enable autoflap in manual modes and use minimum of target and actual speed for flap setting
     // @Bitmask: 16: Enable full aerodynamic load factor-based roll limits when an airspeed sensor is enabled and AIRSPEED_STALL is set
-    // @Bitmask: 21: Emergency-land if RTL failsafe loiters above home for 2 minutes (fork)
     // @Bitmask: 22: In RTL failsafe only, climb first then turn (fork)
     // @Bitmask: 23: In auto-throttle modes other than TAKEOFF/AUTO, glide (throttle=0, target airspeed AIRSPEED_MIN) when throttle stick is below THR_DZ (fork)
     // @User: Advanced
