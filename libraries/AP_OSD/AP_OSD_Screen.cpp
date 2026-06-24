@@ -1443,6 +1443,22 @@ const AP_Param::GroupInfo AP_OSD_Screen::var_info2[] = {
     AP_SUBGROUPINFO(avg_eff_air, "AVG_EFA", 26, AP_OSD_Screen, AP_OSD_Setting),
 #endif
 
+    // @Param: ASPD_DEM_EN
+    // @DisplayName: ASPD_DEM_EN
+    // @Description: Displays the demanded airspeed in auto throttle modes (Plane only). Flashes when below OSD_W_ASPD_LOW or above OSD_W_ASPD_HIGH.
+    // @Values: 0:Disabled,1:Enabled
+
+    // @Param: ASPD_DEM_X
+    // @DisplayName: ASPD_DEM_X
+    // @Description: Horizontal position on screen
+    // @Range: 0 29
+
+    // @Param: ASPD_DEM_Y
+    // @DisplayName: ASPD_DEM_Y
+    // @Description: Vertical position on screen
+    // @Range: 0 15
+    AP_SUBGROUPINFO(aspd_dem, "ASPD_DEM", 27, AP_OSD_Screen, AP_OSD_Setting),
+
     AP_GROUPEND
 };
 
@@ -2246,6 +2262,18 @@ void AP_OSD_Screen::draw_aspeed(uint8_t x, uint8_t y)
         backend->write(x, y, warning, "%c%4d%c", SYMBOL(SYM_ASPD), (int)u_scale(SPEED, aspd), u_icon(SPEED));
     } else {
         backend->write(x, y, false, "%c ---%c", SYMBOL(SYM_ASPD), u_icon(SPEED));
+    }
+}
+
+void AP_OSD_Screen::draw_aspd_dem(uint8_t x, uint8_t y)
+{
+    if (!AP_Notify::flags.armed) {
+        backend->write(x, y, false, "%c ---%c", SYMBOL(SYM_ASPD), u_icon(SPEED));
+    } else if (AP::vehicle()->control_mode_does_auto_throttle()) {
+        const float aspd = AP::vehicle()->demanded_airspeed();
+        const bool warning = (osd->warn_aspd_low > 0 && aspd < osd->warn_aspd_low) ||
+                             (osd->warn_aspd_high > 0 && aspd > osd->warn_aspd_high);
+        backend->write(x, y, warning, "%c%4d%c", SYMBOL(SYM_ASPD), (int)u_scale(SPEED, aspd), u_icon(SPEED));
     }
 }
 
@@ -3554,6 +3582,7 @@ void AP_OSD_Screen::draw(void)
     DRAW_SETTING(avg_eff_ground);
     DRAW_SETTING(avg_eff_air);
 #endif
+    DRAW_SETTING(aspd_dem);
     DRAW_SETTING(callsign);
     DRAW_SETTING(current2);
 
