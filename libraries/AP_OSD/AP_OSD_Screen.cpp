@@ -1776,11 +1776,12 @@ void AP_OSD_Screen::draw_bat_volt(uint8_t instance, VoltageType type, uint8_t x,
     }
     }    
     if (!show_remaining_pct) {
-        // Do not show battery percentage
+        // Fork #101: shift x+1 when no pct symbol so voltage stays column-aligned with the
+        //            pct-shown case (where the bar/pct glyph occupies column x)
         if (type == VoltageType::RESTING_CELL || type == VoltageType::AVG_CELL) {
-            backend->write(x,y, v < blinkvolt, "%1.2f%c", (double)v, SYMBOL(SYM_VOLT));
+            backend->write(x+1,y, v < blinkvolt, "%1.2f%c", (double)v, SYMBOL(SYM_VOLT));
         } else {
-            backend->write(x,y, v < blinkvolt, "%2.1f%c", (double)v, SYMBOL(SYM_VOLT));
+            backend->write(x+1,y, v < blinkvolt, "%2.1f%c", (double)v, SYMBOL(SYM_VOLT));
         }
         return;
     }
@@ -1817,7 +1818,8 @@ void AP_OSD_Screen::draw_rssi(uint8_t x, uint8_t y)
 {
     AP_RSSI *ap_rssi = AP_RSSI::get_singleton();
     if (ap_rssi) {
-        const uint8_t rssiv = ap_rssi->read_receiver_rssi() * 100;
+        // Fork #196: clamp to 99 + lrintf for proper rounding so "%2d" never widens to 3 chars at 100
+        const uint8_t rssiv = MIN(99, lrintf(ap_rssi->read_receiver_rssi() * 100));
         backend->write(x, y, rssiv < osd->warn_rssi, "%c%2d", SYMBOL(SYM_RSSI), rssiv);
     }
 }
@@ -2085,7 +2087,10 @@ void AP_OSD_Screen::draw_home(uint8_t x, uint8_t y)
         backend->write(x, y, false, "%c%c", SYMBOL(SYM_HOME), arrow);
         draw_distance(x+2, y, distance);
     } else {
-        backend->write(x, y, true, "%c", SYMBOL(SYM_HOME));
+        // Fork 1583852d1d: render a full-width placeholder when no fix, so the element
+        //                 occupies the same columns as the fixed case for easier placement
+        backend->write(x, y, true, "%c-", SYMBOL(SYM_HOME));
+        draw_distance(x+2, y, 0);
     }
 }
 
