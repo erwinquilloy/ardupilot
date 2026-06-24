@@ -3269,11 +3269,34 @@ void AP_OSD_Screen::draw_rngf(uint8_t x, uint8_t y)
         backend->write(x, y, false, "----%c%c", u_icon(ALTITUDE), SYMBOL(SYM_RNGFD));
     } else {
         // Fork c7c3a53af5: attitude-correct the slant range into vertical altitude
-        AP_AHRS &ahrs = AP::ahrs();
-        WITH_SEMAPHORE(ahrs.get_semaphore());
-        const float distance = rangefinder->distance_orient(ROTATION_PITCH_270) * ahrs.get_rotation_body_to_ned().c.z;
-        const char *format = distance < 9.995f ? " %1.2f%c%c" : "%2.2f%c%c";
-        backend->write(x, y, false, format, u_scale(ALTITUDE, distance), u_icon(ALTITUDE), SYMBOL(SYM_RNGFD));
+        // Fork #91: subtract per-rangefinder ground clearance (RNGFNDx_GNDCLEAR, cm) so the displayed
+        //          value is altitude above ground, not above the sensor mount
+        float attitude_angle;
+        {
+            AP_AHRS &ahrs = AP::ahrs();
+            WITH_SEMAPHORE(ahrs.get_semaphore());
+            attitude_angle = ahrs.get_rotation_body_to_ned().c.z;
+        }
+        const float distance = (rangefinder->distance_orient(ROTATION_PITCH_270)
+                                - rangefinder->ground_clearance_cm_orient(ROTATION_PITCH_270) * 0.01f) * attitude_angle;
+        const float distance_abs = fabsf(distance);
+
+        uint8_t spaces;
+        const char *format;
+        if (distance_abs < 9.995f) {
+            spaces = 1;
+            format = "%1.2f%c%c";
+        } else if (distance_abs < 99.95f) {
+            spaces = 0;
+            format = "%2.2f%c%c";
+        } else {
+            spaces = 0;
+            format = "%3.1f%c%c";
+        }
+        if (signbit(distance) && spaces > 0) {
+            spaces -= 1;  // fork bug: original code didn't guard, underflows uint8_t when spaces==0
+        }
+        backend->write(x + spaces, y, false, format, u_scale(ALTITUDE, distance), u_icon(ALTITUDE), SYMBOL(SYM_RNGFD));
     }
 }
 #endif
