@@ -503,6 +503,22 @@ const AP_Param::Info Plane::var_info[] = {
     // @User: Standard
     GSCALAR(fs_emergency_landing_delay, "FS_ELAND_DELAY", -1),
 
+    // @Param: FS_ELAND_UPWIND
+    // @DisplayName: Failsafe emergency landing align upwind
+    // @Description: When set, the emergency-landing state machine waits in ALIGNMENT_INTO_WIND until the heading is within ~2 degrees of facing into the estimated wind (with a 120 s safety timeout, and skipped when wind < 1 m/s). 0 to skip the alignment phase entirely.
+    // @Values: 0:Disable,1:Enable
+    // @User: Standard
+    GSCALAR(fs_emergency_landing_land_upwind, "FS_ELAND_UPWIND", 1),
+
+    // @Param: FS_ELAND_GLDALT
+    // @DisplayName: Failsafe emergency landing gliding altitude
+    // @Description: AGL altitude at which the controlled descent ends and the gliding phase begins. The plane sinks under TECS control to this altitude (+2 m hysteresis), aligns into the wind, then glides to touchdown.
+    // @Units: m
+    // @Range: 0 600
+    // @Increment: 0.1
+    // @User: Standard
+    GSCALAR(fs_emergency_landing_gliding_altitude, "FS_ELAND_GLDALT", 15),
+
     // @Param: FS_ELAND_LVLALT
     // @DisplayName: Failsafe emergency landing leveling altitude
     // @Description: AGL altitude below which the plane levels its wings (nav_roll = 0) before flare during an FS emergency landing. Terrain-aware when AP_Terrain is available. Set to -1 to disable (continue spiral all the way down).

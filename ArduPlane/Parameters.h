@@ -272,8 +272,8 @@ public:
         k_param_fs_emergency_landing_delay,  // was k_param_fs_batt_mah (unused — moved to AP_BattMonitor); reclaimed for FS_ELAND_DELAY (#182)
         k_param_fs_timeout_short,
         k_param_fs_timeout_long,
-        k_param_rc_13_old,
-        k_param_rc_14_old,
+        k_param_fs_emergency_landing_gliding_altitude,  // was k_param_rc_13_old (unused legacy); reclaimed for FS_ELAND_GLDALT (#194)
+        k_param_fs_emergency_landing_land_upwind,       // was k_param_rc_14_old (unused legacy); reclaimed for FS_ELAND_UPWIND (#194)
         k_param_tuning,
 
         //
@@ -416,6 +416,8 @@ public:
     AP_Int8 gcs_heartbeat_fs_enabled;
     AP_Int16 fs_emergency_landing_delay;  // fork #182: seconds RTL-FS-loitering-above-home before emergency-land. -1 disables.
     AP_Float fs_emergency_landing_leveling_altitude;  // fork #190: altitude AGL below which we level wings before flare. -1 disables (full spiral to ground).
+    AP_Float fs_emergency_landing_gliding_altitude;   // fork #194: altitude AGL at which the controlled descent ends and gliding begins (default 15 m).
+    AP_Int8  fs_emergency_landing_land_upwind;        // fork #194: 1 = wait for heading to align with wind before gliding (default 1).
 
     // Flight modes
     //
