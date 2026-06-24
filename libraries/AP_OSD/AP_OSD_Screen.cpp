@@ -2046,28 +2046,57 @@ void AP_OSD_Screen::draw_horizon(uint8_t x, uint8_t y)
 
 }
 
-void AP_OSD_Screen::draw_distance(uint8_t x, uint8_t y, float distance)
+void AP_OSD_Screen::draw_distance(uint8_t x, uint8_t y, float distance, bool can_only_be_positive)
 {
+    // Fork #117: per-magnitude format selection with leading-space alignment.
+    //   can_only_be_positive=true frees the sign column (no minus possible).
+    //   can_only_be_positive=false reserves a column so positive/negative values stay aligned.
+    // Preserve OPTION_IMPERIAL_MILES early-switch (fork PR dropped it; we keep it).
     char unit_icon = u_icon(DISTANCE);
     float distance_scaled = u_scale(DISTANCE, distance);
-    const char *fmt = "%4.0f%c";
-    if (distance_scaled > 9999.0f || (osd->units == AP_OSD::UNITS_IMPERIAL && distance_scaled > 5280.0f && (osd->options & AP_OSD::OPTION_IMPERIAL_MILES))) {
-        distance_scaled = u_scale(DISTANCE_LONG, distance);
-        unit_icon= u_icon(DISTANCE_LONG);
-        //try to pack as many useful info as possible
-        if (distance_scaled<9.0f) {
-            fmt = "%1.3f%c";
-        } else if (distance_scaled < 99.0f) {
-            fmt = "%2.2f%c";
-        } else if (distance_scaled < 999.0f) {
-            fmt = "%3.1f%c";
+
+    const char *format;
+    uint8_t spaces;
+
+    const bool use_long_units = (distance_scaled >= 9999.5f)
+        || (osd->units == AP_OSD::UNITS_IMPERIAL
+            && distance_scaled > 5280.0f
+            && (osd->options & AP_OSD::OPTION_IMPERIAL_MILES));
+
+    if (!use_long_units) {
+        const float distance_scaled_abs = fabsf(distance_scaled);
+        format = "%.0f%c";
+        if (distance_scaled_abs < 9.95f) {
+            format = "%1.1f%c";
+            spaces = 3;
+        } else if (distance_scaled_abs < 99.5f) {
+            spaces = 3;
+        } else if (distance_scaled_abs < 999.5f) {
+            spaces = 2;
         } else {
-            fmt = "%4.0f%c";
+            spaces = 1;
         }
-    } else if (distance_scaled < 10.0f) {
-        fmt = "% 3.1f%c";
+    } else {
+        distance_scaled = u_scale(DISTANCE_LONG, distance);
+        unit_icon = u_icon(DISTANCE_LONG);
+        const float distance_scaled_abs = fabsf(distance_scaled);
+        if (distance_scaled_abs < 9.995f) {
+            format = "%1.3f%c";
+        } else if (distance_scaled_abs < 99.95f) {
+            format = "%2.2f%c";
+        } else if (distance_scaled_abs < 999.5f) {
+            format = "%3.1f%c";
+        } else {
+            format = "%4.0f%c";
+        }
+        spaces = 1;
     }
-    backend->write(x, y, false, fmt, (double)distance_scaled, unit_icon);
+
+    if (can_only_be_positive || signbit(distance_scaled)) {
+        spaces -= 1;  // minimum input spaces is 1, so no uint8_t underflow
+    }
+
+    backend->write(x + spaces, y, false, format, (double)distance_scaled, unit_icon);
 }
 
 void AP_OSD_Screen::draw_home(uint8_t x, uint8_t y)
@@ -2085,12 +2114,12 @@ void AP_OSD_Screen::draw_home(uint8_t x, uint8_t y)
         }
         char arrow = get_arrow_font_index(angle_cd);
         backend->write(x, y, false, "%c%c", SYMBOL(SYM_HOME), arrow);
-        draw_distance(x+2, y, distance);
+        draw_distance(x+2, y, distance, true);
     } else {
         // Fork 1583852d1d: render a full-width placeholder when no fix, so the element
         //                 occupies the same columns as the fixed case for easier placement
         backend->write(x, y, true, "%c-", SYMBOL(SYM_HOME));
-        draw_distance(x+2, y, 0);
+        draw_distance(x+2, y, 0, true);
     }
 }
 
@@ -2677,13 +2706,13 @@ void AP_OSD_Screen::draw_waypoint(uint8_t x, uint8_t y)
     }
     char arrow = get_arrow_font_index(angle_cd);
     backend->write(x,y, false, "%c%2u%c",SYMBOL(SYM_WPNO), osd->nav_info.wp_number, arrow);
-    draw_distance(x+4, y, osd->nav_info.wp_distance);
+    draw_distance(x+4, y, osd->nav_info.wp_distance, true);
 }
 
 void AP_OSD_Screen::draw_xtrack_error(uint8_t x, uint8_t y)
 {
     backend->write(x, y, false, "%c", SYMBOL(SYM_XERR));
-    draw_distance(x+1, y, osd->nav_info.wp_xtrack_error);
+    draw_distance(x+1, y, osd->nav_info.wp_xtrack_error, false);  // xtrack can be negative
 }
 
 // ---- stats grid helpers (#121 phase 2) ----
@@ -2764,7 +2793,7 @@ void AP_OSD_Screen::draw_distance_value(uint8_t x, uint8_t y, bool available, fl
         backend->write(x, y, false, "----%c", u_icon(DISTANCE));
         return;
     }
-    draw_distance(x, y, distance);
+    draw_distance(x, y, distance, true);  // stats distances are always non-negative
 }
 
 #if AP_BATTERY_ENABLED
@@ -2918,7 +2947,7 @@ void AP_OSD_Screen::draw_stat(uint8_t x, uint8_t y)
 void AP_OSD_Screen::draw_dist(uint8_t x, uint8_t y)
 {
     backend->write(x, y, false, "%c", SYMBOL(SYM_DIST));
-    draw_distance(x+1, y, osd->_stats.last_ground_distance_m);
+    draw_distance(x+1, y, osd->_stats.last_ground_distance_m, true);
 }
 
 void  AP_OSD_Screen::draw_flightime(uint8_t x, uint8_t y)
@@ -3490,7 +3519,7 @@ void AP_OSD_Screen::draw_loiter_radius(uint8_t x, uint8_t y)
     uint16_t radius;
     if (loiter_radius_changed(radius)) {
         backend->write(x, y, false, "%c", SYMBOL(SYM_RADIUS));
-        draw_distance(x + 1, y, radius);
+        draw_distance(x + 1, y, radius, true);
     }
 #else
     (void)x; (void)y;
