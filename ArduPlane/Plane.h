@@ -563,6 +563,11 @@ private:
         bool rotation_complete;
     } auto_state;
 
+    // fork 34c3ab3d8d: previous loop's failsafe.rc_failsafe value, used to detect the
+    // FS-entry transition so update_control_mode() can clear ALLOW_GLIDING once on entry
+    // and then leave the gliding flag alone for the rest of the FS (where RTL drives it).
+    bool prev_rc_failsafe_state;
+
     // fork PR #194: emergency-landing state machine. Drives the controlled descent
     // INACTIVE -> DELAY -> SINKING_TO_GLIDE_ALTITUDE -> ALIGNMENT_INTO_WIND -> GLIDING ->
     // GLIDING_NO_RETURN once an RC-failsafe RTL has loitered above home for FS_ELAND_DELAY s.

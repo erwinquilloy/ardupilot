@@ -534,11 +534,26 @@ void Plane::update_control_mode(void)
         control_mode->does_auto_throttle() &&
         control_mode != &mode_takeoff &&
         control_mode != &mode_auto) {
-        auto_throttle_gliding = !failsafe.rc_failsafe && get_throttle_input() < g.throttle_dz;
+        if (failsafe.rc_failsafe) {
+            // Fork 34c3ab3d8d: clear gliding once on FS entry so RTL starts from a known state,
+            //                 then leave the flag alone for the rest of the FS so the
+            //                 emergency-landing state machine in mode_rtl::navigate() can
+            //                 drive it (previously every fast loop reclamped gliding to false
+            //                 while in FS, fighting the RTL eland GLIDING state).
+            if (!prev_rc_failsafe_state) {
+                auto_throttle_gliding = false;
+                TECS_controller.set_gliding_requested_flag(false);
+            }
+            // else: in-FS; leave auto_throttle_gliding / TECS gliding flag untouched
+        } else {
+            auto_throttle_gliding = get_throttle_input() < g.throttle_dz;
+            TECS_controller.set_gliding_requested_flag(auto_throttle_gliding);
+        }
     } else {
         auto_throttle_gliding = false;
+        TECS_controller.set_gliding_requested_flag(false);
     }
-    TECS_controller.set_gliding_requested_flag(auto_throttle_gliding);
+    prev_rc_failsafe_state = failsafe.rc_failsafe;
 
     update_fly_forward();
 
