@@ -921,8 +921,8 @@ MSPCommandResult AP_MSP_Telem_Backend::msp_process_out_attitude(sbuf_t *dst)
         int16_t pitch;
         int16_t yaw;
     } attitude {
-        roll : int16_t(degrees(roll_rad) * 10),     // degress to decidegrees
-        pitch : int16_t(degrees(pitch_rad) * 10),   // degress to decidegrees
+        roll : int16_t(lrintf(degrees(roll_rad) * 10)),   // rad -> decidegrees, rounded (fork 265d252283)
+        pitch : int16_t(lrintf(degrees(pitch_rad) * 10)), // rad -> decidegrees, rounded (fork 265d252283)
         yaw : int16_t(wrap_360(degrees(yaw_rad)))
     };
 
