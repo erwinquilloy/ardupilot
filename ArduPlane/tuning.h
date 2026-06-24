@@ -79,6 +79,8 @@ private:
 
         TUNING_Q_FWD_THR =                    58,
 
+        TUNING_PITCH_TRIM =                   59,
+
         TUNING_TECS_THR_FF_DAMP =             62,
         TUNING_TECS_THR_FF_FILT =             63,
     };
