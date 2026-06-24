@@ -16,6 +16,18 @@ const AP_Param::GroupInfo AP_Tuning_Plane::var_info[] = {
     // @User: Standard
     AP_GROUPINFO("PARAM", 1, AP_Tuning_Plane, parmset, 0),
 
+    // @Param: PARAM2
+    // @DisplayName: Second tuning set (TUNE_PARAM_SELECT mid-position)
+    // @Description: Alternate tuning set selectable via the TUNE_PARAM_SELECT aux function when the selector channel is in the middle position. Uses the same value IDs as PARAM (single param or set; see PARAM @Values).
+    // @User: Standard
+    AP_GROUPINFO("PARAM2", 2, AP_Tuning_Plane, parmset2, 0),
+
+    // @Param: PARAM3
+    // @DisplayName: Third tuning set (TUNE_PARAM_SELECT high position)
+    // @Description: Alternate tuning set selectable via the TUNE_PARAM_SELECT aux function when the selector channel is in the high position. Uses the same value IDs as PARAM (single param or set; see PARAM @Values).
+    // @User: Standard
+    AP_GROUPINFO("PARAM3", 3, AP_Tuning_Plane, parmset3, 0),
+
     // the rest of the parameters are from AP_Tuning
     AP_NESTEDGROUPINFO(AP_Tuning, 0),
 
