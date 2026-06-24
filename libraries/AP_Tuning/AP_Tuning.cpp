@@ -155,10 +155,13 @@ void AP_Tuning::check_input(uint8_t flightmode)
     }
     last_check_ms = now;
 
-    if (channel > RC_Channels::get_valid_channel_count()) {
-        // not valid channel
-        return;
-    }
+    // NOTE: previously there was an early-return when
+    //   channel > RC_Channels::get_valid_channel_count()
+    // but that count is sourced from hal.rcin->num_channels() (native RC only)
+    // and is 0 when the FC is fed exclusively via MAVLink RC_CHANNELS_OVERRIDE
+    // (e.g. mLRS bridging telemetry). Removing the gate lets tuning work with
+    // any RC input source. The rc().channel(channel-1) == nullptr check below
+    // (line ~190) already handles out-of-bound channel indices safely.
 
     // check for invalid range
     if (range < 1.1f) {
