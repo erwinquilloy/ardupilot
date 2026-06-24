@@ -21,12 +21,14 @@ void Plane::update_is_flying_5Hz(void)
     bool is_flying_bool = false;
     uint32_t now_ms = AP_HAL::millis();
 
-    const float ground_speed_thresh_ms = (aparm.min_groundspeed > 0) ? (aparm.min_groundspeed*0.9) : GPS_IS_FLYING_SPEED_MS;
+    const float ground_speed_thresh_ms = GPS_IS_FLYING_SPEED_MS;
     bool gps_confirmed_movement = (gps.status() >= AP_GPS::GPS_OK_FIX_3D) &&
                                     (gps.ground_speed() >= ground_speed_thresh_ms);
 
-    // airspeed at least 75% of stall speed?
-    const float airspeed_threshold = MAX(aparm.airspeed_min,2)*0.75f;
+    // airspeed at least 25 km/h (fixed threshold, decoupled from the
+    // user-configured AIRSPEED_MIN which is set for TECS bounds, not
+    // flying-detection sensitivity)
+    const float airspeed_threshold = 25.0f / 3.6f;
     bool airspeed_movement = ahrs.airspeed_EAS(aspeed) && (aspeed >= airspeed_threshold);
 
     if (gps.status() < AP_GPS::GPS_OK_FIX_2D && arming.is_armed() && !airspeed_movement && isFlyingProbability > 0.3) {
