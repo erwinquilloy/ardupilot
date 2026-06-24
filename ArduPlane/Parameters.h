@@ -269,7 +269,7 @@ public:
         k_param_throttle_passthru_stabilize,
         k_param_rc_12_old,
         k_param_throttle_dz,     // was k_param_fs_batt_voltage (unused — moved to AP_BattMonitor); reclaimed for THR_DZ
-        k_param_fs_batt_mah,     // unused - moved to AP_BattMonitor
+        k_param_fs_emergency_landing_delay,  // was k_param_fs_batt_mah (unused — moved to AP_BattMonitor); reclaimed for FS_ELAND_DELAY (#182)
         k_param_fs_timeout_short,
         k_param_fs_timeout_long,
         k_param_rc_13_old,
@@ -414,6 +414,7 @@ public:
     AP_Float fs_timeout_short;
     AP_Float fs_timeout_long;
     AP_Int8 gcs_heartbeat_fs_enabled;
+    AP_Int16 fs_emergency_landing_delay;  // fork #182: seconds RTL-FS-loitering-above-home before emergency-land. -1 disables.
 
     // Flight modes
     //

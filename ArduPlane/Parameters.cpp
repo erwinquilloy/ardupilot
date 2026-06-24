@@ -494,6 +494,15 @@ const AP_Param::Info Plane::var_info[] = {
     // @User: Standard
     GSCALAR(fs_timeout_long,        "FS_LONG_TIMEOUT", 5),
 
+    // @Param: FS_ELAND_DELAY
+    // @DisplayName: Failsafe emergency landing delay
+    // @Description: Seconds the RC failsafe must persist after the plane has reached the home loiter target before an emergency landing begins. The FS long action must trigger RTL for this to fire. -1 disables (default).
+    // @Units: s
+    // @Range: -1 600
+    // @Increment: 1
+    // @User: Standard
+    GSCALAR(fs_emergency_landing_delay, "FS_ELAND_DELAY", -1),
+
     // @Param: FS_GCS_ENABL
     // @DisplayName: GCS failsafe enable
     // @Description: Enable ground control station telemetry failsafe. Failsafe will trigger after FS_LONG_TIMEOUT seconds of no MAVLink heartbeat messages. There are three possible enabled settings. Setting FS_GCS_ENABL to 1 means that GCS failsafe will be triggered when the aircraft has not received a MAVLink HEARTBEAT message. Setting FS_GCS_ENABL to 2 means that GCS failsafe will be triggered on either a loss of HEARTBEAT messages, or a RADIO_STATUS message from a MAVLink enabled 3DR radio indicating that the ground station is not receiving status updates from the aircraft, which is indicated by the RADIO_STATUS.remrssi field being zero (this may happen if you have a one way link due to asymmetric noise on the ground station and aircraft radios).Setting FS_GCS_ENABL to 3 means that GCS failsafe will be triggered by Heartbeat(like option one), but only in AUTO mode. WARNING: Enabling this option opens up the possibility of your plane going into failsafe mode and running the motor on the ground it it loses contact with your ground station. If this option is enabled on an electric plane then you should enable ARMING_REQUIRED.
@@ -1143,7 +1152,7 @@ const AP_Param::GroupInfo ParametersG2::var_info[] = {
     // @Bitmask: 12: Enable FBWB style loiter altitude control
     // @Bitmask: 13: Indicate takeoff waiting for neutral rudder with flight control surfaces
     // @Bitmask: 14: In AUTO - climb to next waypoint altitude immediately instead of linear climb
-    // @Bitmask: 21: Emergency-land if RTL failsafe loiters above home for 2 minutes (fork)
+    // (bit 21 retired -- emergency-land in RTL FS is now driven by the FS_ELAND_DELAY param, fork PR #182)
     // @Bitmask: 22: In RTL failsafe only, climb first then turn (fork)
     // @Bitmask: 23: In auto-throttle modes other than TAKEOFF/AUTO, glide (throttle=0, target airspeed AIRSPEED_MIN) when throttle stick is below THR_DZ (fork)
     // @User: Advanced
@@ -1445,7 +1454,10 @@ static const AP_Param::ConversionInfo conversion_table[] = {
     // k_param_fs_batt_voltage slot for THR_DZ, so the conversion entry
     // would point at the wrong field. Existing users had already migrated
     // away from BATT_LOW_VOLT in the AP_BattMonitor move.)
-    { Parameters::k_param_fs_batt_mah,        0,      AP_PARAM_FLOAT, "BATT_LOW_MAH" },
+    // (fork #182 reclaimed the k_param_fs_batt_mah enum slot for FS_ELAND_DELAY (AP_Int16);
+    //  removing the float BATT_LOW_MAH conversion entry so it can't write into the new
+    //  int16 field on first boot. Existing users had already migrated away from BATT_LOW_MAH
+    //  in the AP_BattMonitor move.)
 
     { Parameters::k_param_arming,             3,      AP_PARAM_INT8,  "ARMING_RUDDER" },
     { Parameters::k_param_compass_enabled_deprecated,       0,      AP_PARAM_INT8, "COMPASS_ENABLE" },
