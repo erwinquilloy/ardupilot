@@ -215,6 +215,14 @@ const AP_Param::GroupInfo AP_MotorsMulticopter::var_info[] = {
     // @User: Advanced
     AP_GROUPINFO("SAFE_TIME", 42, AP_MotorsMulticopter, _safe_time, AP_MOTORS_SAFE_TIME_DEFAULT),
 
+    // @Param: FRTB_RATIO
+    // @DisplayName: Front/rear thrust balance ratio (TRI frames only)
+    // @Description: Adjusts how rear thrust is scaled relative to front thrust on Tri-class VTOL planes. Values < 1.0 push the rear motor harder relative to the front; values > 1.0 push the front motor harder. Default 1.0 leaves the existing thrust split unchanged. Only the AP_MotorsTri backend uses this param; ignored for quad/hex/oct frames.
+    // @Range: 0.5 2.0
+    // @Increment: 0.001
+    // @User: Advanced
+    AP_GROUPINFO("FRTB_RATIO", 63, AP_MotorsMulticopter, _front_rear_throttle_balance_ratio, 1.0f),
+
     // @Param: OPTIONS
     // @DisplayName: Motor options
     // @Description: Motor options

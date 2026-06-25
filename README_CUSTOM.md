@@ -405,6 +405,22 @@ or aircraft. Reset alongside the other stats via `STAT_RESET`.
 
 ---
 
+# Quadplane / VTOL
+
+## `Q_M_FRTB_RATIO` — Tri-frame front/rear thrust balance
+
+Scales the rear motor's thrust output relative to the front pair on
+Tri-class VTOL planes. Lets you bias the hover thrust split without
+rebuilding the airframe or re-tuning the rate loop.
+
+- `Q_M_FRTB_RATIO = 1.0` (default) — unchanged from upstream behaviour
+- `< 1.0` — push the rear motor harder (front motors do less work)
+- `> 1.0` — push the front motors harder (rear motor does less work)
+- Range: 0.5–2.0, step 0.001, Q_M_ subgroup
+
+Only the `AP_MotorsTri` backend uses this; ignored for quad / hex /
+oct frames.
+
 # Battery monitoring (AP_BattMonitor)
 
 A larger toolbox of per-cell and Wh-based limits, plus an

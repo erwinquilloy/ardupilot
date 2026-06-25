@@ -179,6 +179,10 @@ protected:
     // scaling for booster motor throttle
     AP_Float            _boost_scale;
 
+    // Tri-frame front/rear thrust balance (Q_M_FRTB_RATIO). Scales rear
+    // thrust in AP_MotorsTri by 1 / this value; default 1.0 = no change.
+    AP_Float            _front_rear_throttle_balance_ratio;
+
     // motor output variables
     bool                motor_enabled[AP_MOTORS_MAX_NUM_MOTORS];    // true if motor is enabled
 
