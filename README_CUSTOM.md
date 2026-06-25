@@ -416,6 +416,11 @@ auto/RTL/guided. Pilots used to upstream's behaviour can set
 - **Widened OSD sidebars** — wider value columns on the artificial-
   horizon sidebars so 3- and 4-digit values fit cleanly. Inherited
   from upstream 4.6.3 (port by [@mf0o](https://github.com/mf0o))
+- **DJI O3 home / waypoint arrow direction fix** — the BF MSP
+  DisplayPort symbol mapping for the home and waypoint direction
+  arrows had the wrong indices on DJI O3 goggles, making the arrows
+  point in confusing directions. Inherited from upstream 4.6.3
+  (port by [@mf0o](https://github.com/mf0o))
 
 ## Stats grid
 
@@ -652,8 +657,9 @@ Items evaluated and deliberately skipped, with reasoning:
   [github.com/ArduCustom/ardupilot](https://github.com/ArduCustom/ardupilot).
   This branch re-ports a curated subset of that work onto a modern
   4.6.3 base.
-- **[@mf0o](https://github.com/mf0o)** — widened OSD sidebars (ported
-  from upstream into ArduCustom; present here by inheritance from
-  upstream 4.6.3) and the `SpeedyBeeF405WING` target.
+- **[@mf0o](https://github.com/mf0o)** — widened OSD sidebars, the
+  DJI O3 home/waypoint arrow direction fix, and the `SpeedyBeeF405WING`
+  target. All three landed in ArduCustom, made their way into upstream
+  4.6.3, and are present in this fork by inheritance.
 - **Upstream ArduPilot dev team** — the underlying platform.
 - Authoring assistance via Claude Code (Anthropic).
