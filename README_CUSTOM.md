@@ -210,6 +210,34 @@ auto-throttle mode *except* TAKEOFF and AUTO triggers the TECS
 gliding path (throttle to 0, target airspeed dropped to
 `AIRSPEED_MIN`). Releasing the throttle restores auto-throttle.
 
+### `FLIGHT_OPTIONS` bit 24 — `RTL_MANUAL_ALT_CONTROL`
+With this bit, RTL hands altitude control to the pilot's pitch stick
+via the FBW-B controller while outside of RC failsafe — push to climb,
+pull to descend — the same way altitude works in FBWB/CRUISE. The L1
+controller still flies the plane home; only the vertical axis is
+under the pilot. Useful when you want to RTL but choose a different
+return altitude than `ALT_HOLD_RTL` without leaving the mode.
+
+The instant RC failsafe fires (or you clear the bit mid-flight), RTL
+snaps back to its normal climb-to-`ALT_HOLD_RTL` behaviour cleanly:
+`prev_WP_loc` is reset to the current position so TECS doesn't get a
+sudden altitude jump.
+
+Interactions:
+- `RTL_ALT_HOME` is suppressed while manual control is active — the
+  descend-to-home-altitude logic doesn't fight the stick.
+- `RTL_CLIMB_MIN` / `CLIMB_BEFORE_TURN`'s initial-climb bump is
+  skipped — TECS isn't pushed to climb when the pilot already owns
+  altitude.
+- Pitch stick mixing is bypassed (the FBWB path is the sole consumer
+  of the pitch stick), so deflection isn't applied twice.
+
+> ⚠️ Bit relocated from upstream-fork bit 20 to bit 24 in this rebase
+> because upstream 4.6.3 took bit 20 for the unrelated
+> `COURSE_HOLD_HEADING_CONTROL_WITH_YAW_STICK` feature. Update your
+> `FLIGHT_OPTIONS` saved value when migrating from the 2022 fork:
+> `1<<20` becomes `1<<24`.
+
 ### Lost-vehicle audio alarm during RC failsafe
 Once armed in RC failsafe, the lost-vehicle alarm fires. Reuses the
 existing notify channel; no new param.

@@ -175,6 +175,9 @@ enum FlightOptions {
     // FS_ELAND_DELAY param (value -1 = disabled, 0+ = seconds before triggering).
     RTL_CLIMB_FIRST_ONLY_IN_FS = (1<<22),
     ALLOW_GLIDING_IN_AUTO_THR_MODES = (1<<23),
+    // fork PR #155: bit 20 in shellixyz/2022, but bit 20 was claimed upstream by
+    // COURSE_HOLD_HEADING_CONTROL_WITH_YAW_STICK -- relocated to bit 24
+    RTL_MANUAL_ALT_CONTROL = (1<<24),
 };
 
 enum CrowFlapOptions {

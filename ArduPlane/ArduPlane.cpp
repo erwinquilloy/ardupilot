@@ -705,10 +705,11 @@ void Plane::update_alt()
 
         tecs_target_alt_cm = relative_target_altitude_cm();
 
-        if (control_mode == &mode_rtl && !rtl.done_climb && (g2.rtl_climb_min > 0 || (plane.flight_option_enabled(FlightOptions::CLIMB_BEFORE_TURN)))) {
+        if (control_mode == &mode_rtl && !rtl.manual_alt_control && !rtl.done_climb && (g2.rtl_climb_min > 0 || (plane.flight_option_enabled(FlightOptions::CLIMB_BEFORE_TURN)))) {
             // ensure we do the initial climb in RTL. We add an extra
             // 10m in the demanded height to push TECS to climb
-            // quickly
+            // quickly. Fork PR #155: skip the bump when the pilot owns
+            // altitude via RTL_MANUAL_ALT_CONTROL.
             tecs_target_alt_cm = MAX(tecs_target_alt_cm, prev_WP_loc.alt - home.alt) + (g2.rtl_climb_min+10)*100;
         }
 

@@ -882,6 +882,11 @@ private:
     struct {
         bool done_climb;
         bool triggered_by_rc_failsafe;
+        // Fork PR #155: when set, the pilot is driving RTL altitude with the
+        // pitch stick via update_fbwb_speed_height(). Set when entering RTL
+        // (and on every update() while still not in FS) if FlightOptions bit
+        // RTL_MANUAL_ALT_CONTROL is on; cleared when RC failsafes back in.
+        bool manual_alt_control;
         // Once the plane has reached the home loiter target and matched its
         // altitude to RTL_ALT_HOME (within 5 m), this is true. Used to gate
         // the FS emergency-landing timer so it doesn't start counting while

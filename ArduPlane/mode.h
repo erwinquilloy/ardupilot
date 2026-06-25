@@ -460,6 +460,10 @@ public:
 
     void navigate() override;
 
+    // fork PR #155: skip the default mode-target-altitude logic while the pilot
+    // is driving altitude via the pitch stick (manual_alt_control flag)
+    void update_target_altitude() override;
+
     bool allows_throttle_nudging() const override { return true; }
 
     bool does_auto_navigation() const override { return true; }
