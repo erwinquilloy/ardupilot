@@ -98,6 +98,13 @@ const AP_ToneAlarm::Tone AP_ToneAlarm::_tones[] {
     { "MNBGG", false },
 #define AP_NOTIFY_TONE_EKF_ALERT 31
     { "MBNT255>A#8A#8A#8A#8P8A#8A#8A#8A#8P8A#8A#8A#8A#8P8A#8A#8A#8A#8", true },
+    // Takeoff cue tones (fork PR #174, ArduCustom 6d22bfc54b)
+#define AP_NOTIFY_TONE_WAITING_TO_RAISE_THROTTLE 32
+    { "MBT32L64 O5aaaP8aaaP8aaaP8aaaP8aaaP8aaaP8aaaP8aaaP8", true },
+#define AP_NOTIFY_TONE_WAITING_FOR_IDLE_THROTTLE 33
+    { "MBT32L64 O1cdefgab", true },
+#define AP_NOTIFY_TONE_WAITING_FOR_LAUNCH 34
+    { "MBT32L64 O5aP4aP4aP4aP4aP4aP4", true },
 };
 
 bool AP_ToneAlarm::init()
@@ -442,6 +449,27 @@ void AP_ToneAlarm::update()
         flags.failsafe_ekf = AP_Notify::flags.failsafe_ekf;
         if (flags.failsafe_ekf) {
             play_tone(AP_NOTIFY_TONE_EKF_ALERT);
+        }
+    }
+
+    // takeoff cue tones (fork PR #174). Trigger when AP_Notify::takeoff_status
+    // changes; the per-state cont tones loop until set back to TKOFS_IDLE.
+    if (_takeoff_status != AP_Notify::takeoff_status) {
+        _takeoff_status = AP_Notify::takeoff_status;
+        switch (_takeoff_status) {
+            case AP_Notify::TKOFS_WAITING_TO_RAISE_THROTTLE:
+                play_tone(AP_NOTIFY_TONE_WAITING_TO_RAISE_THROTTLE);
+                break;
+            case AP_Notify::TKOFS_WAITING_FOR_IDLE_THROTTLE:
+                play_tone(AP_NOTIFY_TONE_WAITING_FOR_IDLE_THROTTLE);
+                break;
+            case AP_Notify::TKOFS_WAITING_FOR_LAUNCH:
+                play_tone(AP_NOTIFY_TONE_WAITING_FOR_LAUNCH);
+                break;
+            case AP_Notify::TKOFS_IDLE:
+            default:
+                stop_cont_tone();
+                break;
         }
     }
 }

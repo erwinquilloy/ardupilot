@@ -141,6 +141,18 @@ public:
         bool gyro_calibrated;     // true if calibrated gyro/acc
     };
 
+    // Takeoff cue states, used by ToneAlarm to play distinct pre-launch
+    // notification tones. Fork PR #174 (ArduCustom 6d22bfc54b) - paired
+    // with our TKOFF_THR_IDLE / TKOFF_IDL_SRATE / TKOFF_IDL_DELAY ports.
+    typedef enum {
+        TKOFS_IDLE,
+        TKOFS_WAITING_TO_RAISE_THROTTLE,
+        TKOFS_WAITING_FOR_IDLE_THROTTLE,
+        TKOFS_WAITING_FOR_LAUNCH,
+    } takeoffStatus;
+
+    static takeoffStatus takeoff_status;
+
     /// notify_events_type - bitmask of active events.
     //      Notify library is responsible for setting back to zero after notification has been completed
     struct notify_events_type {

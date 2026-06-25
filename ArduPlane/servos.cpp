@@ -18,6 +18,7 @@
 
 #include "Plane.h"
 #include <utility>
+#include <AP_Notify/AP_Notify.h>   // for AP_Notify::takeoff_status (fork PR #174)
 
 /*****************************************
 * Throttle slew limit
@@ -636,6 +637,10 @@ void Plane::set_throttle(void)
         SRV_Channels::set_output_scaled(SRV_Channel::k_throttle, limited_throttle);
     }
 
+    // Default the takeoff cue (fork PR #174) to IDLE; the branches below
+    // override when we're actually in a pre-launch suppressed-throttle state.
+    AP_Notify::takeoff_status = AP_Notify::TKOFS_IDLE;
+
     if (suppress_throttle()) {
         const bool in_pre_takeoff = ((control_mode == &mode_auto &&
                                       flight_stage == AP_FixedWing::FlightStage::NORMAL &&
@@ -644,6 +649,9 @@ void Plane::set_throttle(void)
         if (g.throttle_suppress_manual) {
             // manual pass through of throttle while throttle is suppressed
             SRV_Channels::set_output_scaled(SRV_Channel::k_throttle, get_throttle_input(true));
+            if (in_pre_takeoff) {
+                AP_Notify::takeoff_status = AP_Notify::TKOFS_WAITING_FOR_LAUNCH;
+            }
 
         } else if (landing.is_flaring() && landing.use_thr_min_during_flare() ) {
             // throttle is suppressed (above) to zero in final flare in auto mode, but we allow instead thr_min if user prefers, eg turbines:
@@ -653,6 +661,7 @@ void Plane::set_throttle(void)
             // Pre-launch idle throttle: hold TKOFF_THR_IDLE while the stick is raised,
             // climbing to it at TKOFF_IDL_SRATE (slew rate applied via throttle_slew_limit()).
             float idle_throttle = g2.takeoff_idle_thr.get();
+            bool delay_active = false;
 
             // ArduCustom #185: optional delay between first stick-up and idle ramp.
             // TKOFF_IDL_DELAY (s, default 0 = no delay) holds throttle at 0 for the
@@ -666,17 +675,34 @@ void Plane::set_throttle(void)
                     takeoff_delay_start_tstamp_ms = now;
                     gcs().send_text(MAV_SEVERITY_INFO, "TKOFF idle THR timer started");
                     idle_throttle = 0;
+                    delay_active = true;
                 } else if (now - takeoff_delay_start_tstamp_ms < uint32_t(delay_s) * 1000) {
                     idle_throttle = 0;
+                    delay_active = true;
                 }
             }
             SRV_Channels::set_output_scaled(SRV_Channel::k_throttle, idle_throttle);
+
+            // Takeoff cue: WAITING_FOR_IDLE_THROTTLE while ramping up (or
+            // waiting on TKOFF_IDL_DELAY), WAITING_FOR_LAUNCH once at idle.
+            const float current_throttle = SRV_Channels::get_slew_limited_output_scaled(SRV_Channel::k_throttle);
+            AP_Notify::takeoff_status = (delay_active || current_throttle < g2.takeoff_idle_thr)
+                                            ? AP_Notify::TKOFS_WAITING_FOR_IDLE_THROTTLE
+                                            : AP_Notify::TKOFS_WAITING_FOR_LAUNCH;
 
         } else {
             // default — reset the TKOFF_IDL_DELAY timer so it re-arms next time
             // the pilot raises the stick in the pre-launch suppressed path
             SRV_Channels::set_output_scaled(SRV_Channel::k_throttle, 0.0);
             takeoff_delay_start_tstamp_ms = 0;
+
+            // Takeoff cue: if we're in a pre-takeoff state with stick at zero,
+            // tell the pilot to raise it. Otherwise leave status at TKOFS_IDLE.
+            if (in_pre_takeoff) {
+                AP_Notify::takeoff_status = is_zero(g2.takeoff_idle_thr)
+                                                ? AP_Notify::TKOFS_WAITING_FOR_LAUNCH
+                                                : AP_Notify::TKOFS_WAITING_TO_RAISE_THROTTLE;
+            }
 
         }
     }
