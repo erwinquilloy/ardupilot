@@ -36,7 +36,9 @@
 #include <AP_HAL/AP_HAL_Boards.h>
 
 #ifndef AP_VOLZ_ENABLED
-#define AP_VOLZ_ENABLED BOARD_FLASH_SIZE > 1024
+// Light variant: Volz protocol servos are uncommon for FPV/wing use cases;
+// force-disabled to save flash. Per-board hwdef override re-enables if needed.
+#define AP_VOLZ_ENABLED 0
 #endif
 
 #if AP_VOLZ_ENABLED

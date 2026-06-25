@@ -21,7 +21,9 @@
 #include <AP_HAL/AP_HAL_Boards.h>
 
 #ifndef AP_ROBOTISSERVO_ENABLED
-#define AP_ROBOTISSERVO_ENABLED BOARD_FLASH_SIZE > 1024
+// Light variant: Robotis serial servos are uncommon for FPV/wing use cases;
+// force-disabled to save flash. Per-board hwdef override re-enables if needed.
+#define AP_ROBOTISSERVO_ENABLED 0
 #endif
 
 #if AP_ROBOTISSERVO_ENABLED
