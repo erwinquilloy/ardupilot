@@ -10,12 +10,18 @@
 #endif
 
 #ifndef AP_AIRSPEED_BACKEND_DEFAULT_ENABLED
-#define AP_AIRSPEED_BACKEND_DEFAULT_ENABLED AP_AIRSPEED_ENABLED
+// Light variant: flip the global airspeed-backend default to OFF. Most
+// FPV/wing builds run without a pitot or use the most common one
+// (MS4525/ASP5033). Re-enable the common ones below; rarer chips
+// (DLVR, MS5525, NMEA, SDP3X) compile out. Mirrors mf0o's
+// "Disable detection of useless airspeed sensors" pattern.
+#define AP_AIRSPEED_BACKEND_DEFAULT_ENABLED 0
 #endif
 
 // backends
 #ifndef AP_AIRSPEED_ANALOG_ENABLED
-#define AP_AIRSPEED_ANALOG_ENABLED AP_AIRSPEED_BACKEND_DEFAULT_ENABLED
+// Light variant: keep analog airspeed (simple voltage-divider pitot).
+#define AP_AIRSPEED_ANALOG_ENABLED AP_AIRSPEED_ENABLED
 #endif
 
 #ifndef AP_AIRSPEED_ASP5033_ENABLED
@@ -27,11 +33,13 @@
 #endif
 
 #ifndef AP_AIRSPEED_DRONECAN_ENABLED
-#define AP_AIRSPEED_DRONECAN_ENABLED AP_AIRSPEED_BACKEND_DEFAULT_ENABLED && HAL_ENABLE_DRONECAN_DRIVERS
+// Light variant: keep DroneCAN airspeed (Matek / CAN-attached pitots).
+#define AP_AIRSPEED_DRONECAN_ENABLED AP_AIRSPEED_ENABLED && HAL_ENABLE_DRONECAN_DRIVERS
 #endif
 
 #ifndef AP_AIRSPEED_MS4525_ENABLED
-#define AP_AIRSPEED_MS4525_ENABLED AP_AIRSPEED_BACKEND_DEFAULT_ENABLED
+// Light variant: keep MS4525 (the most common I2C pitot chip).
+#define AP_AIRSPEED_MS4525_ENABLED AP_AIRSPEED_ENABLED
 #endif
 
 #ifndef AP_AIRSPEED_MS5525_ENABLED
@@ -39,7 +47,8 @@
 #endif
 
 #ifndef AP_AIRSPEED_MSP_ENABLED
-#define AP_AIRSPEED_MSP_ENABLED (AP_AIRSPEED_BACKEND_DEFAULT_ENABLED && HAL_MSP_SENSORS_ENABLED)
+// Light variant: keep MSP-airspeed (DJI / goggles passthrough).
+#define AP_AIRSPEED_MSP_ENABLED (AP_AIRSPEED_ENABLED && HAL_MSP_SENSORS_ENABLED)
 #endif
 
 // note additional vehicle restrictions are made in the .cpp file!
