@@ -64,7 +64,9 @@
 #endif
 
 #ifndef AP_GPS_MAV_ENABLED
-  #define AP_GPS_MAV_ENABLED AP_GPS_BACKEND_DEFAULT_ENABLED && HAL_GCS_ENABLED
+  // Light variant: keep MAVLink GPS (companion-computer GPS feed,
+  // SITL injection). Matches mf0o's light-variant keep-list.
+  #define AP_GPS_MAV_ENABLED AP_GPS_ENABLED && HAL_GCS_ENABLED
 #endif
 
 #ifndef HAL_MSP_GPS_ENABLED
@@ -74,7 +76,9 @@
 #endif
 
 #ifndef AP_GPS_NMEA_ENABLED
-  #define AP_GPS_NMEA_ENABLED AP_GPS_BACKEND_DEFAULT_ENABLED
+  // Light variant: keep NMEA (cheap u-blox-clone GPS modules and
+  // Bynav-style GPS often default to NMEA output). Matches mf0o.
+  #define AP_GPS_NMEA_ENABLED AP_GPS_ENABLED
 #endif
 
 #ifndef AP_GPS_NMEA_UNICORE_ENABLED

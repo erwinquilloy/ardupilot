@@ -25,7 +25,14 @@ void setup()
     hal.console->printf("Range Finder library test\n");
 
     // setup for analog pin 13
+    // Use whichever rangefinder type is compiled into this build. Light variant
+    // strips PulsedLightLRF (PLI2C), so prefer Analog (always present in light
+    // and full) before falling back to PLI2C for upstream-equivalent builds.
+#if AP_RANGEFINDER_ANALOG_ENABLED
+    AP_Param::set_object_value(&sonar, sonar.var_info, "_TYPE", (uint8_t)RangeFinder::Type::ANALOG);
+#elif AP_RANGEFINDER_PULSEDLIGHTLRF_ENABLED
     AP_Param::set_object_value(&sonar, sonar.var_info, "_TYPE", (uint8_t)RangeFinder::Type::PLI2C);
+#endif
     AP_Param::set_object_value(&sonar, sonar.var_info, "_PIN", -1.0f);
     AP_Param::set_object_value(&sonar, sonar.var_info, "_SCALING", 1.0f);
 

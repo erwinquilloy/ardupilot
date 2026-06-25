@@ -29,7 +29,10 @@
 #endif
 
 #ifndef AP_AIRSPEED_DLVR_ENABLED
-#define AP_AIRSPEED_DLVR_ENABLED AP_AIRSPEED_BACKEND_DEFAULT_ENABLED
+// Light variant: keep DLVR — the chip behind Matek's popular ASPD-DLVR
+// and ASPD-7002 I2C digital airspeed sensors. mf0o stripped this; we
+// keep it because our user base flies Matek wings.
+#define AP_AIRSPEED_DLVR_ENABLED AP_AIRSPEED_ENABLED
 #endif
 
 #ifndef AP_AIRSPEED_DRONECAN_ENABLED
@@ -43,7 +46,10 @@
 #endif
 
 #ifndef AP_AIRSPEED_MS5525_ENABLED
-#define AP_AIRSPEED_MS5525_ENABLED AP_AIRSPEED_BACKEND_DEFAULT_ENABLED
+// Light variant: keep MS5525 — the chip behind Matek's ASPD-MS5525 I2C
+// airspeed sensor. mf0o stripped this; we keep it because our user
+// base flies Matek wings.
+#define AP_AIRSPEED_MS5525_ENABLED AP_AIRSPEED_ENABLED
 #endif
 
 #ifndef AP_AIRSPEED_MSP_ENABLED
