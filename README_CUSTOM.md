@@ -288,6 +288,41 @@ boot, `RCx_REVERSED=1` → starts HIGH. Solves the "VTX powered on
 at boot before the radio is turned on" problem on Matek FCs where
 the video-power pad is active-low.
 
+## Steering assist supports reverse driving
+
+`calc_nav_yaw_ground()` now flips the steering output sign when the
+plane is actually moving backward on the ground. Below 0.5 m/s the
+GPS heading vector is too noisy, so the firmware falls back to the
+`reversed_throttle` flag (the pilot's commanded reverse). Above 0.5
+m/s it compares ground-track direction to aircraft yaw — if they're
+180° apart (within ±90°) the plane is reversing and the steering
+sign is negated.
+
+Without this, ground steering on a rolling reverse takeoff or taxi
+would kick the plane the wrong way. No parameter — behaviour is
+automatic. Mainly useful for taildraggers and pusher props that
+back up under power.
+
+## MAVFTP reliability on low-RAM F4 boards
+
+`MAVFTP` (the MAVLink file-transfer protocol used for log download,
+script upload, param backup, etc.) sometimes failed to initialise
+at boot on F4-class FCs (192 KB RAM) because the lazy init from the
+first FTP request raced with RAM still being fragmented during
+startup. Symptom: the first FTP transaction from your GCS would
+fail outright.
+
+This build retries `ftp_init()` once per second from the main vehicle
+loop until it succeeds. The function is idempotent (returns true
+immediately if the buffer is already allocated), so it's a no-op
+once init succeeds.
+
+Boards that benefit: every F4 board in the supported list
+(MatekF405-Wing, revo-mini-sd, SkystarsF405DJI, qUark mini wing v4,
+SpeedyBee F405 / Wing / V3 / V4 / AIO / Mini, CoreWing F405 Wing,
+Lefei Longbow F405 Wing, FlyingRC F405 mini). H7 boards have
+abundant RAM and weren't affected.
+
 ## `is_flying` heuristic — fixed thresholds
 
 The internal "is this thing actually airborne" detector
@@ -510,6 +545,22 @@ have safe defaults — set them only if you actually need them.
   hand-off when auto-throttle takes over (no THR_CRUISE snap)
 - TECS gliding integrates with the legacy `set_gliding_requested_flag`
   hook, shared with AP_Soaring
+
+---
+
+# EKF / state estimator
+
+**EKF3-only. EKF2 is not compiled in.**
+
+Upstream 4.6.3 already defaults `HAL_NAVEKF2_AVAILABLE` to 0 (in
+`AP_AHRS_config.h:29`, with the comment "EKF2 slated compiled out by
+default in 4.5, slated to be removed"). This fork honours that default
+on every board it targets — neither the firmware binary nor the param
+list contains any EKF2 surface. Set `AHRS_EKF_TYPE = 3` for normal
+operation (already the default).
+
+Boards that explicitly re-enable EKF2 in their hwdef (e.g. upstream's
+`CubeRed-EKF2` test target) are excluded from this fork's CI matrix.
 
 ---
 
