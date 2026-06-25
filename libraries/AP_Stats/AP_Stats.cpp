@@ -16,12 +16,17 @@ const extern AP_HAL::HAL& hal;
 // table of user settable parameters
 const AP_Param::GroupInfo AP_Stats::var_info[] = {
 
-    // @Param: _BOOT_CNT
+    // @Param: _BOOTCNT
     // @DisplayName: Boot Count
     // @Description: Number of times board has been booted
     // @ReadOnly: True
     // @User: Standard
-    AP_GROUPINFO("_BOOT_CNT",    0, AP_Stats, params.boot_count, 0),
+    // Name kept as STAT_BOOTCNT (no underscore between BOOT and CNT) to
+    // match upstream's name; the fork's earlier "_BOOT_CNT" form broke
+    // autotest scripts that fetch the param by name. Storage is by key+
+    // index (slot 0), so saved values from the prior name migrate
+    // transparently on first load.
+    AP_GROUPINFO("_BOOTCNT",    0, AP_Stats, params.boot_count, 0),
 
     // @Param: _FLT_TIME
     // @DisplayName: Total flight time
