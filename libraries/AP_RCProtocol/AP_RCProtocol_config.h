@@ -10,15 +10,22 @@
 #endif
 
 #ifndef AP_RCPROTOCOL_BACKEND_DEFAULT_ENABLED
-#define AP_RCPROTOCOL_BACKEND_DEFAULT_ENABLED AP_RCPROTOCOL_ENABLED
+// Light variant: flip the global RC-protocol backend default to OFF, then
+// re-enable just CRSF + SBUS + DroneCAN below — the dominant receivers
+// for ELRS / TBS Crossfire / DJI / DroneCAN-RX hardware. Mirrors mf0o's
+// "Disable useless RCIN protocols" commit.
+#define AP_RCPROTOCOL_BACKEND_DEFAULT_ENABLED 0
 #endif
 
 #ifndef AP_RCPROTOCOL_CRSF_ENABLED
-#define AP_RCPROTOCOL_CRSF_ENABLED AP_RCPROTOCOL_BACKEND_DEFAULT_ENABLED
+// Light variant: keep CRSF (covers ELRS + TBS Crossfire — by far the most
+// common modern receivers).
+#define AP_RCPROTOCOL_CRSF_ENABLED AP_RCPROTOCOL_ENABLED
 #endif
 
 #ifndef AP_RCPROTOCOL_DRONECAN_ENABLED
-#define AP_RCPROTOCOL_DRONECAN_ENABLED AP_RCPROTOCOL_BACKEND_DEFAULT_ENABLED && HAL_ENABLE_DRONECAN_DRIVERS
+// Light variant: keep DroneCAN-attached receivers.
+#define AP_RCPROTOCOL_DRONECAN_ENABLED AP_RCPROTOCOL_ENABLED && HAL_ENABLE_DRONECAN_DRIVERS
 #endif
 
 #ifndef AP_RCPROTOCOL_DSM_ENABLED
@@ -49,7 +56,8 @@
 #endif
 
 #ifndef AP_RCPROTOCOL_SBUS_ENABLED
-#define AP_RCPROTOCOL_SBUS_ENABLED AP_RCPROTOCOL_BACKEND_DEFAULT_ENABLED
+// Light variant: keep SBUS (FrSky / Futaba / older Crossfire mode).
+#define AP_RCPROTOCOL_SBUS_ENABLED AP_RCPROTOCOL_ENABLED
 #endif
 
 #ifndef AP_RCPROTOCOL_SRXL_ENABLED
