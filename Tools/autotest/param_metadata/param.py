@@ -125,6 +125,7 @@ known_units = {
              'mGauss/A': 'milligauss per ampere' ,
              'mAh'     : 'milliampere hour'      ,
              'Ah'      : 'ampere hour'           ,
+             'Wh'      : 'watt hour'             ,
              'A/V'     : 'ampere per volt'       ,
              'm/V'     : 'meters per volt'       ,
              'gravities': 'standard acceleration due to gravity' , # g_n would be a more correct unit, but IMHO no one understands what g_n means
