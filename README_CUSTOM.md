@@ -661,5 +661,10 @@ Items evaluated and deliberately skipped, with reasoning:
   DJI O3 home/waypoint arrow direction fix, and the `SpeedyBeeF405WING`
   target. All three landed in ArduCustom, made their way into upstream
   4.6.3, and are present in this fork by inheritance.
+- **[@wvarty](https://github.com/wvarty)** — the CRSF `RSSIDBM` /
+  `RC_SNR` / `RC_ANT` OSD elements and the RF-Mode-on-LQ element
+  (originally ArduCustom PR #78), plus the "un-cap RF_Mode for CRSF
+  protocol" change (PR #205). Same path — landed in ArduCustom, then
+  upstream merged it, then we inherited it in 4.6.3.
 - **Upstream ArduPilot dev team** — the underlying platform.
 - Authoring assistance via Claude Code (Anthropic).
