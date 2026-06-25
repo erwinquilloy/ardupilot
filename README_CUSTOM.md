@@ -109,6 +109,22 @@ The timer resets whenever the stick returns to zero or the plane
 leaves the pre-launch suppressed-throttle state. A GCS text
 `TKOFF idle THR timer started` fires when the timer begins.
 
+### Pre-launch audio cues
+
+The buzzer/ToneAlarm plays distinct cont tones during the pre-launch
+sequence so the pilot doesn't have to watch the GCS:
+
+| State | Tone | Meaning |
+|-------|------|---------|
+| `TKOFS_WAITING_TO_RAISE_THROTTLE` | Rapid triple-beep loop | Stick is at zero in pre-launch — raise it to start the idle ramp |
+| `TKOFS_WAITING_FOR_IDLE_THROTTLE` | Rising scale (`cdefgab`) | Stick is up, idle throttle is ramping (or `TKOFF_IDL_DELAY` timer is still running) |
+| `TKOFS_WAITING_FOR_LAUNCH` | Slow steady beep | At idle throttle, waiting for launch detection to fire |
+| `TKOFS_IDLE` | (silent) | Default; takeoff sequence not active |
+
+Tones loop until the state changes — works the same way pre-arm and
+EKF-failsafe cont tones do. No parameter to enable; it's automatic
+whenever `TKOFF_THR_IDLE` is configured.
+
 ### Pilot altitude control during TAKEOFF loiter
 
 After the initial climb in `TAKEOFF` mode, the plane enters a loiter
