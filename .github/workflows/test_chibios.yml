@@ -169,6 +169,13 @@ jobs:
         exclude:
           - gcc: 10
             toolchain: chibios-clang
+          # Fork-only: fmuv2's 1 MB F4 flash can't fit our accumulated fork
+          # additions (AP_Stats rewrite, AP_BattMonitor expansion, Course
+          # Hold mode, FS emergency landing state machine, etc.) even with
+          # upstream's minimize_features.inc already applied to the board.
+          # Skip the build on our fork; revisit if we add a fork-side
+          # minimize-further include that strips our specific additions.
+          - config: fmuv2-plane
 
     steps:
       # git checkout the PR
