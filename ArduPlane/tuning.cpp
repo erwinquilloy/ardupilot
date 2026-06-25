@@ -12,7 +12,7 @@ const AP_Param::GroupInfo AP_Tuning_Plane::var_info[] = {
     // @Param: PARAM
     // @DisplayName: Transmitter tuning parameter or set of parameters
     // @Description: This sets which parameter or set of parameters will be tuned. Values greater than 100 indicate a set of parameters rather than a single parameter. Parameters less than 50 are for QuadPlane vertical lift motors only.
-    // @Values: 0:None,1:RateRollPI,2:RateRollP,3:RateRollI,4:RateRollD,5:RatePitchPI,6:RatePitchP,7:RatePitchI,8:RatePitchD,9:RateYawPI,10:RateYawP,11:RateYawI,12:RateYawD,13:AngleRollP,14:AnglePitchP,15:AngleYawP,16:PosXYP,17:PosZP,18:VelXYP,19:VelXYI,20:VelZP,21:AccelZP,22:AccelZI,23:AccelZD,24:RatePitchFF,25:RateRollFF,26:RateYawFF,50:FixedWingRollP,51:FixedWingRollI,52:FixedWingRollD,53:FixedWingRollFF,54:FixedWingPitchP,55:FixedWingPitchI,56:FixedWingPitchD,57:FixedWingPitchFF,101:Set_RateRollPitch,102:Set_RateRoll,103:Set_RatePitch,104:Set_RateYaw,105:Set_AngleRollPitch,106:Set_VelXY,107:Set_AccelZ,108:Set_RatePitchDP,109:Set_RateRollDP,110:Set_RateYawDP
+    // @Values: 0:None,1:RateRollPI,2:RateRollP,3:RateRollI,4:RateRollD,5:RatePitchPI,6:RatePitchP,7:RatePitchI,8:RatePitchD,9:RateYawPI,10:RateYawP,11:RateYawI,12:RateYawD,13:AngleRollP,14:AnglePitchP,15:AngleYawP,16:PosXYP,17:PosZP,18:VelXYP,19:VelXYI,20:VelZP,21:AccelZP,22:AccelZI,23:AccelZD,24:RatePitchFF,25:RateRollFF,26:RateYawFF,50:FixedWingRollP,51:FixedWingRollI,52:FixedWingRollD,53:FixedWingRollFF,54:FixedWingPitchP,55:FixedWingPitchI,56:FixedWingPitchD,57:FixedWingPitchFF,58:QModeFwdThr,59:PitchTrim,62:TECS_THR_FF_DAMP,63:TECS_THR_FF_FILT,92:Q_TRIM_PITCH,101:Set_RateRollPitch,102:Set_RateRoll,103:Set_RatePitch,104:Set_RateYaw,105:Set_AngleRollPitch,106:Set_VelXY,107:Set_AccelZ,108:Set_RatePitchDP,109:Set_RateRollDP,110:Set_RateYawDP,111:Set_TECS_THR_FF
     // @User: Standard
     AP_GROUPINFO("PARAM", 1, AP_Tuning_Plane, parmset, 0),
 
@@ -112,6 +112,7 @@ const AP_Tuning_Plane::tuning_name AP_Tuning_Plane::tuning_names[] = {
     { TUNING_TECS_THR_FF_DAMP, "TTHR_FF_DAMP" },
     { TUNING_TECS_THR_FF_FILT, "TTHR_FF_FILT" },
     { TUNING_PITCH_TRIM,   "PitchTrim" },
+    { TUNING_Q_TRIM_PITCH, "Q_TRIM_PITCH" },
     { TUNING_NONE, nullptr }
 };
 
@@ -246,6 +247,11 @@ AP_Float *AP_Tuning_Plane::get_param_pointer(uint8_t parm)
 
     case TUNING_PITCH_TRIM:
         return &plane.g.pitch_trim;
+
+#if HAL_QUADPLANE_ENABLED
+    case TUNING_Q_TRIM_PITCH:
+        return &plane.quadplane.ahrs_trim_pitch;
+#endif
     }
     return nullptr;
 }

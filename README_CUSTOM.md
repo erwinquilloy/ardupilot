@@ -407,6 +407,17 @@ or aircraft. Reset alongside the other stats via `STAT_RESET`.
 
 # Quadplane / VTOL
 
+## `Q_TRIM_PITCH` is now knob-tunable
+
+`Q_TRIM_PITCH` (the AHRS pitch trim used by QuadPlane's hover
+attitude reference) can be assigned to the in-flight tuning knob via
+`TUNE_PARAM = 92` (TUNING_Q_TRIM_PITCH). Same shape as `PTCH_TRIM_DEG`
+being knob-tunable for fixed-wing.
+
+- `TUNE_PARAM = 92`, `TUNE_CHAN = <RC channel>`, `TUNE_RANGE = <max-multiplier>`
+- Active only when QuadPlane is enabled
+- OSD `OSDx_TUNED_PN` / `OSDx_TUNED_PV` display the live value
+
 ## `Q_M_FRTB_RATIO` — Tri-frame front/rear thrust balance
 
 Scales the rear motor's thrust output relative to the front pair on
