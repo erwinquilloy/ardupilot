@@ -34,10 +34,12 @@ Fork-specific board work covers:
 - **revo-mini-sd** *(custom target)*
 - **SkystarsF405DJI** *(custom target)*
 - **qUark mini wing v4** *(custom target)*
+- **NeutronRC_H7_BT** *(custom target, H743, ported from ArduCustom)*
 - **OMNIBUSF7V2** — quadplane disabled to fit the firmware
 - All stock-upstream boards build and run as-is, including: SpeedyBee
-  F405 / F405 Wing, CoreWing F405 Wing, Lefei Longbow F405 Wing,
-  FlyingRC F405 mini, Holybro Kakute H743 Wing
+  F405 / F405 Wing / F405 V3 / F405 V4 / F405 AIO / F405 Mini,
+  CoreWing F405 Wing, Lefei Longbow F405 Wing, FlyingRC F405 mini,
+  Holybro Kakute H743 Wing
 
 Other boards in the upstream tree still build; only the boards above
 have been actively validated.
