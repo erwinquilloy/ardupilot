@@ -25,6 +25,7 @@ public:
 
     HAL_Semaphore &get_semaphore(void) { return _sem; }
 
+    uint32_t get_current_flight_time_s(void);
     uint32_t get_boot_flying_time_s(void);
     uint32_t get_flight_time_s(void) { return get_boot_flying_time_s(); }  // upstream-compat alias
     uint32_t get_total_flying_time_s(void);
@@ -105,6 +106,7 @@ private:
         AP_Int32 flying_air_traveled;
         AP_Float flying_energy;
         AP_Int32 flight_count;
+        AP_Int32 flight_time_max;
 
         AP_Float avg_ground_speed_mps;
         AP_Float max_ground_speed_mps;
@@ -152,6 +154,7 @@ private:
     bool     _air_speeds_are_available = false;
     bool     _esc_temperatures_are_available = false;
 
+    uint32_t _current_flight_time_ms = 0;
     uint32_t _boot_flying_time_ms = 0;
     float    _boot_flying_ground_traveled_m = 0;
     float    _boot_flying_air_traveled_m = 0;
