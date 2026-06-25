@@ -5,6 +5,7 @@
 
 #include <AP_Common/AP_Common.h>
 #include <AP_Param/AP_Param.h>
+#include <AP_BattMonitor/AP_BattMonitor_config.h>  // for AP_BATTERY_ENABLED gate
 
 class AP_Stats
 {
@@ -211,8 +212,10 @@ private:
     void update_flying_time(uint32_t flying_update_delta);
     void update_flying_travel(uint32_t flying_update_delta, uint32_t old_flying_sample_count, uint32_t new_flying_sample_count);
     void update_flying_distances_and_speeds(uint32_t flying_update_delta, uint32_t old_flying_sample_count, uint32_t new_flying_sample_count);
+#if AP_BATTERY_ENABLED
     void update_flying_current_and_power(uint32_t old_flying_sample_count, uint32_t new_flying_sample_count);
     void update_battery(void);
+#endif
     void update_flying_rc(uint32_t old_flying_sample_count, uint32_t new_flying_sample_count);
     void update_flying_esc(uint32_t old_flying_sample_count, uint32_t new_flying_sample_count);
     bool has_been_flying_for_at_least_s(uint32_t time_s);
