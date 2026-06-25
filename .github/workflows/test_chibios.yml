@@ -176,6 +176,10 @@ jobs:
           # Skip the build on our fork; revisit if we add a fork-side
           # minimize-further include that strips our specific additions.
           - config: fmuv2-plane
+          # Fork-only: CubeRed-EKF2 hits the same flash overflow as fmuv2.
+          # Plus we're disabling EKF2 by default (see hwdef policy), so the
+          # CubeRed-EKF2 build target is doubly irrelevant on this fork.
+          - config: CubeRed-EKF2
 
     steps:
       # git checkout the PR

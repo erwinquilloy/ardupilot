@@ -381,6 +381,7 @@ void AP_Stats::update_flying_travel(uint32_t flying_update_delta, uint32_t old_f
     }
 }
 
+#if AP_BATTERY_ENABLED
 void AP_Stats::update_flying_current_and_power(uint32_t old_flying_sample_count, uint32_t new_flying_sample_count)
 {
     AP_BattMonitor &battery = AP::battery();
@@ -399,7 +400,9 @@ void AP_Stats::update_flying_current_and_power(uint32_t old_flying_sample_count,
         _boot_avg_flying_power_w = (_boot_avg_flying_power_w * old_flying_sample_count + power) / new_flying_sample_count;
     }
 }
+#endif  // AP_BATTERY_ENABLED
 
+#if AP_BATTERY_ENABLED
 void AP_Stats::update_battery(void)
 {
     AP_BattMonitor &battery = AP::battery();
@@ -433,6 +436,7 @@ void AP_Stats::update_battery(void)
         _boot_min_cell_voltage_v = fminf(_boot_min_cell_voltage_v, cell_voltage);
     }
 }
+#endif  // AP_BATTERY_ENABLED
 
 void AP_Stats::update_flying_rc(uint32_t old_flying_sample_count, uint32_t new_flying_sample_count)
 {
@@ -561,7 +565,9 @@ void AP_Stats::update()
 
                     update_flying_time(flying_slow_update_delta);
                     update_flying_distances_and_speeds(flying_slow_update_delta, _flying_slow_update_sample_count, new_flying_slow_update_sample_count);
+#if AP_BATTERY_ENABLED
                     update_flying_current_and_power(_flying_slow_update_sample_count, new_flying_slow_update_sample_count);
+#endif
 
                     update_flying_rc(_flying_slow_update_sample_count, new_flying_slow_update_sample_count);
 
@@ -583,7 +589,9 @@ void AP_Stats::update()
         if (_last_slow_update_tstamp_ms) {
             if (now_ms - _last_slow_update_tstamp_ms >= 100) {
                 _last_slow_update_tstamp_ms = now_ms;
+#if AP_BATTERY_ENABLED
                 update_battery();
+#endif
             }
         } else {
             _last_slow_update_tstamp_ms = now_ms;
