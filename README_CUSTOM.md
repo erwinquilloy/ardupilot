@@ -93,6 +93,22 @@ Snap-to-zero when the stick is dropped is instant regardless of slew
 rate. `THR_SUPP_MAN = 1` still takes precedence (continuous manual
 passthrough) — set `THR_SUPP_MAN = 0` to let idle throttle take over.
 
+### `TKOFF_IDL_DELAY` — pause before idle ramp
+
+Optional delay (seconds) between the pilot first raising the stick
+and the throttle starting to ramp toward `TKOFF_THR_IDLE`. Mainly
+useful for ICE engines that want a fixed "warm at idle" pause
+before being commanded up.
+
+- `TKOFF_IDL_DELAY = 0` (default) — no delay, idle ramp starts
+  immediately on stick-up
+- `TKOFF_IDL_DELAY = 5` — hold throttle at 0 for 5 s after first
+  stick-up, then start the idle ramp normally
+
+The timer resets whenever the stick returns to zero or the plane
+leaves the pre-launch suppressed-throttle state. A GCS text
+`TKOFF idle THR timer started` fires when the timer begins.
+
 ### Pilot altitude control during TAKEOFF loiter
 
 After the initial climb in `TAKEOFF` mode, the plane enters a loiter
