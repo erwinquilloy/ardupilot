@@ -254,6 +254,12 @@ private:
     AP_YawController yawController{aparm};
     AP_SteerController steerController{};
 
+    // TKOFF_IDL_DELAY (ArduCustom #185): tstamp the first tick on which
+    // the pilot's stick goes non-zero in pre-launch suppressed-throttle
+    // state. 0 = timer not running; set_throttle() resets to 0 whenever
+    // we leave the idle-throttle path.
+    uint32_t takeoff_delay_start_tstamp_ms = 0;
+
     // Training mode
     bool training_manual_roll;  // user has manual roll control
     bool training_manual_pitch; // user has manual pitch control

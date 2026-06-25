@@ -1435,6 +1435,15 @@ const AP_Param::GroupInfo ParametersG2::var_info[] = {
     // @User: Standard
     AP_GROUPINFO("TKOFF_IDL_SRATE", 46, ParametersG2, takeoff_idle_thr_slewrate, 0),
 
+    // @Param: TKOFF_IDL_DELAY
+    // @DisplayName: Takeoff idle throttle delay
+    // @Description: Seconds the throttle stays at 0 after the stick is first raised before it starts ramping toward TKOFF_THR_IDLE. Useful for ICE engines to settle at idle before going up. Default 0 = no delay (idle ramp starts immediately on stick-up). Resets each time the stick returns to zero.
+    // @Units: s
+    // @Range: 0 120
+    // @Increment: 1
+    // @User: Standard
+    AP_GROUPINFO("TKOFF_IDL_DELAY", 45, ParametersG2, takeoff_idle_thr_delay, 0),
+
     // @Param: TKOFF_THR_IDLE
     // @DisplayName: Idle throttle for takeoff
     // @Description: Throttle to hold before launch when the throttle stick is raised, while in an auto-takeoff state of AUTO (NAV_TAKEOFF) or TAKEOFF mode. Useful for keeping an ICE engine running at idle before launch or for spinning an electric motor at a low RPM ready to launch. When 0 (default) this feature is disabled and the throttle stays at 0 until takeoff is triggered.

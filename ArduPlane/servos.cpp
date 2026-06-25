@@ -652,11 +652,31 @@ void Plane::set_throttle(void)
         } else if (in_pre_takeoff && !is_zero(g2.takeoff_idle_thr) && !is_zero(get_throttle_input(false))) {
             // Pre-launch idle throttle: hold TKOFF_THR_IDLE while the stick is raised,
             // climbing to it at TKOFF_IDL_SRATE (slew rate applied via throttle_slew_limit()).
-            SRV_Channels::set_output_scaled(SRV_Channel::k_throttle, g2.takeoff_idle_thr.get());
+            float idle_throttle = g2.takeoff_idle_thr.get();
+
+            // ArduCustom #185: optional delay between first stick-up and idle ramp.
+            // TKOFF_IDL_DELAY (s, default 0 = no delay) holds throttle at 0 for the
+            // configured duration after the timer starts, useful for ICE engines to
+            // settle at idle before going up. Timer starts on first non-zero stick
+            // tick in this state and resets when we fall out of the path below.
+            const uint8_t delay_s = MAX(0, g2.takeoff_idle_thr_delay.get());
+            if (delay_s > 0) {
+                const uint32_t now = AP_HAL::millis();
+                if (takeoff_delay_start_tstamp_ms == 0) {
+                    takeoff_delay_start_tstamp_ms = now;
+                    gcs().send_text(MAV_SEVERITY_INFO, "TKOFF idle THR timer started");
+                    idle_throttle = 0;
+                } else if (now - takeoff_delay_start_tstamp_ms < uint32_t(delay_s) * 1000) {
+                    idle_throttle = 0;
+                }
+            }
+            SRV_Channels::set_output_scaled(SRV_Channel::k_throttle, idle_throttle);
 
         } else {
-            // default
+            // default — reset the TKOFF_IDL_DELAY timer so it re-arms next time
+            // the pilot raises the stick in the pre-launch suppressed path
             SRV_Channels::set_output_scaled(SRV_Channel::k_throttle, 0.0);
+            takeoff_delay_start_tstamp_ms = 0;
 
         }
     }

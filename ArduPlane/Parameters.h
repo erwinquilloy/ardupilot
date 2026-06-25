@@ -544,6 +544,7 @@ public:
     // a small throttle the moment the pilot raises the stick.
     AP_Float takeoff_idle_thr;
     AP_Int8  takeoff_idle_thr_slewrate;
+    AP_Int8  takeoff_idle_thr_delay;
 
     // Servo autotrim "finished" threshold: ONCE mode declares a surface
     // trimmed when the abs cumulative trim adjustment over 10 s is below
