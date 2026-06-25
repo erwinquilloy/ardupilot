@@ -585,6 +585,30 @@ int16_t Plane::calc_nav_yaw_ground(void)
         int32_t yaw_error_cd = -ToDeg(steer_state.locked_course_err)*100;
         steering = steerController.get_steering_out_angle_error(yaw_error_cd);
     }
+
+    // ArduCustom 1a7cc69c6e: flip the steering sign when actually moving
+    // backwards on the ground. Below 0.5 m/s the GPS heading vector is
+    // noisy, so fall back to the reversed_throttle flag; above 0.5 m/s
+    // use the angle between ground-track and aircraft heading to detect
+    // actual reverse motion. Without this, steering on a rolling reverse
+    // takeoff/landing kicks the plane the wrong way.
+    Vector2f gv;
+    float yaw_rad;
+    {
+        WITH_SEMAPHORE(ahrs.get_semaphore());
+        gv = ahrs.groundspeed_vector();
+        yaw_rad = ahrs.get_yaw();
+    }
+    bool reversing = reversed_throttle;
+    const float gspd = gv.length();
+    if (gspd > 0.5f) {
+        const float angle = degrees(wrap_2PI(atan2f(gv.y, gv.x) - yaw_rad));
+        reversing = angle >= 90 && angle <= 270;
+    }
+    if (reversing) {
+        steering = -steering;
+    }
+
     return constrain_int16(steering, -4500, 4500);
 }
 
