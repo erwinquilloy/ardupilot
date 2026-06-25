@@ -3,9 +3,14 @@
 
 bool ModeRTL::_enter()
 {
+    // Fork PR #158: clear the L1 controller's reached-loiter latch so the
+    // RTL_ALT_HOME descent logic doesn't fire on a stale circle from a
+    // prior loiter session.
+    plane.nav_controller->reset_reached_loiter_target();
     plane.prev_WP_loc = plane.current_loc;
     plane.do_RTL(plane.get_RTL_altitude_cm());
     plane.rtl.done_climb = false;
+    plane.rtl.reached_home_altitude = false;
     // remember whether this RTL was triggered by RC failsafe so the
     // RTL_CLIMB_FIRST_ONLY_IN_FS option can keep applying the climb-first
     // logic for the duration of this RTL even if the link recovers
@@ -160,11 +165,12 @@ void ModeRTL::navigate()
 
         switch (plane.rtl.emergency_landing_status) {
             case Plane::FSEmergencyLandingStatus::INACTIVE:
-                // ADAPTATION: fork uses (reached_loiter_target && rtl.reached_home_altitude),
-                //  but rtl.reached_home_altitude is tied to RTL_MANUAL_ALT_CONTROL which we
-                //  haven't ported. reached_loiter_target() alone is close enough -- the plane
-                //  is at the home loiter point when this fires.
-                if (plane.reached_loiter_target()) {
+                // Fork PR #158 + #194: only start the FS emergency-landing
+                // timer once the plane has reached the home loiter AND
+                // settled at RTL_ALT_HOME (or RTL_ALTITUDE if RTL_ALT_HOME
+                // is -1). The reached_home_altitude flag is set by the
+                // RTL_ALT_HOME descent block below.
+                if (plane.reached_loiter_target() && plane.rtl.reached_home_altitude) {
                     plane.rtl.emergency_landing_tstamp_ms = now;
                     plane.rtl.emergency_landing_status = Plane::FSEmergencyLandingStatus::DELAY;
                 } else {
@@ -263,6 +269,28 @@ void ModeRTL::navigate()
         plane.rtl.emergency_landing_tstamp_ms = 0;
     }
     // (auto-disarm on touchdown is now driven from inside the GLIDING_NO_RETURN case)
+
+    // Fork PR #158: once the plane has reached the home loiter target,
+    // descend/climb to RTL_ALT_HOME (if configured). The fork's original
+    // condition also checks RTL_MANUAL_ALT_CONTROL (FlightOptions bit from
+    // PR #155, not ported), but with that flag absent the simplified gate
+    // here is always "descend after reaching the loiter target".
+    if (plane.reached_loiter_target()) {
+        int32_t home_altitude_cm;
+        if (plane.g.RTL_home_altitude > -1) {
+            home_altitude_cm = plane.get_home_RTL_altitude_cm();
+            plane.next_WP_loc.set_alt_cm(home_altitude_cm, Location::AltFrame::ABSOLUTE);
+            plane.setup_terrain_target_alt(plane.next_WP_loc);
+            plane.set_target_altitude_location(plane.next_WP_loc);
+        } else {
+            home_altitude_cm = plane.get_RTL_altitude_cm();
+        }
+        plane.rtl.done_climb = true;
+        // 5 m tolerance, like the fork
+        if (abs(home_altitude_cm - plane.current_loc.alt) < 500) {
+            plane.rtl.reached_home_altitude = true;
+        }
+    }
 
     uint16_t radius = abs(plane.g.rtl_radius);
     if (radius > 0) {
