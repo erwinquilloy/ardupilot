@@ -908,7 +908,16 @@ MSPCommandResult AP_MSP_Telem_Backend::msp_process_out_attitude(sbuf_t *dst)
     {
         AP_AHRS &ahrs = AP::ahrs();
         WITH_SEMAPHORE(ahrs.get_semaphore());
+#ifndef HAL_BUILD_AP_PERIPH
+        // Vehicle builds: route through AP::vehicle()->get_osd_roll_pitch_rad()
+        // so Plane subtracts PTCH_TRIM_DEG and VTOL overrides apply.
         AP::vehicle()->get_osd_roll_pitch_rad(roll, pitch);
+#else
+        // AP_Periph builds: AP::vehicle() isn't compiled in. Fall back to
+        // raw AHRS attitude — AP_Periph doesn't have OSD/trim overrides anyway.
+        roll = ahrs.get_roll();
+        pitch = ahrs.get_pitch();
+#endif
         yaw_cd = ahrs.yaw_sensor;
     }
 
