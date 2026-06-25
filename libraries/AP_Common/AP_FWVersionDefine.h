@@ -30,8 +30,10 @@
 #define ACTIVE_FWSTR AP_CUSTOM_FIRMWARE_STRING
 #define ORIGINAL_FWSTR THISFIRMWARE
 #else
-#define ACTIVE_FWSTR THISFIRMWARE
-#define ORIGINAL_FWSTR nullptr
+// Light variant: mark the firmware so users can tell it apart from the
+// full master_custom_4.6.3 binary in mavlink AUTOPILOT_VERSION / .apj.
+#define ACTIVE_FWSTR THISFIRMWARE " Light"
+#define ORIGINAL_FWSTR THISFIRMWARE
 #endif
 
 /**
