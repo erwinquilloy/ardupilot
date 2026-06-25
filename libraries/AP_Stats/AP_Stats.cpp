@@ -1,5 +1,16 @@
 #include "AP_Stats.h"
 
+// AP_Stats is built into vehicle binaries AND into AP_Periph builds.
+// On AP_Periph, APM_BUILD_DIRECTORY is undefined → APM_BUILD_TYPE is
+// undefined → using it in #if trips -Werror=undef. Define a defined-
+// everywhere helper instead.
+#include <AP_Vehicle/AP_Vehicle_Type.h>
+#ifdef APM_BUILD_DIRECTORY
+#define AP_STATS_BUILD_IS_PLANE APM_BUILD_TYPE(APM_BUILD_ArduPlane)
+#else
+#define AP_STATS_BUILD_IS_PLANE 0
+#endif
+
 #include <AP_Math/AP_Math.h>
 #include <AP_RTC/AP_RTC.h>
 
@@ -67,7 +78,7 @@ const AP_Param::GroupInfo AP_Stats::var_info[] = {
     // @User: Standard
     AP_GROUPINFO("_FLT_ENERGY",  5, AP_Stats, params.flying_energy, 0),
 
-#if defined(APM_BUILD_DIRECTORY) && APM_BUILD_TYPE(APM_BUILD_ArduPlane)
+#if AP_STATS_BUILD_IS_PLANE
     // @Param: _TRAVEL_AIR
     // @DisplayName: Total air distance traveled
     // @Description: Total air distance traveled
@@ -93,7 +104,7 @@ const AP_Param::GroupInfo AP_Stats::var_info[] = {
     // @User: Standard
     AP_GROUPINFO("_GSPD_MAX",    8, AP_Stats, params.max_ground_speed_mps, 0),
 
-#if defined(APM_BUILD_DIRECTORY) && APM_BUILD_TYPE(APM_BUILD_ArduPlane)
+#if AP_STATS_BUILD_IS_PLANE
     // @Param: _ASPD_AVG
     // @DisplayName: Average air speed
     // @Description: Average air speed
@@ -427,11 +438,13 @@ void AP_Stats::update_battery(void)
 
 void AP_Stats::update_flying_rc(uint32_t old_flying_sample_count, uint32_t new_flying_sample_count)
 {
+#if AP_RSSI_ENABLED
     // minimum RSSI
     AP_RSSI *ap_rssi = AP_RSSI::get_singleton();
     if (ap_rssi) {
         _boot_min_rc_rssi = fminf(_boot_min_rc_rssi, ap_rssi->read_receiver_rssi());
     }
+#endif
 
 #if AP_OSD_LINK_STATS_EXTENSIONS_ENABLED
     // minimum RSSI dBm — only when the CRSF protocol carries extended link
