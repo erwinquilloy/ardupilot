@@ -395,6 +395,14 @@ Stats themselves are armed-relative (pre-arm baseline captured,
 deltas accumulated armed); wind stats are gated until 30 s of flight
 time has accumulated.
 
+### Persistent maximum-flight-time stat
+
+`STAT_FLT_TIME_MX` (seconds, read-only, persisted) — the longest
+single-flight duration ever recorded since last reset. Captured at
+takeoff/landing transition (`set_flying(false)` path) and at every
+30 s flush tick. Useful for endurance comparisons across batteries
+or aircraft. Reset alongside the other stats via `STAT_RESET`.
+
 ---
 
 # Battery monitoring (AP_BattMonitor)
