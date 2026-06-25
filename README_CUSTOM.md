@@ -1,4 +1,39 @@
-# ArduPlane Custom Build
+# ArduPlane Custom Build — **LIGHT VARIANT**
+
+> 🪶 **This is the light variant of the fork.** A stripped-down build
+> that fits more easily on F4 boards. For the full-features build, see
+> the [`master_custom_4.6.3`](../../tree/master_custom_4.6.3) branch.
+>
+> Inspired by mf0o's [`master_custom_light`](https://github.com/mf0o/ardupilot/tree/master_custom_light)
+> fork of ArduCustom. Same intent: distribute a smaller-binary variant
+> for board operators who don't need every protocol backend.
+
+## What's stripped vs. the full variant
+
+The following are compiled out of the light binary by default. A
+per-board hwdef can re-enable any of them via the matching
+`define AP_<X>_ENABLED 1`.
+
+| Family | Kept (in light) | Stripped (not in light) |
+|---|---|---|
+| **Servo drivers** | PWM, DShot, S.BUS-out | Volz, Robotis |
+| **Engine** | Electric (default) | ICE (governor, RPM, choke/ignition/throttle) |
+| **GPS backends** | UBLOX, DroneCAN, MSP | ERB, GSOF, MAV, NMEA, NMEA-Unicore, NOVA, SBF, SBP, SBP2, SIRF |
+| **RC input protocols** | CRSF (ELRS/Crossfire), SBUS, DroneCAN | DSM, FPORT, FPORT2, IBUS, PPMSUM, SRXL, SUMD, ST24, GHST, MAVRADIO |
+| **Battery monitor backends** | Analog, ESC telem, DroneCAN | BEBOP, EFI, SMBUS, FuelFlow/Level, Generator, INA2xx, INA3221, Sum, SynDev |
+| **Rangefinder backends** | Analog, MAVLink | Benewake, LightWare, MaxBotix, NoopLoop, USD1, Wasp, Ainstein, BLPing, NRA24, GYUS42, others |
+| **Airspeed backends** | Analog, MS4525, MSP, DroneCAN | ASP5033, DLVR, MS5525, NMEA, SDP3X |
+| **EKF** | EKF3 (same as full variant) | EKF2 (off in full variant too, per upstream 4.6.3 default) |
+
+All fork features described below are unchanged — Course Hold, idle
+throttle family, AUTO→FBWA stick takeover, OSD additions, stats grid,
+emergency landing state machine, etc. — the strips above are purely
+about which hardware backends compile in.
+
+**Binary size:** SITL build is ~258 KB smaller than the full variant
+(text section), which is a meaningful chunk of flash on 1 MB F4 boards.
+
+---
 
 A curated fork of ArduPlane, rebased onto upstream **ArduPlane 4.6.3**
 (tag `Plane-4.6.3`, commit `3fc7011a7d`). This branch carries a set of
