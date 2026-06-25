@@ -12,7 +12,11 @@
 #endif
 
 #ifndef AP_RANGEFINDER_BACKEND_DEFAULT_ENABLED
-#define AP_RANGEFINDER_BACKEND_DEFAULT_ENABLED AP_RANGEFINDER_ENABLED
+// Light variant: flip the global rangefinder-backend default to OFF.
+// Most FPV/wing builds use a single MAVLink-streamed rangefinder if any.
+// Re-enable Analog + MAVLink + Lightware + DroneCAN below as the common
+// modern topologies. Mirrors mf0o's "Disable useless rangefinders" commit.
+#define AP_RANGEFINDER_BACKEND_DEFAULT_ENABLED 0
 #endif
 
 #ifndef AP_RANGEFINDER_BACKEND_CAN_ENABLED
@@ -20,7 +24,8 @@
 #endif
 
 #ifndef AP_RANGEFINDER_ANALOG_ENABLED
-#define AP_RANGEFINDER_ANALOG_ENABLED AP_RANGEFINDER_BACKEND_DEFAULT_ENABLED
+// Light variant: keep analog rangefinder support (most basic topology).
+#define AP_RANGEFINDER_ANALOG_ENABLED AP_RANGEFINDER_ENABLED
 #endif
 
 #ifndef AP_RANGEFINDER_BBB_PRU_ENABLED
@@ -100,7 +105,9 @@
 #endif
 
 #ifndef AP_RANGEFINDER_MAVLINK_ENABLED
-#define AP_RANGEFINDER_MAVLINK_ENABLED AP_RANGEFINDER_BACKEND_DEFAULT_ENABLED && HAL_GCS_ENABLED
+// Light variant: keep MAVLink-streamed rangefinder (common for VTOL / FPV
+// optical flow stacks where the rangefinder is on a companion computer).
+#define AP_RANGEFINDER_MAVLINK_ENABLED AP_RANGEFINDER_ENABLED && HAL_GCS_ENABLED
 #endif
 
 #ifndef AP_RANGEFINDER_MAXBOTIX_SERIAL_ENABLED
