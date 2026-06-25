@@ -83,6 +83,8 @@ private:
 
         TUNING_TECS_THR_FF_DAMP =             62,
         TUNING_TECS_THR_FF_FILT =             63,
+
+        TUNING_Q_TRIM_PITCH =                 92,
     };
 
     /*
