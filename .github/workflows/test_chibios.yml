@@ -180,6 +180,10 @@ jobs:
           # Plus we're disabling EKF2 by default (see hwdef policy), so the
           # CubeRed-EKF2 build target is doubly irrelevant on this fork.
           - config: CubeRed-EKF2
+          # Fork-only: CubeOrange-PPP (PPP/Networking variant for CubeOrange)
+          # likewise overflows flash with our fork additions. Not on the
+          # actively-flown board list.
+          - config: CubeOrange-PPP
 
     steps:
       # git checkout the PR
