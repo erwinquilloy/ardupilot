@@ -1028,7 +1028,14 @@ private:
     static int gen_dir_entry(char *dest, size_t space, const char * path, const struct dirent * entry); // FTP helper for emitting a dir response
     static void ftp_list_dir(struct pending_ftp &request, struct pending_ftp &response);
 
+    // Idempotent - returns true if already initialised, otherwise attempts
+    // to allocate the request buffer + FTP worker thread. Lifted to the
+    // public surface so the vehicle 1 Hz loop can retry init on low-RAM
+    // MCUs where the lazy init from handle_file_transfer_protocol() can
+    // fail at boot (ArduCustom b7ecb389a6).
+public:
     bool ftp_init(void);
+private:
     void handle_file_transfer_protocol(const mavlink_message_t &msg);
     bool send_ftp_reply(const pending_ftp &reply);
     void ftp_worker(void);

@@ -328,6 +328,15 @@ extern AP_IOMCU iomcu;
 
 void Plane::one_second_loop()
 {
+#if AP_MAVLINK_FTP_ENABLED
+    // Retry MAVFTP init on low-RAM MCUs where the lazy init from the
+    // first FTP request can fail before RAM has settled. ftp_init() is
+    // idempotent so this no-ops once the worker thread is up.
+    if (auto *chan = gcs().chan(0)) {
+        chan->ftp_init();
+    }
+#endif
+
     // make it possible to change control channel ordering at runtime
     set_control_channels();
 
