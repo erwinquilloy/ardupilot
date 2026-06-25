@@ -30,7 +30,11 @@
 #endif
 
 #ifndef AP_GPS_BACKEND_DEFAULT_ENABLED
-#define AP_GPS_BACKEND_DEFAULT_ENABLED AP_GPS_ENABLED
+// Light variant: flip the global GPS-backend default to OFF, then
+// explicitly re-enable just the three backends our typical user actually
+// uses (UBLOX serial GPS, DroneCAN GPS, MSP GPS from a goggles passthrough).
+// Mirrors mf0o's minimize_common.inc pattern.
+#define AP_GPS_BACKEND_DEFAULT_ENABLED 0
 #endif
 
 #if !defined(AP_GPS_BLENDED_ENABLED) && defined(GPS_MAX_INSTANCES)
@@ -46,7 +50,9 @@
 #endif
 
 #ifndef AP_GPS_DRONECAN_ENABLED
-#define AP_GPS_DRONECAN_ENABLED AP_GPS_BACKEND_DEFAULT_ENABLED && HAL_ENABLE_DRONECAN_DRIVERS
+// Light variant: keep DroneCAN GPS regardless of the global default flip,
+// since CAN-attached GPS modules are common on H7 wing builds.
+#define AP_GPS_DRONECAN_ENABLED HAL_ENABLE_DRONECAN_DRIVERS
 #endif
 
 #ifndef AP_GPS_ERB_ENABLED
@@ -62,7 +68,9 @@
 #endif
 
 #ifndef HAL_MSP_GPS_ENABLED
-#define HAL_MSP_GPS_ENABLED AP_GPS_BACKEND_DEFAULT_ENABLED && HAL_MSP_SENSORS_ENABLED
+// Light variant: keep MSP GPS regardless of the global default flip,
+// since OSD goggles often pass through GPS data.
+#define HAL_MSP_GPS_ENABLED HAL_MSP_SENSORS_ENABLED
 #endif
 
 #ifndef AP_GPS_NMEA_ENABLED
@@ -94,7 +102,9 @@
 #endif
 
 #ifndef AP_GPS_UBLOX_ENABLED
-  #define AP_GPS_UBLOX_ENABLED AP_GPS_BACKEND_DEFAULT_ENABLED
+  // Light variant: keep UBLOX serial GPS unconditionally; it's the most
+  // common GPS module for the fork's target boards.
+  #define AP_GPS_UBLOX_ENABLED AP_GPS_ENABLED
 #endif
 
 #ifndef AP_GPS_RTCM_DECODE_ENABLED
