@@ -1,11 +1,11 @@
 # ArduPlane Custom Build
 
-A personal fork of ArduPlane, rebased onto upstream **ArduPlane 4.6.3**
-(tag `Plane-4.6.3`, commit `3fc7011a7d`). This branch carries a curated
-set of additions and behaviour changes on top of stock 4.6.3, mostly
-ported from [shellixyz's classic 2022 fork](https://github.com/shellixyz/ardupilot)
+A curated fork of ArduPlane, rebased onto upstream **ArduPlane 4.6.3**
+(tag `Plane-4.6.3`, commit `3fc7011a7d`). This branch carries a set of
+additions and behaviour changes on top of stock 4.6.3, mostly ported
+from [shellixyz's classic 2022 fork](https://github.com/shellixyz/ardupilot)
 and the maintained successor at [ArduCustom/ardupilot](https://github.com/ArduCustom/ardupilot),
-with a few additions of my own.
+plus a few additions originating in this fork.
 
 > If you fly stock ArduPlane and don't recognise the param names in this
 > document, you are on the wrong firmware — go to [ardupilot.org](https://ardupilot.org)
@@ -27,7 +27,7 @@ below; SITL builds and runs cleanly.
 
 ## Supported boards
 
-Fork-specific board work is scoped to the boards I actually fly:
+Fork-specific board work covers:
 
 - **MatekF405-Wing** — LED-pad-as-relay output, U3 DMA fix, bootloader
   serial wiring
@@ -35,12 +35,12 @@ Fork-specific board work is scoped to the boards I actually fly:
 - **SkystarsF405DJI** *(custom target)*
 - **qUark mini wing v4** *(custom target)*
 - **OMNIBUSF7V2** — quadplane disabled to fit the firmware
-- All stock-upstream boards I use as-is: SpeedyBee F405 / F405 Wing,
-  CoreWing F405 Wing, Lefei Longbow F405 Wing, FlyingRC F405 mini,
-  Holybro Kakute H743 Wing
+- All stock-upstream boards build and run as-is, including: SpeedyBee
+  F405 / F405 Wing, CoreWing F405 Wing, Lefei Longbow F405 Wing,
+  FlyingRC F405 mini, Holybro Kakute H743 Wing
 
-Other boards in the upstream tree still build; I just don't validate
-them.
+Other boards in the upstream tree still build; only the boards above
+have been actively validated.
 
 ---
 
@@ -90,6 +90,23 @@ engine before launch or spin an electric motor at low RPM ready to fly.
 Snap-to-zero when the stick is dropped is instant regardless of slew
 rate. `THR_SUPP_MAN = 1` still takes precedence (continuous manual
 passthrough) — set `THR_SUPP_MAN = 0` to let idle throttle take over.
+
+### Pilot altitude control during TAKEOFF loiter
+
+After the initial climb in `TAKEOFF` mode, the plane enters a loiter
+circle around the target waypoint. The throttle stick now adjusts
+altitude during this loiter phase the same way FBW-B does it — push
+the stick up to climb, pull down to descend — so the pilot can settle
+the plane at the right altitude before flipping to `AUTO` or `RTL`.
+
+No parameter to enable; behaviour is on whenever TAKEOFF is the active
+mode and `flight_stage` is past the initial climb.
+
+> **Not (yet) ported:** manual radius and rotation-direction control
+> during the same loiter phase. Roll-stick input still rolls the plane
+> against the navigation controller, not the loiter geometry. Needs
+> the [pilot-loiter-control prerequisite](https://github.com/ArduCustom/ardupilot/commit/dd65f3275f)
+> from ArduCustom PR #180 first.
 
 ## Pitch trim & tuning knob
 
@@ -359,6 +376,9 @@ auto/RTL/guided. Pilots used to upstream's behaviour can set
 - **DJI FPV / HDZero numeric attitude** — uses
   `get_osd_roll_pitch_rad()` so the goggles match the horizon
 - **5 OSD screens** default (was 4)
+- **Widened OSD sidebars** — wider value columns on the artificial-
+  horizon sidebars so 3- and 4-digit values fit cleanly. Inherited
+  from upstream 4.6.3 (port by [@mf0o](https://github.com/mf0o))
 
 ## Stats grid
 
@@ -508,10 +528,10 @@ stock 4.6.3 build and then load this firmware:
 
 # Deliberately *not* included
 
-Items I considered porting but skipped, with reasoning:
+Items evaluated and deliberately skipped, with reasoning:
 
-- **Angle-control-as-PID rewrite** — large architectural risk; I use
-  upstream's controllers as-is
+- **Angle-control-as-PID rewrite** — large architectural risk; sticking
+  with upstream's controllers
 - **Throttle curves** — upstream now has its own
 - **Stick-mixing removal entirely** — keeping the param exposed is
   more discoverable than deleting it
@@ -522,7 +542,7 @@ Items I considered porting but skipped, with reasoning:
 - **Takeoff audio (`AP_Notify::TKOFS_*`)** — depends on the takeoff
   audio backlog; idle throttle works silently for now
 - **`#164` Plane-only OSD element gating** — namespace cleanup with no
-  Plane-only benefit; I fly Plane only
+  Plane-only benefit; this build targets Plane only
 
 ---
 
@@ -538,11 +558,14 @@ Items I considered porting but skipped, with reasoning:
 
 # Credits
 
-The bulk of the per-feature work originates from **Michel Pastor
-(shellixyz)** at [github.com/ArduCustom/ardupilot](https://github.com/ArduCustom/ardupilot)
-and his earlier `shellixyz/ardupilot`. This branch re-ports a
-curated subset onto a modern 4.6.3 base.
-
-Upstream ArduPilot dev team for the underlying platform.
-
-Built with assistance from Claude Code (Anthropic).
+- **Michel Pastor ([shellixyz](https://github.com/shellixyz))** —
+  bulk of the per-feature work, both in the classic 2022
+  `shellixyz/ardupilot` and the maintained successor at
+  [github.com/ArduCustom/ardupilot](https://github.com/ArduCustom/ardupilot).
+  This branch re-ports a curated subset of that work onto a modern
+  4.6.3 base.
+- **[@mf0o](https://github.com/mf0o)** — widened OSD sidebars (ported
+  from upstream into ArduCustom; present here by inheritance from
+  upstream 4.6.3) and the `SpeedyBeeF405WING` target.
+- **Upstream ArduPilot dev team** — the underlying platform.
+- Authoring assistance via Claude Code (Anthropic).
