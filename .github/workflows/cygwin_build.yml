@@ -142,6 +142,7 @@ concurrency:
 
 jobs:
   build:
+    if: github.repository == 'ArduPilot/ardupilot'
     runs-on: 'windows-latest'
 
     steps:

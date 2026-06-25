@@ -138,6 +138,7 @@ concurrency:
 
 jobs:
   build:
+    if: github.repository == 'ArduPilot/ardupilot'
     runs-on: ubuntu-22.04
     container:
       image: ardupilot/ardupilot-dev-ros:latest

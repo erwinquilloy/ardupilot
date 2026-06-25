@@ -140,6 +140,7 @@ concurrency:
 
 jobs:
   build:
+    if: github.repository == 'ArduPilot/ardupilot'
     runs-on: macos-latest
     strategy:
       fail-fast: false  # don't cancel if a job from the matrix fails
