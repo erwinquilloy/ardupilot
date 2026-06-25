@@ -318,6 +318,12 @@ void Plane::stabilize_stick_mixing_fbw()
         control_mode == &mode_training) {
         return;
     }
+    // Fork PR #155: in RTL with RTL_MANUAL_ALT_CONTROL active, the pilot's
+    // pitch stick is already driving altitude via update_fbwb_speed_height();
+    // skip stick mixing so it doesn't get applied twice.
+    if (control_mode == &mode_rtl && plane.rtl.manual_alt_control) {
+        return;
+    }
     // do FBW style roll stick mixing. We don't treat it linearly however. For
     // inputs up to half the maximum, we use linear addition to the nav_roll.
     // Above that it goes non-linear and ends up as 2x the maximum, to ensure
