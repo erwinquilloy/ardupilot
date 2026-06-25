@@ -32,12 +32,10 @@ const AP_Param::GroupInfo AP_Stats::var_info[] = {
     // @Description: Number of times board has been booted
     // @ReadOnly: True
     // @User: Standard
-    // Name kept as STAT_BOOTCNT (no underscore between BOOT and CNT) to
-    // match upstream's name; the fork's earlier "_BOOT_CNT" form broke
-    // autotest scripts that fetch the param by name. Storage is by key+
-    // index (slot 0), so saved values from the prior name migrate
-    // transparently on first load.
     AP_GROUPINFO("_BOOTCNT",    0, AP_Stats, params.boot_count, 0),
+    // (Suffix kept as STAT_BOOTCNT to match upstream; the prior _BOOT_CNT
+    // form broke autotest. Storage is by key+index so saved values migrate
+    // transparently.)
 
     // @Param: _FLT_TIME
     // @DisplayName: Total flight time
