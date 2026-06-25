@@ -55,6 +55,10 @@ public:
     void update_level_flight(void) override;
     bool reached_loiter_target(void) override;
 
+    // Reset the loiter-target-reached latch (fork PR #158). Just clears
+    // _WPcircle so the next loiter update has to re-detect the circle.
+    void reset_reached_loiter_target(void) override { _WPcircle = false; }
+
     // set the default NAVL1_PERIOD
     void set_default_period(float period) {
         _L1_period.set_default(period);

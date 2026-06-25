@@ -103,6 +103,11 @@ public:
     // the update_loiter() method is used
     virtual bool reached_loiter_target(void) = 0;
 
+    // Reset the reached_loiter_target latch (fork PR #158). Used at RTL
+    // entry so the new RTL_ALT_HOME descent logic doesn't see a stale
+    // "we're already at the loiter target" from a prior loiter session.
+    virtual void reset_reached_loiter_target(void) = 0;
+
     // notify Navigation controller that a new waypoint has just been
     // processed. This means that until we handle an update_XXX() function
     // the data is stale with old navigation information.

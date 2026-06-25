@@ -110,6 +110,18 @@ int32_t Plane::get_RTL_altitude_cm() const
 }
 
 /*
+  return RTL_ALT_HOME altitude as AMSL cm (fork PR #158).
+  Falls back to get_RTL_altitude_cm() when RTL_ALT_HOME is -1 (disabled).
+ */
+int32_t Plane::get_home_RTL_altitude_cm() const
+{
+    if (g.RTL_home_altitude < 0) {
+        return get_RTL_altitude_cm();
+    }
+    return g.RTL_home_altitude*100 + home.alt;
+}
+
+/*
   return relative altitude in meters (relative to terrain, if available,
   or home otherwise)
  */

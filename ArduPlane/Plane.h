@@ -882,6 +882,11 @@ private:
     struct {
         bool done_climb;
         bool triggered_by_rc_failsafe;
+        // Once the plane has reached the home loiter target and matched its
+        // altitude to RTL_ALT_HOME (within 5 m), this is true. Used to gate
+        // the FS emergency-landing timer so it doesn't start counting while
+        // the plane is still in the descent/climb to home altitude.
+        bool reached_home_altitude;
         bool loitering = false;  // fork loiter-radius OSD: true when RTL has reached the home loiter
         // fork PR #194: emergency-landing state machine timestamp + status (replaces the auto_state.* bools from PR #150)
         uint32_t emergency_landing_tstamp_ms;
@@ -984,6 +989,7 @@ private:
     void adjust_altitude_target();
     void setup_glide_slope(void);
     int32_t get_RTL_altitude_cm() const;
+    int32_t get_home_RTL_altitude_cm() const;
     bool rangefinder_use(enum RangeFinderUse rangefinder_use) const;
     float relative_ground_altitude(enum RangeFinderUse rangefinder_use);
     float relative_ground_altitude(enum RangeFinderUse rangefinder_use, bool use_terrain_if_available);

@@ -217,7 +217,7 @@ public:
         k_param_pitch_limit_min,
         k_param_airspeed_cruise,
         k_param_RTL_altitude,
-        k_param_inverted_flight_ch_unused, // unused
+        k_param_RTL_home_altitude,  // was k_param_inverted_flight_ch_unused (re-used by fork PR #158)
         k_param_min_groundspeed,
         k_param_crosstrack_use_wind, // unused
 
@@ -447,6 +447,7 @@ public:
     AP_Int16 dspoiler_rud_rate;
     AP_Int32 log_bitmask;
     AP_Float RTL_altitude;
+    AP_Float RTL_home_altitude;
     AP_Float pitch_trim;
     AP_Float cruise_alt_floor;
 

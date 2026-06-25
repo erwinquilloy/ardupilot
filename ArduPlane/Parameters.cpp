@@ -742,6 +742,13 @@ const AP_Param::Info Plane::var_info[] = {
     // @User: Standard
     GSCALAR(RTL_altitude,        "RTL_ALTITUDE",   ALT_HOLD_HOME),
 
+    // @Param: RTL_ALT_HOME
+    // @DisplayName: Altitude to descend/climb to after reaching home (fork PR #158)
+    // @Description: Once the plane has reached home and entered the RTL loiter, descend or climb to this altitude (in meters above home). Useful for keeping the plane in visual range after the long-distance return. Set to -1 to stay at RTL_ALTITUDE.
+    // @Units: m
+    // @User: Standard
+    GSCALAR(RTL_home_altitude,   "RTL_ALT_HOME",   -1),
+
     // @Param: CRUISE_ALT_FLOOR
     // @DisplayName: Minimum altitude for FBWB and CRUISE mode
     // @Description: This is the minimum altitude in meters (above home) that FBWB and CRUISE modes will allow. If you attempt to descend below this altitude then the plane will level off. It will also force a climb to this altitude if below in these modes. A value of zero means no limit.
