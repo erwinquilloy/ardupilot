@@ -52,8 +52,8 @@
 #endif
 
 #ifndef AP_BATTERY_UAVCAN_BATTERYINFO_ENABLED
-// Light variant: keep DroneCAN battery telemetry (common on H7 wings).
-#define AP_BATTERY_UAVCAN_BATTERYINFO_ENABLED AP_BATTERY_ENABLED && HAL_ENABLE_DRONECAN_DRIVERS
+// Light variant: CAN disabled in strict 2022 definition.
+#define AP_BATTERY_UAVCAN_BATTERYINFO_ENABLED 0
 #endif
 
 #ifndef AP_BATTERY_FUELFLOW_ENABLED

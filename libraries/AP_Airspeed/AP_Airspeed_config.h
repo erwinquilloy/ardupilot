@@ -29,32 +29,29 @@
 #endif
 
 #ifndef AP_AIRSPEED_DLVR_ENABLED
-// Light variant: keep DLVR — the chip behind Matek's popular ASPD-DLVR
-// and ASPD-7002 I2C digital airspeed sensors. mf0o stripped this; we
-// keep it because our user base flies Matek wings.
-#define AP_AIRSPEED_DLVR_ENABLED AP_AIRSPEED_ENABLED
+// Light variant: strict 2022 definition is Analog or MS4525 only.
+#define AP_AIRSPEED_DLVR_ENABLED 0
 #endif
 
 #ifndef AP_AIRSPEED_DRONECAN_ENABLED
-// Light variant: keep DroneCAN airspeed (Matek / CAN-attached pitots).
-#define AP_AIRSPEED_DRONECAN_ENABLED AP_AIRSPEED_ENABLED && HAL_ENABLE_DRONECAN_DRIVERS
+// Light variant: CAN disabled in strict 2022 definition.
+#define AP_AIRSPEED_DRONECAN_ENABLED 0
 #endif
 
 #ifndef AP_AIRSPEED_MS4525_ENABLED
-// Light variant: keep MS4525 (the most common I2C pitot chip).
+// Light variant: keep MS4525 (the most common I2C pitot chip; one of two
+// allowed pressure sensors in the strict 2022 definition).
 #define AP_AIRSPEED_MS4525_ENABLED AP_AIRSPEED_ENABLED
 #endif
 
 #ifndef AP_AIRSPEED_MS5525_ENABLED
-// Light variant: keep MS5525 — the chip behind Matek's ASPD-MS5525 I2C
-// airspeed sensor. mf0o stripped this; we keep it because our user
-// base flies Matek wings.
-#define AP_AIRSPEED_MS5525_ENABLED AP_AIRSPEED_ENABLED
+// Light variant: strict 2022 definition is Analog or MS4525 only.
+#define AP_AIRSPEED_MS5525_ENABLED 0
 #endif
 
 #ifndef AP_AIRSPEED_MSP_ENABLED
-// Light variant: keep MSP-airspeed (DJI / goggles passthrough).
-#define AP_AIRSPEED_MSP_ENABLED (AP_AIRSPEED_ENABLED && HAL_MSP_SENSORS_ENABLED)
+// Light variant: strict 2022 definition is Analog or MS4525 only.
+#define AP_AIRSPEED_MSP_ENABLED 0
 #endif
 
 // note additional vehicle restrictions are made in the .cpp file!

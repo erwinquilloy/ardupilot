@@ -231,7 +231,11 @@
 #endif
 
 #ifndef HAL_ENABLE_DRONECAN_DRIVERS
-#define HAL_ENABLE_DRONECAN_DRIVERS HAL_CANMANAGER_ENABLED
+// Light variant: strict 2022 definition has no CAN. Disable the whole
+// DroneCAN driver layer so AP_DroneCAN itself compiles out (not just
+// individual subscribers, which would cause undefined-reference link
+// errors when AP_DroneCAN::init still tries to wire them up).
+#define HAL_ENABLE_DRONECAN_DRIVERS 0
 #endif
 
 #ifndef AP_TEST_DRONECAN_DRIVERS

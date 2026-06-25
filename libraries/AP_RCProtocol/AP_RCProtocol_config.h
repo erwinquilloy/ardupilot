@@ -24,8 +24,8 @@
 #endif
 
 #ifndef AP_RCPROTOCOL_DRONECAN_ENABLED
-// Light variant: keep DroneCAN-attached receivers.
-#define AP_RCPROTOCOL_DRONECAN_ENABLED AP_RCPROTOCOL_ENABLED && HAL_ENABLE_DRONECAN_DRIVERS
+// Light variant: CAN disabled in strict 2022 definition.
+#define AP_RCPROTOCOL_DRONECAN_ENABLED 0
 #endif
 
 #ifndef AP_RCPROTOCOL_DSM_ENABLED
@@ -33,14 +33,20 @@
 #endif
 
 #ifndef AP_RCPROTOCOL_FPORT_ENABLED
-#define AP_RCPROTOCOL_FPORT_ENABLED AP_RCPROTOCOL_BACKEND_DEFAULT_ENABLED
+// Light variant: keep FPORT (one of the four allowed RC protocols
+// in the strict 2022 definition: SBUS, CRSF, IBUS, FPORT).
+#define AP_RCPROTOCOL_FPORT_ENABLED AP_RCPROTOCOL_ENABLED
 #endif
 #ifndef AP_RCPROTOCOL_FPORT2_ENABLED
-#define AP_RCPROTOCOL_FPORT2_ENABLED AP_RCPROTOCOL_BACKEND_DEFAULT_ENABLED && AP_FRSKY_SPORT_TELEM_ENABLED
+// Light variant: keep FPORT2 as a sibling of FPORT, gated on the
+// FrSky SPort telem path that the protocol layers on top of.
+#define AP_RCPROTOCOL_FPORT2_ENABLED AP_RCPROTOCOL_ENABLED && AP_FRSKY_SPORT_TELEM_ENABLED
 #endif
 
 #ifndef AP_RCPROTOCOL_IBUS_ENABLED
-#define AP_RCPROTOCOL_IBUS_ENABLED AP_RCPROTOCOL_BACKEND_DEFAULT_ENABLED
+// Light variant: keep IBUS (FlySky receivers; allowed by the strict
+// 2022 list).
+#define AP_RCPROTOCOL_IBUS_ENABLED AP_RCPROTOCOL_ENABLED
 #endif
 
 #ifndef AP_RCPROTOCOL_JOYSTICK_SFML_ENABLED

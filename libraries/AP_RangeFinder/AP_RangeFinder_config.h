@@ -24,8 +24,8 @@
 #endif
 
 #ifndef AP_RANGEFINDER_ANALOG_ENABLED
-// Light variant: keep analog rangefinder support (most basic topology).
-#define AP_RANGEFINDER_ANALOG_ENABLED AP_RANGEFINDER_ENABLED
+// Light variant: strict 2022 definition is Benewake LIDARs only.
+#define AP_RANGEFINDER_ANALOG_ENABLED 0
 #endif
 
 #ifndef AP_RANGEFINDER_BBB_PRU_ENABLED
@@ -37,7 +37,8 @@
 #endif
 
 #ifndef AP_RANGEFINDER_BENEWAKE_CAN_ENABLED
-#define AP_RANGEFINDER_BENEWAKE_CAN_ENABLED (HAL_MAX_CAN_PROTOCOL_DRIVERS && AP_RANGEFINDER_BACKEND_DEFAULT_ENABLED)
+// Light variant: CAN disabled in strict 2022 definition (Benewake CAN variant stripped).
+#define AP_RANGEFINDER_BENEWAKE_CAN_ENABLED 0
 #endif
 
 // Light variant: keep all Benewake serial variants (TF02 / TF03 / TFmini /
@@ -74,7 +75,8 @@
 #endif
 
 #ifndef AP_RANGEFINDER_DRONECAN_ENABLED
-#define AP_RANGEFINDER_DRONECAN_ENABLED (HAL_ENABLE_DRONECAN_DRIVERS && AP_RANGEFINDER_BACKEND_DEFAULT_ENABLED)
+// Light variant: CAN disabled in strict 2022 definition.
+#define AP_RANGEFINDER_DRONECAN_ENABLED 0
 #endif
 
 #ifndef AP_RANGEFINDER_GYUS42V2_ENABLED
@@ -98,13 +100,13 @@
 #endif
 
 #ifndef AP_RANGEFINDER_LWI2C_ENABLED
-// Light variant: keep LightWare I2C (LW20-I2C, LF002 — popular FPV LIDAR).
-#define AP_RANGEFINDER_LWI2C_ENABLED AP_RANGEFINDER_ENABLED
+// Light variant: strict 2022 definition is Benewake LIDARs only.
+#define AP_RANGEFINDER_LWI2C_ENABLED 0
 #endif
 
 #ifndef AP_RANGEFINDER_LIGHTWARE_SERIAL_ENABLED
-// Light variant: keep LightWare serial variants (LW20-S, SF11 etc.).
-#define AP_RANGEFINDER_LIGHTWARE_SERIAL_ENABLED AP_RANGEFINDER_ENABLED
+// Light variant: strict 2022 definition is Benewake LIDARs only.
+#define AP_RANGEFINDER_LIGHTWARE_SERIAL_ENABLED 0
 #endif
 
 #ifndef AP_RANGEFINDER_LUA_ENABLED
@@ -112,9 +114,8 @@
 #endif
 
 #ifndef AP_RANGEFINDER_MAVLINK_ENABLED
-// Light variant: keep MAVLink-streamed rangefinder (common for VTOL / FPV
-// optical flow stacks where the rangefinder is on a companion computer).
-#define AP_RANGEFINDER_MAVLINK_ENABLED AP_RANGEFINDER_ENABLED && HAL_GCS_ENABLED
+// Light variant: strict 2022 definition is Benewake LIDARs only.
+#define AP_RANGEFINDER_MAVLINK_ENABLED 0
 #endif
 
 #ifndef AP_RANGEFINDER_MAXBOTIX_SERIAL_ENABLED
@@ -186,14 +187,13 @@
 #endif
 
 #ifndef AP_RANGEFINDER_VL53L0X_ENABLED
-// Light variant: keep VL53L0X (cheap ToF chip; mf0o's light variant
-// keeps it too, since it's on many low-cost rangefinder modules).
-#define AP_RANGEFINDER_VL53L0X_ENABLED AP_RANGEFINDER_ENABLED
+// Light variant: strict 2022 definition is Benewake LIDARs only.
+#define AP_RANGEFINDER_VL53L0X_ENABLED 0
 #endif
 
 #ifndef AP_RANGEFINDER_VL53L1X_ENABLED
-// Light variant: keep VL53L1X (cheap ToF chip, see VL53L0X comment).
-#define AP_RANGEFINDER_VL53L1X_ENABLED AP_RANGEFINDER_ENABLED
+// Light variant: strict 2022 definition is Benewake LIDARs only.
+#define AP_RANGEFINDER_VL53L1X_ENABLED 0
 #endif
 
 #ifndef AP_RANGEFINDER_WASP_ENABLED

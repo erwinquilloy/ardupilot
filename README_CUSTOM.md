@@ -10,19 +10,29 @@
 
 ## What's stripped vs. the full variant
 
-The following are compiled out of the light binary by default. A
-per-board hwdef can re-enable any of them via the matching
-`define AP_<X>_ENABLED 1`.
+Aligned to the **strict 2022 light-variant definition** mf0o released:
+- Only **1 GPS** and **1 magnetometer**
+- **No CAN** anywhere (no DroneCAN GPS / RC / battery / airspeed / rangefinder)
+- RC: **SBUS, CRSF, IBUS, FPORT** only
+- GPS: **UBLOX** only
+- Airspeed: **Analog** or **MS4525** pressure sensors only
+- Rangefinder: **Benewake LIDARs** only
+
+A per-board hwdef can re-enable any of the stripped items via the
+matching `define AP_<X>_ENABLED 1` if a specific airframe needs it.
 
 | Family | Kept (in light) | Stripped (not in light) |
 |---|---|---|
+| **GPS instances** | 1 | (no redundant / blended GPS) |
+| **Magnetometers** | 1 | (no second compass averaging) |
+| **CAN entirely** | — | all DroneCAN backends: GPS, RC, BattMon, Rangefinder, Airspeed |
 | **Servo drivers** | PWM, DShot, S.BUS-out | Volz, Robotis |
-| **Engine** | Electric (default) | ICE (governor, RPM, choke/ignition/throttle) |
-| **GPS backends** | UBLOX, DroneCAN, MSP | ERB, GSOF, MAV, NMEA, NMEA-Unicore, NOVA, SBF, SBP, SBP2, SIRF |
-| **RC input protocols** | CRSF (ELRS/Crossfire), SBUS, DroneCAN | DSM, FPORT, FPORT2, IBUS, PPMSUM, SRXL, SUMD, ST24, GHST, MAVRADIO |
-| **Battery monitor backends** | Analog, ESC telem, DroneCAN | BEBOP, EFI, SMBUS, FuelFlow/Level, Generator, INA2xx, INA3221, Sum, SynDev |
-| **Rangefinder backends** | Analog, MAVLink | Benewake, LightWare, MaxBotix, NoopLoop, USD1, Wasp, Ainstein, BLPing, NRA24, GYUS42, others |
-| **Airspeed backends** | Analog, MS4525, MSP, DroneCAN | ASP5033, DLVR, MS5525, NMEA, SDP3X |
+| **Engine** | Electric | ICE (governor, RPM, choke/ignition/throttle channels) |
+| **GPS backends** | UBLOX | DroneCAN, MAV, MSP, NMEA, NMEA-Unicore, ERB, GSOF, NOVA, SBF, SBP, SBP2, SIRF |
+| **RC input protocols** | CRSF (ELRS/Crossfire), SBUS, IBUS, FPORT, FPORT2 | DroneCAN, DSM, PPMSUM, SRXL, SRXL2, SUMD, ST24, GHST, MAVRADIO |
+| **Battery monitor backends** | Analog, ESC telem | DroneCAN, BEBOP, EFI, SMBUS, FuelFlow/Level, Generator, INA2xx, INA3221, Sum, SynDev |
+| **Rangefinder backends** | Benewake (TF02, TF03, TFmini, TFmini Plus) | Analog, MAVLink, LightWare, MaxBotix, VL53L0X/L1X, BLPing, BenewakeCAN, NoopLoop, USD1, Wasp, Ainstein, NRA24, GYUS42, HC-SR04, others |
+| **Airspeed backends** | Analog, MS4525 | DroneCAN, MSP, ASP5033, DLVR, MS5525, NMEA, SDP3X |
 | **EKF** | EKF3 (same as full variant) | EKF2 (off in full variant too, per upstream 4.6.3 default) |
 
 All fork features described below are unchanged — Course Hold, idle
@@ -30,8 +40,19 @@ throttle family, AUTO→FBWA stick takeover, OSD additions, stats grid,
 emergency landing state machine, etc. — the strips above are purely
 about which hardware backends compile in.
 
-**Binary size:** SITL build is ~258 KB smaller than the full variant
-(text section), which is a meaningful chunk of flash on 1 MB F4 boards.
+> ⚠️ **Matek I2C digital airspeed sensors (ASPD-DLVR / ASPD-7002 /
+> ASPD-MS5525) WILL NOT WORK on the light variant.** Use the full
+> [`master_custom_4.6.3`](../../tree/master_custom_4.6.3) build for
+> those airframes — those chips are DLVR/MS5525, which the strict
+> 2022 definition excludes.
+
+> ⚠️ **CAN hardware won't work on light** — no DroneCAN GPS, RC,
+> battery, rangefinder, or airspeed. CAN-attached anything needs the
+> full variant.
+
+**Binary size:** SITL build is meaningfully smaller than the full
+variant — actual per-board delta depends on which backends that
+board's hwdef would have pulled in.
 
 ---
 

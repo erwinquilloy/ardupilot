@@ -54,7 +54,10 @@
  */
 #ifndef HAL_BUILD_AP_PERIPH
 #ifndef HAL_COMPASS_MAX_SENSORS
-#define HAL_COMPASS_MAX_SENSORS 3
+// Light variant: strict 2022 definition allows only 1 magnetometer.
+// Forcing to 1 removes the multi-compass-backend storage / averaging
+// plumbing for further flash savings.
+#define HAL_COMPASS_MAX_SENSORS 1
 #endif
 #if HAL_COMPASS_MAX_SENSORS > 1
 #define COMPASS_MAX_UNREG_DEV 5

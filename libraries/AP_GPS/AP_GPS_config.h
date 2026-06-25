@@ -13,7 +13,10 @@
    than 1 then redundant sensors may be available
  */
 #ifndef GPS_MAX_RECEIVERS
-#define GPS_MAX_RECEIVERS 2 // maximum number of physical GPS sensors allowed - does not include virtual GPS created by blending receiver data
+// Light variant: strict 2022 definition allows only 1 GPS. Forcing to 1
+// here removes the redundant-GPS plumbing (blended virtual instance,
+// 2nd receiver state, etc.) for further flash savings.
+#define GPS_MAX_RECEIVERS 1
 #endif
 
 #if !defined(GPS_MAX_INSTANCES)
@@ -50,9 +53,8 @@
 #endif
 
 #ifndef AP_GPS_DRONECAN_ENABLED
-// Light variant: keep DroneCAN GPS regardless of the global default flip,
-// since CAN-attached GPS modules are common on H7 wing builds.
-#define AP_GPS_DRONECAN_ENABLED HAL_ENABLE_DRONECAN_DRIVERS
+// Light variant: CAN is disabled in the 2022 strict definition (user-provided).
+#define AP_GPS_DRONECAN_ENABLED 0
 #endif
 
 #ifndef AP_GPS_ERB_ENABLED
@@ -64,21 +66,18 @@
 #endif
 
 #ifndef AP_GPS_MAV_ENABLED
-  // Light variant: keep MAVLink GPS (companion-computer GPS feed,
-  // SITL injection). Matches mf0o's light-variant keep-list.
-  #define AP_GPS_MAV_ENABLED AP_GPS_ENABLED && HAL_GCS_ENABLED
+  // Light variant: strict 2022 definition is UBLOX-only.
+  #define AP_GPS_MAV_ENABLED 0
 #endif
 
 #ifndef HAL_MSP_GPS_ENABLED
-// Light variant: keep MSP GPS regardless of the global default flip,
-// since OSD goggles often pass through GPS data.
-#define HAL_MSP_GPS_ENABLED HAL_MSP_SENSORS_ENABLED
+// Light variant: strict 2022 definition is UBLOX-only.
+#define HAL_MSP_GPS_ENABLED 0
 #endif
 
 #ifndef AP_GPS_NMEA_ENABLED
-  // Light variant: keep NMEA (cheap u-blox-clone GPS modules and
-  // Bynav-style GPS often default to NMEA output). Matches mf0o.
-  #define AP_GPS_NMEA_ENABLED AP_GPS_ENABLED
+  // Light variant: strict 2022 definition is UBLOX-only.
+  #define AP_GPS_NMEA_ENABLED 0
 #endif
 
 #ifndef AP_GPS_NMEA_UNICORE_ENABLED
