@@ -157,6 +157,13 @@ void ModeTakeoff::update()
         plane.next_WP_loc = start_loc;
         plane.next_WP_loc.offset_bearing(direction, dist);
         plane.next_WP_loc.alt += alt*100.0;
+
+        // Seed the target_altitude struct off the loiter WP so the pilot's
+        // throttle-stick (FBW-B style, see update_fbwb_speed_height below)
+        // can nudge altitude up and down during the takeoff loiter phase.
+        plane.setup_terrain_target_alt(plane.next_WP_loc);
+        plane.set_target_altitude_location(plane.next_WP_loc);
+
         plane.steer_state.hold_course_cd = wrap_360_cd(direction*100); // Necessary to allow Plane::takeoff_calc_roll() to function.
     }
         
@@ -187,6 +194,11 @@ void ModeTakeoff::update()
             have_autoenabled_fences = true;
         }
 #endif
+        // Pilot stick adjustment of loiter altitude (FBW-B style), per
+        // ArduCustom v11.0 #226. Reads channel_pitch->norm_input() and
+        // shifts target_altitude.amsl_cm; navigate() then bakes the new
+        // alt into next_WP_loc each loop.
+        plane.update_fbwb_speed_height();
         plane.calc_nav_roll();
         plane.calc_nav_pitch();
         plane.calc_throttle();
@@ -201,7 +213,11 @@ void ModeTakeoff::update()
 
 void ModeTakeoff::navigate()
 {
-    // Zero indicates to use WP_LOITER_RAD
+    // Bake the pilot-adjusted target altitude (from update_fbwb_speed_height)
+    // back into next_WP_loc so the loiter circle holds the new altitude.
+    plane.next_WP_loc.set_alt_cm(plane.target_altitude.amsl_cm, Location::AltFrame::ABSOLUTE);
+    // Zero indicates to use WP_LOITER_RAD (manual radius / direction control
+    // not ported yet - depends on fork PR #180).
     plane.update_loiter(0);
 }
 
