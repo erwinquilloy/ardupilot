@@ -67,7 +67,7 @@ const AP_Param::GroupInfo AP_Stats::var_info[] = {
     // @User: Standard
     AP_GROUPINFO("_FLT_ENERGY",  5, AP_Stats, params.flying_energy, 0),
 
-#if APM_BUILD_TYPE(APM_BUILD_ArduPlane)
+#if defined(APM_BUILD_DIRECTORY) && APM_BUILD_TYPE(APM_BUILD_ArduPlane)
     // @Param: _TRAVEL_AIR
     // @DisplayName: Total air distance traveled
     // @Description: Total air distance traveled
@@ -93,7 +93,7 @@ const AP_Param::GroupInfo AP_Stats::var_info[] = {
     // @User: Standard
     AP_GROUPINFO("_GSPD_MAX",    8, AP_Stats, params.max_ground_speed_mps, 0),
 
-#if APM_BUILD_TYPE(APM_BUILD_ArduPlane)
+#if defined(APM_BUILD_DIRECTORY) && APM_BUILD_TYPE(APM_BUILD_ArduPlane)
     // @Param: _ASPD_AVG
     // @DisplayName: Average air speed
     // @Description: Average air speed
@@ -496,6 +496,7 @@ void AP_Stats::reset_params_if_requested(void)
 
         if (!params_reset) {
             uint32_t system_clock = 0; // in seconds
+#if AP_RTC_ENABLED
             uint64_t rtc_clock_us;
             if (AP::rtc().get_utc_usec(rtc_clock_us)) {
                 system_clock = rtc_clock_us / 1000000;
@@ -505,6 +506,10 @@ void AP_Stats::reset_params_if_requested(void)
             } else {
                 system_clock = 1;
             }
+#else
+            // AP_Periph and other RTC-less builds: just stamp 1 to mark a reset
+            system_clock = 1;
+#endif
             params.reset.set_and_save_ifchanged(system_clock);
         }
 

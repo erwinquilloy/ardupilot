@@ -266,7 +266,7 @@ const AP_Param::GroupInfo AP_OSD::var_info[] = {
     // @DisplayName: Vertical acceleration warn threshold
     // @Description: ACC_VERT OSD item flashes when |vertical acceleration| exceeds this value. 0 disables. Fork #46 + #95 doc fix.
     // @Range: 0 20
-    // @Units: g
+    // @Units: gravities
     // @User: Standard
     AP_GROUPINFO("_W_VERT_ACC", 60, AP_OSD, warn_vert_acc, 0),
 
