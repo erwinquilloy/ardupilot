@@ -79,6 +79,22 @@ const AP_Param::Info Plane::var_info[] = {
     // @User: Advanced
     GSCALAR(kff_throttle_to_pitch,  "KFF_THR2PTCH",   0),
 
+    // @Param: KFF_THRAT2ELEV
+    // @DisplayName: Throttle-above-trim to elevator PWM offset mix (fork PR #146)
+    // @Description: Elevator/elevon/vtail/dspoiler servos shift by this many PWM microseconds at 100% throttle. Linearly interpolated from 0 at TRIM_THROTTLE to this value at 100. Compensates aerodynamic pitching moment from a high-mounted thrust line. Negative values reduce pitch-up tendency.
+    // @Range: -500 500
+    // @Increment: 1
+    // @User: Advanced
+    GSCALAR(kff_throttle_above_trim_to_elevator, "KFF_THRAT2ELEV", 0),
+
+    // @Param: KFF_FLAP2ELEV
+    // @DisplayName: Flap position to elevator PWM offset mix (fork PR #147)
+    // @Description: Elevator/elevon/vtail/dspoiler servos shift by this many PWM microseconds at 100% flap deployment. Linearly scaled with current flap %. Compensates pitching moment from flap extension. Negative values reduce pitch-up tendency.
+    // @Range: -500 500
+    // @Increment: 1
+    // @User: Advanced
+    GSCALAR(kff_flap_to_elevator, "KFF_FLAP2ELEV", 0),
+
     // @Param: STAB_PITCH_DOWN
     // @DisplayName: Low throttle pitch down trim 
     // @Description: Degrees of down pitch added when throttle is below TRIM_THROTTLE in FBWA and AUTOTUNE modes. Scales linearly so full value is added when THR_MIN is reached. Helps to keep airspeed higher in glides or landing approaches and prevents accidental stalls. 2 degrees recommended for most planes.

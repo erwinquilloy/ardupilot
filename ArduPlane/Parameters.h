@@ -287,8 +287,8 @@ public:
         k_param_quadplane,
         k_param_rtl_radius,
         k_param_land_then_servos_neutral,   // unused - moved to AP_Landing
-        k_param_rc_15_old,
-        k_param_rc_16_old,
+        k_param_kff_throttle_above_trim_to_elevator,  // was k_param_rc_15_old (unused legacy); reclaimed for KFF_THRAT2ELEV (fork PR #146)
+        k_param_kff_flap_to_elevator,                 // was k_param_rc_16_old (unused legacy); reclaimed for KFF_FLAP2ELEV (fork PR #147)
 
         //
         // 210: flight modes
@@ -381,6 +381,12 @@ public:
     AP_Float kff_rudder_mix;
     AP_Float kff_pitch_to_throttle;
     AP_Float kff_throttle_to_pitch;
+    // Fork PR #146 / #147: PWM offset feed-forwards into the elevator
+    // mix to compensate aerodynamic pitching moments from throttle
+    // (high-mounted engines etc.) and flap deployment. Stored as
+    // AP_Float so they can drive AP_Tuning (which only takes AP_Float*).
+    AP_Float kff_throttle_above_trim_to_elevator;
+    AP_Float kff_flap_to_elevator;
     AP_Float ground_steer_alt;
     AP_Int16 ground_steer_dps;
     AP_Float stab_pitch_down;

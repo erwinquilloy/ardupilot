@@ -556,6 +556,38 @@ search a range; sign of the seed picks which polarity is swept).
 > incompatible. Re-enable per-board via hwdef define if you actually
 > use deepstall and don't need `ELEVATOR_DIFF`.
 
+## Throttle / flap → elevator PWM offset mixes
+
+Two additive feed-forward mixes that shift the calculated elevator PWM
+in proportion to throttle or flap position. Useful for compensating
+aerodynamic pitching moments — e.g. high-thrust-line airframes that
+pitch up when throttle goes in, or planes that pitch up on flap
+extension and need a bit of down-elevator to stay trimmed.
+
+- `KFF_THRAT2ELEV` (PWM µs in `[-500, 500]`, default 0) — shift applied
+  at full throttle, linearly interpolated from 0 at `TRIM_THROTTLE`.
+  Below trim there's no shift. Sign: positive shifts the elevator in
+  the same direction as a positive (pitch-up) command, so set negative
+  to *reduce* pitch-up tendency with throttle.
+- `KFF_FLAP2ELEV` (PWM µs in `[-500, 500]`, default 0) — shift applied
+  at 100% flap deployment, linearly scaled with current flap percent.
+  Same sign convention.
+
+Both are post-processing offsets applied in `servos_output()` *after*
+the standard mixers (elevon, vtail, dspoiler) and after the diff-throws
+have run. The shift is broadcast to every elevator-equivalent channel
+(`k_elevator`, both elevons, both vtails, and on flying-wing builds the
+outer + inner dspoilers). Servo reversal is honored: a positive
+`KFF_*2ELEV` always means "elevator-up direction" regardless of how the
+individual channels are wired.
+
+Both knobs are exposed to in-flight RC tuning:
+- `TUNE_PARAM = 82` (`THRAT2ELEV`)
+- `TUNE_PARAM = 83` (`FLAP2ELEV`)
+
+Standard single-param multiplicative-scaling caveat applies: must be
+seeded non-zero to search a range, sign of the seed picks polarity.
+
 ---
 
 # OSD additions
@@ -848,8 +880,6 @@ Items evaluated and deliberately skipped, with reasoning:
   reconciliation work
 - **Auto-throttle nudge rewrite** — upstream already rewrote nudge
   (`8aafe85f6f`); needs reconciliation, not a parallel port
-- **Takeoff audio (`AP_Notify::TKOFS_*`)** — depends on the takeoff
-  audio backlog; idle throttle works silently for now
 - **`#164` Plane-only OSD element gating** — namespace cleanup with no
   Plane-only benefit; this build targets Plane only
 
