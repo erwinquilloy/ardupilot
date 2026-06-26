@@ -304,6 +304,20 @@ void AP_Arming_Plane::change_arm_state(void)
 
 bool AP_Arming_Plane::arm(const AP_Arming::Method method, const bool do_arming_checks)
 {
+    // Fork PR #30: rearm path. If the throttle was cut by an in-flight
+    // disarm attempt, an arm request just clears the throttle-cut state
+    // (and restores the pre-cut mode if we had bumped the user into FBWA).
+    // Skip the standard arming checks — the plane is already armed in
+    // the eyes of the firmware; we're just releasing the throttle hold.
+    if (throttle_cut) {
+        if (throttle_cut_prev_mode && plane.control_mode == &plane.mode_fbwa) {
+            plane.set_mode(*throttle_cut_prev_mode, ModeReason::RC_COMMAND);
+        }
+        set_throttle_cut(false);
+        gcs().send_text(MAV_SEVERITY_INFO, "Rearmed");
+        return true;
+    }
+
     if (!AP_Arming::arm(method, do_arming_checks)) {
         return false;
     }
@@ -336,24 +350,56 @@ bool AP_Arming_Plane::arm(const AP_Arming::Method method, const bool do_arming_c
 }
 
 /*
+  Fork PR #30: helper for setting the throttle-cut flag. Mirrors the
+  flag into AP_Notify so the buzzer / LEDs / OSD can reflect it.
+ */
+void AP_Arming_Plane::set_throttle_cut(bool status)
+{
+    throttle_cut = status;
+    AP_Notify::flags.throttle_cut = status;
+}
+
+/*
   disarm motors
  */
 bool AP_Arming_Plane::disarm(const AP_Arming::Method method, bool do_disarm_checks)
 {
-    if (do_disarm_checks &&
-        (AP_Arming::method_is_GCS(method) ||
-         method == AP_Arming::Method::RUDDER)) {
+    if (do_disarm_checks) {
+        // Fork PR #30: don't actually disarm in flight. If the disarm
+        // request came from an aux switch and the plane is flying, cut
+        // the throttle and switch to FBWA (if we were in an auto-throttle
+        // mode). is_flying.cpp will call disarm_if_requested() once we
+        // touch the ground, completing the deferred disarm. SITL retains
+        // the upstream behaviour so autotest can disarm-on-command.
+#if CONFIG_HAL_BOARD != HAL_BOARD_SITL
         if (plane.is_flying()) {
-            // don't allow mavlink or rudder disarm while flying
+            if (method == AP_Arming::Method::AUXSWITCH) {
+                set_throttle_cut(true);
+                if (plane.control_mode->does_auto_throttle()) {
+                    throttle_cut_prev_mode = plane.control_mode;
+                    plane.set_mode(plane.mode_fbwa, ModeReason::RC_COMMAND);
+                } else {
+                    throttle_cut_prev_mode = nullptr;
+                }
+                gcs().send_text(MAV_SEVERITY_INFO, "Throttle cut by arm switch");
+            }
+            // for non-aux-switch disarm requests (rudder, GCS) we
+            // return false here without warning — same as upstream.
             return false;
         }
-    }
-    
-    if (do_disarm_checks && method == AP_Arming::Method::RUDDER) {
-        // option must be enabled:
-        if (get_rudder_arming_type() != AP_Arming::RudderArming::ARMDISARM) {
-            gcs().send_text(MAV_SEVERITY_INFO, "Rudder disarm: disabled");
+#else
+        if (plane.is_flying() && (method == AP_Arming::Method::RUDDER ||
+                                  AP_Arming::method_is_GCS(method))) {
             return false;
+        }
+#endif
+
+        if (method == AP_Arming::Method::RUDDER) {
+            // option must be enabled:
+            if (get_rudder_arming_type() != AP_Arming::RudderArming::ARMDISARM) {
+                gcs().send_text(MAV_SEVERITY_INFO, "Rudder disarm: disabled");
+                return false;
+            }
         }
     }
 
@@ -377,6 +423,9 @@ bool AP_Arming_Plane::disarm(const AP_Arming::Method method, bool do_disarm_chec
 
     //only log if disarming was successful
     change_arm_state();
+    // Fork PR #30: clear any pending throttle-cut on a clean disarm so
+    // a re-arm later starts from a known state.
+    set_throttle_cut(false);
 
     // record disarm time for any post-disarm scheduled actions (mirrors arm())
     plane.armed_tstamp_ms = 0;
@@ -394,6 +443,19 @@ bool AP_Arming_Plane::disarm(const AP_Arming::Method method, bool do_disarm_chec
     send_arm_disarm_statustext("Throttle disarmed");
 
     return true;
+}
+
+/*
+  Fork PR #30: complete a deferred disarm once the plane has actually
+  landed. is_flying.cpp calls this every 5 Hz update when !is_flying().
+  Does nothing unless throttle_cut is set (i.e. the user pressed the
+  aux disarm switch in flight and we deferred the real disarm).
+ */
+void AP_Arming_Plane::disarm_if_requested()
+{
+    if (throttle_cut) {
+        disarm(AP_Arming::Method::AUXSWITCH, false);
+    }
 }
 
 void AP_Arming_Plane::update_soft_armed()

@@ -69,6 +69,41 @@ input still rolls the plane; releasing returns to the locked course.
 
 ## Arming & takeoff
 
+### Arm-switch safety — in-flight disarm cuts throttle, doesn't disarm
+
+If the pilot moves the arming aux switch to "disarm" *while the plane
+is flying*, the firmware will **not** disarm. Instead it:
+
+1. Cuts the throttle output (every mode, including MANUAL).
+2. If the current mode is auto-throttle (RTL / LOITER / AUTO / CRUISE
+   / FBWB / etc.), switches to **FBWA** so the pilot can fly the
+   plane down by stick.
+3. Updates the OSD flight-mode chip to show the disarmed symbol so
+   the pilot has a visual confirmation.
+4. Defers the real disarm until `is_flying()` reports false. Once
+   the plane has actually landed (`update_is_flying_5Hz` sees it
+   below the speed/airspeed thresholds), the deferred disarm
+   completes automatically.
+
+While the throttle-cut state is active, **moving the arming switch back
+to "arm" rearms instantly with no checks** — it just clears the
+throttle-cut and restores the pre-cut mode (if the auto→FBWA bump
+happened). This is the V10.0 ArduCustom safety pattern: the throttle
+cut is a softer-than-disarm action and you can recover from it.
+
+GCS messages:
+- `Throttle cut by arm switch` — at the moment the cut fires
+- `Rearmed` — when the arm switch goes back to "arm" mid-cut
+
+Caveats:
+- **SITL retains the upstream behaviour** so autotest still passes —
+  the in-flight disarm guard is gated by `CONFIG_HAL_BOARD != HAL_BOARD_SITL`.
+- The deferred disarm completes silently via `disarm_if_requested()`
+  in `update_is_flying_5Hz`. It does the standard `disarm()` path so
+  log close + AP_Notify state + everything else still runs.
+- MAVLink and rudder-stick disarm requests in-flight are still rejected
+  outright (no throttle-cut path).
+
 ### `ARMING_MODE_SW` — auto mode switch after arming
 After arming, wait ~3 seconds, then automatically switch to the
 selected mode. Lets a single aux-switch arm and launch a TKOFF/AUTO

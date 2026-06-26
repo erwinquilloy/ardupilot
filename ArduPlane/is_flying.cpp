@@ -183,6 +183,12 @@ void Plane::update_is_flying_5Hz(void)
 
     // conservative ground mode value for rate D suppression
     ground_mode = !is_flying() && !arming.is_armed_and_safety_off();
+
+    // Fork PR #30: complete any deferred (throttle-cut) disarm now that
+    // we've actually touched the ground.
+    if (!is_flying()) {
+        arming.disarm_if_requested();
+    }
 }
 
 /*

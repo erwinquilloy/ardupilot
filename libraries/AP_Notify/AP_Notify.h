@@ -139,6 +139,7 @@ public:
         bool video_recording;     // true when the vehicle is recording video
         bool temp_cal_running;    // true if a temperature calibration is running
         bool gyro_calibrated;     // true if calibrated gyro/acc
+        bool throttle_cut;        // fork PR #30: arm switch cut throttle in flight (Plane-only consumer)
     };
 
     // Takeoff cue states, used by ToneAlarm to play distinct pre-launch
