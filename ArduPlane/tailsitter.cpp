@@ -223,7 +223,13 @@ void Tailsitter::setup()
                      SRV_Channels::function_assigned(SRV_Channel::k_tiltMotorRight)));
 
     _have_elevator = SRV_Channels::function_assigned(SRV_Channel::k_elevator);
-    _have_aileron = SRV_Channels::function_assigned(SRV_Channel::k_aileron);
+    // Fork PR #133: also count split aileron outputs if assigned (the
+    // tailsitter mixer reads from k_aileron pre-split, so this just lets
+    // a tailsitter built with paired k_aileron_left/k_aileron_right
+    // outputs still claim "has aileron").
+    _have_aileron = SRV_Channels::function_assigned(SRV_Channel::k_aileron) ||
+                    (SRV_Channels::function_assigned(SRV_Channel::k_aileron_left) &&
+                     SRV_Channels::function_assigned(SRV_Channel::k_aileron_right));
     _have_rudder = SRV_Channels::function_assigned(SRV_Channel::k_rudder);
     _have_elevon = SRV_Channels::function_assigned(SRV_Channel::k_elevon_left) || SRV_Channels::function_assigned(SRV_Channel::k_elevon_right);
     _have_v_tail = SRV_Channels::function_assigned(SRV_Channel::k_vtail_left) || SRV_Channels::function_assigned(SRV_Channel::k_vtail_right);
@@ -765,6 +771,9 @@ void Tailsitter::speed_scaling(void)
 
     const SRV_Channel::Aux_servo_function_t functions[] = {
         SRV_Channel::Aux_servo_function_t::k_aileron,
+        // Fork PR #133: split aileron outputs get the same speed scaling
+        SRV_Channel::Aux_servo_function_t::k_aileron_left,
+        SRV_Channel::Aux_servo_function_t::k_aileron_right,
         SRV_Channel::Aux_servo_function_t::k_elevator,
         SRV_Channel::Aux_servo_function_t::k_rudder,
         SRV_Channel::Aux_servo_function_t::k_tiltMotorLeft,

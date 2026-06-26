@@ -552,6 +552,14 @@ public:
     // this PWM-microsecond value.
     AP_Int8  servos_auto_trim_finished_threshold;
 
+    // Aileron / elevator differential throws (fork PR #133). Positive
+    // value reduces the down-throw; negative value reduces the up-throw.
+    // 0 = no asymmetry. Aileron diff is applied to the split k_aileron_left
+    // / k_aileron_right outputs (and to flaperons / non-flying-wing
+    // dspoilers); elevator diff is applied to k_elevator.
+    AP_Float ailerons_diff;
+    AP_Float elevator_diff;
+
 #if AP_LANDINGGEAR_ENABLED
     AP_LandingGear landing_gear;
 #endif

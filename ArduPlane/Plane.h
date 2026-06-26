@@ -848,7 +848,7 @@ private:
         const char *channel_saturation_message;
     } ServoTrimSetEntry;
 
-    static const ServoTrimSetEntry aileron_trim_set[3];
+    static const ServoTrimSetEntry aileron_trim_set[5];
     static const ServoTrimSetEntry elevator_trim_set[3];
     static const ServoTrimSetEntry elevon_trim_set[2];
     static const ServoTrimSetEntry dspoiler_outer_trim_set[2];
@@ -1291,6 +1291,10 @@ private:
     void throttle_slew_limit(SRV_Channel::Aux_servo_function_t func);
     bool suppress_throttle(void);
     void update_throttle_hover();
+    // Fork PR #133: ailerons / elevator differential throws.
+    float apply_throws_diff(float input, float diff) const;
+    void channel_function_apply_diff(SRV_Channel::Aux_servo_function_t func, float diff) const;
+    void set_aileron_outputs() const;
     void channel_function_mixer(SRV_Channel::Aux_servo_function_t func1_in, SRV_Channel::Aux_servo_function_t func2_in,
                                 SRV_Channel::Aux_servo_function_t func1_out, SRV_Channel::Aux_servo_function_t func2_out) const;
     void flaperon_update();
