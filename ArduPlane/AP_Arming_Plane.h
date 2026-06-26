@@ -69,6 +69,10 @@ private:
     // of an auto-throttle mode (no restore needed).
     Mode *throttle_cut_prev_mode;
 
+    // Fork PR #221: emergency_landing flag value at the moment throttle
+    // cut was enabled, so we can restore it on rearm.
+    bool emergency_landing_prev_status;
+
     // oneshot with duration AP_ARMING_DELAY_MS used by quadplane to delay spoolup after arming:
     // ignored unless OPTION_DELAY_ARMING or OPTION_TILT_DISARMED is set
     bool delay_arming;
