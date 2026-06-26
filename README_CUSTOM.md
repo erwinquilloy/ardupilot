@@ -916,18 +916,35 @@ Machine-generated parameter metadata for **this fork** lives at
 the firmware exposes — including every fork-added bit on
 `FLIGHT_OPTIONS`, `RC_OPTIONS`, `OSD_OPTIONS`, and so on.
 
-Six formats are committed:
+### 👉 Browse the parameter reference
+
+Click either link below to read the full HTML parameter reference
+in your browser — no download, no GitHub account:
+
+- **Light branch** — <https://raw.githack.com/erwinquilloy/ardupilot/master_custom_4.6.3_light/docs/parameters/Parameters.html>
+- **Full branch** — <https://raw.githack.com/erwinquilloy/ardupilot/master_custom_4.6.3/docs/parameters/Parameters.html>
+
+(`raw.githack.com` serves the HTML with the right `Content-Type` so
+your browser actually renders it. `raw.githubusercontent.com` would
+serve the same file as plain-text source code.)
+
+### Other formats
+
+All six formats `param_parse.py` produces are committed in the same
+directory:
 
 | File | Use case |
 |---|---|
 | [`apm.pdef.json`](docs/parameters/apm.pdef.json) | Best for tooling — easy to parse in JS / Python |
 | [`apm.pdef.xml`](docs/parameters/apm.pdef.xml) | Alternative structured format |
-| [`Parameters.html`](docs/parameters/Parameters.html) | Browsable HTML |
+| [`Parameters.html`](docs/parameters/Parameters.html) | Browsable HTML (rendered URLs above) |
 | [`Parameters.md`](docs/parameters/Parameters.md) | GitHub-rendered Markdown |
 | [`Parameters.rst`](docs/parameters/Parameters.rst) | Sphinx-flavoured reStructuredText |
 | [`ParametersLatex.rst`](docs/parameters/ParametersLatex.rst) | Book-style RST tuned for LaTeX |
 
-Stable URLs for the JSON (use either; content is identical across branches):
+For tooling that fetches the raw JSON / XML directly, use
+`raw.githubusercontent.com` (it serves the file's actual bytes with
+`text/plain`, which is what JSON/XML parsers expect):
 
 ```
 https://raw.githubusercontent.com/erwinquilloy/ardupilot/master_custom_4.6.3_light/docs/parameters/apm.pdef.json
@@ -940,48 +957,27 @@ in a calculator UI.
 
 ## Bitmask calculator
 
-A self-contained HTML/JS bitmask calculator lives at
-[`docs/bitmask_calculator.html`](docs/bitmask_calculator.html).
+A self-contained HTML/JS bitmask calculator for **this fork's**
+parameter set. It loads the JSON above, lets you tick bits to
+compute the integer value (or paste a value to see which bits are
+set), and shows decimal / hex / binary representations. Runs
+entirely in your browser — no server, no analytics, no GitHub
+account needed.
 
-**To use it: download the file and open in a browser.**
+### 👉 Open the calculator
 
-It loads the JSON above, lets you tick bits to compute the integer
-value (or paste a value to see which bits are set), and shows decimal
-/ hex / binary representations. Runs entirely in your browser — no
-server, no analytics.
+Click either link below to use the calculator in your browser:
 
-Inspired by Stavros' [ArduPilot bitmask calculator](https://notes.stavros.io/ardupilot/bitmask-calculator/);
-this version uses **this fork's parameter set** so the fork-added bits
-on `FLIGHT_OPTIONS` (21 / 22 / 23 / 24), `RC_OPTIONS` bit 22, the
-`OSD_OPTIONS` bits, etc. are visible without leaving the page.
+- **Light branch** — <https://raw.githack.com/erwinquilloy/ardupilot/master_custom_4.6.3_light/docs/bitmask_calculator.html>
+- **Full branch** — <https://raw.githack.com/erwinquilloy/ardupilot/master_custom_4.6.3/docs/bitmask_calculator.html>
 
-### How to use the calculator
+`raw.githack.com` is a free public CDN — no account, no login. It
+just proxies GitHub raw files with the correct `Content-Type` so
+HTML renders instead of showing source code. The URLs always serve
+the latest committed version of the file from the named branch;
+bookmark whichever matches the firmware variant you flash.
 
-The page itself has an expandable "How to use" section with the
-full walk-through. Two quick paths:
-
-**Option 1 — Run it locally (recommended).** Download the HTML file
-and double-click to open in any browser:
-
-```bash
-curl -O https://raw.githubusercontent.com/erwinquilloy/ardupilot/master_custom_4.6.3_light/docs/bitmask_calculator.html
-```
-
-Or just `git clone` the repo and open `docs/bitmask_calculator.html`
-directly. Works offline once loaded; the param JSON is fetched on
-demand but the page also accepts a local file upload if you're
-offline.
-
-**Option 2 — Use it via a "raw to rendered" CDN.** GitHub's
-`raw.githubusercontent.com` serves HTML as plain text and won't
-render. Use `raw.githack.com` instead:
-
-```
-https://raw.githack.com/erwinquilloy/ardupilot/master_custom_4.6.3_light/docs/bitmask_calculator.html
-```
-
-That URL always serves the latest committed version from the light
-branch — bookmark it.
+### Computing or reverse-engineering a value
 
 **To compute a value:**
 1. Pick the param (e.g. `FLIGHT_OPTIONS`) from the dropdown.
@@ -991,6 +987,24 @@ branch — bookmark it.
 **To reverse-engineer an existing value:** type or paste the integer
 into the Value (decimal) field; the bit checkboxes will reflect which
 bits are set.
+
+Inspired by Stavros' [ArduPilot bitmask calculator](https://notes.stavros.io/ardupilot/bitmask-calculator/);
+this version uses **this fork's parameter set** so the fork-added bits
+on `FLIGHT_OPTIONS` (21 / 22 / 23 / 24), `RC_OPTIONS` bit 22, the
+`OSD_OPTIONS` bits, etc. are visible without leaving the page.
+
+### Want it offline / want to host it yourself?
+
+The page also accepts a local JSON file upload, so you can keep a
+copy on a tablet for the field:
+
+```bash
+curl -O https://raw.githubusercontent.com/erwinquilloy/ardupilot/master_custom_4.6.3_light/docs/bitmask_calculator.html
+curl -O https://raw.githubusercontent.com/erwinquilloy/ardupilot/master_custom_4.6.3_light/docs/parameters/apm.pdef.json
+```
+
+Open the HTML file in your browser, then in the "Source" dropdown
+pick **Upload file…** and point at the JSON.
 
 ---
 
