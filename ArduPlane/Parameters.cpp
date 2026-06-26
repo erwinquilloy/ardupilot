@@ -1145,6 +1145,10 @@ const AP_Param::GroupInfo ParametersG2::var_info[] = {
     // @Bitmask: 22: In RTL failsafe only, climb first then turn (fork)
     // @Bitmask: 23: In auto-throttle modes other than TAKEOFF/AUTO, glide (throttle=0, target airspeed AIRSPEED_MIN) when throttle stick is below THR_DZ (fork)
     // @Bitmask: 24: In RTL (outside of RC failsafe), let the pilot drive altitude with the pitch stick via FBWB control (fork PR #155, relocated from bit 20)
+    // @Bitmask: 21: Reserved (was RTL_FAILSAFE_LAND_AFTER_2MIN; retired in fork PR #182 in favour of FS_ELAND_DELAY)
+    // @Bitmask: 22: In RTL failsafe only climb first then turn (fork)
+    // @Bitmask: 23: In auto-throttle modes other than TAKEOFF/AUTO glide (throttle=0 with target airspeed AIRSPEED_MIN) when throttle stick is below THR_DZ (fork)
+    // @Bitmask: 24: In RTL outside of RC failsafe let the pilot drive altitude with the pitch stick via FBWB control (fork PR #155; relocated from bit 20)
     // @User: Advanced
     AP_GROUPINFO("FLIGHT_OPTIONS", 13, ParametersG2, flight_options, 0),
 
