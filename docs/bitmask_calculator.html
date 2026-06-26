@@ -137,6 +137,50 @@
   .bit-row .bit-desc { font-size: 0.92rem; }
   .bit-row .bit-mask { font-family: monospace; font-size: 0.75rem; color: var(--muted); display: block; margin-top: 0.15rem; }
   details summary { cursor: pointer; font-size: 0.85rem; color: var(--muted); margin-top: 0.5rem; }
+  details.howto {
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    margin-bottom: 1.5rem;
+    background: var(--code-bg);
+  }
+  details.howto > summary {
+    padding: 0.75rem 1rem;
+    font-size: 0.95rem;
+    color: var(--fg);
+    font-weight: 600;
+    margin-top: 0;
+  }
+  details.howto[open] > summary {
+    border-bottom: 1px solid var(--border);
+  }
+  details.howto .howto-body {
+    padding: 1rem;
+  }
+  details.howto p { margin: 0.5rem 0; }
+  details.howto ol, details.howto ul { margin: 0.5rem 0 0.75rem 1.2rem; padding: 0; }
+  details.howto li { margin: 0.25rem 0; }
+  details.howto pre {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 0.6rem;
+    overflow-x: auto;
+    margin: 0.4rem 0;
+  }
+  details.howto code, details.howto pre code {
+    font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    font-size: 0.85rem;
+  }
+  details.howto kbd {
+    font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    font-size: 0.85rem;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-bottom-width: 2px;
+    border-radius: 3px;
+    padding: 1px 5px;
+  }
+  details.howto strong { display: block; margin-top: 0.5rem; }
   footer { margin-top: 2rem; padding-top: 1rem; border-top: 1px solid var(--border); font-size: 0.8rem; color: var(--muted); }
   footer a { color: var(--accent); }
 </style>
@@ -148,9 +192,73 @@
 <p class="sub">
   Reads the fork's <code>apm.pdef.json</code> and lets you tick bits to compute
   values for params like <code>FLIGHT_OPTIONS</code>, <code>OSD_OPTIONS</code>,
-  <code>RC_OPTIONS</code>, <code>OSD_OPTIONS</code>, etc.
+  <code>RC_OPTIONS</code>, etc.
   Inspired by <a href="https://notes.stavros.io/ardupilot/bitmask-calculator/" target="_blank" rel="noopener">notes.stavros.io/ardupilot/bitmask-calculator</a>.
 </p>
+
+<details class="howto">
+  <summary>How to use this calculator (click to expand)</summary>
+  <div class="howto-body">
+    <p><strong>Two ways to use it:</strong></p>
+
+    <p><strong>1. Run it locally on your computer (recommended)</strong></p>
+    <ol>
+      <li>
+        Save this page to your computer: right-click the page background
+        and pick <em>"Save As&hellip;"</em> / <em>"Save Page As&hellip;"</em>,
+        or use <kbd>Ctrl+S</kbd> (<kbd>Cmd+S</kbd> on macOS). Save as
+        <code>bitmask_calculator.html</code> anywhere convenient.
+      </li>
+      <li>
+        Double-click the saved file to open it in your browser.
+        Everything works offline once loaded — the page is pure HTML/JS,
+        no server, no analytics.
+      </li>
+      <li>
+        On first load, the calculator fetches
+        <code>apm.pdef.json</code> from this fork's GitHub raw URL.
+        If you're offline, click "Upload file…" in the
+        <em>Source</em> dropdown to point at a local JSON instead.
+      </li>
+    </ol>
+
+    <p><strong>2. Use it directly via a CDN (no download)</strong></p>
+    <p>
+      GitHub's <code>raw.githubusercontent.com</code> serves HTML as
+      plain text and won't render. Use a "raw to rendered" CDN like
+      <a href="https://raw.githack.com" target="_blank" rel="noopener">raw.githack.com</a>:
+    </p>
+    <pre><code>https://raw.githack.com/erwinquilloy/ardupilot/master_custom_4.6.3_light/docs/bitmask_calculator.html</code></pre>
+    <p>
+      Bookmark that URL and it always serves the latest version from
+      the light branch.
+    </p>
+
+    <p><strong>Then, to compute a value:</strong></p>
+    <ol>
+      <li>Wait for the parameter list to load (the <em>Source</em> bar will say "Loaded N bitmask params" in green).</li>
+      <li>Pick the parameter you want to calculate (e.g. <code>FLIGHT_OPTIONS</code>) from the <em>Parameter</em> dropdown.</li>
+      <li>Tick the bits you want enabled. The <em>Value (decimal)</em> field updates live with decimal, hex, and binary representations.</li>
+      <li>Use <em>Copy</em> to put the value on your clipboard, then paste into Mission Planner / MAVProxy / QGroundControl as the parameter value.</li>
+    </ol>
+
+    <p><strong>To reverse-engineer an existing value:</strong></p>
+    <ol>
+      <li>Pick the parameter from the dropdown.</li>
+      <li>Type or paste the integer value into the <em>Value (decimal)</em> field.</li>
+      <li>The bit checkboxes will reflect which bits are set.</li>
+    </ol>
+
+    <p><strong>Switching branches:</strong></p>
+    <p>
+      Use the <em>Source</em> dropdown to pick the light or full
+      branch's <code>apm.pdef.json</code>. Content is byte-identical
+      between the two on this fork — the strip is only of hardware
+      backends at compile time, not of parameter definitions — so
+      either works for the calculator.
+    </p>
+  </div>
+</details>
 
 <div class="controls">
   <div class="row">

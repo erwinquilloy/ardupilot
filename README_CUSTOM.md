@@ -952,6 +952,43 @@ this version uses **this fork's parameter set** so the fork-added bits
 on `FLIGHT_OPTIONS` (21 / 22 / 23 / 24), `RC_OPTIONS` bit 22, the
 `OSD_OPTIONS` bits, etc. are visible without leaving the page.
 
+### How to use the calculator
+
+The page itself has an expandable "How to use" section with the
+full walk-through. Two quick paths:
+
+**Option 1 — Run it locally (recommended).** Download the HTML file
+and double-click to open in any browser:
+
+```bash
+curl -O https://raw.githubusercontent.com/erwinquilloy/ardupilot/master_custom_4.6.3_light/docs/bitmask_calculator.html
+```
+
+Or just `git clone` the repo and open `docs/bitmask_calculator.html`
+directly. Works offline once loaded; the param JSON is fetched on
+demand but the page also accepts a local file upload if you're
+offline.
+
+**Option 2 — Use it via a "raw to rendered" CDN.** GitHub's
+`raw.githubusercontent.com` serves HTML as plain text and won't
+render. Use `raw.githack.com` instead:
+
+```
+https://raw.githack.com/erwinquilloy/ardupilot/master_custom_4.6.3_light/docs/bitmask_calculator.html
+```
+
+That URL always serves the latest committed version from the light
+branch — bookmark it.
+
+**To compute a value:**
+1. Pick the param (e.g. `FLIGHT_OPTIONS`) from the dropdown.
+2. Tick the bits you want. The decimal / hex / binary fields update live.
+3. Hit "Copy" and paste into Mission Planner / MAVProxy / QGroundControl.
+
+**To reverse-engineer an existing value:** type or paste the integer
+into the Value (decimal) field; the bit checkboxes will reflect which
+bits are set.
+
 ---
 
 # Branch / repository layout
