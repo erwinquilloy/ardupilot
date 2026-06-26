@@ -84,6 +84,10 @@ private:
         TUNING_TECS_THR_FF_DAMP =             62,
         TUNING_TECS_THR_FF_FILT =             63,
 
+        // Fork PR #133 follow-up: ailerons / elevator differential throws
+        TUNING_AILERONS_DIFF =                90,
+        TUNING_ELEVATOR_DIFF =                91,
+
         TUNING_Q_TRIM_PITCH =                 92,
     };
 
