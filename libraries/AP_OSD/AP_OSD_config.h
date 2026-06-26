@@ -24,5 +24,9 @@
 #endif
 
 #ifndef AP_OSD_LINK_STATS_EXTENSIONS_ENABLED
-#define AP_OSD_LINK_STATS_EXTENSIONS_ENABLED 0      // Disabled by default to save flash, enable via custom build server
+// Fork default: ON. Surfaces OSDx_LINK_Q, RC_PWR, RSSIDBM, RC_SNR, RC_ANT, RC_LQ
+// extended CRSF telemetry elements. Upstream defaults to 0 to save ~3-5 KB flash;
+// our fork users typically fly ELRS/CRSF and want these readings on the OSD.
+// Per-board hwdef can still override by defining to 0 before including this header.
+#define AP_OSD_LINK_STATS_EXTENSIONS_ENABLED 1
 #endif
