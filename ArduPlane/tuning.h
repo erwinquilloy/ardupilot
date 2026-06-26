@@ -84,6 +84,10 @@ private:
         TUNING_TECS_THR_FF_DAMP =             62,
         TUNING_TECS_THR_FF_FILT =             63,
 
+        // Fork PR #146 / #147 follow-up: throttle/flap-to-elevator mix
+        TUNING_KFF_THRAT2ELEV =               82,
+        TUNING_KFF_FLAP2ELEV =                83,
+
         // Fork PR #133 follow-up: ailerons / elevator differential throws
         TUNING_AILERONS_DIFF =                90,
         TUNING_ELEVATOR_DIFF =                91,
