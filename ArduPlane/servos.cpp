@@ -573,6 +573,55 @@ void Plane::apply_throttle_dz(void)
 }
 
 /*
+  Fork PR #146 / #147: helper for the throttle/flap-to-elevator mixes.
+  Apply the given PWM shift to every elevator-equivalent output channel
+  (elevator, both elevons, both vtails, and on flying-wing builds the
+  outer + inner dspoilers).
+ */
+void Plane::shift_elevator_output_pwm(int16_t elev_pwm_shift)
+{
+    SRV_Channels::shift_output_pwm(SRV_Channel::k_elevator,     elev_pwm_shift);
+    SRV_Channels::shift_output_pwm(SRV_Channel::k_elevon_left,  elev_pwm_shift);
+    SRV_Channels::shift_output_pwm(SRV_Channel::k_elevon_right, elev_pwm_shift);
+    SRV_Channels::shift_output_pwm(SRV_Channel::k_vtail_left,   elev_pwm_shift);
+    SRV_Channels::shift_output_pwm(SRV_Channel::k_vtail_right,  elev_pwm_shift);
+
+    const int8_t bitmask = g2.crow_flap_options.get();
+    const bool flying_wing       = (bitmask & CrowFlapOptions::FLYINGWING) != 0;
+    const bool full_span_aileron = (bitmask & CrowFlapOptions::FULLSPAN)   != 0;
+
+    if (flying_wing) {
+        SRV_Channels::shift_output_pwm(SRV_Channel::k_dspoilerLeft1,  elev_pwm_shift);
+        SRV_Channels::shift_output_pwm(SRV_Channel::k_dspoilerRight1, elev_pwm_shift);
+        if (full_span_aileron) {
+            SRV_Channels::shift_output_pwm(SRV_Channel::k_dspoilerLeft2,  elev_pwm_shift);
+            SRV_Channels::shift_output_pwm(SRV_Channel::k_dspoilerRight2, elev_pwm_shift);
+        }
+    }
+}
+
+void Plane::apply_throttle_to_elevator_mix(void)
+{
+    if (is_zero(g.kff_throttle_above_trim_to_elevator.get())) {
+        return;
+    }
+    const float throttle = SRV_Channels::get_output_scaled(SRV_Channel::k_throttle);
+    const int16_t elev_mix_pwm = lrintf(linear_interpolate(0, g.kff_throttle_above_trim_to_elevator,
+                                                           throttle, aparm.throttle_cruise, 100));
+    shift_elevator_output_pwm(elev_mix_pwm);
+}
+
+void Plane::apply_flap_to_elevator_mix(void)
+{
+    if (is_zero(g.kff_flap_to_elevator.get())) {
+        return;
+    }
+    const float flap_position = SRV_Channels::get_slew_limited_output_scaled(SRV_Channel::k_flap_auto);
+    const int16_t elev_mix_pwm = lrintf(flap_position * g.kff_flap_to_elevator * 0.01f);
+    shift_elevator_output_pwm(elev_mix_pwm);
+}
+
+/*
   Apply min/max safety limits to throttle.
  */
 float Plane::apply_throttle_limits(float throttle_in)
@@ -1162,7 +1211,14 @@ void Plane::servos_output(void)
 
     //  set control surface servos to neutral
     landing_neutral_control_surface_servos();
-    
+
+    // Fork PR #146 / #147: post-process the elevator outputs to apply
+    // throttle- and flap-driven PWM offsets. Runs after the standard
+    // mixers + dspoiler + neutral-on-landing pipeline so the shift is
+    // a pure add-on; both helpers are no-ops when their KFF param is 0.
+    apply_throttle_to_elevator_mix();
+    apply_flap_to_elevator_mix();
+
     // set rudder arm waiting for neutral control throws (rudder neutral, aileron/rt vtail/rt elevon to full right)
     if (flight_option_enabled(FlightOptions::INDICATE_WAITING_FOR_RUDDER_NEUTRAL)) {
         indicate_waiting_for_rud_neutral_to_takeoff();

@@ -794,6 +794,33 @@ void SRV_Channels::set_output_to_trim(SRV_Channel::Aux_servo_function_t function
 }
 
 /*
+  Fork PR #146 / #147: shift the calculated PWM of every channel
+  assigned to `function` by `pwm_shift` microseconds. Reversed channels
+  get the opposite sign so a positive `pwm_shift` always means the same
+  control direction (e.g. "elevator up") regardless of servo wiring.
+  Result is clamped to the channel's servo_min / servo_max.
+ */
+void SRV_Channels::shift_output_pwm(SRV_Channel::Aux_servo_function_t function, int16_t pwm_shift)
+{
+    if (!SRV_Channel::valid_function(function)) {
+        return;
+    }
+    const auto func_output_scaled = functions[function].output_scaled;
+
+    for (uint8_t i=0; i<NUM_SERVO_CHANNELS; i++) {
+        if (channels[i].function == function) {
+            auto &channel = channels[i];
+            const int16_t channel_shift = channel.get_reversed() ? -pwm_shift : pwm_shift;
+            channel.calc_pwm(func_output_scaled);
+            const uint16_t new_output_pwm = constrain_int16(channel.get_output_pwm() + channel_shift,
+                                                            channel.get_output_min(),
+                                                            channel.get_output_max());
+            channel.set_output_pwm(new_output_pwm);
+        }
+    }
+}
+
+/*
   get the normalised output for a channel function from the pwm value
   of the first matching channel
  */
