@@ -448,10 +448,12 @@ void AP_Stats::update_flying_rc(uint32_t old_flying_sample_count, uint32_t new_f
     }
 #endif
 
-#if AP_OSD_LINK_STATS_EXTENSIONS_ENABLED
+#if AP_OSD_LINK_STATS_EXTENSIONS_ENABLED && AP_RCPROTOCOL_CRSF_ENABLED
     // minimum RSSI dBm — only when the CRSF protocol carries extended link
-    // stats (gated by AP_OSD_LINK_STATS_EXTENSIONS_ENABLED). On SITL and
-    // other builds where the extension fields aren't compiled in, leave
+    // stats (gated on both the user toggle and CRSF backend presence;
+    // boards without the CRSF protocol compiled in (ESP32 minimal,
+    // AP_Periph) skip this block entirely). On SITL and other builds
+    // where the extension fields aren't populated, leave
     // _boot_min_rc_rssi_dbm at its FLT_MAX sentinel.
     const int8_t rssi_dbm = AP::crsf()->get_link_status().rssi_dbm;
     if (rssi_dbm >= 0) {
