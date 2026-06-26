@@ -80,7 +80,11 @@ is flying*, the firmware will **not** disarm. Instead it:
    plane down by stick.
 3. Updates the OSD flight-mode chip to show the disarmed symbol so
    the pilot has a visual confirmation.
-4. Defers the real disarm until `is_flying()` reports false. Once
+4. Latches `emergency_landing` on for the duration of the cut, so if
+   an RC failsafe fires before the plane is on the ground the failsafe
+   path stays in FBWA rather than reverting to RTL into terrain. The
+   flag is restored to its pre-cut value on rearm.
+5. Defers the real disarm until `is_flying()` reports false. Once
    the plane has actually landed (`update_is_flying_5Hz` sees it
    below the speed/airspeed thresholds), the deferred disarm
    completes automatically.

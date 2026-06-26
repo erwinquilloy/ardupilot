@@ -314,6 +314,10 @@ bool AP_Arming_Plane::arm(const AP_Arming::Method method, const bool do_arming_c
             plane.set_mode(*throttle_cut_prev_mode, ModeReason::RC_COMMAND);
         }
         set_throttle_cut(false);
+        // Fork PR #221: restore the emergency_landing flag to whatever
+        // it was when the cut fired, so rearming undoes the FBWA-via-FS
+        // path #221 wires up on the cut side.
+        plane.emergency_landing = emergency_landing_prev_status;
         gcs().send_text(MAV_SEVERITY_INFO, "Rearmed");
         return true;
     }
@@ -375,6 +379,12 @@ bool AP_Arming_Plane::disarm(const AP_Arming::Method method, bool do_disarm_chec
         if (plane.is_flying()) {
             if (method == AP_Arming::Method::AUXSWITCH) {
                 set_throttle_cut(true);
+                // Fork PR #221: latch emergency_landing on for the duration
+                // of the cut. Forces the failsafe path into FBWA (rather
+                // than RTL into terrain) if RC FS hits before the plane
+                // can be brought down.
+                emergency_landing_prev_status = plane.emergency_landing;
+                plane.emergency_landing = true;
                 if (plane.control_mode->does_auto_throttle()) {
                     throttle_cut_prev_mode = plane.control_mode;
                     plane.set_mode(plane.mode_fbwa, ModeReason::RC_COMMAND);
