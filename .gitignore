@@ -123,6 +123,12 @@ ParameterMetaDataBackup.xml
 ParameterMetaData.xml
 apm.pdef.xml
 apm.pdef.json
+# Fork: keep parameter metadata at a stable path so a bitmask
+# calculator app can fetch it via raw.githubusercontent.com
+!docs/parameters/apm.pdef.json
+!docs/parameters/apm.pdef.xml
+!docs/parameters/Parameters.html
+!docs/parameters/Parameters.md
 parameters.edn
 LogMessages.html
 LogMessages.rst
