@@ -472,6 +472,13 @@ auto/RTL/guided. Pilots used to upstream's behaviour can set
   arrow-direction variant available for wind/groundspeed
 - **DJI FPV / HDZero numeric attitude** — uses
   `get_osd_roll_pitch_rad()` so the goggles match the horizon
+- **Extended CRSF link-stats elements on by default** —
+  `AP_OSD_LINK_STATS_EXTENSIONS_ENABLED` flipped 0 → 1 so
+  `OSDx_LINK_Q`, `OSDx_RC_PWR`, `OSDx_RSSIDBM`, `OSDx_RC_SNR`,
+  `OSDx_RC_ANT`, and `OSDx_RC_LQ` are compiled in without needing
+  the custom build server. Costs ~3-5 KB flash; fork users typically
+  fly ELRS/CRSF and want these readings on the OSD. Per-board hwdef
+  can still override by defining the macro to 0 before include.
 - **5 OSD screens** default (was 4)
 - **Widened OSD sidebars** — wider value columns on the artificial-
   horizon sidebars so 3- and 4-digit values fit cleanly. Inherited
