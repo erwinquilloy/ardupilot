@@ -112,6 +112,8 @@ const AP_Tuning_Plane::tuning_name AP_Tuning_Plane::tuning_names[] = {
     { TUNING_TECS_THR_FF_DAMP, "TTHR_FF_DAMP" },
     { TUNING_TECS_THR_FF_FILT, "TTHR_FF_FILT" },
     { TUNING_PITCH_TRIM,   "PitchTrim" },
+    { TUNING_AILERONS_DIFF, "AILERON_DIFF" },
+    { TUNING_ELEVATOR_DIFF, "ELEVATOR_DIFF" },
     { TUNING_Q_TRIM_PITCH, "Q_TRIM_PITCH" },
     { TUNING_NONE, nullptr }
 };
@@ -247,6 +249,12 @@ AP_Float *AP_Tuning_Plane::get_param_pointer(uint8_t parm)
 
     case TUNING_PITCH_TRIM:
         return &plane.g.pitch_trim;
+
+    case TUNING_AILERONS_DIFF:
+        return &plane.g2.ailerons_diff;
+
+    case TUNING_ELEVATOR_DIFF:
+        return &plane.g2.elevator_diff;
 
 #if HAL_QUADPLANE_ENABLED
     case TUNING_Q_TRIM_PITCH:
