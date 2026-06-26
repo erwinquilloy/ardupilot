@@ -75,6 +75,7 @@ const AP_Param::GroupInfo SRV_Channel::var_info[] = {
     // @Values{Plane}: 2:Flap,3:FlapAuto
     // @Values: 4:Aileron
     // @Values{Plane}: 4:Aileron
+    // @Values{Plane}: 200:AileronLeft,201:AileronRight
     // @Values: 6:Mount1Yaw,7:Mount1Pitch,8:Mount1Roll,9:Mount1Retract
     // @Values{Plane, Copter, Rover, Sub}: 6:Mount1Yaw,7:Mount1Pitch,8:Mount1Roll,9:Mount1Retract
     // @Values: 10:CameraTrigger
@@ -374,23 +375,26 @@ bool SRV_Channel::should_e_stop(SRV_Channel::Function function)
 // return true if function is for a control surface
 bool SRV_Channel::is_control_surface(SRV_Channel::Function function)
 {
-    switch (function) {
-    case Function::k_flap:
-    case Function::k_flap_auto:
-    case Function::k_aileron:
-    case Function::k_dspoilerLeft1:
-    case Function::k_dspoilerLeft2:
-    case Function::k_dspoilerRight1:
-    case Function::k_dspoilerRight2:
-    case Function::k_elevator:
-    case Function::k_rudder:
-    case Function::k_flaperon_left:
-    case Function::k_flaperon_right:
-    case Function::k_elevon_left:
-    case Function::k_elevon_right:
-    case Function::k_vtail_left:
-    case Function::k_vtail_right:
-    case Function::k_airbrake:
+    switch (function)
+    {
+    case SRV_Channel::Function::k_flap:
+    case SRV_Channel::Function::k_flap_auto:
+    case SRV_Channel::Function::k_aileron:
+    case SRV_Channel::Function::k_aileron_left:
+    case SRV_Channel::Function::k_aileron_right:
+    case SRV_Channel::Function::k_dspoilerLeft1:
+    case SRV_Channel::Function::k_dspoilerLeft2:
+    case SRV_Channel::Function::k_dspoilerRight1:
+    case SRV_Channel::Function::k_dspoilerRight2:
+    case SRV_Channel::Function::k_elevator:
+    case SRV_Channel::Function::k_rudder:
+    case SRV_Channel::Function::k_flaperon_left:
+    case SRV_Channel::Function::k_flaperon_right:
+    case SRV_Channel::Function::k_elevon_left:
+    case SRV_Channel::Function::k_elevon_right:
+    case SRV_Channel::Function::k_vtail_left:
+    case SRV_Channel::Function::k_vtail_right:
+    case SRV_Channel::Function::k_airbrake:
         return true;
 
     default:
