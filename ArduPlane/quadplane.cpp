@@ -1701,8 +1701,16 @@ void QuadPlane::update(void)
         return;
     }
 
+    // Fork PR #222: stop Q-mode motors when the user has cut throttle via
+    // the arming switch AND brought the throttle stick to zero. Lets the
+    // pilot land vertically by holding the throttle down, while still
+    // letting them fly out (rearm) if they raise the stick before the
+    // arming switch goes back to armed.
+    const bool throttle_emergency_stop = plane.arming.get_throttle_cut() &&
+                                         is_zero(plane.channel_throttle->get_control_in());
+
     // keep motors interlock state upto date with E-stop
-    motors->set_interlock(!SRV_Channels::get_emergency_stop());
+    motors->set_interlock(!SRV_Channels::get_emergency_stop() && !throttle_emergency_stop);
 
     if ((ahrs_view != NULL) && !is_equal(_last_ahrs_trim_pitch, ahrs_trim_pitch.get())) {
         _last_ahrs_trim_pitch = ahrs_trim_pitch.get();

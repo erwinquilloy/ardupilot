@@ -96,8 +96,21 @@ happened). This is the V10.0 ArduCustom safety pattern: the throttle
 cut is a softer-than-disarm action and you can recover from it.
 
 GCS messages:
-- `Throttle cut by arm switch` — at the moment the cut fires
+- `Throttle cut by arm switch` — at the moment the cut fires (fixed-wing
+  or VTOL with throttle stick at zero)
+- `Disarm prevented` — VTOL with throttle stick still raised; the motors
+  are still spinning, drop the stick to let them stop
 - `Rearmed` — when the arm switch goes back to "arm" mid-cut
+
+**VTOL / quadplane behaviour:** in a VTOL mode (QHover, QLoiter, QRTL,
+QLand, etc.) the firmware **does not** switch the plane to FBWA on cut.
+The motors only stop once the throttle stick reaches zero, so the
+pilot can land vertically by holding throttle down. Raising the stick
+again before the arming switch flips back keeps the motors live so the
+pilot can fly out. The throttle output servo channels (`k_throttle`,
+`k_throttleLeft`, `k_throttleRight`) are also forced to zero on the cut
+side as belt-and-braces in case a twin-motor path bypasses the standard
+throttle suppression.
 
 Caveats:
 - **SITL retains the upstream behaviour** so autotest still passes —

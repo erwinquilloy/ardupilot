@@ -372,9 +372,10 @@ bool AP_Arming_Plane::disarm(const AP_Arming::Method method, bool do_disarm_chec
         // Fork PR #30: don't actually disarm in flight. If the disarm
         // request came from an aux switch and the plane is flying, cut
         // the throttle and switch to FBWA (if we were in an auto-throttle
-        // mode). is_flying.cpp will call disarm_if_requested() once we
-        // touch the ground, completing the deferred disarm. SITL retains
-        // the upstream behaviour so autotest can disarm-on-command.
+        // FW mode). VTOL: don't bump to FBWA -- the user wants to land
+        // vertically; servos.cpp + quadplane.cpp stop the motors when the
+        // throttle stick reaches 0 instead. SITL retains the upstream
+        // behaviour so autotest can disarm-on-command.
 #if CONFIG_HAL_BOARD != HAL_BOARD_SITL
         if (plane.is_flying()) {
             if (method == AP_Arming::Method::AUXSWITCH) {
@@ -385,13 +386,23 @@ bool AP_Arming_Plane::disarm(const AP_Arming::Method method, bool do_disarm_chec
                 // can be brought down.
                 emergency_landing_prev_status = plane.emergency_landing;
                 plane.emergency_landing = true;
-                if (plane.control_mode->does_auto_throttle()) {
+                // Fork PR #222: VTOL modes don't get bumped to FBWA -- the
+                // motors will stop once the throttle stick reaches 0
+                // (see quadplane.cpp interlock + servos.cpp output gate).
+                if (!plane.control_mode->is_vtol_mode() && plane.control_mode->does_auto_throttle()) {
                     throttle_cut_prev_mode = plane.control_mode;
                     plane.set_mode(plane.mode_fbwa, ModeReason::RC_COMMAND);
                 } else {
                     throttle_cut_prev_mode = nullptr;
                 }
-                gcs().send_text(MAV_SEVERITY_INFO, "Throttle cut by arm switch");
+                // Fork PR #222: in VTOL mode with the throttle stick still
+                // raised, the motors are still spinning -- tell the pilot
+                // their disarm request wasn't actually honoured yet so they
+                // know to drop the throttle stick.
+                const bool disarm_prevented = !is_zero(plane.channel_throttle->get_control_in()) &&
+                                              plane.control_mode->is_vtol_mode();
+                gcs().send_text(MAV_SEVERITY_INFO, disarm_prevented ?
+                                "Disarm prevented" : "Throttle cut by arm switch");
             }
             // for non-aux-switch disarm requests (rudder, GCS) we
             // return false here without warning — same as upstream.
