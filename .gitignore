@@ -129,6 +129,8 @@ apm.pdef.json
 !docs/parameters/apm.pdef.xml
 !docs/parameters/Parameters.html
 !docs/parameters/Parameters.md
+!docs/parameters/Parameters.rst
+!docs/parameters/ParametersLatex.rst
 parameters.edn
 LogMessages.html
 LogMessages.rst
