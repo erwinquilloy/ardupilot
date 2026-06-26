@@ -74,6 +74,7 @@ const AP_Param::GroupInfo SRV_Channel::var_info[] = {
     // @Values{Plane}: 2:Flap,3:FlapAuto
     // @Values: 4:Aileron
     // @Values{Plane}: 4:Aileron
+    // @Values{Plane}: 200:AileronLeft,201:AileronRight
     // @Values: 6:Mount1Yaw,7:Mount1Pitch,8:Mount1Roll,9:Mount1Retract
     // @Values{Plane, Copter, Rover}: 6:Mount1Yaw,7:Mount1Pitch,8:Mount1Roll,9:Mount1Retract
     // @Values: 10:CameraTrigger
@@ -363,9 +364,11 @@ bool SRV_Channel::is_control_surface(SRV_Channel::Aux_servo_function_t function)
 {
     switch (function)
     {
-    case SRV_Channel::Aux_servo_function_t::k_flap:  
+    case SRV_Channel::Aux_servo_function_t::k_flap:
     case SRV_Channel::Aux_servo_function_t::k_flap_auto:
     case SRV_Channel::Aux_servo_function_t::k_aileron:
+    case SRV_Channel::Aux_servo_function_t::k_aileron_left:
+    case SRV_Channel::Aux_servo_function_t::k_aileron_right:
     case SRV_Channel::Aux_servo_function_t::k_dspoilerLeft1:
     case SRV_Channel::Aux_servo_function_t::k_dspoilerLeft2:
     case SRV_Channel::Aux_servo_function_t::k_dspoilerRight1:

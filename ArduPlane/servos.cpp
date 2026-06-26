@@ -179,6 +179,22 @@ bool Plane::suppress_throttle(void)
 
 
 /*
+  Fork PR #133: asymmetrically attenuate a control surface output based
+  on a +/- 90 differential-throw setting. Positive diff attenuates the
+  down side (input > 0 in our sign convention); negative diff attenuates
+  the up side. Magnitudes above 90 are clamped to 90 so the surface
+  always retains at least 10 % of its travel on the attenuated side.
+ */
+float Plane::apply_throws_diff(float input, float diff) const
+{
+    const float mixing_diff_attn = (100 - MIN(fabsf(diff), 90)) * 0.01f;
+    if ((input < 0 && diff > 0) || (input > 0 && diff < 0)) {
+        return input * mixing_diff_attn;
+    }
+    return input;
+}
+
+/*
   mixer for elevon and vtail channels setup using designated servo
   function values. This mixer operates purely on scaled values,
   allowing the user to trim and limit individual servos using the
@@ -217,10 +233,15 @@ void Plane::flaperon_update()
       percentage of flaps. Flap input can come from a manual channel
       or from auto flaps.
      */
-    float aileron = SRV_Channels::get_output_scaled(SRV_Channel::k_aileron);
+    // Fork PR #133: split aileron into left/right with ailerons_diff
+    // attenuation applied per side before the flap split-in.
+    float aileron_right = SRV_Channels::get_output_scaled(SRV_Channel::k_aileron);
+    float aileron_left  = -aileron_right;
+    aileron_left  = apply_throws_diff(aileron_left,  g2.ailerons_diff);
+    aileron_right = apply_throws_diff(aileron_right, g2.ailerons_diff);
     float flap_percent = SRV_Channels::get_slew_limited_output_scaled(SRV_Channel::k_flap_auto);
-    float flaperon_left  = constrain_float(aileron + flap_percent * 45, -4500, 4500);
-    float flaperon_right = constrain_float(aileron - flap_percent * 45, -4500, 4500);
+    float flaperon_left  = constrain_float(aileron_left  - flap_percent * 45, -4500, 4500);
+    float flaperon_right = constrain_float(aileron_right - flap_percent * 45, -4500, 4500);
     SRV_Channels::set_output_scaled(SRV_Channel::k_flaperon_left, flaperon_left);
     SRV_Channels::set_output_scaled(SRV_Channel::k_flaperon_right, flaperon_right);
 }
@@ -241,15 +262,21 @@ void Plane::dspoiler_update(void)
     const bool progressive_crow   = (bitmask & CrowFlapOptions::PROGRESSIVE_CROW) != 0  || crow_mode == CrowMode::PROGRESSIVE; 
 
     // if flying wing use elevons else use ailerons
+    // Fork PR #133: apply ailerons_diff to the aileron-derived elevon
+    // outputs in both branches (flying-wing and non-flying-wing). Fork
+    // used g.mixing_diff in the flying-wing branch but upstream 4.6.3
+    // removed that param; ailerons_diff is the natural successor since
+    // elevons-in-flying-wing mode behave as left/right ailerons for the
+    // roll axis.
     float elevon_left;
     float elevon_right;
     if (flying_wing) {
-        elevon_left = SRV_Channels::get_output_scaled(SRV_Channel::k_elevon_left);
-        elevon_right = SRV_Channels::get_output_scaled(SRV_Channel::k_elevon_right);
+        elevon_left  = apply_throws_diff(SRV_Channels::get_output_scaled(SRV_Channel::k_elevon_left),  g2.ailerons_diff);
+        elevon_right = apply_throws_diff(SRV_Channels::get_output_scaled(SRV_Channel::k_elevon_right), g2.ailerons_diff);
     } else {
         const float aileron = SRV_Channels::get_output_scaled(SRV_Channel::k_aileron);
-        elevon_left = -aileron;
-        elevon_right = aileron;
+        elevon_left  = apply_throws_diff(-aileron, g2.ailerons_diff);
+        elevon_right = apply_throws_diff(aileron,  g2.ailerons_diff);
     }
 
     const float rudder_rate = g.dspoiler_rud_rate * 0.01f;
@@ -1045,6 +1072,26 @@ void Plane::landing_neutral_control_surface_servos(void)
 }
 
 /*
+  Fork PR #133 helpers: wrap apply_throws_diff for a single channel,
+  and split the k_aileron output into k_aileron_left / k_aileron_right
+  with the differential throw applied per side.
+ */
+void Plane::channel_function_apply_diff(SRV_Channel::Aux_servo_function_t func, float diff) const
+{
+    const float input = SRV_Channels::get_output_scaled(func);
+    SRV_Channels::set_output_scaled(func, apply_throws_diff(input, diff));
+}
+
+void Plane::set_aileron_outputs() const
+{
+    const float aileron_input = SRV_Channels::get_output_scaled(SRV_Channel::k_aileron);
+    const float aileron_left_output  = apply_throws_diff(-aileron_input, g2.ailerons_diff);
+    const float aileron_right_output = apply_throws_diff(aileron_input,  g2.ailerons_diff);
+    SRV_Channels::set_output_scaled(SRV_Channel::k_aileron_left,  aileron_left_output);
+    SRV_Channels::set_output_scaled(SRV_Channel::k_aileron_right, aileron_right_output);
+}
+
+/*
   sets rudder/vtail , and elevon to indicator positions that we are in a rudder arming waiting for neutral stick state
 */
 void Plane::indicate_waiting_for_rud_neutral_to_takeoff(void)
@@ -1077,6 +1124,12 @@ void Plane::servos_output(void)
     // run vtail and elevon mixers
     channel_function_mixer(SRV_Channel::k_aileron, SRV_Channel::k_elevator, SRV_Channel::k_elevon_left, SRV_Channel::k_elevon_right);
     channel_function_mixer(SRV_Channel::k_rudder,  SRV_Channel::k_elevator, SRV_Channel::k_vtail_right, SRV_Channel::k_vtail_left);
+
+    // Fork PR #133: apply elevator differential throws to k_elevator
+    // after the elevon/vtail mixers have read from it, and split k_aileron
+    // into k_aileron_left / k_aileron_right with ailerons_diff per side.
+    channel_function_apply_diff(SRV_Channel::k_elevator, g2.elevator_diff);
+    set_aileron_outputs();
 
 #if HAL_QUADPLANE_ENABLED
     // cope with tailsitters and bicopters
@@ -1129,6 +1182,10 @@ void Plane::update_throttle_hover() {
 // auto-trim and how its trim should be derived from pitch_I / roll_I
 const Plane::ServoTrimSetEntry Plane::aileron_trim_set[] = {
     {SRV_Channel::k_aileron,         TrimAdjustmentType::AdjustRoll,         "Aileron trim saturation"},
+    // Fork PR #133: split aileron outputs participate in autotrim too;
+    // _left is roll-inverted like flaperon_left.
+    {SRV_Channel::k_aileron_left,    TrimAdjustmentType::AdjustRollInverted, "Left aileron trim saturation"},
+    {SRV_Channel::k_aileron_right,   TrimAdjustmentType::AdjustRoll,         "Right aileron trim saturation"},
     {SRV_Channel::k_flaperon_left,   TrimAdjustmentType::AdjustRollInverted, "Left flaperon trim saturation"},
     {SRV_Channel::k_flaperon_right,  TrimAdjustmentType::AdjustRoll,         "Right flaperon trim saturation"},
 };

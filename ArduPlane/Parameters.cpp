@@ -1420,6 +1420,22 @@ const AP_Param::GroupInfo ParametersG2::var_info[] = {
     // @User: Standard
     AP_GROUPINFO("AUTO_CLIMB_MAX", 51, ParametersG2, auto_climb_max, 0),
 
+    // @Param: AILERON_DIFF
+    // @DisplayName: Aileron differential throws (fork PR #133)
+    // @Description: Amount of differential throws applied to the ailerons. A positive number reduces the down-travel of each side; a negative number reduces the up-travel. Applied to the split k_aileron_left / k_aileron_right outputs, to flaperons (after the auto-flap split), and to dspoiler elevons when not in flying-wing mode.
+    // @Units: %
+    // @Range: -90 90
+    // @User: Advanced
+    AP_GROUPINFO("AILERON_DIFF", 53, ParametersG2, ailerons_diff, 0),
+
+    // @Param: ELEVATOR_DIFF
+    // @DisplayName: Elevator differential throws (fork PR #133)
+    // @Description: Amount of differential throws applied to the elevator. A positive number reduces the down-travel; a negative number reduces the up-travel. Applied to the k_elevator output after the standard nav-pitch mixing. Does not apply to elevons (those use AILERON_DIFF on the aileron side of the mixer).
+    // @Units: %
+    // @Range: -90 90
+    // @User: Advanced
+    AP_GROUPINFO("ELEVATOR_DIFF", 54, ParametersG2, elevator_diff, 0),
+
     // @Param: ARMING_MODE_SW
     // @DisplayName: Mode to switch to ~3 s after arming
     // @Description: After arming, wait 3 s then switch to the selected mode. Lets a single aux-switch arm and start a TKOFF or AUTO mission without a second mode switch.

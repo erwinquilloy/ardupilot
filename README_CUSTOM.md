@@ -464,6 +464,46 @@ crash detection, auto state) all become slightly more responsive.
 auto/RTL/guided. Pilots used to upstream's behaviour can set
 `STICK_MIXING = 1` to restore it.
 
+## Aileron / elevator differential throws
+
+Asymmetric control-surface throws, set in firmware so they survive radio
+swaps and reflashes. Useful for airframes that want more up-throw than
+down-throw on the ailerons (less adverse yaw) or asymmetric elevator
+behaviour for high-alpha handling.
+
+- `AILERON_DIFF` (% in `[-90, 90]`, default 0) — applied to the split
+  aileron outputs, to flaperons (after the auto-flap split), and to
+  dspoiler elevons when not in flying-wing mode. Positive value reduces
+  the down side; negative reduces the up side.
+- `ELEVATOR_DIFF` (% in `[-90, 90]`, default 0) — applied to the
+  `k_elevator` output after the elevon/vtail mixers have read from it.
+  Same sign convention as `AILERON_DIFF`. Does not apply to elevons (use
+  `AILERON_DIFF` for the aileron-side asymmetry on flying wings).
+
+Two new servo functions are added so a single physical aileron channel
+can split into left/right outputs with the diff applied per side:
+
+- **200** — `AileronLeft` (mirrors `k_aileron` with sign inverted and
+  `AILERON_DIFF` applied)
+- **201** — `AileronRight` (same as `k_aileron` but with `AILERON_DIFF`
+  applied)
+
+A "classic" build that wires both ailerons to one channel with a Y-cable
+keeps using `4:Aileron` and `AILERON_DIFF` is a no-op. A split build
+uses `200/201` on two channels and gains per-side differential throw.
+
+Both knobs are also exposed to in-flight RC tuning via `TUNE_PARAM = 90`
+(AILERONS_DIFF) and `TUNE_PARAM = 91` (ELEVATOR_DIFF), with the standard
+single-param multiplicative-scaling rules (must be seeded non-zero to
+search a range; sign of the seed picks which polarity is swept).
+
+> ⚠️ **Deepstall landing is disabled** in this fork (`HAL_LANDING_DEEPSTALL_ENABLED`
+> default flipped to `0`). The deepstall code path writes elevator PWM
+> directly via `set_output_pwm`, which bypasses the `ELEVATOR_DIFF`
+> attenuation in `set_output_scaled`. The two features are mechanically
+> incompatible. Re-enable per-board via hwdef define if you actually
+> use deepstall and don't need `ELEVATOR_DIFF`.
+
 ---
 
 # OSD additions
@@ -739,6 +779,7 @@ stock 4.6.3 build and then load this firmware:
 | `consumed_wh` integrates with `voltage_resting_estimate`                                        | Reported Wh ~10 % higher under load; use `consumed_wh_without_losses` for the old value. |
 | `AP_Stats` scheduled at 100 Hz                                                                  | Peak-stat accuracy; CPU cost is negligible.                                  |
 | `BATTn_OPTIONS` is uint32                                                                       | Bit 23 = use Wh for remaining %. Backwards-compat with uint16 saved values.  |
+| `HAL_LANDING_DEEPSTALL_ENABLED` (BOARD_FLASH_SIZE > 1024) → 0                                   | Deepstall landing compiled out; mechanically incompatible with `ELEVATOR_DIFF`. Per-board hwdef can opt back in. |
 
 ---
 
