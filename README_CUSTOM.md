@@ -885,8 +885,11 @@ in a calculator UI.
 ## Bitmask calculator
 
 A self-contained HTML/JS bitmask calculator lives at
-[`docs/bitmask_calculator.html`](docs/bitmask_calculator.html). It
-loads the JSON above, lets you tick bits to compute the integer
+[`docs/bitmask_calculator.html`](docs/bitmask_calculator.html).
+
+**To use it: download the file and open in a browser.**
+
+It loads the JSON above, lets you tick bits to compute the integer
 value (or paste a value to see which bits are set), and shows decimal
 / hex / binary representations. Runs entirely in your browser — no
 server, no analytics.
