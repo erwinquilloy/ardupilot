@@ -35,6 +35,7 @@
 #endif
 #include <AC_Fence/AC_Fence_config.h>
 #include <AP_RangeFinder/AP_RangeFinder_config.h>
+#include <AP_RCProtocol/AP_RCProtocol_config.h>  // for AP_RCPROTOCOL_CRSF_ENABLED
 
 class AP_OSD_Backend;
 class AP_MSP;
@@ -57,8 +58,11 @@ class AP_MSP;
 #define OSD_DEBUG_ELEMENT 0
 #endif
 
-#if AP_OSD_LINK_STATS_EXTENSIONS_ENABLED
-// For the moment, these extra panels only work with CRSF protocol based RC systems
+// The extended panels read AP::crsf()->get_link_status(), so they need
+// the CRSF protocol backend compiled in too. Boards with the protocol
+// stripped (ESP32 minimal, AP_Periph) get the panels compiled out even
+// if the user toggle is set.
+#if AP_OSD_LINK_STATS_EXTENSIONS_ENABLED && AP_RCPROTOCOL_CRSF_ENABLED
 #define AP_OSD_EXTENDED_LNK_STATS 1
 #define AP_OSD_WARN_RSSI_DEFAULT -100   // Default value for OSD RSSI panel warning, in dbm
 #else
