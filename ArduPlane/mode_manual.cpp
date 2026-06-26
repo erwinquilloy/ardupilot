@@ -1,5 +1,6 @@
 #include "mode.h"
 #include "Plane.h"
+#include "RC_Channel.h"
 
 void ModeManual::update()
 {
@@ -28,4 +29,14 @@ bool ModeManual::use_throttle_limits() const
     }
 #endif
     return false;
+}
+
+// Fork PR #139: voltage compensation runs in MANUAL by default. The
+// pilot can opt out by setting RC_OPTIONS bit 22 (PLANE_DISABLE_MAN_BAT_COMP),
+// at which point we revert to upstream's "MANUAL is pure passthrough"
+// behaviour. Default-on matches the fork's behaviour so users coming
+// from the legacy fork see no change.
+bool ModeManual::use_battery_compensation() const
+{
+    return !(rc().option_is_enabled(RC_Channels::Option::PLANE_DISABLE_MAN_BAT_COMP));
 }

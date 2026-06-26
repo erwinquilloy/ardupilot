@@ -433,6 +433,27 @@ Below `THR_DZ` % output, the throttle is forced to 0. Keeps the
 motor truly off when TECS commands a low but non-zero value (typical
 under glide / descent). Default 4 %.
 
+## Throttle voltage compensation in MANUAL mode
+
+Upstream applies `FWD_BAT_VOLT_*` throttle voltage compensation in every
+auto-throttle mode but skips it in MANUAL (and all the other manual-
+throttle modes: STABILIZE, TRAINING, ACRO, FBWA, AUTOTUNE). This fork
+extends voltage compensation to MANUAL too, so the pilot's stick
+position maps to a more consistent thrust as the battery sags.
+
+- Default: **enabled** in MANUAL (matches the legacy fork's PR #139).
+  Set `FWD_BAT_VOLT_MIN` / `FWD_BAT_VOLT_MAX` to configure; comp is
+  inactive when either is 0.
+- Opt out: set `RC_OPTIONS` bit 22 (`PLANE_DISABLE_MAN_BAT_COMP`) to
+  revert to upstream's "MANUAL is pure passthrough" behaviour.
+
+The other manual-throttle modes (STABILIZE / TRAINING / ACRO / FBWA /
+AUTOTUNE) keep upstream's behaviour and **do not** get voltage comp.
+Fork PR #33 (which extended comp into those modes on the 2022 fork) is
+*not* re-ported because upstream's `Mode::use_battery_compensation()`
+virtual already provides the same partitioning that PR #33 was aiming
+at -- the work is upstream.
+
 ## Smarter RC relays
 
 The relay aux functions (`RCx_OPTION = RELAY1..6`) now treat your
@@ -864,6 +885,7 @@ stock 4.6.3 build and then load this firmware:
 | `AP_Stats` scheduled at 100 Hz                                                                  | Peak-stat accuracy; CPU cost is negligible.                                  |
 | `BATTn_OPTIONS` is uint32                                                                       | Bit 23 = use Wh for remaining %. Backwards-compat with uint16 saved values.  |
 | `HAL_LANDING_DEEPSTALL_ENABLED` (BOARD_FLASH_SIZE > 1024) → 0                                   | Deepstall landing compiled out; mechanically incompatible with `ELEVATOR_DIFF`. Per-board hwdef can opt back in. |
+| MANUAL mode now applies `FWD_BAT_VOLT_*` throttle voltage compensation                          | Pilot's throttle stick maps to consistent thrust as battery sags. Set `RC_OPTIONS` bit 22 (`PLANE_DISABLE_MAN_BAT_COMP`) to opt back into upstream's pure-passthrough behaviour. Only takes effect if `FWD_BAT_VOLT_MIN`/`MAX` are configured (non-zero). |
 
 ---
 

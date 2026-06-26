@@ -441,8 +441,10 @@ public:
     // true if throttle min/max limits should be applied
     bool use_throttle_limits() const override;
 
-    // true if voltage correction should be applied to throttle
-    bool use_battery_compensation() const override { return false; }
+    // Fork PR #139: voltage compensation applies in MANUAL mode unless
+    // RC_OPTIONS bit 22 (PLANE_DISABLE_MAN_BAT_COMP) is set. Implementation
+    // in mode_manual.cpp to keep the RC_Channels dependency out of the header.
+    bool use_battery_compensation() const override;
 
 };
 
