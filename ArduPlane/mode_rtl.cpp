@@ -11,6 +11,7 @@ bool ModeRTL::_enter()
     plane.do_RTL(plane.get_RTL_altitude_cm());
     plane.rtl.done_climb = false;
     plane.rtl.reached_home_altitude = false;
+    plane.rtl.manual_alt_control = false;
     // remember whether this RTL was triggered by RC failsafe so the
     // RTL_CLIMB_FIRST_ONLY_IN_FS option can keep applying the climb-first
     // logic for the duration of this RTL even if the link recovers
@@ -18,6 +19,17 @@ bool ModeRTL::_enter()
     // fork PR #194: reset the emergency-landing state machine on each fresh RTL entry
     plane.rtl.emergency_landing_status = Plane::FSEmergencyLandingStatus::INACTIVE;
     plane.rtl.emergency_landing_tstamp_ms = 0;
+
+    // Fork PR #155: if RTL_MANUAL_ALT_CONTROL is on and we are not in RC
+    // failsafe, hand altitude control to the pilot's pitch stick from the
+    // very first tick. Seed target_altitude.amsl_cm from prev_WP_loc so the
+    // FBWB altitude controller starts from where the plane already is rather
+    // than snapping to the RTL altitude.
+    if (plane.flight_option_enabled(FlightOptions::RTL_MANUAL_ALT_CONTROL) &&
+        !plane.rtl.triggered_by_rc_failsafe) {
+        plane.rtl.manual_alt_control = true;
+        IGNORE_RETURN(plane.prev_WP_loc.get_alt_cm(Location::AltFrame::ABSOLUTE, plane.target_altitude.amsl_cm));
+    }
 #if HAL_QUADPLANE_ENABLED
     plane.vtol_approach_s.approach_stage = Plane::VTOLApproach::Stage::RTL;
 
@@ -61,6 +73,34 @@ void ModeRTL::_exit()
 void ModeRTL::update()
 {
     plane.calc_nav_roll();
+
+    // Fork PR #155: RTL_MANUAL_ALT_CONTROL. While not in RC failsafe and the
+    // option is set, the pilot drives altitude via the pitch stick. We skip
+    // the usual nav-pitch / throttle calcs (update_fbwb_speed_height owns
+    // target_altitude) and let the L1 controller bring the plane home using
+    // whatever altitude the pilot picks. Re-asserted every tick so the flag
+    // tracks the live FlightOptions setting.
+    const bool not_in_fs = !plane.failsafe.rc_failsafe && !plane.rtl.triggered_by_rc_failsafe;
+    if (not_in_fs && plane.flight_option_enabled(FlightOptions::RTL_MANUAL_ALT_CONTROL)) {
+        plane.rtl.manual_alt_control = true;
+        plane.update_fbwb_speed_height();
+        return;
+    }
+
+    // Fork PR #155: transition from manual-alt control into a normal RTL --
+    // either because RC just failsafed, or because the user cleared the
+    // option mid-flight. Reset the climb baseline to the current altitude
+    // and re-arm the do_RTL plumbing so the plane climbs/descends to the
+    // configured RTL altitude cleanly (without snapping). reached_home_altitude
+    // is also cleared so the FS eland timer is re-gated by the descent block
+    // in navigate().
+    if (plane.rtl.manual_alt_control) {
+        plane.prev_WP_loc = plane.current_loc;
+        plane.do_RTL(plane.get_RTL_altitude_cm());
+        plane.rtl.manual_alt_control = false;
+        plane.rtl.reached_home_altitude = false;
+    }
+
     plane.calc_nav_pitch();
     plane.calc_throttle();
 
@@ -271,11 +311,10 @@ void ModeRTL::navigate()
     // (auto-disarm on touchdown is now driven from inside the GLIDING_NO_RETURN case)
 
     // Fork PR #158: once the plane has reached the home loiter target,
-    // descend/climb to RTL_ALT_HOME (if configured). The fork's original
-    // condition also checks RTL_MANUAL_ALT_CONTROL (FlightOptions bit from
-    // PR #155, not ported), but with that flag absent the simplified gate
-    // here is always "descend after reaching the loiter target".
-    if (plane.reached_loiter_target()) {
+    // descend/climb to RTL_ALT_HOME (if configured). PR #155 added the
+    // !manual_alt_control gate so this block stops fighting the pilot's
+    // pitch stick when RTL_MANUAL_ALT_CONTROL is active.
+    if (plane.reached_loiter_target() && !plane.rtl.manual_alt_control) {
         int32_t home_altitude_cm;
         if (plane.g.RTL_home_altitude > -1) {
             home_altitude_cm = plane.get_home_RTL_altitude_cm();
@@ -352,6 +391,17 @@ void ModeRTL::navigate()
             plane.auto_state.checked_for_autoland = true;
         }
     }
+}
+
+// Fork PR #155: while the pilot is driving altitude with the pitch stick
+// (RTL_MANUAL_ALT_CONTROL active), suppress the base-class target-altitude
+// pipeline so set_target_altitude_location() doesn't fight FBWB control.
+void ModeRTL::update_target_altitude()
+{
+    if (plane.rtl.manual_alt_control) {
+        return;
+    }
+    Mode::update_target_altitude();
 }
 
 #if HAL_QUADPLANE_ENABLED
