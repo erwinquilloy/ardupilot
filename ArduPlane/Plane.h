@@ -1287,6 +1287,11 @@ private:
     void throttle_watt_limiter(int8_t &min_throttle, int8_t &max_throttle);
     void throttle_slew_limit();
     void apply_throttle_dz(void);
+    // Fork PR #146 / #147: throttle/flap-to-elevator PWM offset mixes
+    // run after the elevon/vtail mixers and the dspoiler update.
+    void shift_elevator_output_pwm(int16_t elev_pwm_shift);
+    void apply_throttle_to_elevator_mix(void);
+    void apply_flap_to_elevator_mix(void);
     bool suppress_throttle(void);
     void update_throttle_hover();
     // Fork PR #133: ailerons / elevator differential throws.
