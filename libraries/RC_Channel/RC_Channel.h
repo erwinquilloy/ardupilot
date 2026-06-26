@@ -551,6 +551,7 @@ public:
         CRSF_FM_DISARM_STAR     = (1U << 12), // when disarmed, add a star at the end of the flight mode in CRSF telemetry
         ELRS_420KBAUD           = (1U << 13), // use 420kbaud for ELRS protocol
         AUTO_SWITCH_TO_FBWA_WITH_STICKS = (1U << 20), // plane only: switch from AUTO to FBWA when pitch or roll stick moves > 10% deflection
+        PLANE_DISABLE_MAN_BAT_COMP      = (1U << 22), // plane only (fork PR #139): disable throttle battery voltage compensation in MANUAL mode
     };
 
     bool option_is_enabled(Option option) const {
