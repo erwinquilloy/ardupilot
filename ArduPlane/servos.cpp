@@ -88,6 +88,13 @@ void Plane::throttle_slew_limit(SRV_Channel::Aux_servo_function_t func)
 */
 bool Plane::suppress_throttle(void)
 {
+    // Fork PR #30: if the arm switch cut the throttle in-flight, keep
+    // the throttle suppressed in every mode (including MANUAL) until
+    // the plane lands and the deferred disarm completes.
+    if (arming.get_throttle_cut()) {
+        return true;
+    }
+
     if (control_mode == &mode_manual) {
         // Throttle is never suppressed in manual mode
         return false;
@@ -1136,6 +1143,16 @@ void Plane::servos_output(void)
     quadplane.tailsitter.output();
     quadplane.tiltrotor.bicopter_output();
 #endif
+
+    // Fork PR #222: belt-and-braces zero on the throttle channels when the
+    // arm switch has cut the throttle. suppress_throttle() also returns
+    // true on this path (Plane PR #30), but writing 0 here covers the
+    // twin-motor outputs that don't read suppress_throttle.
+    if (arming.get_throttle_cut()) {
+        SRV_Channels::set_output_scaled(SRV_Channel::k_throttle,      0.0);
+        SRV_Channels::set_output_scaled(SRV_Channel::k_throttleLeft,  0.0);
+        SRV_Channels::set_output_scaled(SRV_Channel::k_throttleRight, 0.0);
+    }
 
     // support forced flare option
     force_flare();
