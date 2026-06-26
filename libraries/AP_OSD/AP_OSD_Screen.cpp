@@ -1865,7 +1865,10 @@ void AP_OSD_Screen::draw_fltmode(uint8_t x, uint8_t y)
 {
     AP_Notify * notify = AP_Notify::get_singleton();
     char arm;
-    if (AP_Notify::flags.armed) {
+    // Fork PR #30: show the disarmed symbol when an in-flight arm-switch
+    // disarm has cut the throttle but the deferred disarm hasn't fired
+    // yet. Visually communicates "you have cut throttle" to the pilot.
+    if (AP_Notify::flags.armed && !AP_Notify::flags.throttle_cut) {
         arm = SYMBOL(SYM_ARMED);
     } else {
         arm = SYMBOL(SYM_DISARMED);
