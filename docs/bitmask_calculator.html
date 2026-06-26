@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ArduPlane Custom — Bitmask calculator</title>
+<style>
+  :root {
+    --bg: #fafafa;
+    --fg: #222;
+    --muted: #666;
+    --border: #ddd;
+    --accent: #0066cc;
+    --accent-hover: #004a99;
+    --code-bg: #f0f0f0;
+    --warn: #b40000;
+    --ok: #006400;
+    --row-alt: #f4f4f4;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #1a1a1a;
+      --fg: #e8e8e8;
+      --muted: #999;
+      --border: #333;
+      --accent: #4da6ff;
+      --accent-hover: #80c1ff;
+      --code-bg: #262626;
+      --warn: #ff6666;
+      --ok: #80d080;
+      --row-alt: #222;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+                 "Helvetica Neue", Arial, sans-serif;
+    background: var(--bg);
+    color: var(--fg);
+    margin: 0;
+    padding: 1.5rem;
+    line-height: 1.5;
+  }
+  .container { max-width: 1024px; margin: 0 auto; }
+  h1 { margin: 0 0 0.25rem 0; font-size: 1.5rem; }
+  .sub { color: var(--muted); margin: 0 0 1.5rem 0; font-size: 0.9rem; }
+  .sub a { color: var(--accent); }
+  .controls {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+    padding: 1rem;
+    background: var(--code-bg);
+    border-radius: 6px;
+    border: 1px solid var(--border);
+  }
+  .controls .row {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  label { font-weight: 600; }
+  select, input[type="text"], input[type="number"], button {
+    font-family: inherit;
+    font-size: 0.95rem;
+    padding: 0.4rem 0.6rem;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    background: var(--bg);
+    color: var(--fg);
+  }
+  select { min-width: 280px; flex: 1; }
+  input[type="text"] { flex: 1; min-width: 200px; font-family: monospace; }
+  button {
+    cursor: pointer;
+    background: var(--accent);
+    color: white;
+    border-color: var(--accent);
+    font-weight: 600;
+  }
+  button:hover { background: var(--accent-hover); border-color: var(--accent-hover); }
+  button.secondary {
+    background: var(--bg);
+    color: var(--fg);
+    border-color: var(--border);
+  }
+  button.secondary:hover { background: var(--code-bg); }
+  .status { font-size: 0.85rem; color: var(--muted); }
+  .status.warn { color: var(--warn); }
+  .status.ok { color: var(--ok); }
+  .param-card {
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    margin-bottom: 1rem;
+    background: var(--bg);
+  }
+  .param-head {
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid var(--border);
+    background: var(--code-bg);
+    border-radius: 6px 6px 0 0;
+  }
+  .param-head h2 { margin: 0; font-size: 1.1rem; font-family: monospace; }
+  .param-head p { margin: 0.25rem 0 0 0; color: var(--muted); font-size: 0.9rem; }
+  .param-body { padding: 1rem; }
+  .value-row {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-bottom: 1rem;
+    padding: 0.75rem;
+    background: var(--code-bg);
+    border-radius: 4px;
+  }
+  .value-row label { font-weight: 600; }
+  .value-row input { font-family: monospace; min-width: 180px; }
+  .value-row .small { font-size: 0.85rem; color: var(--muted); font-family: monospace; }
+  .bit-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.25rem;
+  }
+  .bit-row {
+    display: grid;
+    grid-template-columns: 40px 60px 1fr;
+    align-items: start;
+    padding: 0.4rem 0.6rem;
+    border-radius: 4px;
+    gap: 0.6rem;
+  }
+  .bit-row:nth-child(odd) { background: var(--row-alt); }
+  .bit-row input[type="checkbox"] { transform: scale(1.2); cursor: pointer; }
+  .bit-row .bit-num { font-family: monospace; font-weight: 600; color: var(--muted); }
+  .bit-row .bit-desc { font-size: 0.92rem; }
+  .bit-row .bit-mask { font-family: monospace; font-size: 0.75rem; color: var(--muted); display: block; margin-top: 0.15rem; }
+  details summary { cursor: pointer; font-size: 0.85rem; color: var(--muted); margin-top: 0.5rem; }
+  footer { margin-top: 2rem; padding-top: 1rem; border-top: 1px solid var(--border); font-size: 0.8rem; color: var(--muted); }
+  footer a { color: var(--accent); }
+</style>
+</head>
+<body>
+<div class="container">
+
+<h1>ArduPlane Custom — Bitmask calculator</h1>
+<p class="sub">
+  Reads the fork's <code>apm.pdef.json</code> and lets you tick bits to compute
+  values for params like <code>FLIGHT_OPTIONS</code>, <code>OSD_OPTIONS</code>,
+  <code>RC_OPTIONS</code>, <code>OSD_OPTIONS</code>, etc.
+  Inspired by <a href="https://notes.stavros.io/ardupilot/bitmask-calculator/" target="_blank" rel="noopener">notes.stavros.io/ardupilot/bitmask-calculator</a>.
+</p>
+
+<div class="controls">
+  <div class="row">
+    <label for="source">Source:</label>
+    <select id="source">
+      <option value="https://raw.githubusercontent.com/erwinquilloy/ardupilot/master_custom_4.6.3_light/docs/parameters/apm.pdef.json">Light branch — raw.githubusercontent.com</option>
+      <option value="https://raw.githubusercontent.com/erwinquilloy/ardupilot/master_custom_4.6.3/docs/parameters/apm.pdef.json">Full branch — raw.githubusercontent.com</option>
+      <option value="./parameters/apm.pdef.json">Local (./parameters/apm.pdef.json)</option>
+      <option value="custom">Custom URL…</option>
+      <option value="file">Upload file…</option>
+    </select>
+    <button id="reload">Reload</button>
+  </div>
+  <div class="row" id="custom-row" style="display:none">
+    <input type="text" id="custom-url" placeholder="https://…/apm.pdef.json">
+  </div>
+  <div class="row" id="file-row" style="display:none">
+    <input type="file" id="file-input" accept=".json">
+  </div>
+  <div class="status" id="status">Idle.</div>
+  <div class="row">
+    <label for="param">Parameter:</label>
+    <select id="param" disabled><option>— load first —</option></select>
+  </div>
+</div>
+
+<div id="card-container"></div>
+
+<footer>
+  <p>
+    Built for the
+    <a href="https://github.com/erwinquilloy/ardupilot" target="_blank" rel="noopener"><code>erwinquilloy/ardupilot</code></a>
+    fork of ArduPlane. Param metadata is auto-generated from the firmware
+    source by <code>Tools/autotest/param_metadata/param_parse.py</code>;
+    this calculator is a pure-static HTML/JS page (no server, no analytics)
+    and runs entirely in your browser.
+  </p>
+  <p>
+    Source / report issues:
+    <a href="https://github.com/erwinquilloy/ardupilot/blob/master_custom_4.6.3_light/docs/bitmask_calculator.html" target="_blank" rel="noopener">docs/bitmask_calculator.html</a>
+  </p>
+</footer>
+
+</div>
+
+<script>
+'use strict';
+
+const els = {
+  source: document.getElementById('source'),
+  customRow: document.getElementById('custom-row'),
+  customUrl: document.getElementById('custom-url'),
+  fileRow: document.getElementById('file-row'),
+  fileInput: document.getElementById('file-input'),
+  reload: document.getElementById('reload'),
+  status: document.getElementById('status'),
+  param: document.getElementById('param'),
+  card: document.getElementById('card-container'),
+};
+
+let parsed = null;        // current apm.pdef.json content
+let bitmaskParams = [];   // array of {fullName, group, name, definition}
+
+function setStatus(text, kind) {
+  els.status.textContent = text;
+  els.status.className = 'status' + (kind ? ' ' + kind : '');
+}
+
+els.source.addEventListener('change', () => {
+  const v = els.source.value;
+  els.customRow.style.display = v === 'custom' ? 'flex' : 'none';
+  els.fileRow.style.display = v === 'file' ? 'flex' : 'none';
+});
+
+els.reload.addEventListener('click', loadFromSelected);
+els.fileInput.addEventListener('change', loadFromFile);
+els.param.addEventListener('change', () => renderParamCard(els.param.value));
+
+async function loadFromSelected() {
+  const v = els.source.value;
+  if (v === 'file') {
+    if (!els.fileInput.files.length) {
+      setStatus('Choose a file first.', 'warn');
+      return;
+    }
+    await loadFromFile();
+    return;
+  }
+  const url = v === 'custom' ? els.customUrl.value.trim() : v;
+  if (!url) {
+    setStatus('Enter a URL.', 'warn');
+    return;
+  }
+  await loadFromUrl(url);
+}
+
+async function loadFromFile() {
+  const file = els.fileInput.files[0];
+  if (!file) return;
+  setStatus('Reading ' + file.name + '…');
+  try {
+    const text = await file.text();
+    handleJson(JSON.parse(text), file.name);
+  } catch (e) {
+    setStatus('Parse error: ' + e.message, 'warn');
+  }
+}
+
+async function loadFromUrl(url) {
+  setStatus('Fetching ' + url + '…');
+  try {
+    const r = await fetch(url, {cache: 'no-cache'});
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    const json = await r.json();
+    handleJson(json, url);
+  } catch (e) {
+    setStatus('Fetch failed: ' + e.message, 'warn');
+  }
+}
+
+function handleJson(json, label) {
+  parsed = json;
+  bitmaskParams = collectBitmaskParams(json);
+  if (!bitmaskParams.length) {
+    setStatus('No bitmask params found in this JSON.', 'warn');
+    els.param.innerHTML = '<option>— none —</option>';
+    els.param.disabled = true;
+    els.card.innerHTML = '';
+    return;
+  }
+  setStatus('Loaded ' + bitmaskParams.length + ' bitmask params from ' + label, 'ok');
+  populateParamSelector();
+  // Auto-select the first one
+  renderParamCard(els.param.value);
+}
+
+/*
+  apm.pdef.json structure (from param_parse.py jsonemit):
+  {
+    "json": {"version": 0},
+    "<GROUP_LABEL>": {                  // e.g. "Plane", "RC", "ADSB_", ""
+      "<FULL_PARAM_NAME>": {            // e.g. "FLIGHT_OPTIONS", "ADSB_EMIT_TYPE"
+        "DisplayName": "…",
+        "Description": "…",
+        "Bitmask": {"0": "first bit desc", "1": "…", …},
+        …
+      }
+    }
+  }
+  The top-level key is a logical group label — for `ADSB_` etc. it's just
+  the convenience prefix; the child key is already the full param name and
+  often contains that same prefix as part of itself. So we DO NOT prepend
+  the top-level key when building the param's full name.
+*/
+function collectBitmaskParams(json) {
+  const out = [];
+  for (const topKey of Object.keys(json)) {
+    if (topKey === 'json') continue;
+    const top = json[topKey];
+    if (!top || typeof top !== 'object') continue;
+    for (const k of Object.keys(top)) {
+      const v = top[k];
+      if (!v || typeof v !== 'object') continue;
+      if (v.Bitmask && typeof v.Bitmask === 'object') {
+        out.push({fullName: k, group: topKey, def: v});
+      }
+    }
+  }
+  out.sort((a, b) => a.fullName.localeCompare(b.fullName));
+  return out;
+}
+
+function populateParamSelector() {
+  els.param.innerHTML = '';
+  for (const p of bitmaskParams) {
+    const o = document.createElement('option');
+    o.value = p.fullName;
+    o.textContent = p.fullName + (p.def.DisplayName ? '  —  ' + p.def.DisplayName : '');
+    els.param.appendChild(o);
+  }
+  els.param.disabled = false;
+}
+
+function renderParamCard(fullName) {
+  const p = bitmaskParams.find(x => x.fullName === fullName);
+  if (!p) { els.card.innerHTML = ''; return; }
+
+  const bits = p.def.Bitmask;
+  const bitKeys = Object.keys(bits).map(n => parseInt(n, 10)).sort((a, b) => a - b);
+  const userClass = p.def.User || '';
+  const description = p.def.Description || '';
+
+  const card = document.createElement('div');
+  card.className = 'param-card';
+  card.innerHTML = `
+    <div class="param-head">
+      <h2>${escape(p.fullName)}</h2>
+      <p>${escape(p.def.DisplayName || '')}${userClass ? ' &nbsp;·&nbsp; <em>' + escape(userClass) + ' user</em>' : ''}${p.group ? ' &nbsp;·&nbsp; <code>' + escape(p.group) + '</code>' : ''}</p>
+      ${description ? '<details><summary>description</summary><div style="margin-top:0.4rem">' + escape(description) + '</div></details>' : ''}
+    </div>
+    <div class="param-body">
+      <div class="value-row">
+        <label for="val-dec">Value (decimal):</label>
+        <input type="number" id="val-dec" min="0" step="1">
+        <span class="small">hex: <span id="val-hex">0x0</span></span>
+        <span class="small">bin: <span id="val-bin">0</span></span>
+        <button class="secondary" id="copy-dec">Copy</button>
+        <button class="secondary" id="clear-all">Clear all</button>
+      </div>
+      <div class="bit-grid" id="bits"></div>
+    </div>
+  `;
+  els.card.innerHTML = '';
+  els.card.appendChild(card);
+
+  const valDec = card.querySelector('#val-dec');
+  const valHex = card.querySelector('#val-hex');
+  const valBin = card.querySelector('#val-bin');
+  const bitsContainer = card.querySelector('#bits');
+  const checkboxes = {};
+
+  for (const bit of bitKeys) {
+    const row = document.createElement('label');
+    row.className = 'bit-row';
+    const cb = document.createElement('input');
+    cb.type = 'checkbox';
+    cb.dataset.bit = bit;
+    const num = document.createElement('span');
+    num.className = 'bit-num';
+    num.textContent = 'bit ' + bit;
+    const desc = document.createElement('span');
+    desc.className = 'bit-desc';
+    desc.innerHTML = escape(bits[bit]) + '<span class="bit-mask">= ' + maskRepr(bit) + '</span>';
+    row.appendChild(cb);
+    row.appendChild(num);
+    row.appendChild(desc);
+    bitsContainer.appendChild(row);
+    checkboxes[bit] = cb;
+    cb.addEventListener('change', updateValueFromBits);
+  }
+
+  function maskRepr(bit) {
+    if (bit > 30) {
+      // BigInt for safety
+      const v = BigInt(1) << BigInt(bit);
+      return v.toString() + ' (0x' + v.toString(16).toUpperCase() + ')';
+    }
+    const v = 1 << bit;
+    return v + ' (0x' + v.toString(16).toUpperCase() + ')';
+  }
+
+  function updateValueFromBits() {
+    // use BigInt to be safe for bits > 30
+    let v = 0n;
+    for (const bit of bitKeys) {
+      if (checkboxes[bit].checked) v |= (1n << BigInt(bit));
+    }
+    valDec.value = v.toString();
+    valHex.textContent = '0x' + v.toString(16).toUpperCase();
+    valBin.textContent = v.toString(2);
+  }
+
+  function updateBitsFromValue() {
+    let raw = valDec.value.trim();
+    if (raw === '' || raw === '-') {
+      for (const bit of bitKeys) checkboxes[bit].checked = false;
+      valHex.textContent = '0x0';
+      valBin.textContent = '0';
+      return;
+    }
+    let v;
+    try { v = BigInt(raw); } catch { return; }
+    if (v < 0n) v = -v;
+    for (const bit of bitKeys) {
+      checkboxes[bit].checked = (v & (1n << BigInt(bit))) !== 0n;
+    }
+    valHex.textContent = '0x' + v.toString(16).toUpperCase();
+    valBin.textContent = v.toString(2);
+  }
+
+  valDec.addEventListener('input', updateBitsFromValue);
+
+  card.querySelector('#copy-dec').addEventListener('click', () => {
+    valDec.select();
+    navigator.clipboard?.writeText(valDec.value || '0');
+    setStatus('Copied ' + (valDec.value || '0') + ' to clipboard', 'ok');
+  });
+
+  card.querySelector('#clear-all').addEventListener('click', () => {
+    for (const bit of bitKeys) checkboxes[bit].checked = false;
+    valDec.value = '0';
+    valHex.textContent = '0x0';
+    valBin.textContent = '0';
+  });
+
+  // start at 0
+  valDec.value = '0';
+}
+
+function escape(s) {
+  if (s == null) return '';
+  return String(s)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
+// Auto-load on first paint
+loadFromSelected();
+</script>
+</body>
+</html>
