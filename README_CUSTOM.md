@@ -907,6 +907,53 @@ Items evaluated and deliberately skipped, with reasoning:
 
 ---
 
+# Documentation and tooling
+
+## Full parameter reference
+
+Machine-generated parameter metadata for **this fork** lives at
+[`docs/parameters/`](docs/parameters/). It covers every parameter
+the firmware exposes — including every fork-added bit on
+`FLIGHT_OPTIONS`, `RC_OPTIONS`, `OSD_OPTIONS`, and so on.
+
+Six formats are committed:
+
+| File | Use case |
+|---|---|
+| [`apm.pdef.json`](docs/parameters/apm.pdef.json) | Best for tooling — easy to parse in JS / Python |
+| [`apm.pdef.xml`](docs/parameters/apm.pdef.xml) | Alternative structured format |
+| [`Parameters.html`](docs/parameters/Parameters.html) | Browsable HTML |
+| [`Parameters.md`](docs/parameters/Parameters.md) | GitHub-rendered Markdown |
+| [`Parameters.rst`](docs/parameters/Parameters.rst) | Sphinx-flavoured reStructuredText |
+| [`ParametersLatex.rst`](docs/parameters/ParametersLatex.rst) | Book-style RST tuned for LaTeX |
+
+Stable URLs for the JSON (use either; content is identical across branches):
+
+```
+https://raw.githubusercontent.com/erwinquilloy/ardupilot/master_custom_4.6.3_light/docs/parameters/apm.pdef.json
+https://raw.githubusercontent.com/erwinquilloy/ardupilot/master_custom_4.6.3/docs/parameters/apm.pdef.json
+```
+
+The directory's own [README](docs/parameters/README.md) lists the
+fork-specific bitmask bits and the most useful params to bring up
+in a calculator UI.
+
+## Bitmask calculator
+
+A self-contained HTML/JS bitmask calculator lives at
+[`docs/bitmask_calculator.html`](docs/bitmask_calculator.html). It
+loads the JSON above, lets you tick bits to compute the integer
+value (or paste a value to see which bits are set), and shows decimal
+/ hex / binary representations. Runs entirely in your browser — no
+server, no analytics.
+
+Inspired by Stavros' [ArduPilot bitmask calculator](https://notes.stavros.io/ardupilot/bitmask-calculator/);
+this version uses **this fork's parameter set** so the fork-added bits
+on `FLIGHT_OPTIONS` (21 / 22 / 23 / 24), `RC_OPTIONS` bit 22, the
+`OSD_OPTIONS` bits, etc. are visible without leaving the page.
+
+---
+
 # Branch / repository layout
 
 - `master_custom_4.6.3` — current mainline. All ongoing work goes here.

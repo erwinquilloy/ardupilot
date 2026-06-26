@@ -29,10 +29,8 @@ exposes, including the fork-specific additions:
 | `apm.pdef.xml`  | Alternative structured format, schema matches upstream | ~2.5 MB |
 | `Parameters.html` | Browsable in any web browser | ~2.0 MB |
 | `Parameters.md` | GitHub-rendered Markdown | ~1.2 MB |
-
-The full upstream output set also includes `Parameters.rst` (Sphinx)
-and `ParametersLatex.rst` (book-style LaTeX). Those aren't committed
-here to keep the repo lean; regenerate locally if you need them.
+| `Parameters.rst` | Sphinx-flavoured reStructuredText | ~3.5 MB |
+| `ParametersLatex.rst` | Book-style RST tuned for LaTeX rendering | ~3.2 MB |
 
 ## Bitmask calculator
 
