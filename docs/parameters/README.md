@@ -34,6 +34,16 @@ The full upstream output set also includes `Parameters.rst` (Sphinx)
 and `ParametersLatex.rst` (book-style LaTeX). Those aren't committed
 here to keep the repo lean; regenerate locally if you need them.
 
+## Bitmask calculator
+
+A standalone calculator that loads `apm.pdef.json` and lets you tick bits
+to compute integer values (or paste a value to see which bits are set)
+lives at [`docs/bitmask_calculator.html`](../bitmask_calculator.html).
+It's a single self-contained HTML file — no server, no analytics, runs
+in your browser. Defaults to fetching the JSON from the light branch's
+raw URL; can also load from the full branch, a custom URL, or a local
+file.
+
 ## Stable URLs for tooling
 
 For a bitmask calculator or similar app, fetch the JSON directly:
