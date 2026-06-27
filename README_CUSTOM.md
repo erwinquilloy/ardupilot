@@ -736,6 +736,62 @@ seeded non-zero to search a range, sign of the seed picks polarity.
   via [@mf0o](https://github.com/mf0o)'s `osd/dji_batt_bar_source_option`
   branch (commit `93c530cdb2`)
 
+## Setting up cell voltage on the OSD
+
+Two related elements display cell voltage. Both are upstream features,
+but the setup is non-obvious because cell count has to come from
+somewhere.
+
+| Element | Shows |
+|---|---|
+| `OSDx_AVGCELLV` | Avg cell voltage **under load** (`pack_voltage / cell_count`) |
+| `OSDx_ACRVOLT` | Avg cell **resting** voltage — sag-corrected; closer to true state-of-charge in flight |
+
+`OSDx_ACRVOLT` is generally the more useful in-flight reading because
+it back-calculates what the cell voltage would be with no load — a
+current spike won't make the bar dive.
+
+### Steps
+
+1. **Battery monitor must be configured.** Confirm `BATT_MONITOR` is
+   non-zero (`4` = analog volt+amp on most Matek/SpeedyBee boards) and
+   that pack voltage shows in your GCS. If not, set up `BATT_MONITOR` /
+   `BATT_VOLT_PIN` / `BATT_VOLT_MULT` for your hardware first.
+
+2. **Tell the OSD how many cells to divide by:**
+
+   ```
+   OSD_CELL_COUNT = -1   disables both avgcellv and acrvolt elements
+   OSD_CELL_COUNT = 0    autodetect at battery connection (assumes well-
+                         charged LiPo/LiIon — power up with a full pack)
+   OSD_CELL_COUNT = N    manual override (e.g. 4 for a 4S pack)
+   ```
+
+   Autodetect (`0`) is the easiest if your packs are always the same
+   chemistry / fully charged on connection.
+
+3. **Enable the element on each screen you want it on**, with a
+   position (column `X`, row `Y`). For screen 1, e.g. column 24 row 4:
+
+   ```
+   OSD1_AVGCELLV_EN = 1
+   OSD1_AVGCELLV_X  = 24
+   OSD1_AVGCELLV_Y  = 4
+   ```
+
+   Substitute `OSD2_..OSD5_` for additional screens. Same pattern for
+   `OSDx_ACRVOLT_EN/X/Y` if you want the resting-voltage variant.
+
+4. **Optional low-voltage flash thresholds**, both are top-level
+   `OSD_*` params (single global value, not per-screen):
+
+   ```
+   OSD_W_AVGCELLV = 3.6   AVGCELLV flashes below this cell voltage
+   OSD_W_ACRVOLT  = 3.6   ACRVOLT flashes below this cell voltage
+   ```
+
+   Default `3.6 V` is sensible for LiPo. Lower for LiIon (e.g. `3.3`).
+
 ## Stats grid
 
 `OSDx_STATS_EN = 1` enables an 11-row post-flight statistics grid
