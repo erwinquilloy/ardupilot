@@ -683,7 +683,15 @@ seeded non-zero to search a range, sign of the seed picks polarity.
 - **5 OSD screens** default (was 4)
 - **Widened OSD sidebars** — wider value columns on the artificial-
   horizon sidebars so 3- and 4-digit values fit cleanly. Inherited
-  from upstream 4.6.3 (port by [@mf0o](https://github.com/mf0o))
+  from upstream 4.6.3 (port by [@mf0o](https://github.com/mf0o)).
+  Upstream replaced ArduCustom's binary `OSD_OPTIONS` bit 17 toggle
+  with two continuous-offset top-level params that are strictly
+  more flexible: **`OSD_SB_H_OFS`** (horizontal offset of the
+  altitude column, default 0; use `14` to match ArduCustom's
+  wide-sidebar look — `16 + 14 = 30`) and **`OSD_SB_V_EXT`**
+  (extra vertical bar height each side of centre, default 0).
+  These are **`OSD_*`** (single global value), not per-screen
+  `OSDx_*`. This is why we don't backport the bit-17 toggle.
 - **DJI O3 home / waypoint arrow direction fix** — the BF MSP
   DisplayPort symbol mapping for the home and waypoint direction
   arrows had the wrong indices on DJI O3 goggles, making the arrows
