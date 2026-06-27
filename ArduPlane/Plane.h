@@ -213,7 +213,13 @@ private:
 
     // flight modes convenience array
     AP_Int8 *flight_modes = &g.flight_mode1;
-    const uint8_t num_flight_modes = 6;
+    // Fork FLTMODE_EXT: extension array for switch positions 7..12. Only
+    // consulted when g2.fltmode_ext = 1.
+    AP_Int8 *flight_modes2 = &g2.flight_mode7;
+    // Number of valid switch positions on the FLTMODE channel.  Returns
+    // 6 normally; 12 when FLTMODE_EXT = 1 so RC_Channel_Plane's mode
+    // switch handlers know how many slots are valid.
+    uint8_t num_flight_modes() const;
 
 #if AP_RANGEFINDER_ENABLED
     AP_FixedWing::Rangefinder_State rangefinder_state;
