@@ -1164,6 +1164,13 @@ private:
     void handle_battery_failsafe(const char* type_str, const int8_t action);
     bool failsafe_in_landing_sequence() const;  // returns true if the vehicle is in landing sequence.  Intended only for use in failsafe code.
 
+    // landing_sequence_wind.cpp: drop-in replacement for
+    // mission.jump_to_landing_sequence(loc) that biases the choice of
+    // DO_LAND_START by wind alignment when LAND_WIND_BIAS > 0. Falls
+    // through to the upstream nearest-distance behaviour when the bias
+    // is 0 or the wind estimate is unreliable.
+    bool try_upwind_jump_to_landing_sequence(const Location &from_loc);
+
 #if AP_FENCE_ENABLED
     // fence.cpp
     void fence_check();

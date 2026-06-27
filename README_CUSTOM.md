@@ -300,6 +300,54 @@ non-jump item is a NAV_TAKEOFF, the mission restarts at item 1 each
 time you enter AUTO from a non-flying state. Prevents accidentally
 resuming a mid-mission item after a failed launch.
 
+### `LAND_WIND_BIAS` — pick the upwind `DO_LAND_START`
+Upstream picks the **nearest** `DO_LAND_START` whenever ArduPlane
+needs to autoland — RTL autoland, fence breach, battery failsafe, or
+a `MAV_CMD_DO_LAND_START` from the GCS. In wind, the nearest
+landing is frequently the *downwind* one.
+
+`LAND_WIND_BIAS` (default `0` = upstream behaviour preserved)
+shifts the selection toward the landing whose final approach faces
+into the wind. Each candidate is scored as
+
+```
+score = distance * (1 - LAND_WIND_BIAS * cos(approach_heading - wind_from))
+```
+
+where `cos` returns `+1` for a perfect headwind approach (no
+penalty) and `-1` for a perfect tailwind approach (multiplier
+`1 + LAND_WIND_BIAS`). The lowest-scoring candidate wins.
+`LAND_WIND_BIAS = 1` lets a direct-tailwind 500 m approach lose to a
+direct-headwind 1000 m approach; `0.3` is a gentler tilt that still
+breaks ties in favour of upwind landings.
+
+The approach heading for each `DO_LAND_START` is derived from the
+bearing toward the next `NAV_*` waypoint in the mission — typically
+the first leg of the descending approach. If no following nav cmd
+can be found, that candidate is scored on distance alone.
+
+Falls back to nearest-distance (the upstream behaviour) when:
+- `LAND_WIND_BIAS = 0` (any value `<= 0`)
+- AHRS wind estimate magnitude is below 1 m/s (unreliable on a
+  pre-takeoff plane, or a GPS-only build before the plane has
+  turned enough for the estimator to settle)
+- A candidate's approach heading cannot be derived
+
+When wind-bias changes the choice, a `DO_LAND_START N (upwind,
+nearest was M)` GCS line is sent next to the standard `Landing
+sequence start` text, so you can see the bias actually fired in
+flight logs.
+
+> **Note on airframes without an airspeed sensor (any variant):**
+> ArduPlane's wind estimator needs the plane to turn to converge
+> when there is no pitot. Straight-line flight just after takeoff
+> may not produce a usable estimate, so the fallback keeps
+> selection nearest-distance until a turn or two has populated
+> the estimator. Airframes with a working pitot get a usable wind
+> estimate much sooner. The light variant is no different from the
+> full variant here — the limitation is in the AHRS estimator, not
+> the build.
+
 ## Emergency landing (RC failsafe)
 
 A state machine that initiates a controlled glide to the home area

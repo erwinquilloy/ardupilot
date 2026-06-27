@@ -566,6 +566,11 @@ public:
     AP_Float ailerons_diff;
     AP_Float elevator_diff;
 
+    // Fork: wind-biased DO_LAND_START selection. Default 0 preserves
+    // upstream behaviour (pick nearest DO_LAND_START). Larger values
+    // bias selection toward landings whose approach faces into wind.
+    AP_Float rtl_land_wind_bias;
+
 #if AP_LANDINGGEAR_ENABLED
     AP_LandingGear landing_gear;
 #endif

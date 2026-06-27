@@ -1452,6 +1452,13 @@ const AP_Param::GroupInfo ParametersG2::var_info[] = {
     // @User: Advanced
     AP_GROUPINFO("ELEVATOR_DIFF", 54, ParametersG2, elevator_diff, 0),
 
+    // @Param: LAND_WIND_BIAS
+    // @DisplayName: Landing sequence wind bias
+    // @Description: Bias the DO_LAND_START selection toward landings whose final approach faces into the wind. Applies wherever ArduPlane chooses a landing sequence -- RTL autoland, fence breach, battery failsafe, and the GCS DO_LAND_START command. 0 = pure nearest-distance (upstream default; no behaviour change). > 0 = penalise tailwind candidates; full headwind earns no penalty. Falls back to nearest-distance when AHRS wind estimate < 1 m/s or an approach heading cannot be derived from the mission sequence.
+    // @Range: 0 1
+    // @User: Standard
+    AP_GROUPINFO("LAND_WIND_BIAS", 55, ParametersG2, rtl_land_wind_bias, 0),
+
     // @Param: ARMING_MODE_SW
     // @DisplayName: Mode to switch to ~3 s after arming
     // @Description: After arming, wait 3 s then switch to the selected mode. Lets a single aux-switch arm and start a TKOFF or AUTO mission without a second mode switch.
