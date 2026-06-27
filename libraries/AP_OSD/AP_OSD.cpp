@@ -270,6 +270,13 @@ const AP_Param::GroupInfo AP_OSD::var_info[] = {
     // @User: Standard
     AP_GROUPINFO("_W_VERT_ACC", 60, AP_OSD, warn_vert_acc, 0),
 
+    // @Param: _BATBAR_TYPE
+    // @DisplayName: DJI OSD battery bar type
+    // @Description: Selects the data source the DJI OSD battery bar represents
+    // @Values: 0:mAh,1:Wh
+    // @User: Standard
+    AP_GROUPINFO("_BATBAR_TYPE", 58, AP_OSD, batt_bar_type, AP_OSD::BATT_BAR_BASE_MAH),
+
 #if AP_OSD_EXTENDED_LNK_STATS
     // @Param: _W_LQ
     // @DisplayName: RC link quality warn level (in %)

@@ -705,8 +705,14 @@ public:
         EFF_UNIT_BASE_WH  = 1,
     };
 
+    enum batt_bar_type_e {
+        BATT_BAR_BASE_MAH = 0,
+        BATT_BAR_BASE_WH  = 1,
+    };
+
     AP_Int8 units;
     AP_Int8 efficiency_unit_base;
+    AP_Int8 batt_bar_type;
 
     AP_OSD_Screen screen[AP_OSD_NUM_DISPLAY_SCREENS];
 
