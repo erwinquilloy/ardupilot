@@ -238,6 +238,16 @@
 #define HAL_ENABLE_DRONECAN_DRIVERS 0
 #endif
 
+#ifndef HAL_PICCOLO_CAN_ENABLE
+// Light variant: no CAN means no PiccoloCAN ESC driver either. The
+// default in AP_PiccoloCAN_Device.h tracks HAL_NUM_CAN_IFACES which
+// is set per-board in hwdef.dat, so any hwdef that defines CAN buses
+// would otherwise pull PiccoloCAN's ~30 KB of generated protocol code
+// into the binary. Mirror mf0o's strip via a config override instead
+// of deleting the source files.
+#define HAL_PICCOLO_CAN_ENABLE 0
+#endif
+
 #ifndef AP_TEST_DRONECAN_DRIVERS
 #define AP_TEST_DRONECAN_DRIVERS 0
 #endif

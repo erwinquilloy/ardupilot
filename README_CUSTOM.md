@@ -25,7 +25,7 @@ matching `define AP_<X>_ENABLED 1` if a specific airframe needs it.
 |---|---|---|
 | **GPS instances** | 1 | (no redundant / blended GPS) |
 | **Magnetometers** | 1 | (no second compass averaging) |
-| **CAN entirely** | — | all DroneCAN backends: GPS, RC, BattMon, Rangefinder, Airspeed |
+| **CAN entirely** | — | all DroneCAN backends: GPS, RC, BattMon, Rangefinder, Airspeed; plus the **PiccoloCAN** ESC driver (~30 KB of generated protocol code) |
 | **Servo drivers** | PWM, DShot, S.BUS-out | Volz, Robotis |
 | **Engine** | Electric | ICE (governor, RPM, choke/ignition/throttle channels) |
 | **GPS backends** | UBLOX | DroneCAN, MAV, MSP, NMEA, NMEA-Unicore, ERB, GSOF, NOVA, SBF, SBP, SBP2, SIRF |
