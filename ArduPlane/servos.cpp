@@ -1349,9 +1349,13 @@ bool Plane::servos_auto_trim_set(const Plane::ServoTrimSetEntry *const trim_set,
  */
 void Plane::servos_auto_trim(void)
 {
-    // only in FBWA and auto-throttle modes, but not in AUTO or TAKEOFF (#204)
+    // only in FBWA and auto-throttle modes, but not in AUTO or TAKEOFF (#204).
+    // Fork: AUTO_TRIM mode is also whitelisted -- it sets auto_trim.run on
+    // _enter() so the outer arm gate fires, and we want the trim loop to
+    // run while the pilot flies in that mode.
     if ((!control_mode->does_auto_throttle() || control_mode == &mode_takeoff || control_mode == &mode_auto) &&
-        control_mode != &mode_fbwa) {
+        control_mode != &mode_fbwa &&
+        control_mode != &mode_auto_trim) {
         return;
     }
     if (!arming.is_armed_and_safety_off()) {
