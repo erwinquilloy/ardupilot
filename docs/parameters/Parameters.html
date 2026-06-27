@@ -728,6 +728,8 @@ DO NOT EDIT
 <tr><td>23</td><td>QACRO</td></tr>
 <tr><td>24</td><td>THERMAL</td></tr>
 <tr><td>25</td><td>Loiter to QLand</td></tr>
+<tr><td>26</td><td>Course Hold</td></tr>
+<tr><td>27</td><td>Auto Trim</td></tr>
 </table>
 </ul>
 
@@ -761,6 +763,8 @@ DO NOT EDIT
 <tr><td>23</td><td>QACRO</td></tr>
 <tr><td>24</td><td>THERMAL</td></tr>
 <tr><td>25</td><td>Loiter to QLand</td></tr>
+<tr><td>26</td><td>Course Hold</td></tr>
+<tr><td>27</td><td>Auto Trim</td></tr>
 </table>
 </ul>
 
@@ -794,6 +798,8 @@ DO NOT EDIT
 <tr><td>23</td><td>QACRO</td></tr>
 <tr><td>24</td><td>THERMAL</td></tr>
 <tr><td>25</td><td>Loiter to QLand</td></tr>
+<tr><td>26</td><td>Course Hold</td></tr>
+<tr><td>27</td><td>Auto Trim</td></tr>
 </table>
 </ul>
 
@@ -827,6 +833,8 @@ DO NOT EDIT
 <tr><td>23</td><td>QACRO</td></tr>
 <tr><td>24</td><td>THERMAL</td></tr>
 <tr><td>25</td><td>Loiter to QLand</td></tr>
+<tr><td>26</td><td>Course Hold</td></tr>
+<tr><td>27</td><td>Auto Trim</td></tr>
 </table>
 </ul>
 
@@ -860,6 +868,8 @@ DO NOT EDIT
 <tr><td>23</td><td>QACRO</td></tr>
 <tr><td>24</td><td>THERMAL</td></tr>
 <tr><td>25</td><td>Loiter to QLand</td></tr>
+<tr><td>26</td><td>Course Hold</td></tr>
+<tr><td>27</td><td>Auto Trim</td></tr>
 </table>
 </ul>
 
@@ -893,6 +903,8 @@ DO NOT EDIT
 <tr><td>23</td><td>QACRO</td></tr>
 <tr><td>24</td><td>THERMAL</td></tr>
 <tr><td>25</td><td>Loiter to QLand</td></tr>
+<tr><td>26</td><td>Course Hold</td></tr>
+<tr><td>27</td><td>Auto Trim</td></tr>
 </table>
 </ul>
 
@@ -926,6 +938,8 @@ DO NOT EDIT
 <tr><td>23</td><td>QACRO</td></tr>
 <tr><td>24</td><td>THERMAL</td></tr>
 <tr><td>25</td><td>Loiter to QLand</td></tr>
+<tr><td>26</td><td>Course Hold</td></tr>
+<tr><td>27</td><td>Auto Trim</td></tr>
 </table>
 </ul>
 
@@ -1487,6 +1501,235 @@ DO NOT EDIT
 <ul>
 <li>Units: percent</li>
 <li>Range: -90 90</li>
+</ul>
+
+
+<h2>Landing sequence wind bias (ArduPlane:LAND_WIND_BIAS)</h2>
+
+<p>Bias the DO_LAND_START selection toward landings whose final approach faces into the wind. Applies wherever ArduPlane chooses a landing sequence -- RTL autoland, fence breach, battery failsafe, and the GCS DO_LAND_START command. 0 = pure nearest-distance (upstream default; no behaviour change). &gt; 0 = penalise tailwind candidates; full headwind earns no penalty. Falls back to nearest-distance when AHRS wind estimate &lt; 1 m/s or an approach heading cannot be derived from the mission sequence.</p>
+<ul>
+<li>Range: 0 1</li>
+</ul>
+
+
+<h2>Enable 12-position FLTMODE_CH (ArduPlane:FLTMODE_EXT)</h2><em>Note: This parameter is for advanced users</em><br>
+
+<p>Default 0 = upstream 6-position behaviour (FLTMODE1..6 only). 1 = 12-position switch: the FLTMODE_CH PWM range is split into 12 bins of 75 us each mapping to FLTMODE1..6 and FLTMODE7..12. Useful when an OpenTX/EdgeTX multi-position switch source needs more than six slots. The 12 bins are tight (75 us each); use only with stable digital RC links (SBUS / CRSF / ELRS) and not analogue PPM.</p>
+<ul>
+<table><th>Value</th><th>Meaning</th>
+<tr><td>0</td><td>Disabled</td></tr>
+<tr><td>1</td><td>Enabled</td></tr>
+</table>
+</ul>
+
+
+<h2>FlightMode7 (ArduPlane:FLTMODE7)</h2><em>Note: This parameter is for advanced users</em><br>
+
+<p>Flight mode for switch position 7 (PWM 1501..1575). Only consulted when FLTMODE_EXT = 1.</p>
+<ul>
+<table><th>Value</th><th>Meaning</th>
+<tr><td>0</td><td>Manual</td></tr>
+<tr><td>1</td><td>CIRCLE</td></tr>
+<tr><td>2</td><td>STABILIZE</td></tr>
+<tr><td>3</td><td>TRAINING</td></tr>
+<tr><td>4</td><td>ACRO</td></tr>
+<tr><td>5</td><td>FBWA</td></tr>
+<tr><td>6</td><td>FBWB</td></tr>
+<tr><td>7</td><td>CRUISE</td></tr>
+<tr><td>8</td><td>AUTOTUNE</td></tr>
+<tr><td>10</td><td>Auto</td></tr>
+<tr><td>11</td><td>RTL</td></tr>
+<tr><td>12</td><td>Loiter</td></tr>
+<tr><td>13</td><td>TAKEOFF</td></tr>
+<tr><td>14</td><td>AVOID_ADSB</td></tr>
+<tr><td>15</td><td>Guided</td></tr>
+<tr><td>17</td><td>QSTABILIZE</td></tr>
+<tr><td>18</td><td>QHOVER</td></tr>
+<tr><td>19</td><td>QLOITER</td></tr>
+<tr><td>20</td><td>QLAND</td></tr>
+<tr><td>21</td><td>QRTL</td></tr>
+<tr><td>22</td><td>QAUTOTUNE</td></tr>
+<tr><td>23</td><td>QACRO</td></tr>
+<tr><td>24</td><td>THERMAL</td></tr>
+<tr><td>25</td><td>Loiter to QLand</td></tr>
+<tr><td>26</td><td>Course Hold</td></tr>
+<tr><td>27</td><td>Auto Trim</td></tr>
+</table>
+</ul>
+
+
+<h2>FlightMode8 (ArduPlane:FLTMODE8)</h2><em>Note: This parameter is for advanced users</em><br>
+
+<p>Flight mode for switch position 8 (PWM 1576..1650). Only consulted when FLTMODE_EXT = 1.</p>
+<ul>
+<table><th>Value</th><th>Meaning</th>
+<tr><td>0</td><td>Manual</td></tr>
+<tr><td>1</td><td>CIRCLE</td></tr>
+<tr><td>2</td><td>STABILIZE</td></tr>
+<tr><td>3</td><td>TRAINING</td></tr>
+<tr><td>4</td><td>ACRO</td></tr>
+<tr><td>5</td><td>FBWA</td></tr>
+<tr><td>6</td><td>FBWB</td></tr>
+<tr><td>7</td><td>CRUISE</td></tr>
+<tr><td>8</td><td>AUTOTUNE</td></tr>
+<tr><td>10</td><td>Auto</td></tr>
+<tr><td>11</td><td>RTL</td></tr>
+<tr><td>12</td><td>Loiter</td></tr>
+<tr><td>13</td><td>TAKEOFF</td></tr>
+<tr><td>14</td><td>AVOID_ADSB</td></tr>
+<tr><td>15</td><td>Guided</td></tr>
+<tr><td>17</td><td>QSTABILIZE</td></tr>
+<tr><td>18</td><td>QHOVER</td></tr>
+<tr><td>19</td><td>QLOITER</td></tr>
+<tr><td>20</td><td>QLAND</td></tr>
+<tr><td>21</td><td>QRTL</td></tr>
+<tr><td>22</td><td>QAUTOTUNE</td></tr>
+<tr><td>23</td><td>QACRO</td></tr>
+<tr><td>24</td><td>THERMAL</td></tr>
+<tr><td>25</td><td>Loiter to QLand</td></tr>
+<tr><td>26</td><td>Course Hold</td></tr>
+<tr><td>27</td><td>Auto Trim</td></tr>
+</table>
+</ul>
+
+
+<h2>FlightMode9 (ArduPlane:FLTMODE9)</h2><em>Note: This parameter is for advanced users</em><br>
+
+<p>Flight mode for switch position 9 (PWM 1651..1725). Only consulted when FLTMODE_EXT = 1.</p>
+<ul>
+<table><th>Value</th><th>Meaning</th>
+<tr><td>0</td><td>Manual</td></tr>
+<tr><td>1</td><td>CIRCLE</td></tr>
+<tr><td>2</td><td>STABILIZE</td></tr>
+<tr><td>3</td><td>TRAINING</td></tr>
+<tr><td>4</td><td>ACRO</td></tr>
+<tr><td>5</td><td>FBWA</td></tr>
+<tr><td>6</td><td>FBWB</td></tr>
+<tr><td>7</td><td>CRUISE</td></tr>
+<tr><td>8</td><td>AUTOTUNE</td></tr>
+<tr><td>10</td><td>Auto</td></tr>
+<tr><td>11</td><td>RTL</td></tr>
+<tr><td>12</td><td>Loiter</td></tr>
+<tr><td>13</td><td>TAKEOFF</td></tr>
+<tr><td>14</td><td>AVOID_ADSB</td></tr>
+<tr><td>15</td><td>Guided</td></tr>
+<tr><td>17</td><td>QSTABILIZE</td></tr>
+<tr><td>18</td><td>QHOVER</td></tr>
+<tr><td>19</td><td>QLOITER</td></tr>
+<tr><td>20</td><td>QLAND</td></tr>
+<tr><td>21</td><td>QRTL</td></tr>
+<tr><td>22</td><td>QAUTOTUNE</td></tr>
+<tr><td>23</td><td>QACRO</td></tr>
+<tr><td>24</td><td>THERMAL</td></tr>
+<tr><td>25</td><td>Loiter to QLand</td></tr>
+<tr><td>26</td><td>Course Hold</td></tr>
+<tr><td>27</td><td>Auto Trim</td></tr>
+</table>
+</ul>
+
+
+<h2>FlightMode10 (ArduPlane:FLTMODE10)</h2><em>Note: This parameter is for advanced users</em><br>
+
+<p>Flight mode for switch position 10 (PWM 1726..1800). Only consulted when FLTMODE_EXT = 1.</p>
+<ul>
+<table><th>Value</th><th>Meaning</th>
+<tr><td>0</td><td>Manual</td></tr>
+<tr><td>1</td><td>CIRCLE</td></tr>
+<tr><td>2</td><td>STABILIZE</td></tr>
+<tr><td>3</td><td>TRAINING</td></tr>
+<tr><td>4</td><td>ACRO</td></tr>
+<tr><td>5</td><td>FBWA</td></tr>
+<tr><td>6</td><td>FBWB</td></tr>
+<tr><td>7</td><td>CRUISE</td></tr>
+<tr><td>8</td><td>AUTOTUNE</td></tr>
+<tr><td>10</td><td>Auto</td></tr>
+<tr><td>11</td><td>RTL</td></tr>
+<tr><td>12</td><td>Loiter</td></tr>
+<tr><td>13</td><td>TAKEOFF</td></tr>
+<tr><td>14</td><td>AVOID_ADSB</td></tr>
+<tr><td>15</td><td>Guided</td></tr>
+<tr><td>17</td><td>QSTABILIZE</td></tr>
+<tr><td>18</td><td>QHOVER</td></tr>
+<tr><td>19</td><td>QLOITER</td></tr>
+<tr><td>20</td><td>QLAND</td></tr>
+<tr><td>21</td><td>QRTL</td></tr>
+<tr><td>22</td><td>QAUTOTUNE</td></tr>
+<tr><td>23</td><td>QACRO</td></tr>
+<tr><td>24</td><td>THERMAL</td></tr>
+<tr><td>25</td><td>Loiter to QLand</td></tr>
+<tr><td>26</td><td>Course Hold</td></tr>
+<tr><td>27</td><td>Auto Trim</td></tr>
+</table>
+</ul>
+
+
+<h2>FlightMode11 (ArduPlane:FLTMODE11)</h2><em>Note: This parameter is for advanced users</em><br>
+
+<p>Flight mode for switch position 11 (PWM 1801..1875). Only consulted when FLTMODE_EXT = 1.</p>
+<ul>
+<table><th>Value</th><th>Meaning</th>
+<tr><td>0</td><td>Manual</td></tr>
+<tr><td>1</td><td>CIRCLE</td></tr>
+<tr><td>2</td><td>STABILIZE</td></tr>
+<tr><td>3</td><td>TRAINING</td></tr>
+<tr><td>4</td><td>ACRO</td></tr>
+<tr><td>5</td><td>FBWA</td></tr>
+<tr><td>6</td><td>FBWB</td></tr>
+<tr><td>7</td><td>CRUISE</td></tr>
+<tr><td>8</td><td>AUTOTUNE</td></tr>
+<tr><td>10</td><td>Auto</td></tr>
+<tr><td>11</td><td>RTL</td></tr>
+<tr><td>12</td><td>Loiter</td></tr>
+<tr><td>13</td><td>TAKEOFF</td></tr>
+<tr><td>14</td><td>AVOID_ADSB</td></tr>
+<tr><td>15</td><td>Guided</td></tr>
+<tr><td>17</td><td>QSTABILIZE</td></tr>
+<tr><td>18</td><td>QHOVER</td></tr>
+<tr><td>19</td><td>QLOITER</td></tr>
+<tr><td>20</td><td>QLAND</td></tr>
+<tr><td>21</td><td>QRTL</td></tr>
+<tr><td>22</td><td>QAUTOTUNE</td></tr>
+<tr><td>23</td><td>QACRO</td></tr>
+<tr><td>24</td><td>THERMAL</td></tr>
+<tr><td>25</td><td>Loiter to QLand</td></tr>
+<tr><td>26</td><td>Course Hold</td></tr>
+<tr><td>27</td><td>Auto Trim</td></tr>
+</table>
+</ul>
+
+
+<h2>FlightMode12 (ArduPlane:FLTMODE12)</h2><em>Note: This parameter is for advanced users</em><br>
+
+<p>Flight mode for switch position 12 (PWM 1876..2049). Only consulted when FLTMODE_EXT = 1.</p>
+<ul>
+<table><th>Value</th><th>Meaning</th>
+<tr><td>0</td><td>Manual</td></tr>
+<tr><td>1</td><td>CIRCLE</td></tr>
+<tr><td>2</td><td>STABILIZE</td></tr>
+<tr><td>3</td><td>TRAINING</td></tr>
+<tr><td>4</td><td>ACRO</td></tr>
+<tr><td>5</td><td>FBWA</td></tr>
+<tr><td>6</td><td>FBWB</td></tr>
+<tr><td>7</td><td>CRUISE</td></tr>
+<tr><td>8</td><td>AUTOTUNE</td></tr>
+<tr><td>10</td><td>Auto</td></tr>
+<tr><td>11</td><td>RTL</td></tr>
+<tr><td>12</td><td>Loiter</td></tr>
+<tr><td>13</td><td>TAKEOFF</td></tr>
+<tr><td>14</td><td>AVOID_ADSB</td></tr>
+<tr><td>15</td><td>Guided</td></tr>
+<tr><td>17</td><td>QSTABILIZE</td></tr>
+<tr><td>18</td><td>QHOVER</td></tr>
+<tr><td>19</td><td>QLOITER</td></tr>
+<tr><td>20</td><td>QLAND</td></tr>
+<tr><td>21</td><td>QRTL</td></tr>
+<tr><td>22</td><td>QAUTOTUNE</td></tr>
+<tr><td>23</td><td>QACRO</td></tr>
+<tr><td>24</td><td>THERMAL</td></tr>
+<tr><td>25</td><td>Loiter to QLand</td></tr>
+<tr><td>26</td><td>Course Hold</td></tr>
+<tr><td>27</td><td>Auto Trim</td></tr>
+</table>
 </ul>
 
 
@@ -25913,6 +26156,17 @@ DO NOT EDIT
 <ul>
 <li>Range: 0 20</li>
 <li>Units: standard acceleration due to gravity</li>
+</ul>
+
+
+<h2>DJI OSD battery bar type (OSD_BATBAR_TYPE)</h2>
+
+<p>Selects the data source the DJI OSD battery bar represents</p>
+<ul>
+<table><th>Value</th><th>Meaning</th>
+<tr><td>0</td><td>mAh</td></tr>
+<tr><td>1</td><td>Wh</td></tr>
+</table>
 </ul>
 
 

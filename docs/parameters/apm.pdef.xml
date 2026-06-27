@@ -462,6 +462,8 @@
           <value code="23">QACRO</value>
           <value code="24">THERMAL</value>
           <value code="25">Loiter to QLand</value>
+          <value code="26">Course Hold</value>
+          <value code="27">Auto Trim</value>
         </values>
       </param>
       <param humanName="FlightMode2" name="ArduPlane:FLTMODE2" documentation="Flight mode for switch position 2 (1231 to 1360)" user="Standard">
@@ -490,6 +492,8 @@
           <value code="23">QACRO</value>
           <value code="24">THERMAL</value>
           <value code="25">Loiter to QLand</value>
+          <value code="26">Course Hold</value>
+          <value code="27">Auto Trim</value>
         </values>
       </param>
       <param humanName="FlightMode3" name="ArduPlane:FLTMODE3" documentation="Flight mode for switch position 3 (1361 to 1490)" user="Standard">
@@ -518,6 +522,8 @@
           <value code="23">QACRO</value>
           <value code="24">THERMAL</value>
           <value code="25">Loiter to QLand</value>
+          <value code="26">Course Hold</value>
+          <value code="27">Auto Trim</value>
         </values>
       </param>
       <param humanName="FlightMode4" name="ArduPlane:FLTMODE4" documentation="Flight mode for switch position 4 (1491 to 1620)" user="Standard">
@@ -546,6 +552,8 @@
           <value code="23">QACRO</value>
           <value code="24">THERMAL</value>
           <value code="25">Loiter to QLand</value>
+          <value code="26">Course Hold</value>
+          <value code="27">Auto Trim</value>
         </values>
       </param>
       <param humanName="FlightMode5" name="ArduPlane:FLTMODE5" documentation="Flight mode for switch position 5 (1621 to 1749)" user="Standard">
@@ -574,6 +582,8 @@
           <value code="23">QACRO</value>
           <value code="24">THERMAL</value>
           <value code="25">Loiter to QLand</value>
+          <value code="26">Course Hold</value>
+          <value code="27">Auto Trim</value>
         </values>
       </param>
       <param humanName="FlightMode6" name="ArduPlane:FLTMODE6" documentation="Flight mode for switch position 6 (1750 to 2049)" user="Standard">
@@ -602,6 +612,8 @@
           <value code="23">QACRO</value>
           <value code="24">THERMAL</value>
           <value code="25">Loiter to QLand</value>
+          <value code="26">Course Hold</value>
+          <value code="27">Auto Trim</value>
         </values>
       </param>
       <param humanName="Initial flight mode" name="ArduPlane:INITIAL_MODE" documentation="This selects the mode to start in on boot. This is useful for when you want to start in AUTO mode on boot without a receiver." user="Advanced">
@@ -630,6 +642,8 @@
           <value code="23">QACRO</value>
           <value code="24">THERMAL</value>
           <value code="25">Loiter to QLand</value>
+          <value code="26">Course Hold</value>
+          <value code="27">Auto Trim</value>
         </values>
       </param>
       <param humanName="Maximum Bank Angle" name="ArduPlane:ROLL_LIMIT_DEG" documentation="Maximum bank angle commanded in modes with stabilized limits. Increase this value for sharper turns, but decrease to prevent accelerated stalls." user="Standard">
@@ -1033,6 +1047,195 @@
         <field name="Units">%</field>
         <field name="UnitText">percent</field>
         <field name="Range">-90 90</field>
+      </param>
+      <param humanName="Landing sequence wind bias" name="ArduPlane:LAND_WIND_BIAS" documentation="Bias the DO_LAND_START selection toward landings whose final approach faces into the wind. Applies wherever ArduPlane chooses a landing sequence -- RTL autoland, fence breach, battery failsafe, and the GCS DO_LAND_START command. 0 = pure nearest-distance (upstream default; no behaviour change). &gt; 0 = penalise tailwind candidates; full headwind earns no penalty. Falls back to nearest-distance when AHRS wind estimate &lt; 1 m/s or an approach heading cannot be derived from the mission sequence." user="Standard">
+        <field name="Range">0 1</field>
+      </param>
+      <param humanName="Enable 12-position FLTMODE_CH" name="ArduPlane:FLTMODE_EXT" documentation="Default 0 = upstream 6-position behaviour (FLTMODE1..6 only). 1 = 12-position switch: the FLTMODE_CH PWM range is split into 12 bins of 75 us each mapping to FLTMODE1..6 and FLTMODE7..12. Useful when an OpenTX/EdgeTX multi-position switch source needs more than six slots. The 12 bins are tight (75 us each); use only with stable digital RC links (SBUS / CRSF / ELRS) and not analogue PPM." user="Advanced">
+        <values>
+          <value code="0">Disabled</value>
+          <value code="1">Enabled</value>
+        </values>
+      </param>
+      <param humanName="FlightMode7" name="ArduPlane:FLTMODE7" documentation="Flight mode for switch position 7 (PWM 1501..1575). Only consulted when FLTMODE_EXT = 1." user="Advanced">
+        <values>
+          <value code="0">Manual</value>
+          <value code="1">CIRCLE</value>
+          <value code="2">STABILIZE</value>
+          <value code="3">TRAINING</value>
+          <value code="4">ACRO</value>
+          <value code="5">FBWA</value>
+          <value code="6">FBWB</value>
+          <value code="7">CRUISE</value>
+          <value code="8">AUTOTUNE</value>
+          <value code="10">Auto</value>
+          <value code="11">RTL</value>
+          <value code="12">Loiter</value>
+          <value code="13">TAKEOFF</value>
+          <value code="14">AVOID_ADSB</value>
+          <value code="15">Guided</value>
+          <value code="17">QSTABILIZE</value>
+          <value code="18">QHOVER</value>
+          <value code="19">QLOITER</value>
+          <value code="20">QLAND</value>
+          <value code="21">QRTL</value>
+          <value code="22">QAUTOTUNE</value>
+          <value code="23">QACRO</value>
+          <value code="24">THERMAL</value>
+          <value code="25">Loiter to QLand</value>
+          <value code="26">Course Hold</value>
+          <value code="27">Auto Trim</value>
+        </values>
+      </param>
+      <param humanName="FlightMode8" name="ArduPlane:FLTMODE8" documentation="Flight mode for switch position 8 (PWM 1576..1650). Only consulted when FLTMODE_EXT = 1." user="Advanced">
+        <values>
+          <value code="0">Manual</value>
+          <value code="1">CIRCLE</value>
+          <value code="2">STABILIZE</value>
+          <value code="3">TRAINING</value>
+          <value code="4">ACRO</value>
+          <value code="5">FBWA</value>
+          <value code="6">FBWB</value>
+          <value code="7">CRUISE</value>
+          <value code="8">AUTOTUNE</value>
+          <value code="10">Auto</value>
+          <value code="11">RTL</value>
+          <value code="12">Loiter</value>
+          <value code="13">TAKEOFF</value>
+          <value code="14">AVOID_ADSB</value>
+          <value code="15">Guided</value>
+          <value code="17">QSTABILIZE</value>
+          <value code="18">QHOVER</value>
+          <value code="19">QLOITER</value>
+          <value code="20">QLAND</value>
+          <value code="21">QRTL</value>
+          <value code="22">QAUTOTUNE</value>
+          <value code="23">QACRO</value>
+          <value code="24">THERMAL</value>
+          <value code="25">Loiter to QLand</value>
+          <value code="26">Course Hold</value>
+          <value code="27">Auto Trim</value>
+        </values>
+      </param>
+      <param humanName="FlightMode9" name="ArduPlane:FLTMODE9" documentation="Flight mode for switch position 9 (PWM 1651..1725). Only consulted when FLTMODE_EXT = 1." user="Advanced">
+        <values>
+          <value code="0">Manual</value>
+          <value code="1">CIRCLE</value>
+          <value code="2">STABILIZE</value>
+          <value code="3">TRAINING</value>
+          <value code="4">ACRO</value>
+          <value code="5">FBWA</value>
+          <value code="6">FBWB</value>
+          <value code="7">CRUISE</value>
+          <value code="8">AUTOTUNE</value>
+          <value code="10">Auto</value>
+          <value code="11">RTL</value>
+          <value code="12">Loiter</value>
+          <value code="13">TAKEOFF</value>
+          <value code="14">AVOID_ADSB</value>
+          <value code="15">Guided</value>
+          <value code="17">QSTABILIZE</value>
+          <value code="18">QHOVER</value>
+          <value code="19">QLOITER</value>
+          <value code="20">QLAND</value>
+          <value code="21">QRTL</value>
+          <value code="22">QAUTOTUNE</value>
+          <value code="23">QACRO</value>
+          <value code="24">THERMAL</value>
+          <value code="25">Loiter to QLand</value>
+          <value code="26">Course Hold</value>
+          <value code="27">Auto Trim</value>
+        </values>
+      </param>
+      <param humanName="FlightMode10" name="ArduPlane:FLTMODE10" documentation="Flight mode for switch position 10 (PWM 1726..1800). Only consulted when FLTMODE_EXT = 1." user="Advanced">
+        <values>
+          <value code="0">Manual</value>
+          <value code="1">CIRCLE</value>
+          <value code="2">STABILIZE</value>
+          <value code="3">TRAINING</value>
+          <value code="4">ACRO</value>
+          <value code="5">FBWA</value>
+          <value code="6">FBWB</value>
+          <value code="7">CRUISE</value>
+          <value code="8">AUTOTUNE</value>
+          <value code="10">Auto</value>
+          <value code="11">RTL</value>
+          <value code="12">Loiter</value>
+          <value code="13">TAKEOFF</value>
+          <value code="14">AVOID_ADSB</value>
+          <value code="15">Guided</value>
+          <value code="17">QSTABILIZE</value>
+          <value code="18">QHOVER</value>
+          <value code="19">QLOITER</value>
+          <value code="20">QLAND</value>
+          <value code="21">QRTL</value>
+          <value code="22">QAUTOTUNE</value>
+          <value code="23">QACRO</value>
+          <value code="24">THERMAL</value>
+          <value code="25">Loiter to QLand</value>
+          <value code="26">Course Hold</value>
+          <value code="27">Auto Trim</value>
+        </values>
+      </param>
+      <param humanName="FlightMode11" name="ArduPlane:FLTMODE11" documentation="Flight mode for switch position 11 (PWM 1801..1875). Only consulted when FLTMODE_EXT = 1." user="Advanced">
+        <values>
+          <value code="0">Manual</value>
+          <value code="1">CIRCLE</value>
+          <value code="2">STABILIZE</value>
+          <value code="3">TRAINING</value>
+          <value code="4">ACRO</value>
+          <value code="5">FBWA</value>
+          <value code="6">FBWB</value>
+          <value code="7">CRUISE</value>
+          <value code="8">AUTOTUNE</value>
+          <value code="10">Auto</value>
+          <value code="11">RTL</value>
+          <value code="12">Loiter</value>
+          <value code="13">TAKEOFF</value>
+          <value code="14">AVOID_ADSB</value>
+          <value code="15">Guided</value>
+          <value code="17">QSTABILIZE</value>
+          <value code="18">QHOVER</value>
+          <value code="19">QLOITER</value>
+          <value code="20">QLAND</value>
+          <value code="21">QRTL</value>
+          <value code="22">QAUTOTUNE</value>
+          <value code="23">QACRO</value>
+          <value code="24">THERMAL</value>
+          <value code="25">Loiter to QLand</value>
+          <value code="26">Course Hold</value>
+          <value code="27">Auto Trim</value>
+        </values>
+      </param>
+      <param humanName="FlightMode12" name="ArduPlane:FLTMODE12" documentation="Flight mode for switch position 12 (PWM 1876..2049). Only consulted when FLTMODE_EXT = 1." user="Advanced">
+        <values>
+          <value code="0">Manual</value>
+          <value code="1">CIRCLE</value>
+          <value code="2">STABILIZE</value>
+          <value code="3">TRAINING</value>
+          <value code="4">ACRO</value>
+          <value code="5">FBWA</value>
+          <value code="6">FBWB</value>
+          <value code="7">CRUISE</value>
+          <value code="8">AUTOTUNE</value>
+          <value code="10">Auto</value>
+          <value code="11">RTL</value>
+          <value code="12">Loiter</value>
+          <value code="13">TAKEOFF</value>
+          <value code="14">AVOID_ADSB</value>
+          <value code="15">Guided</value>
+          <value code="17">QSTABILIZE</value>
+          <value code="18">QHOVER</value>
+          <value code="19">QLOITER</value>
+          <value code="20">QLAND</value>
+          <value code="21">QRTL</value>
+          <value code="22">QAUTOTUNE</value>
+          <value code="23">QACRO</value>
+          <value code="24">THERMAL</value>
+          <value code="25">Loiter to QLand</value>
+          <value code="26">Course Hold</value>
+          <value code="27">Auto Trim</value>
+        </values>
       </param>
       <param humanName="Mode to switch to ~3 s after arming" name="ArduPlane:ARMING_MODE_SW" documentation="After arming, wait 3 s then switch to the selected mode. Lets a single aux-switch arm and start a TKOFF or AUTO mission without a second mode switch." user="Advanced">
         <values>
@@ -16930,6 +17133,12 @@
         <field name="Range">0 20</field>
         <field name="Units">gravities</field>
         <field name="UnitText">standard acceleration due to gravity</field>
+      </param>
+      <param humanName="DJI OSD battery bar type" name="OSD_BATBAR_TYPE" documentation="Selects the data source the DJI OSD battery bar represents" user="Standard">
+        <values>
+          <value code="0">mAh</value>
+          <value code="1">Wh</value>
+        </values>
       </param>
       <param humanName="RC link quality warn level (in %)" name="OSD_W_LQ" documentation="Set level at which RC_LQ item will flash (%)" user="Standard">
         <field name="Range">0 100</field>
