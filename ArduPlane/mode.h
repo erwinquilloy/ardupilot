@@ -77,6 +77,7 @@ public:
         AUTOLAND      = 26,
 #endif
         COURSE_HOLD   = 26,
+        AUTO_TRIM     = 27,
 
     // Mode number 30 reserved for "offboard" for external/lua control.
     };
@@ -698,6 +699,24 @@ public:
 protected:
 
     bool _enter() override;
+};
+
+// Fork: AUTO TRIM flight mode -- flies like COURSE_HOLD but starts the
+// servo auto-trim loop on _enter and stops it on _exit.  Useful for a
+// quick in-flight trim pass without leaning on the SERVO_AUTO_TRIM=1
+// once-only mechanism (which only runs in FBWA / auto-throttle modes).
+class ModeAutoTrim : public ModeCourseHold
+{
+public:
+
+    Number mode_number() const override { return Number::AUTO_TRIM; }
+    const char *name() const override { return "AUTO TRIM"; }
+    const char *name4() const override { return "ATRM"; }
+
+protected:
+
+    bool _enter() override;
+    void _exit() override;
 };
 
 class ModeCruise : public Mode
