@@ -274,7 +274,7 @@ void Plane::handle_battery_failsafe(const char *type_str, const int8_t action)
                     plane.mission.set_in_landing_sequence_flag(true);
                     break;
                 }
-                if (plane.mission.jump_to_landing_sequence(plane.current_loc)) {
+                if (plane.try_upwind_jump_to_landing_sequence(plane.current_loc)) {
                     plane.set_mode(mode_auto, ModeReason::BATTERY_FAILSAFE);
                     break;
                 }
