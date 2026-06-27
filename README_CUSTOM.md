@@ -123,6 +123,40 @@ input still rolls the plane; releasing returns to the locked course.
 > `modules/mavlink/pymavlink/mavutil.py` `mode_mapping_apm` to teach
 > MAVProxy the right name, or change `FLTMODE_n` to 27+ locally.
 
+### Auto Trim (mode 27)
+Flies like Course Hold (locked ground-track heading, pilot trims
+roll/pitch by stick) and simultaneously runs the **servo auto-trim
+loop** in the background. Use it to push small trim into the saved
+servo trims while still actively flying — no need to land between
+adjustments. Exiting the mode stops the loop.
+
+- **Enable:** set any `FLTMODE_n = 27` (or use FLTMODE_EXT slots 7..12)
+- The same `SERVO_AUTO_TRIM` / `SAT_FINISHTHRESH` parameters that
+  control the always-on auto-trim apply here too.
+- The mode shares Course Hold's `CRUISE_YAW_RATE` + `FLIGHT_OPTIONS`
+  bit 20 (yaw-stick steers locked heading) behaviour because it
+  inherits from `ModeCourseHold`.
+- Same post-4.6.3 mode-number caveat as Course Hold (upstream may
+  give a meaning to 27 in a later release).
+
+### `FLTMODE_EXT` — 12-position FLTMODE_CH
+Default `0` keeps the upstream 6-position behaviour bit-for-bit. Set
+`1` and ArduPlane reads the FLTMODE_CH PWM as a 12-bin selector
+instead of 6 — useful when your radio's source for `FLTMODE_CH` is
+an OpenTX/EdgeTX multi-position switch with more than 6 positions.
+
+- Bins are 75 µs wide starting at 1126 µs (`1126/1201/.../1876`).
+- Positions 1..6 use the existing `FLTMODE1..6` params (no change).
+- Positions 7..12 use new params **`FLTMODE7..FLTMODE12`** (default
+  FBWA each).
+- Stable digital RC links recommended (SBUS / CRSF / ELRS). PPM /
+  analogue PWM is **not** recommended — 75 µs bins are too tight
+  for jitter typical of analogue links.
+
+Originally Stavros Korokithakis 2021 (`e8ff5a8dfd`), forward-ported
+through ArduCustom; this re-port adapts to upstream 4.6.3's
+RC_Channel-based mode-switch refactor.
+
 ## Arming & takeoff
 
 ### Arm-switch safety — in-flight disarm cuts throttle, doesn't disarm
@@ -1093,15 +1127,32 @@ pick **Upload file…** and point at the JSON.
   `shellixyz/ardupilot` and the maintained successor at
   [github.com/ArduCustom/ardupilot](https://github.com/ArduCustom/ardupilot).
   This branch re-ports a curated subset of that work onto a modern
-  4.6.3 base.
+  4.6.3 base. Recent additions sourced from him include `OSD_BATBAR_TYPE`
+  (DJI battery-bar Wh source, co-authored with Stavros, originally
+  `93c530cdb2`), `MatekH743` ADSB+EFI strip (`26597c8805`), and the
+  `AUTO_TRIM` flight mode (mode 27, ArduCustom v11.2 `9e84d8a1ee`).
+- **[Stavros Korokithakis ([@skorokithakis](https://github.com/skorokithakis))]** —
+  `FLTMODE_EXT` 12-position FLTMODE_CH mechanism (original 2021 commit
+  `e8ff5a8dfd`) and co-author of the DJI battery-bar source option.
 - **[@mf0o](https://github.com/mf0o)** — widened OSD sidebars, the
-  DJI O3 home/waypoint arrow direction fix, and the `SpeedyBeeF405WING`
-  target. All three landed in ArduCustom, made their way into upstream
-  4.6.3, and are present in this fork by inheritance.
+  DJI O3 home/waypoint arrow direction fix, the `SpeedyBeeF405WING`
+  target (all three landed in ArduCustom and inherited here via
+  upstream 4.6.3), and stewardship of the
+  [`master_custom_light`](https://github.com/mf0o/ardupilot/tree/master_custom_light)
+  pattern that our `master_custom_4.6.3_light` variant mirrors —
+  including the `MatekH743` ADSB+EFI strip and routing the
+  DJI-batt-bar-source patch.
+- **[@giacomo892](https://github.com/giacomo892)** — `PiccoloCAN` ESC
+  driver strip used by the light variant to save ~30 KB of generated
+  protocol code (originally `8837116f9f`, picked up from mf0o's light
+  fork).
 - **[@wvarty](https://github.com/wvarty)** — the CRSF `RSSIDBM` /
   `RC_SNR` / `RC_ANT` OSD elements and the RF-Mode-on-LQ element
   (originally ArduCustom PR #78), plus the "un-cap RF_Mode for CRSF
   protocol" change (PR #205). Same path — landed in ArduCustom, then
   upstream merged it, then we inherited it in 4.6.3.
 - **Upstream ArduPilot dev team** — the underlying platform.
+- The `LAND_WIND_BIAS` wind-aware DO_LAND_START selection feature is
+  original to this fork (not from any upstream contributor), built
+  on top of AP_Mission's existing landing-sequence selection.
 - Authoring assistance via Claude Code (Anthropic).
