@@ -66,6 +66,26 @@
 #if !defined(FLIGHT_MODE_6)
  # define FLIGHT_MODE_6                  Mode::Number::MANUAL
 #endif
+// Fork FLTMODE_EXT (12-position mode switch).  These slots are only
+// consulted when FLTMODE_EXT = 1; with the default 0 they sit idle.
+#if !defined(FLIGHT_MODE_7)
+ # define FLIGHT_MODE_7                  Mode::Number::FLY_BY_WIRE_A
+#endif
+#if !defined(FLIGHT_MODE_8)
+ # define FLIGHT_MODE_8                  Mode::Number::FLY_BY_WIRE_A
+#endif
+#if !defined(FLIGHT_MODE_9)
+ # define FLIGHT_MODE_9                  Mode::Number::FLY_BY_WIRE_A
+#endif
+#if !defined(FLIGHT_MODE_10)
+ # define FLIGHT_MODE_10                 Mode::Number::FLY_BY_WIRE_A
+#endif
+#if !defined(FLIGHT_MODE_11)
+ # define FLIGHT_MODE_11                 Mode::Number::FLY_BY_WIRE_A
+#endif
+#if !defined(FLIGHT_MODE_12)
+ # define FLIGHT_MODE_12                 Mode::Number::FLY_BY_WIRE_A
+#endif
 
 
 //////////////////////////////////////////////////////////////////////////////
