@@ -18,6 +18,7 @@
 #include <AP_Stats/AP_Stats.h>
 #include <AP_RSSI/AP_RSSI.h>
 #include <AP_Notify/AP_Notify.h>
+#include <AP_BattMonitor/AP_BattMonitor_config.h>
 
 #include "AP_MSP.h"
 #include "AP_MSP_Telem_DJI.h"
@@ -249,4 +250,57 @@ bool AP_MSP_Telem_DJI::get_rssi(float &rssi) const
 #endif
     return true;
 }
+
+#if AP_BATTERY_ENABLED
+// DJI O3 / Avatar / Goggles 2 use the value reported in MSP_BATTERY_STATE to drive their
+// on-goggle battery bar. Override the backend's default so that when OSD_BATBAR_TYPE=1 (Wh)
+// the bar's underlying mAh/capacity pair is rescaled to make the percentage match Wh usage.
+MSPCommandResult AP_MSP_Telem_DJI::msp_process_out_battery_state(sbuf_t *dst)
+{
+    const AP_MSP *msp = AP::msp();
+    if (msp == nullptr) {
+        return MSP_RESULT_ERROR;
+    }
+    battery_state_t battery_state;
+    update_battery_state(battery_state);
+
+    uint32_t capacity_mah = battery_state.batt_capacity_mah;
+
+#if OSD_ENABLED
+    AP_OSD *osd = AP::osd();
+    if (osd != nullptr && osd->batt_bar_type == AP_OSD::BATT_BAR_BASE_WH) {
+        // Bar percentage = consumed_mah / capacity_mah. We can't change the
+        // consumed field reported to the goggles, so rescale the capacity to
+        // make the resulting ratio equal to consumed_wh / capacity_wh.
+        if (is_positive(battery_state.batt_consumed_wh)) {
+            capacity_mah = battery_state.batt_capacity_wh * battery_state.batt_consumed_mah / battery_state.batt_consumed_wh;
+        } else {
+            capacity_mah = UINT32_MAX;
+        }
+    }
+#endif
+
+    const struct PACKED {
+        uint8_t cellcount;
+        uint16_t capacity_mah;
+        uint8_t voltage_dv;
+        uint16_t mah;
+        int16_t current_ca;
+        uint8_t state;
+        uint16_t voltage_cv;
+    } battery {
+        cellcount : (uint8_t)constrain_int16((msp->_cellcount > 0 ? msp->_cellcount : battery_state.batt_cellcount), 0, 255),
+        capacity_mah : (uint16_t)constrain_int32(capacity_mah, 0, UINT16_MAX),
+        voltage_dv : (uint8_t)constrain_int16(battery_state.batt_voltage_v * 10, 0, 255),
+        mah : (uint16_t)MIN(battery_state.batt_consumed_mah, 0xFFFF),
+        current_ca : (int16_t)constrain_int32(battery_state.batt_current_a * 100, -0x8000, 0x7FFF),
+        state : (uint8_t)battery_state.batt_state,
+        voltage_cv : (uint16_t)constrain_int32(battery_state.batt_voltage_v * 100, 0, 0x7FFF)
+    };
+
+    sbuf_write_data(dst, &battery, sizeof(battery));
+    return MSP_RESULT_ACK;
+}
+#endif // AP_BATTERY_ENABLED
+
 #endif //HAL_MSP_ENABLED
