@@ -221,3 +221,11 @@ define HAL_OS_FATFS_IO 1
 define OSD_ENABLED 1
 define HAL_OSD_TYPE_DEFAULT 1
 ROMFS_WILDCARD libraries/AP_OSD/fonts/font*.bin
+
+# Light variant: airframe class this fork targets doesn't carry ADSB
+# transponders nor EFI engines on MatekH743 boards. Strip both to
+# reclaim ~50 KB flash. Per-board hwdef can re-enable if needed.
+# Mirror of mf0o 26597c8805.
+define HAL_ADSB_ENABLED 0
+define HAL_EFI_ENABLED 0
+define HAL_EFI_DRONECAN_ENABLED 0
