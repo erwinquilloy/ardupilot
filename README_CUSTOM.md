@@ -689,6 +689,18 @@ seeded non-zero to search a range, sign of the seed picks polarity.
   arrows had the wrong indices on DJI O3 goggles, making the arrows
   point in confusing directions. Inherited from upstream 4.6.3
   (port by [@mf0o](https://github.com/mf0o))
+- **DJI OSD battery-bar data source — `OSD_BATBAR_TYPE`** —
+  default `0` keeps the goggle's battery bar driven by mAh used
+  vs `BATT_CAPACITY` (stock behaviour). Set `1` to drive the bar
+  by Wh used vs `BATT_CAPACITY_WH` instead. The DJI Air Unit only
+  consumes mAh + capacity_mah in `MSP_BATTERY_STATE`, so when set
+  to Wh we rescale the reported capacity to make the resulting
+  percentage equal `consumed_wh / capacity_wh`. Useful on packs
+  whose Wh capacity is configured but whose mAh rating is unknown
+  or unreliable. Originally
+  [ArduCustom @shellixyz + @stavros](https://github.com/ArduCustom/ardupilot)
+  via [@mf0o](https://github.com/mf0o)'s `osd/dji_batt_bar_source_option`
+  branch (commit `93c530cdb2`)
 
 ## Stats grid
 
