@@ -155,6 +155,7 @@ public:
     friend class ModeFBWA;
     friend class ModeFBWB;
     friend class ModeCourseHold;
+    friend class ModeAutoTrim;
     friend class ModeCruise;
     friend class ModeAutoTune;
     friend class ModeAuto;
@@ -321,6 +322,7 @@ private:
     ModeFBWA mode_fbwa;
     ModeFBWB mode_fbwb;
     ModeCourseHold mode_course_hold;
+    ModeAutoTrim mode_auto_trim;
     ModeCruise mode_cruise;
     ModeAutoTune mode_autotune;
     ModeAuto mode_auto;

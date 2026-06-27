@@ -34,6 +34,7 @@ void Plane::failsafe_short_on_event(enum failsafe_state fstype, ModeReason reaso
     case Mode::Number::FLY_BY_WIRE_B:
     case Mode::Number::CRUISE:
     case Mode::Number::COURSE_HOLD:
+    case Mode::Number::AUTO_TRIM:
     case Mode::Number::TRAINING:
         if(plane.emergency_landing) {
             set_mode(mode_fbwa, reason); // emergency landing switch overrides normal action to allow out of range landing
@@ -123,6 +124,7 @@ void Plane::failsafe_long_on_event(enum failsafe_state fstype, ModeReason reason
     case Mode::Number::FLY_BY_WIRE_B:
     case Mode::Number::CRUISE:
     case Mode::Number::COURSE_HOLD:
+    case Mode::Number::AUTO_TRIM:
     case Mode::Number::TRAINING:
     case Mode::Number::CIRCLE:
     case Mode::Number::LOITER:
