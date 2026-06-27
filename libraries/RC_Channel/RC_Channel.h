@@ -432,7 +432,12 @@ private:
 
     void reset_mode_switch();
     void read_mode_switch();
+protected:
+    // Exposed to subclasses so vehicles can build custom switch readers
+    // (e.g. ArduPlane's FLTMODE_EXT 12-position scan) on top of the
+    // same debounce machinery that the 6-pos reader uses.
     bool debounce_completed(int8_t position);
+private:
     // returns true if the first time we successfully read the
     // channel's three-position-switch position we should record that
     // position as the current position *without* executing the

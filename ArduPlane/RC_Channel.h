@@ -16,6 +16,19 @@ protected:
     // called when the mode switch changes position:
     void mode_switch_changed(modeswitch_pos_t new_pos) override;
 
+public:
+    // Fork FLTMODE_EXT: 12-position PWM scan + dispatch. RC_Channels_Plane
+    // calls this when FLTMODE_EXT = 1 instead of the upstream 6-position
+    // path. Public so the container override can reach it (the base
+    // RC_Channel::read_mode_switch is non-virtual and mode_switch_changed
+    // is protected, so neither can be touched from outside the class).
+    void read_12pos_mode_switch();
+
+protected:
+    // Fork FLTMODE_EXT: 12-position PWM scan, mirrors the shape of
+    // RC_Channel::read_6pos_switch (debounce + position out-param).
+    bool read_12pos_switch(int8_t &position) WARN_IF_UNUSED;
+
 private:
 
     void do_aux_function_change_mode(Mode::Number number,

@@ -571,6 +571,19 @@ public:
     // bias selection toward landings whose approach faces into wind.
     AP_Float rtl_land_wind_bias;
 
+    // Fork FLTMODE_EXT (Stavros 2021): when fltmode_ext = 1 the
+    // FLTMODE_CH input is interpreted as a 12-position switch (75 us
+    // bins instead of 6 wide bins).  flight_mode7..12 are the modes
+    // for positions 7..12.  fltmode_ext = 0 keeps the upstream
+    // 6-position behaviour unchanged.
+    AP_Int8 fltmode_ext;
+    AP_Int8 flight_mode7;
+    AP_Int8 flight_mode8;
+    AP_Int8 flight_mode9;
+    AP_Int8 flight_mode10;
+    AP_Int8 flight_mode11;
+    AP_Int8 flight_mode12;
+
 #if AP_LANDINGGEAR_ENABLED
     AP_LandingGear landing_gear;
 #endif

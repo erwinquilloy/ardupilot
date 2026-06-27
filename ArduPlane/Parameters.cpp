@@ -1459,6 +1459,55 @@ const AP_Param::GroupInfo ParametersG2::var_info[] = {
     // @User: Standard
     AP_GROUPINFO("LAND_WIND_BIAS", 55, ParametersG2, rtl_land_wind_bias, 0),
 
+    // @Param: FLTMODE_EXT
+    // @DisplayName: Enable 12-position FLTMODE_CH
+    // @Description: Default 0 = upstream 6-position behaviour (FLTMODE1..6 only). 1 = 12-position switch: the FLTMODE_CH PWM range is split into 12 bins of 75 us each mapping to FLTMODE1..6 and FLTMODE7..12. Useful when an OpenTX/EdgeTX multi-position switch source needs more than six slots. The 12 bins are tight (75 us each); use only with stable digital RC links (SBUS / CRSF / ELRS) and not analogue PPM.
+    // @Values: 0:Disabled,1:Enabled
+    // @User: Advanced
+    AP_GROUPINFO("FLTMODE_EXT", 57, ParametersG2, fltmode_ext, 0),
+
+    // @Param: FLTMODE7
+    // @DisplayName: FlightMode7
+    // @Description: Flight mode for switch position 7 (PWM 1501..1575). Only consulted when FLTMODE_EXT = 1.
+    // @CopyValuesFrom: FLTMODE1
+    // @User: Advanced
+    AP_GROUPINFO("FLTMODE7", 58, ParametersG2, flight_mode7, (uint8_t)FLIGHT_MODE_7),
+
+    // @Param: FLTMODE8
+    // @DisplayName: FlightMode8
+    // @Description: Flight mode for switch position 8 (PWM 1576..1650). Only consulted when FLTMODE_EXT = 1.
+    // @CopyValuesFrom: FLTMODE1
+    // @User: Advanced
+    AP_GROUPINFO("FLTMODE8", 59, ParametersG2, flight_mode8, (uint8_t)FLIGHT_MODE_8),
+
+    // @Param: FLTMODE9
+    // @DisplayName: FlightMode9
+    // @Description: Flight mode for switch position 9 (PWM 1651..1725). Only consulted when FLTMODE_EXT = 1.
+    // @CopyValuesFrom: FLTMODE1
+    // @User: Advanced
+    AP_GROUPINFO("FLTMODE9", 60, ParametersG2, flight_mode9, (uint8_t)FLIGHT_MODE_9),
+
+    // @Param: FLTMODE10
+    // @DisplayName: FlightMode10
+    // @Description: Flight mode for switch position 10 (PWM 1726..1800). Only consulted when FLTMODE_EXT = 1.
+    // @CopyValuesFrom: FLTMODE1
+    // @User: Advanced
+    AP_GROUPINFO("FLTMODE10", 61, ParametersG2, flight_mode10, (uint8_t)FLIGHT_MODE_10),
+
+    // @Param: FLTMODE11
+    // @DisplayName: FlightMode11
+    // @Description: Flight mode for switch position 11 (PWM 1801..1875). Only consulted when FLTMODE_EXT = 1.
+    // @CopyValuesFrom: FLTMODE1
+    // @User: Advanced
+    AP_GROUPINFO("FLTMODE11", 62, ParametersG2, flight_mode11, (uint8_t)FLIGHT_MODE_11),
+
+    // @Param: FLTMODE12
+    // @DisplayName: FlightMode12
+    // @Description: Flight mode for switch position 12 (PWM 1876..2049). Only consulted when FLTMODE_EXT = 1.
+    // @CopyValuesFrom: FLTMODE1
+    // @User: Advanced
+    AP_GROUPINFO("FLTMODE12", 63, ParametersG2, flight_mode12, (uint8_t)FLIGHT_MODE_12),
+
     // @Param: ARMING_MODE_SW
     // @DisplayName: Mode to switch to ~3 s after arming
     // @Description: After arming, wait 3 s then switch to the selected mode. Lets a single aux-switch arm and start a TKOFF or AUTO mission without a second mode switch.
