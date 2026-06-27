@@ -710,6 +710,8 @@ Flight mode for switch position 1 (910 to 1230 and above 2049)
 |23|QACRO|
 |24|THERMAL|
 |25|Loiter to QLand|
+|26|Course Hold|
+|27|Auto Trim|
 
 ## FLTMODE2: FlightMode2
 
@@ -741,6 +743,8 @@ Flight mode for switch position 2 (1231 to 1360)
 |23|QACRO|
 |24|THERMAL|
 |25|Loiter to QLand|
+|26|Course Hold|
+|27|Auto Trim|
 
 ## FLTMODE3: FlightMode3
 
@@ -772,6 +776,8 @@ Flight mode for switch position 3 (1361 to 1490)
 |23|QACRO|
 |24|THERMAL|
 |25|Loiter to QLand|
+|26|Course Hold|
+|27|Auto Trim|
 
 ## FLTMODE4: FlightMode4
 
@@ -803,6 +809,8 @@ Flight mode for switch position 4 (1491 to 1620)
 |23|QACRO|
 |24|THERMAL|
 |25|Loiter to QLand|
+|26|Course Hold|
+|27|Auto Trim|
 
 ## FLTMODE5: FlightMode5
 
@@ -834,6 +842,8 @@ Flight mode for switch position 5 (1621 to 1749)
 |23|QACRO|
 |24|THERMAL|
 |25|Loiter to QLand|
+|26|Course Hold|
+|27|Auto Trim|
 
 ## FLTMODE6: FlightMode6
 
@@ -865,6 +875,8 @@ Flight mode for switch position 6 (1750 to 2049)
 |23|QACRO|
 |24|THERMAL|
 |25|Loiter to QLand|
+|26|Course Hold|
+|27|Auto Trim|
 
 ## INITIAL_MODE: Initial flight mode
 
@@ -898,6 +910,8 @@ This selects the mode to start in on boot. This is useful for when you want to s
 |23|QACRO|
 |24|THERMAL|
 |25|Loiter to QLand|
+|26|Course Hold|
+|27|Auto Trim|
 
 ## ROLL_LIMIT_DEG: Maximum Bank Angle
 
@@ -1459,6 +1473,233 @@ Amount of differential throws applied to the elevator. A positive number reduces
 - Units: %
 
 - Range: -90 90
+
+## LAND_WIND_BIAS: Landing sequence wind bias
+
+Bias the DO_LAND_START selection toward landings whose final approach faces into the wind. Applies wherever ArduPlane chooses a landing sequence -- RTL autoland, fence breach, battery failsafe, and the GCS DO_LAND_START command. 0 = pure nearest-distance (upstream default; no behaviour change). > 0 = penalise tailwind candidates; full headwind earns no penalty. Falls back to nearest-distance when AHRS wind estimate < 1 m/s or an approach heading cannot be derived from the mission sequence.
+
+- Range: 0 1
+
+## FLTMODE_EXT: Enable 12-position FLTMODE_CH
+
+*Note: This parameter is for advanced users*
+
+Default 0 = upstream 6-position behaviour (FLTMODE1..6 only). 1 = 12-position switch: the FLTMODE_CH PWM range is split into 12 bins of 75 us each mapping to FLTMODE1..6 and FLTMODE7..12. Useful when an OpenTX/EdgeTX multi-position switch source needs more than six slots. The 12 bins are tight (75 us each); use only with stable digital RC links (SBUS / CRSF / ELRS) and not analogue PPM.
+
+|Value|Meaning|
+|:---:|:---:|
+|0|Disabled|
+|1|Enabled|
+
+## FLTMODE7: FlightMode7
+
+*Note: This parameter is for advanced users*
+
+Flight mode for switch position 7 (PWM 1501..1575). Only consulted when FLTMODE_EXT = 1.
+
+|Value|Meaning|
+|:---:|:---:|
+|0|Manual|
+|1|CIRCLE|
+|2|STABILIZE|
+|3|TRAINING|
+|4|ACRO|
+|5|FBWA|
+|6|FBWB|
+|7|CRUISE|
+|8|AUTOTUNE|
+|10|Auto|
+|11|RTL|
+|12|Loiter|
+|13|TAKEOFF|
+|14|AVOID_ADSB|
+|15|Guided|
+|17|QSTABILIZE|
+|18|QHOVER|
+|19|QLOITER|
+|20|QLAND|
+|21|QRTL|
+|22|QAUTOTUNE|
+|23|QACRO|
+|24|THERMAL|
+|25|Loiter to QLand|
+|26|Course Hold|
+|27|Auto Trim|
+
+## FLTMODE8: FlightMode8
+
+*Note: This parameter is for advanced users*
+
+Flight mode for switch position 8 (PWM 1576..1650). Only consulted when FLTMODE_EXT = 1.
+
+|Value|Meaning|
+|:---:|:---:|
+|0|Manual|
+|1|CIRCLE|
+|2|STABILIZE|
+|3|TRAINING|
+|4|ACRO|
+|5|FBWA|
+|6|FBWB|
+|7|CRUISE|
+|8|AUTOTUNE|
+|10|Auto|
+|11|RTL|
+|12|Loiter|
+|13|TAKEOFF|
+|14|AVOID_ADSB|
+|15|Guided|
+|17|QSTABILIZE|
+|18|QHOVER|
+|19|QLOITER|
+|20|QLAND|
+|21|QRTL|
+|22|QAUTOTUNE|
+|23|QACRO|
+|24|THERMAL|
+|25|Loiter to QLand|
+|26|Course Hold|
+|27|Auto Trim|
+
+## FLTMODE9: FlightMode9
+
+*Note: This parameter is for advanced users*
+
+Flight mode for switch position 9 (PWM 1651..1725). Only consulted when FLTMODE_EXT = 1.
+
+|Value|Meaning|
+|:---:|:---:|
+|0|Manual|
+|1|CIRCLE|
+|2|STABILIZE|
+|3|TRAINING|
+|4|ACRO|
+|5|FBWA|
+|6|FBWB|
+|7|CRUISE|
+|8|AUTOTUNE|
+|10|Auto|
+|11|RTL|
+|12|Loiter|
+|13|TAKEOFF|
+|14|AVOID_ADSB|
+|15|Guided|
+|17|QSTABILIZE|
+|18|QHOVER|
+|19|QLOITER|
+|20|QLAND|
+|21|QRTL|
+|22|QAUTOTUNE|
+|23|QACRO|
+|24|THERMAL|
+|25|Loiter to QLand|
+|26|Course Hold|
+|27|Auto Trim|
+
+## FLTMODE10: FlightMode10
+
+*Note: This parameter is for advanced users*
+
+Flight mode for switch position 10 (PWM 1726..1800). Only consulted when FLTMODE_EXT = 1.
+
+|Value|Meaning|
+|:---:|:---:|
+|0|Manual|
+|1|CIRCLE|
+|2|STABILIZE|
+|3|TRAINING|
+|4|ACRO|
+|5|FBWA|
+|6|FBWB|
+|7|CRUISE|
+|8|AUTOTUNE|
+|10|Auto|
+|11|RTL|
+|12|Loiter|
+|13|TAKEOFF|
+|14|AVOID_ADSB|
+|15|Guided|
+|17|QSTABILIZE|
+|18|QHOVER|
+|19|QLOITER|
+|20|QLAND|
+|21|QRTL|
+|22|QAUTOTUNE|
+|23|QACRO|
+|24|THERMAL|
+|25|Loiter to QLand|
+|26|Course Hold|
+|27|Auto Trim|
+
+## FLTMODE11: FlightMode11
+
+*Note: This parameter is for advanced users*
+
+Flight mode for switch position 11 (PWM 1801..1875). Only consulted when FLTMODE_EXT = 1.
+
+|Value|Meaning|
+|:---:|:---:|
+|0|Manual|
+|1|CIRCLE|
+|2|STABILIZE|
+|3|TRAINING|
+|4|ACRO|
+|5|FBWA|
+|6|FBWB|
+|7|CRUISE|
+|8|AUTOTUNE|
+|10|Auto|
+|11|RTL|
+|12|Loiter|
+|13|TAKEOFF|
+|14|AVOID_ADSB|
+|15|Guided|
+|17|QSTABILIZE|
+|18|QHOVER|
+|19|QLOITER|
+|20|QLAND|
+|21|QRTL|
+|22|QAUTOTUNE|
+|23|QACRO|
+|24|THERMAL|
+|25|Loiter to QLand|
+|26|Course Hold|
+|27|Auto Trim|
+
+## FLTMODE12: FlightMode12
+
+*Note: This parameter is for advanced users*
+
+Flight mode for switch position 12 (PWM 1876..2049). Only consulted when FLTMODE_EXT = 1.
+
+|Value|Meaning|
+|:---:|:---:|
+|0|Manual|
+|1|CIRCLE|
+|2|STABILIZE|
+|3|TRAINING|
+|4|ACRO|
+|5|FBWA|
+|6|FBWB|
+|7|CRUISE|
+|8|AUTOTUNE|
+|10|Auto|
+|11|RTL|
+|12|Loiter|
+|13|TAKEOFF|
+|14|AVOID_ADSB|
+|15|Guided|
+|17|QSTABILIZE|
+|18|QHOVER|
+|19|QLOITER|
+|20|QLAND|
+|21|QRTL|
+|22|QAUTOTUNE|
+|23|QACRO|
+|24|THERMAL|
+|25|Loiter to QLand|
+|26|Course Hold|
+|27|Auto Trim|
 
 ## ARMING_MODE_SW: Mode to switch to ~3 s after arming
 
@@ -25511,6 +25752,15 @@ ACC_VERT OSD item flashes when |vertical acceleration| exceeds this value. 0 dis
 - Range: 0 20
 
 - Units: gravities
+
+## OSD_BATBAR_TYPE: DJI OSD battery bar type
+
+Selects the data source the DJI OSD battery bar represents
+
+|Value|Meaning|
+|:---:|:---:|
+|0|mAh|
+|1|Wh|
 
 ## OSD_W_LQ: RC link quality warn level (in %)
 
