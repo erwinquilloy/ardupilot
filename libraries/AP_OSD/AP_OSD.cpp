@@ -275,7 +275,11 @@ const AP_Param::GroupInfo AP_OSD::var_info[] = {
     // @Description: Selects the data source the DJI OSD battery bar represents
     // @Values: 0:mAh,1:Wh
     // @User: Standard
-    AP_GROUPINFO("_BATBAR_TYPE", 58, AP_OSD, batt_bar_type, AP_OSD::BATT_BAR_BASE_MAH),
+    // Slot picked from the unused range 39..55 (we can't use 58 -- the
+    // 5-screen bump SUBGROUPINFO sits there; can't use 35/36/37/38
+    // either, those are _SB_H_OFS / _SB_V_EXT / _EFF_UNIT / screen[4]
+    // SUBGROUPINFO2). 39 is the lowest free slot.
+    AP_GROUPINFO("_BATBAR_TYPE", 39, AP_OSD, batt_bar_type, AP_OSD::BATT_BAR_BASE_MAH),
 
 #if AP_OSD_EXTENDED_LNK_STATS
     // @Param: _W_LQ
