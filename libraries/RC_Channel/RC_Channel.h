@@ -284,6 +284,15 @@ public:
         LOWEHEISER_THROTTLE= 218,  // allows for throttle on slider
         TRANSMITTER_TUNING = 219, // use a transmitter knob or slider for in-flight tuning
 
+        // Fork: SERVOS_AUTO_TRIM = 200 (Plane) -- HIGH starts the servo
+        // auto-trim accumulator without changing flight mode, LOW stops
+        // it. Same behaviour as the legacy fork's slot 162; we use 200
+        // for compatibility with mf0o / saved RCx_OPTION=200 params. The
+        // 200-219 range is otherwise carved out upstream for "inputs to
+        // replace RCMAP" (ROLL/PITCH/etc., all >= 201), so 200 itself was
+        // the unused slot at the head of that block and a natural fit.
+        SERVOS_AUTO_TRIM =   200,
+
         TUNE_PARAM_SELECT  = 250, // 3-position switch selects TUNE_PARAM / PARAM2 / PARAM3 (plane only)
 
         // inputs 248-249 are reserved for the Skybrush fork at

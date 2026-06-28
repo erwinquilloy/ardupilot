@@ -83,6 +83,27 @@ adjustments. Exiting the mode stops the loop.
 - Same post-4.6.3 mode-number caveat as Course Hold (upstream may
   give a meaning to 27 in a later release).
 
+### RC aux switch entries (Plane)
+Plane's `RCx_OPTION` enum gains two entries so the pilot can put
+autotrim and autotune on momentary aux switches without burning a
+FLTMODE_n slot:
+
+- **`RCx_OPTION = 17` — AUTOTUNE Mode.** Switches into Plane's
+  AUTOTUNE flight mode (mode 8) on switch HIGH. Upstream had this
+  enum value wired only for Copter; the fork extends it to Plane.
+  This is *flight-mode entry*, distinct from `RCx_OPTION = 107`
+  (`FW_AUTOTUNE`), which toggles the autotune loop without changing
+  flight mode.
+- **`RCx_OPTION = 200` — Servos Auto Trim.** Starts the servo
+  auto-trim accumulator on switch HIGH (with a clean prepare so it
+  doesn't resume from a previous run) and stops it on LOW. Stays in
+  whatever flight mode you're already in (FBWA / CRUISE / etc.) — it
+  does **not** force AUTO_TRIM mode. GCS prints "Servos auto trim
+  started" / "stopped" as it toggles. Slot 200 matches mf0o's port,
+  so saved `RCx_OPTION = 200` params from mf0o-based builds keep
+  working. (The legacy 2022 fork used slot 162 for the same option;
+  re-save the param if you're migrating from the old fork.)
+
 ### `FLTMODE_EXT` — 12-position FLTMODE_CH
 Default `0` keeps the upstream 6-position behaviour bit-for-bit. Set
 `1` and ArduPlane reads the FLTMODE_CH PWM as a 12-bin selector
