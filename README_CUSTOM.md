@@ -77,6 +77,29 @@ Identical to upstream. From a configured WSL / Linux toolchain:
 The branch builds clean for every board listed under "Supported boards"
 below; SITL builds and runs cleanly.
 
+### Firmware version string
+
+Mavlink `AUTOPILOT_VERSION` (the banner that shows up in MissionPlanner
+on connect, and in `arduplane --help`) is built up as:
+
+```
+ArduPlane V<x.y.z> ArduCustom <FORK_VERSION>[ Light] (<git-hash>)
+```
+
+For example:
+
+```
+ArduPlane V4.6.3 ArduCustom v0.1-beta (08b10695)        # full branch
+ArduPlane V4.6.3 ArduCustom v0.1-beta Light (08b10695)  # light branch
+```
+
+The upstream `ArduPlane V4.6.3` prefix is kept so GCS tools that parse
+the upstream version string (MissionPlanner, MAVProxy, autotest
+scripts) keep working. `FORK_VERSION` lives in
+`libraries/AP_Common/AP_FWVersionDefine.h` — bump it on each release.
+The `Light` suffix only appears on the `master_custom_4.6.3_light`
+branch (set in the same header).
+
 ## Supported boards
 
 Fork-specific board work covers:

@@ -23,6 +23,20 @@
 #include <AP_Common/AP_FWVersion.h>
 #include <AP_Vehicle/AP_Vehicle_Type.h>
 
+// Fork branding + release version. Bump FORK_VERSION on each release
+// so users (and the .apj filename) can tell builds apart. We append
+// our brand to "ArduPlane V<x.y.z>" rather than replacing it so GCS
+// tools that parse the upstream prefix (MissionPlanner, MAVProxy,
+// autotest scripts) keep working.
+//
+// Resulting strings (paired with git hash, added below):
+//   master_custom_4.6.3:        "ArduPlane V4.6.3 ArduCustom v0.1-beta (abc1234)"
+//   master_custom_4.6.3_light:  "ArduPlane V4.6.3 ArduCustom v0.1-beta Light (abc1234)"
+//
+// Sets ORIGINAL_FWSTR to the bare THISFIRMWARE so anything that
+// specifically wants the upstream "ArduPlane V4.6.3" can still get it.
+#define FORK_VERSION "v0.1-beta"
+
 /*
   allow vendors to set AP_CUSTOM_FIRMWARE_STRING in hwdef.dat
  */
@@ -30,9 +44,9 @@
 #define ACTIVE_FWSTR AP_CUSTOM_FIRMWARE_STRING
 #define ORIGINAL_FWSTR THISFIRMWARE
 #else
-// Light variant: mark the firmware so users can tell it apart from the
-// full master_custom_4.6.3 binary in mavlink AUTOPILOT_VERSION / .apj.
-#define ACTIVE_FWSTR THISFIRMWARE " Light"
+// Light variant: extra " Light" suffix so users can tell the light
+// .apj apart from the full one in mavlink AUTOPILOT_VERSION + filename.
+#define ACTIVE_FWSTR THISFIRMWARE " ArduCustom " FORK_VERSION " Light"
 #define ORIGINAL_FWSTR THISFIRMWARE
 #endif
 
