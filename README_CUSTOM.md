@@ -51,7 +51,6 @@ variant — actual per-board delta depends on which backends that
 board's hwdef would have pulled in.
 
 ---
-
 A curated fork of ArduPlane, rebased onto upstream **ArduPlane 4.6.3**
 (tag `Plane-4.6.3`, commit `3fc7011a7d`). This branch carries a set of
 additions and behaviour changes on top of stock 4.6.3, mostly ported
