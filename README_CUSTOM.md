@@ -1,4 +1,12 @@
-# ArduPlane Custom Build
+# ArduPlane Custom Build — **FULL VARIANT**
+
+> 🛠️ **This is the full variant of the fork** — every hardware backend
+> upstream ArduPlane 4.6.3 ships, plus this fork's additions. Larger
+> binary, fits comfortably on H7 / F7 / large-flash F4 targets. For a
+> stripped-down build that fits more easily on flash-constrained F4
+> boards (fewer GPS / RC / battery / rangefinder backends), see the
+> [`master_custom_4.6.3_light`](../../tree/master_custom_4.6.3_light)
+> branch.
 
 A curated fork of ArduPlane, rebased onto upstream **ArduPlane 4.6.3**
 (tag `Plane-4.6.3`, commit `3fc7011a7d`). This branch carries a set of
