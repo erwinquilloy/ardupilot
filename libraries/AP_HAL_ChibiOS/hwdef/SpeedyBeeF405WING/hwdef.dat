@@ -174,10 +174,15 @@ include ../include/minimize_fpv_osd.inc
 undef AP_CAMERA_MOUNT_ENABLED
 undef HAL_MOUNT_ENABLED
 undef HAL_MOUNT_SERVO_ENABLED
+# Fork: also enable CADDX backend (default-gated on flash > 1024 KB,
+# so it's normally off on this 1 MB F4 board). Users running CADDX
+# GM3-type gimbals need this on.
+undef HAL_MOUNT_CADDX_ENABLED
 
 define AP_CAMERA_MOUNT_ENABLED 1
 define HAL_MOUNT_ENABLED 1
 define AP_MOUNT_BACKEND_DEFAULT_ENABLED 0
 define HAL_MOUNT_SERVO_ENABLED 1
+define HAL_MOUNT_CADDX_ENABLED 1
 
 define DEFAULT_NTF_LED_TYPES 257
