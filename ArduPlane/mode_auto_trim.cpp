@@ -19,6 +19,11 @@ bool ModeAutoTrim::_enter()
     if (!ModeCourseHold::_enter()) {
         return false;
     }
+    // Zero the accumulator state before arming the loop so re-entering
+    // AUTO_TRIM doesn't resume from the previous run's pitch_I / roll_I
+    // snapshots. Matches the legacy fork's servos_auto_trim_start helper
+    // (prepare-then-run), which the SERVOS_AUTO_TRIM RC option also uses.
+    plane.servos_auto_trim_prepare();
     plane.auto_trim.run = true;
     return true;
 }
