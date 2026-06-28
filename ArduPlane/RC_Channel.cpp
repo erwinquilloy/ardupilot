@@ -170,6 +170,10 @@ void RC_Channel_Plane::init_aux_function(const RC_Channel::AUX_FUNC ch_option,
     case AUX_FUNC::TRIM_TO_CURRENT_SERVO_RC:
     case AUX_FUNC::EMERGENCY_LANDING_EN:
     case AUX_FUNC::FW_AUTOTUNE:
+    // Fork: AUTOTUNE_MODE (17) and SERVOS_AUTO_TRIM (200) -- no init
+    // needed, the handler reads ch_flag at runtime.
+    case AUX_FUNC::AUTOTUNE_MODE:
+    case AUX_FUNC::SERVOS_AUTO_TRIM:
 #if AP_TUNING_ENABLED
     case AUX_FUNC::TUNE_PARAM_SELECT:
 #endif
@@ -389,6 +393,30 @@ bool RC_Channel_Plane::do_aux_function(const AUX_FUNC ch_option, const AuxSwitch
 
     case AUX_FUNC::CRUISE:
         do_aux_function_change_mode(Mode::Number::CRUISE, ch_flag);
+        break;
+
+    // Fork: wire AUTOTUNE_MODE (17) for Plane -- upstream only handles it
+    // for Copter. Lets the pilot enter Plane's AUTOTUNE flight mode from
+    // any aux-switch position rather than dedicating a FLTMODE_n slot.
+    case AUX_FUNC::AUTOTUNE_MODE:
+        do_aux_function_change_mode(Mode::Number::AUTOTUNE, ch_flag);
+        break;
+
+    // Fork: SERVOS_AUTO_TRIM (200) -- HIGH starts the servo auto-trim
+    // accumulator from a zeroed state, LOW stops it. Does NOT change
+    // flight mode (so the pilot can run trim in FBWA / CRUISE / etc.
+    // without switching to the dedicated AUTO_TRIM mode). Mirrors the
+    // legacy fork's slot 162 / mf0o's slot 200; we use 200 so saved
+    // RCx_OPTION=200 params from mf0o-based builds keep working.
+    case AUX_FUNC::SERVOS_AUTO_TRIM:
+        if (ch_flag == AuxSwitchPos::HIGH) {
+            plane.servos_auto_trim_prepare();
+            plane.auto_trim.run = true;
+            gcs().send_text(MAV_SEVERITY_INFO, "Servos auto trim started");
+        } else if (ch_flag == AuxSwitchPos::LOW) {
+            plane.auto_trim.run = false;
+            gcs().send_text(MAV_SEVERITY_INFO, "Servos auto trim stopped");
+        }
         break;
 
 #if HAL_QUADPLANE_ENABLED

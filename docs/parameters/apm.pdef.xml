@@ -9226,6 +9226,7 @@
           <value code="52">ACRO Mode</value>
           <value code="38">ADSB Avoidance Enable</value>
           <value code="16">AUTO Mode</value>
+          <value code="17">AUTOTUNE Mode</value>
           <value code="84">AirMode</value>
           <value code="210">Airbrakes</value>
           <value code="91">Airspeed Ratio Calibration</value>
@@ -9313,6 +9314,7 @@
           <value code="305">Scripting6</value>
           <value code="306">Scripting7</value>
           <value code="307">Scripting8</value>
+          <value code="200">Servos Auto Trim</value>
           <value code="155">Set roll pitch and yaw trim to current servo and RC</value>
           <value code="88">Soaring Enable</value>
           <value code="112">SwitchExternalAHRS</value>
@@ -9332,6 +9334,7 @@
           <value code="52">ACRO Mode</value>
           <value code="38">ADSB Avoidance Enable</value>
           <value code="16">AUTO Mode</value>
+          <value code="17">AUTOTUNE Mode</value>
           <value code="84">AirMode</value>
           <value code="210">Airbrakes</value>
           <value code="91">Airspeed Ratio Calibration</value>
@@ -9419,6 +9422,7 @@
           <value code="305">Scripting6</value>
           <value code="306">Scripting7</value>
           <value code="307">Scripting8</value>
+          <value code="200">Servos Auto Trim</value>
           <value code="155">Set roll pitch and yaw trim to current servo and RC</value>
           <value code="88">Soaring Enable</value>
           <value code="112">SwitchExternalAHRS</value>
@@ -9438,6 +9442,7 @@
           <value code="52">ACRO Mode</value>
           <value code="38">ADSB Avoidance Enable</value>
           <value code="16">AUTO Mode</value>
+          <value code="17">AUTOTUNE Mode</value>
           <value code="84">AirMode</value>
           <value code="210">Airbrakes</value>
           <value code="91">Airspeed Ratio Calibration</value>
@@ -9525,6 +9530,7 @@
           <value code="305">Scripting6</value>
           <value code="306">Scripting7</value>
           <value code="307">Scripting8</value>
+          <value code="200">Servos Auto Trim</value>
           <value code="155">Set roll pitch and yaw trim to current servo and RC</value>
           <value code="88">Soaring Enable</value>
           <value code="112">SwitchExternalAHRS</value>
@@ -9544,6 +9550,7 @@
           <value code="52">ACRO Mode</value>
           <value code="38">ADSB Avoidance Enable</value>
           <value code="16">AUTO Mode</value>
+          <value code="17">AUTOTUNE Mode</value>
           <value code="84">AirMode</value>
           <value code="210">Airbrakes</value>
           <value code="91">Airspeed Ratio Calibration</value>
@@ -9631,6 +9638,7 @@
           <value code="305">Scripting6</value>
           <value code="306">Scripting7</value>
           <value code="307">Scripting8</value>
+          <value code="200">Servos Auto Trim</value>
           <value code="155">Set roll pitch and yaw trim to current servo and RC</value>
           <value code="88">Soaring Enable</value>
           <value code="112">SwitchExternalAHRS</value>
@@ -24520,6 +24528,7 @@
           <value code="52">ACRO Mode</value>
           <value code="38">ADSB Avoidance Enable</value>
           <value code="16">AUTO Mode</value>
+          <value code="17">AUTOTUNE Mode</value>
           <value code="84">AirMode</value>
           <value code="210">Airbrakes</value>
           <value code="91">Airspeed Ratio Calibration</value>
@@ -24607,6 +24616,7 @@
           <value code="305">Scripting6</value>
           <value code="306">Scripting7</value>
           <value code="307">Scripting8</value>
+          <value code="200">Servos Auto Trim</value>
           <value code="155">Set roll pitch and yaw trim to current servo and RC</value>
           <value code="88">Soaring Enable</value>
           <value code="112">SwitchExternalAHRS</value>
@@ -24657,6 +24667,7 @@
           <value code="52">ACRO Mode</value>
           <value code="38">ADSB Avoidance Enable</value>
           <value code="16">AUTO Mode</value>
+          <value code="17">AUTOTUNE Mode</value>
           <value code="84">AirMode</value>
           <value code="210">Airbrakes</value>
           <value code="91">Airspeed Ratio Calibration</value>
@@ -24744,6 +24755,7 @@
           <value code="305">Scripting6</value>
           <value code="306">Scripting7</value>
           <value code="307">Scripting8</value>
+          <value code="200">Servos Auto Trim</value>
           <value code="155">Set roll pitch and yaw trim to current servo and RC</value>
           <value code="88">Soaring Enable</value>
           <value code="112">SwitchExternalAHRS</value>
@@ -24794,6 +24806,7 @@
           <value code="52">ACRO Mode</value>
           <value code="38">ADSB Avoidance Enable</value>
           <value code="16">AUTO Mode</value>
+          <value code="17">AUTOTUNE Mode</value>
           <value code="84">AirMode</value>
           <value code="210">Airbrakes</value>
           <value code="91">Airspeed Ratio Calibration</value>
@@ -24881,6 +24894,7 @@
           <value code="305">Scripting6</value>
           <value code="306">Scripting7</value>
           <value code="307">Scripting8</value>
+          <value code="200">Servos Auto Trim</value>
           <value code="155">Set roll pitch and yaw trim to current servo and RC</value>
           <value code="88">Soaring Enable</value>
           <value code="112">SwitchExternalAHRS</value>
@@ -24931,6 +24945,7 @@
           <value code="52">ACRO Mode</value>
           <value code="38">ADSB Avoidance Enable</value>
           <value code="16">AUTO Mode</value>
+          <value code="17">AUTOTUNE Mode</value>
           <value code="84">AirMode</value>
           <value code="210">Airbrakes</value>
           <value code="91">Airspeed Ratio Calibration</value>
@@ -25018,6 +25033,7 @@
           <value code="305">Scripting6</value>
           <value code="306">Scripting7</value>
           <value code="307">Scripting8</value>
+          <value code="200">Servos Auto Trim</value>
           <value code="155">Set roll pitch and yaw trim to current servo and RC</value>
           <value code="88">Soaring Enable</value>
           <value code="112">SwitchExternalAHRS</value>
@@ -25068,6 +25084,7 @@
           <value code="52">ACRO Mode</value>
           <value code="38">ADSB Avoidance Enable</value>
           <value code="16">AUTO Mode</value>
+          <value code="17">AUTOTUNE Mode</value>
           <value code="84">AirMode</value>
           <value code="210">Airbrakes</value>
           <value code="91">Airspeed Ratio Calibration</value>
@@ -25155,6 +25172,7 @@
           <value code="305">Scripting6</value>
           <value code="306">Scripting7</value>
           <value code="307">Scripting8</value>
+          <value code="200">Servos Auto Trim</value>
           <value code="155">Set roll pitch and yaw trim to current servo and RC</value>
           <value code="88">Soaring Enable</value>
           <value code="112">SwitchExternalAHRS</value>
@@ -25205,6 +25223,7 @@
           <value code="52">ACRO Mode</value>
           <value code="38">ADSB Avoidance Enable</value>
           <value code="16">AUTO Mode</value>
+          <value code="17">AUTOTUNE Mode</value>
           <value code="84">AirMode</value>
           <value code="210">Airbrakes</value>
           <value code="91">Airspeed Ratio Calibration</value>
@@ -25292,6 +25311,7 @@
           <value code="305">Scripting6</value>
           <value code="306">Scripting7</value>
           <value code="307">Scripting8</value>
+          <value code="200">Servos Auto Trim</value>
           <value code="155">Set roll pitch and yaw trim to current servo and RC</value>
           <value code="88">Soaring Enable</value>
           <value code="112">SwitchExternalAHRS</value>
@@ -25342,6 +25362,7 @@
           <value code="52">ACRO Mode</value>
           <value code="38">ADSB Avoidance Enable</value>
           <value code="16">AUTO Mode</value>
+          <value code="17">AUTOTUNE Mode</value>
           <value code="84">AirMode</value>
           <value code="210">Airbrakes</value>
           <value code="91">Airspeed Ratio Calibration</value>
@@ -25429,6 +25450,7 @@
           <value code="305">Scripting6</value>
           <value code="306">Scripting7</value>
           <value code="307">Scripting8</value>
+          <value code="200">Servos Auto Trim</value>
           <value code="155">Set roll pitch and yaw trim to current servo and RC</value>
           <value code="88">Soaring Enable</value>
           <value code="112">SwitchExternalAHRS</value>
@@ -25479,6 +25501,7 @@
           <value code="52">ACRO Mode</value>
           <value code="38">ADSB Avoidance Enable</value>
           <value code="16">AUTO Mode</value>
+          <value code="17">AUTOTUNE Mode</value>
           <value code="84">AirMode</value>
           <value code="210">Airbrakes</value>
           <value code="91">Airspeed Ratio Calibration</value>
@@ -25566,6 +25589,7 @@
           <value code="305">Scripting6</value>
           <value code="306">Scripting7</value>
           <value code="307">Scripting8</value>
+          <value code="200">Servos Auto Trim</value>
           <value code="155">Set roll pitch and yaw trim to current servo and RC</value>
           <value code="88">Soaring Enable</value>
           <value code="112">SwitchExternalAHRS</value>
@@ -25616,6 +25640,7 @@
           <value code="52">ACRO Mode</value>
           <value code="38">ADSB Avoidance Enable</value>
           <value code="16">AUTO Mode</value>
+          <value code="17">AUTOTUNE Mode</value>
           <value code="84">AirMode</value>
           <value code="210">Airbrakes</value>
           <value code="91">Airspeed Ratio Calibration</value>
@@ -25703,6 +25728,7 @@
           <value code="305">Scripting6</value>
           <value code="306">Scripting7</value>
           <value code="307">Scripting8</value>
+          <value code="200">Servos Auto Trim</value>
           <value code="155">Set roll pitch and yaw trim to current servo and RC</value>
           <value code="88">Soaring Enable</value>
           <value code="112">SwitchExternalAHRS</value>
@@ -25753,6 +25779,7 @@
           <value code="52">ACRO Mode</value>
           <value code="38">ADSB Avoidance Enable</value>
           <value code="16">AUTO Mode</value>
+          <value code="17">AUTOTUNE Mode</value>
           <value code="84">AirMode</value>
           <value code="210">Airbrakes</value>
           <value code="91">Airspeed Ratio Calibration</value>
@@ -25840,6 +25867,7 @@
           <value code="305">Scripting6</value>
           <value code="306">Scripting7</value>
           <value code="307">Scripting8</value>
+          <value code="200">Servos Auto Trim</value>
           <value code="155">Set roll pitch and yaw trim to current servo and RC</value>
           <value code="88">Soaring Enable</value>
           <value code="112">SwitchExternalAHRS</value>
@@ -25890,6 +25918,7 @@
           <value code="52">ACRO Mode</value>
           <value code="38">ADSB Avoidance Enable</value>
           <value code="16">AUTO Mode</value>
+          <value code="17">AUTOTUNE Mode</value>
           <value code="84">AirMode</value>
           <value code="210">Airbrakes</value>
           <value code="91">Airspeed Ratio Calibration</value>
@@ -25977,6 +26006,7 @@
           <value code="305">Scripting6</value>
           <value code="306">Scripting7</value>
           <value code="307">Scripting8</value>
+          <value code="200">Servos Auto Trim</value>
           <value code="155">Set roll pitch and yaw trim to current servo and RC</value>
           <value code="88">Soaring Enable</value>
           <value code="112">SwitchExternalAHRS</value>
@@ -26027,6 +26057,7 @@
           <value code="52">ACRO Mode</value>
           <value code="38">ADSB Avoidance Enable</value>
           <value code="16">AUTO Mode</value>
+          <value code="17">AUTOTUNE Mode</value>
           <value code="84">AirMode</value>
           <value code="210">Airbrakes</value>
           <value code="91">Airspeed Ratio Calibration</value>
@@ -26114,6 +26145,7 @@
           <value code="305">Scripting6</value>
           <value code="306">Scripting7</value>
           <value code="307">Scripting8</value>
+          <value code="200">Servos Auto Trim</value>
           <value code="155">Set roll pitch and yaw trim to current servo and RC</value>
           <value code="88">Soaring Enable</value>
           <value code="112">SwitchExternalAHRS</value>
@@ -26164,6 +26196,7 @@
           <value code="52">ACRO Mode</value>
           <value code="38">ADSB Avoidance Enable</value>
           <value code="16">AUTO Mode</value>
+          <value code="17">AUTOTUNE Mode</value>
           <value code="84">AirMode</value>
           <value code="210">Airbrakes</value>
           <value code="91">Airspeed Ratio Calibration</value>
@@ -26251,6 +26284,7 @@
           <value code="305">Scripting6</value>
           <value code="306">Scripting7</value>
           <value code="307">Scripting8</value>
+          <value code="200">Servos Auto Trim</value>
           <value code="155">Set roll pitch and yaw trim to current servo and RC</value>
           <value code="88">Soaring Enable</value>
           <value code="112">SwitchExternalAHRS</value>
@@ -26301,6 +26335,7 @@
           <value code="52">ACRO Mode</value>
           <value code="38">ADSB Avoidance Enable</value>
           <value code="16">AUTO Mode</value>
+          <value code="17">AUTOTUNE Mode</value>
           <value code="84">AirMode</value>
           <value code="210">Airbrakes</value>
           <value code="91">Airspeed Ratio Calibration</value>
@@ -26388,6 +26423,7 @@
           <value code="305">Scripting6</value>
           <value code="306">Scripting7</value>
           <value code="307">Scripting8</value>
+          <value code="200">Servos Auto Trim</value>
           <value code="155">Set roll pitch and yaw trim to current servo and RC</value>
           <value code="88">Soaring Enable</value>
           <value code="112">SwitchExternalAHRS</value>
@@ -26438,6 +26474,7 @@
           <value code="52">ACRO Mode</value>
           <value code="38">ADSB Avoidance Enable</value>
           <value code="16">AUTO Mode</value>
+          <value code="17">AUTOTUNE Mode</value>
           <value code="84">AirMode</value>
           <value code="210">Airbrakes</value>
           <value code="91">Airspeed Ratio Calibration</value>
@@ -26525,6 +26562,7 @@
           <value code="305">Scripting6</value>
           <value code="306">Scripting7</value>
           <value code="307">Scripting8</value>
+          <value code="200">Servos Auto Trim</value>
           <value code="155">Set roll pitch and yaw trim to current servo and RC</value>
           <value code="88">Soaring Enable</value>
           <value code="112">SwitchExternalAHRS</value>
@@ -26575,6 +26613,7 @@
           <value code="52">ACRO Mode</value>
           <value code="38">ADSB Avoidance Enable</value>
           <value code="16">AUTO Mode</value>
+          <value code="17">AUTOTUNE Mode</value>
           <value code="84">AirMode</value>
           <value code="210">Airbrakes</value>
           <value code="91">Airspeed Ratio Calibration</value>
@@ -26662,6 +26701,7 @@
           <value code="305">Scripting6</value>
           <value code="306">Scripting7</value>
           <value code="307">Scripting8</value>
+          <value code="200">Servos Auto Trim</value>
           <value code="155">Set roll pitch and yaw trim to current servo and RC</value>
           <value code="88">Soaring Enable</value>
           <value code="112">SwitchExternalAHRS</value>

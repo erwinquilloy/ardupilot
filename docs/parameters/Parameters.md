@@ -13708,6 +13708,7 @@ Auxiliary RC Options function executed on pin change
 |9|Camera Trigger|
 |11|Fence Enable|
 |16|AUTO Mode|
+|17|AUTOTUNE Mode|
 |22|Parachute Release|
 |24|Auto Mission Reset|
 |27|Retract Mount1|
@@ -13797,6 +13798,7 @@ Auxiliary RC Options function executed on pin change
 |215|Mount2 Roll|
 |216|Mount2 Pitch|
 |217|Mount2 Yaw|
+|200|Servos Auto Trim|
 |300|Scripting1|
 |301|Scripting2|
 |302|Scripting3|
@@ -13817,6 +13819,7 @@ Auxiliary RC Options function executed on pin change
 |9|Camera Trigger|
 |11|Fence Enable|
 |16|AUTO Mode|
+|17|AUTOTUNE Mode|
 |22|Parachute Release|
 |24|Auto Mission Reset|
 |27|Retract Mount1|
@@ -13906,6 +13909,7 @@ Auxiliary RC Options function executed on pin change
 |215|Mount2 Roll|
 |216|Mount2 Pitch|
 |217|Mount2 Yaw|
+|200|Servos Auto Trim|
 |300|Scripting1|
 |301|Scripting2|
 |302|Scripting3|
@@ -13926,6 +13930,7 @@ Auxiliary RC Options function executed on pin change
 |9|Camera Trigger|
 |11|Fence Enable|
 |16|AUTO Mode|
+|17|AUTOTUNE Mode|
 |22|Parachute Release|
 |24|Auto Mission Reset|
 |27|Retract Mount1|
@@ -14015,6 +14020,7 @@ Auxiliary RC Options function executed on pin change
 |215|Mount2 Roll|
 |216|Mount2 Pitch|
 |217|Mount2 Yaw|
+|200|Servos Auto Trim|
 |300|Scripting1|
 |301|Scripting2|
 |302|Scripting3|
@@ -14035,6 +14041,7 @@ Auxiliary RC Options function executed on pin change
 |9|Camera Trigger|
 |11|Fence Enable|
 |16|AUTO Mode|
+|17|AUTOTUNE Mode|
 |22|Parachute Release|
 |24|Auto Mission Reset|
 |27|Retract Mount1|
@@ -14124,6 +14131,7 @@ Auxiliary RC Options function executed on pin change
 |215|Mount2 Roll|
 |216|Mount2 Pitch|
 |217|Mount2 Yaw|
+|200|Servos Auto Trim|
 |300|Scripting1|
 |301|Scripting2|
 |302|Scripting3|
@@ -38587,6 +38595,7 @@ Function assigned to this RC channel
 |9|Camera Trigger|
 |11|Fence Enable|
 |16|AUTO Mode|
+|17|AUTOTUNE Mode|
 |22|Parachute Release|
 |24|Auto Mission Reset|
 |27|Retract Mount1|
@@ -38676,6 +38685,7 @@ Function assigned to this RC channel
 |215|Mount2 Roll|
 |216|Mount2 Pitch|
 |217|Mount2 Yaw|
+|200|Servos Auto Trim|
 |300|Scripting1|
 |301|Scripting2|
 |302|Scripting3|
