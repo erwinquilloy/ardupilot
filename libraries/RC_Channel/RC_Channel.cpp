@@ -124,7 +124,7 @@ const AP_Param::GroupInfo RC_Channel::var_info[] = {
     // @Values{Copter}: 14:Acro Trainer
     // @Values{Copter}: 15:Sprayer Enable
     // @Values{Copter, Rover, Plane}: 16:AUTO Mode
-    // @Values{Copter}: 17:AUTOTUNE Mode
+    // @Values{Copter, Plane}: 17:AUTOTUNE Mode
     // @Values{Copter, Blimp}: 18:LAND Mode
     // @Values{Copter, Rover}: 19:Gripper
     // @Values{Copter}: 21:Parachute Enable
@@ -262,6 +262,7 @@ const AP_Param::GroupInfo RC_Channel::var_info[] = {
     // @Values{Copter, Rover, Plane, Sub}: 212:Mount1 Roll, 213:Mount1 Pitch, 214:Mount1 Yaw, 215:Mount2 Roll, 216:Mount2 Pitch, 217:Mount2 Yaw
     // @Values{Copter, Rover, Plane, Blimp, Sub}:  218:Loweheiser throttle
     // @Values{Copter}: 219:Transmitter Tuning
+    // @Values{Plane}: 200:Servos Auto Trim
     // @Values{All-Vehicles}: 300:Scripting1, 301:Scripting2, 302:Scripting3, 303:Scripting4, 304:Scripting5, 305:Scripting6, 306:Scripting7, 307:Scripting8, 308:Scripting9, 309:Scripting10, 310:Scripting11, 311:Scripting12, 312:Scripting13, 313:Scripting14, 314:Scripting15, 315:Scripting16
     // @Values{All-Vehicles}: 316:Stop-Restart Scripting
     // @User: Standard
