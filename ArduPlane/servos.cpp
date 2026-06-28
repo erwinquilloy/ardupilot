@@ -569,6 +569,14 @@ void Plane::apply_throttle_dz(void)
     if (g.throttle_dz > 0 &&
         fabsf(SRV_Channels::get_output_scaled(SRV_Channel::k_throttle)) < g.throttle_dz) {
         SRV_Channels::set_output_scaled(SRV_Channel::k_throttle, 0.0f);
+        // Twin-motor airframes: servos_twin_engine_mix() splits k_throttle
+        // into k_throttleLeft/k_throttleRight earlier in servos_output(),
+        // so zeroing k_throttle here doesn't reach the actual motor outputs.
+        // Mirror the deadzone onto the split channels so ESCs that don't
+        // fully stop at low non-zero commands also see a clean zero on
+        // twin setups.
+        SRV_Channels::set_output_scaled(SRV_Channel::k_throttleLeft,  0.0f);
+        SRV_Channels::set_output_scaled(SRV_Channel::k_throttleRight, 0.0f);
     }
 }
 
