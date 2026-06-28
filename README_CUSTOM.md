@@ -111,6 +111,17 @@ Fork-specific board work covers:
 - **qUark mini wing v4** *(custom target)*
 - **NeutronRC_H7_BT** *(custom target, H743, ported from ArduCustom)*
 - **OMNIBUSF7V2** — quadplane disabled to fit the firmware
+- **F4 mount support re-enabled** on `speedybeef4v3`, `MatekF405-TE`,
+  `MatekF405-Wing`, `LongBowF405WING`, `SpeedyBeeF405WING`. Upstream's
+  `minimize_common.inc` zeros `HAL_MOUNT_ENABLED` on flash-constrained
+  boards, which breaks gimbal users on F4 (MissionPlanner reports
+  "Invalid channel option" for `RCx_OPTION = 212/213/214` — the
+  MOUNT1_ROLL/PITCH/YAW input labels). Each F4 hwdef now does an
+  `undef`/`define` after the `minimize_*` include to turn mount back
+  on with **servo + CADDX** backends enabled (other backends stay off
+  to preserve flash budget). LongBow's existing upstream attempt used
+  `#undef`/`#define` which is a hwdef comment, not a directive —
+  fixed by dropping the `#`.
 - All stock-upstream boards build and run as-is, including: SpeedyBee
   F405 / F405 Wing / F405 V3 / F405 V4 / F405 AIO / F405 Mini,
   CoreWing F405 Wing, Lefei Longbow F405 Wing, FlyingRC F405 mini,
