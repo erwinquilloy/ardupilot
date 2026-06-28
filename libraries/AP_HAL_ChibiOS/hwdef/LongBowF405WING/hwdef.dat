@@ -178,15 +178,23 @@ define HAL_WITH_DSP FALSE
 
 include ../include/minimize_fpv_osd.inc
 
-#undef AP_CAMERA_MOUNT_ENABLED
-#undef AP_LANDINGGEAR_ENABLED
-#undef HAL_MOUNT_ENABLED
-#undef HAL_MOUNT_SERVO_ENABLED
+# Fork: upstream LongBow hwdef wrote these as `#undef` / `#define`
+# which is a shell-style comment in hwdef.dat syntax -- so the mount
+# block was a no-op and HAL_MOUNT stayed at the minimize_common
+# default of 0. Drop the `#` so the directives actually fire, and
+# add the CADDX backend for users running CADDX GM3-type gimbals.
+undef AP_CAMERA_MOUNT_ENABLED
+undef AP_LANDINGGEAR_ENABLED
+undef HAL_MOUNT_ENABLED
+undef HAL_MOUNT_SERVO_ENABLED
+undef HAL_MOUNT_CADDX_ENABLED
 
-#define AP_CAMERA_MOUNT_ENABLED 1
-#define AP_LANDINGGEAR_ENABLED 1
-#define HAL_MOUNT_ENABLED 1
-#define HAL_MOUNT_SERVO_ENABLED 1
+define AP_CAMERA_MOUNT_ENABLED 1
+define AP_LANDINGGEAR_ENABLED 1
+define HAL_MOUNT_ENABLED 1
+define AP_MOUNT_BACKEND_DEFAULT_ENABLED 0
+define HAL_MOUNT_SERVO_ENABLED 1
+define HAL_MOUNT_CADDX_ENABLED 1
 
-#define DEFAULT_NTF_LED_TYPES 257
+define DEFAULT_NTF_LED_TYPES 257
 
