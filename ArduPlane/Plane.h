@@ -28,6 +28,7 @@
 #include <cmath>
 #include <stdarg.h>
 #include <stdio.h>
+#include <string.h>     // for memset() used by servos_auto_trim_prepare()
 
 #include <AP_HAL/AP_HAL.h>
 #include <AP_Common/AP_Common.h>
@@ -1294,6 +1295,12 @@ private:
     void landing_neutral_control_surface_servos(void);
     void servos_output(void);
     void servos_auto_trim(void);
+    // Zero the auto_trim accumulator (timestamps + per-channel
+    // saturation snapshots) before starting a run, so two consecutive
+    // sessions never carry state across. Mirrors the legacy fork's
+    // helper of the same name. Caller still sets auto_trim.run = true
+    // afterwards.
+    void servos_auto_trim_prepare(void) { memset(&auto_trim, 0, sizeof(auto_trim)); }
     bool servos_auto_trim_set(const ServoTrimSetEntry *trim_set,
                               uint trim_set_entries_count,
                               float pitch_I, float roll_I,
