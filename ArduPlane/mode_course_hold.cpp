@@ -40,6 +40,15 @@ void ModeCourseHold::update()
     } else {
         plane.calc_nav_roll();
     }
+
+    // Course Hold is a manual-throttle mode (does_auto_throttle() inherits
+    // the base Mode default of false), so the mode is responsible for
+    // writing k_throttle every loop. Without this, twin-motor airframes
+    // (servos_twin_engine_mix reads k_throttle) and single-motor builds
+    // both stall at whatever throttle the previous mode left behind --
+    // typically 0 after arming. This also covers AUTO_TRIM since
+    // ModeAutoTrim extends ModeCourseHold.
+    output_pilot_throttle();
 }
 
 /*
