@@ -101,6 +101,13 @@ input still rolls the plane; releasing returns to the locked course.
 > `modules/mavlink/pymavlink/mavutil.py` `mode_mapping_apm` to teach
 > MAVProxy the right name, or change `FLTMODE_n` to 27+ locally.
 
+> 📡 **Yaapu telemetry users:** stock Yaapu's plane-mode table stops
+> at mode 25 (Thermal) so Course Hold shows as a blank chip + no
+> audio cue. Drop-in `plane.lua` and `coursehold.wav` are in
+> [`Tools/yaapu-coursehold/`](Tools/yaapu-coursehold/README.md) —
+> see that directory's README for install paths on both the radio
+> SD card and the Yaapu GCS desktop tool.
+
 ### Auto Trim (mode 27)
 Flies like Course Hold (locked ground-track heading, pilot trims
 roll/pitch by stick) and simultaneously runs the **servo auto-trim
