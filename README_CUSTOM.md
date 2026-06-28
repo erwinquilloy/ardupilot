@@ -3,10 +3,6 @@
 > 🪶 **This is the light variant of the fork.** A stripped-down build
 > that fits more easily on F4 boards. For the full-features build, see
 > the [`master_custom_4.6.3`](../../tree/master_custom_4.6.3) branch.
->
-> Inspired by mf0o's [`master_custom_light`](https://github.com/mf0o/ardupilot/tree/master_custom_light)
-> fork of ArduCustom. Same intent: distribute a smaller-binary variant
-> for board operators who don't need every protocol backend.
 
 ## What's stripped vs. the full variant
 
