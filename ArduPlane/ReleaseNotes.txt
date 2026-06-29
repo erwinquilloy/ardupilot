@@ -2,6 +2,24 @@ ArduPilot Plane Release Notes:
 ------------------------------------------------------------------
 Fork notes (master_custom_4.6.3 / _light)
 
+Peer-aircraft radar (iNav Radar / FormationFlight) support
+- New AP_Radar library, MSP backend, OSD widget. Forward-ported
+  from MUSTARDTIGERFPV/ArduPilot commit 35f5f0ef4f.
+- Wire-compatible with any ESP32 running ESP32-INAV-Radar or
+  FormationFlight — they emit MSP2_SET_RADAR_POS (0x100B) on UART
+  and our AP_MSP parser feeds it into AP_Radar.
+- Configure: RADAR_TYPE=1 (MSP), SERIALn_PROTOCOL=33 (MSP),
+  OSDx_RADAR_EN=1, OSDx_RADAR_X/Y for placement. Can share the
+  same UART as MSP DisplayPort goggle OSD.
+- OSD widget: cycles up to 6 peers (one every 2 s), shows callsign
+  letter A..F, bearing arrow, distance, and relative altitude
+  with up/down arrows. Peers go stale after 3 s.
+- Build gate: HAL_MSP_RADAR_ENABLED follows AP_RADAR_ENABLED which
+  follows HAL_MSP_ENABLED. Override AP_RADAR_ENABLED=0 in a hwdef
+  to strip it on flash-constrained boards.
+- See README_CUSTOM.md "Peer-aircraft radar" for the full
+  setup / OSD / fit-on-F4 story.
+
 Knob tuning for PTCH_TRIM_DEG / Q_TRIM_PITCH — REQUIRED seed
 - AP_Tuning's knob math is multiplicative around the parameter's
   current value: the knob sweeps [seed / TUNE_RANGE,

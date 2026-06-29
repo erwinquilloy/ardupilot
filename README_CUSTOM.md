@@ -942,6 +942,101 @@ or aircraft. Reset alongside the other stats via `STAT_RESET`.
 
 ---
 
+# Peer-aircraft radar (iNav Radar / FormationFlight)
+
+Forward-ported from [MUSTARDTIGERFPV/ArduPilot @ `35f5f0ef4f`](https://github.com/MUSTARDTIGERFPV/ArduPilot/commit/35f5f0ef4f1a3e64f1be9a05e9eda3ce5b40e2dd)
+(March 2023). Lets ArduPlane consume peer-aircraft position frames
+from an ESP32 running [ESP32-INAV-Radar](https://github.com/OlivierC-FR/ESP32-INAV-Radar)
+or its active successor [FormationFlight](https://github.com/FormationFlight/FormationFlight)
+and display peers as a small symbol on the OSD. Peer-to-peer radio
+(LoRa SX12xx, E22 sub-GHz, or ESP-NOW) is handled entirely by the
+ESP32 — the flight controller just sees an MSP serial stream.
+
+**Wire protocol:** `MSP2_SET_RADAR_POS` (`0x100B`) — identical frame
+layout to iNav's, so any existing ESP32-INAV-Radar / FormationFlight
+hardware works without reflashing.
+
+## Setup
+
+Hardware: connect the ESP32 module's MSP TX/RX/GND to a free UART on
+the flight controller.
+
+Parameters:
+
+| Param | Value | Notes |
+|---|---|---|
+| `RADAR_TYPE` | `1` | `1`=MSP, `0`=disabled (defaults to MSP) |
+| `SERIALn_PROTOCOL` | `33` | MSP — the same protocol used by DJI/Walksnail OSD telemetry; can share that port |
+| `SERIALn_BAUD` | `115` | 115200 |
+| `OSDx_RADAR_EN` | `1` | Per-screen enable for the radar OSD element |
+| `OSDx_RADAR_X` / `_Y` | grid coords | Element placement on screen `x` (1..5) |
+
+If the FC is already running MSP DisplayPort for goggle OSD on one
+UART, the radar can share that same UART — MSP demultiplexes by
+message ID.
+
+## OSD element
+
+Cycles through up to 6 healthy peers (one every 2 s) and renders:
+
+```
+A→
+ 1.2km ↑15m
+```
+
+- **A..F** — peer slot letter (the ESP32 assigns slot 0..5; we display 'A'+slot).
+- **arrow** — bearing to the peer, body-frame, drawn from the
+  existing `get_arrow_font_index()` direction-arrow helper.
+- **distance** — horizontal distance to the peer in the OSD's
+  configured units (m/km, ft/mi, or NM).
+- **vertical distance** — relative altitude with up/down arrow
+  (`↑`/`↑↑` if the peer is above; `↓`/`↓↓` if below — heavy arrow
+  past 25 m).
+- A peer goes "stale" (and the element blanks) after `RADAR_PEER_FRESH_TIME_MS`
+  = 3 s without a fresh frame.
+
+## Build gating
+
+```
+AP_RADAR_ENABLED        = HAL_MSP_ENABLED       (default)
+HAL_MSP_RADAR_ENABLED   = AP_RADAR_ENABLED && HAL_MSP_ENABLED
+```
+
+i.e. radar follows MSP. Override in a hwdef with `define AP_RADAR_ENABLED 0`
+to force-strip it on a flash-constrained board.
+
+## Fit on the 6 fork-supported boards
+
+| Board | Flash | Status |
+|---|---|---|
+| KakuteH7-Wing | 2 MB | Fits comfortably |
+| speedybeef4v3 | 1 MB | Should fit (5–10 KB add) — verify per-board |
+| SpeedyBeeF405WING | 1 MB | Should fit — verify |
+| MatekF405-Wing-bdshot | 1 MB | Should fit — verify |
+| MatekF405-TE-bdshot | 1 MB | Should fit — verify |
+| LongBowF405WING | 1 MB | Should fit — verify |
+
+If a 1 MB F4 board overflows, the cheapest first trim is
+`define HAL_SOARING_ENABLED 0` in that board's hwdef (Plane soaring
+is on by default and unused on twin-motor FPV wings).
+
+## Limitations / scope
+
+- **One backend.** Only `MSP` is implemented — no MAVLink, no
+  proprietary radio backends. The mavlink message handler is a stub
+  inherited from MustardTiger's design and currently does nothing.
+- **No avoidance integration.** Peers are *displayed*, not fed into
+  `AP_Avoidance` — formation flight intentionally violates avoidance
+  geometry, and ADS-B-style fan-out would have cost more flash than
+  the whole feature.
+- **Vertical arrow thresholds are fixed** (25 m) — no parameter to
+  tune them yet. Easy to add later if anyone asks.
+- **No iNav-style "information-to-display" upstream channel.**
+  `MSP2_SET_RADAR_ITD` (`0x100C`) is reserved in the protocol header
+  but not yet parsed.
+
+---
+
 # Quadplane / VTOL
 
 ## `Q_TRIM_PITCH` is now knob-tunable

@@ -77,6 +77,7 @@
 #include <AP_Rally/AP_Rally.h>
 
 #include <AP_OpticalFlow/AP_OpticalFlow.h>     // Optical Flow library
+#include <AP_Radar/AP_Radar.h>                 // iNav Radar / FormationFlight peer-aircraft radar
 #include <AP_Parachute/AP_Parachute.h>
 #include <AP_ADSB/AP_ADSB.h>
 #include <AP_ICEngine/AP_ICEngine.h>
@@ -297,6 +298,11 @@ private:
 #if AP_OPTICALFLOW_ENABLED
     // Optical flow sensor
     AP_OpticalFlow optflow;
+#endif
+
+#if AP_RADAR_ENABLED
+    // iNav Radar / FormationFlight peer-aircraft radar (MSP wire format)
+    AP_Radar radar;
 #endif
 
 #if HAL_RALLY_ENABLED
