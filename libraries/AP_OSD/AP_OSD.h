@@ -246,6 +246,7 @@ private:
     AP_OSD_Setting avg_eff_ground{false, 0, 0};    // fork: flight-long avg efficiency over ground distance (Plane only via AP_Stats)
     AP_OSD_Setting avg_eff_air{false, 0, 0};       // fork: flight-long avg efficiency over air distance (Plane only via AP_Stats)
     AP_OSD_Setting aspd_dem{false, 0, 0};          // fork #38: demanded airspeed in auto-throttle modes (Plane only)
+    AP_OSD_Setting radar{false, 0, 0};             // iNav Radar / FormationFlight peer-aircraft display
     AP_OSD_Setting atemp;
     AP_OSD_Setting bat2_vlt;
     AP_OSD_Setting bat2used;
@@ -306,6 +307,7 @@ private:
     void draw_gspeed(uint8_t x, uint8_t y);
     void draw_horizon(uint8_t x, uint8_t y);
     void draw_home(uint8_t x, uint8_t y);
+    void draw_radar(uint8_t x, uint8_t y);
     void draw_throttle(uint8_t x, uint8_t y);
     void draw_heading(uint8_t x, uint8_t y);
 #if AP_RPM_ENABLED
@@ -327,6 +329,7 @@ private:
     //helper functions
     void draw_speed(uint8_t x, uint8_t y, float magnitude);
     void draw_speed_with_arrow(uint8_t x, uint8_t y, float angle_rad, float magnitude);
+    void draw_vdistance(uint8_t x, uint8_t y, float distance);
     void draw_distance(uint8_t x, uint8_t y, float distance, bool can_only_be_positive);
     char get_arrow_font_index (int32_t angle_cd);
 #if HAL_WITH_ESC_TELEM
