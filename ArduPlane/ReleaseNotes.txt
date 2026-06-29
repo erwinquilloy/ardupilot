@@ -1,6 +1,6 @@
 ArduPilot Plane Release Notes:
 ------------------------------------------------------------------
-Fork notes (master_custom_4.6.3 / _light)
+v0.2-beta (fork: master_custom_4.6.3 / _light)
 
 Peer-aircraft radar (iNav Radar / FormationFlight) support
 - New AP_Radar library, MSP backend, OSD widget. Forward-ported
@@ -8,17 +8,40 @@ Peer-aircraft radar (iNav Radar / FormationFlight) support
 - Wire-compatible with any ESP32 running ESP32-INAV-Radar or
   FormationFlight — they emit MSP2_SET_RADAR_POS (0x100B) on UART
   and our AP_MSP parser feeds it into AP_Radar.
-- Configure: RADAR_TYPE=1 (MSP), SERIALn_PROTOCOL=33 (MSP),
-  OSDx_RADAR_EN=1, OSDx_RADAR_X/Y for placement. Can share the
-  same UART as MSP DisplayPort goggle OSD.
+- Verified end-to-end on real hardware (SpeedyBee F405 WING + a
+  FormationFlight ESP32 module): peer detection works in the
+  FormationFlight web UI, and the OSD element draws correctly once
+  both planes have GPS lock.
+- Minimum config on FCs running this build:
+    SERIALn_PROTOCOL = 33   (MSP, on the UART the ESP32 is wired to)
+    SERIALn_BAUD     = 115  (115200)
+    OSD1_RADAR_EN    = 1
+    OSD1_RADAR_X / _Y -- pick a free spot on screen 1
+  RADAR_TYPE defaults to 1 and does not need to be set explicitly.
+  Can share the UART with MSP DisplayPort goggle OSD.
+- Other planes in the formation that run stock ArduPilot still
+  broadcast their position fine (their ESP32 polls the FC over
+  standard MSP -- no fork-specific firmware required on the
+  broadcasting side). They just won't see peers on their own OSD
+  unless they also flash a radar-capable build.
 - OSD widget: cycles up to 6 peers (one every 2 s), shows callsign
   letter A..F, bearing arrow, distance, and relative altitude
   with up/down arrows. Peers go stale after 3 s.
+- Fit on the 1 MB F4 fleet (light variant, all boards built and
+  measured; free flash after radar):
+    speedybeef4v3            54.9 KB
+    MatekF405-TE-bdshot      43.7 KB
+    SpeedyBeeF405WING        30.6 KB
+    MatekF405-Wing-bdshot    28.5 KB   <- tightest of the F4 group
+    LongBowF405WING          (not yet measured -- expected ~30 KB)
+    KakuteH7-Wing            trivially fits (2 MB board)
+  MatekF405-Wing-bdshot is the new canary; first to bump the
+  ceiling in any future upstream rebase or feature add.
 - Build gate: HAL_MSP_RADAR_ENABLED follows AP_RADAR_ENABLED which
   follows HAL_MSP_ENABLED. Override AP_RADAR_ENABLED=0 in a hwdef
   to strip it on flash-constrained boards.
 - See README_CUSTOM.md "Peer-aircraft radar" for the full
-  setup / OSD / fit-on-F4 story.
+  setup / OSD / wire-protocol / fit-on-F4 story.
 
 Knob tuning for PTCH_TRIM_DEG / Q_TRIM_PITCH — REQUIRED seed
 - AP_Tuning's knob math is multiplicative around the parameter's

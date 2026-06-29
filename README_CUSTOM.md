@@ -1007,21 +1007,39 @@ to force-strip it on a flash-constrained board.
 
 ## Fit on the 6 fork-supported boards
 
-| Board | Flash | Status |
-|---|---|---|
-| KakuteH7-Wing | 2 MB | Fits comfortably |
-| speedybeef4v3 | 1 MB | Should fit (5–10 KB add) — verify per-board |
-| SpeedyBeeF405WING | 1 MB | Should fit — verify |
-| MatekF405-Wing-bdshot | 1 MB | Should fit — verify |
-| MatekF405-TE-bdshot | 1 MB | Should fit — verify |
-| LongBowF405WING | 1 MB | Should fit — verify |
+Measured against the **light variant** at v0.2-beta with radar on:
+
+| Board | Flash | Free after radar | Status |
+|---|---:|---:|---|
+| KakuteH7-Wing | 2 MB | (huge) | Trivially fits |
+| speedybeef4v3 | 1 MB | **54.9 KB** | Ships — most headroom |
+| MatekF405-TE-bdshot | 1 MB | **43.7 KB** | Ships |
+| SpeedyBeeF405WING | 1 MB | **30.6 KB** | Ships |
+| MatekF405-Wing-bdshot | 1 MB | **28.5 KB** | Ships — tightest of the F4 fleet |
+| LongBowF405WING | 1 MB | not measured | Expected to ship (~30 KB free, similar profile to SBF405WING) |
+
+`MatekF405-Wing-bdshot` is now the canary board — first to bump the
+1 MB ceiling in any future upstream rebase or feature add. Worth
+watching going forward.
 
 If a 1 MB F4 board overflows, the cheapest first trim is
 `define HAL_SOARING_ENABLED 0` in that board's hwdef (Plane soaring
-is on by default and unused on twin-motor FPV wings).
+is on by default and unused on twin-motor FPV wings; buys ~8–12 KB).
+
+**Bench-tested end-to-end** on a SpeedyBee F405 WING with a
+FormationFlight ESP32 module — peer detection works in the
+FormationFlight web UI, OSD element draws correctly once both planes
+have GPS lock (the element stays blank without lock by design — see
+"Limitations" below).
 
 ## Limitations / scope
 
+- **GPS lock required on both planes for the element to draw.** Your
+  own plane needs `ahrs.get_location()` to compute bearing/distance,
+  and the peer plane needs a fix to broadcast non-zero coords (a peer
+  with `lat=lon=alt=0` is treated as unhealthy). With no fix anywhere
+  the OSD shows only a blinking letter ("A"); element switches to the
+  full `B→ 1.2km ↑15m` form within ~2 s of both planes having lock.
 - **One backend.** Only `MSP` is implemented — no MAVLink, no
   proprietary radio backends. The mavlink message handler is a stub
   inherited from MustardTiger's design and currently does nothing.
@@ -1034,6 +1052,9 @@ is on by default and unused on twin-motor FPV wings).
 - **No iNav-style "information-to-display" upstream channel.**
   `MSP2_SET_RADAR_ITD` (`0x100C`) is reserved in the protocol header
   but not yet parsed.
+- **No GCS "peer detected / lost" announcements** in this release.
+  t413's upstream PR #32333 adds `STATUSTEXT` events for peer state
+  changes; we may cherry-pick that in a follow-up.
 
 ---
 
