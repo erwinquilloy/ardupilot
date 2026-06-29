@@ -964,7 +964,7 @@ to force-strip it on a flash-constrained board.
 
 ## Fit on the 6 fork-supported boards
 
-Measured against the **light variant** at v0.2-beta with radar on:
+Measured against the **light variant** at v0.1-beta with radar on:
 
 | Board | Flash | Free after radar | Status |
 |---|---:|---:|---|
