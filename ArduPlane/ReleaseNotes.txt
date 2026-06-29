@@ -1,6 +1,6 @@
 ArduPilot Plane Release Notes:
 ------------------------------------------------------------------
-v0.2-beta (fork: master_custom_4.6.3 / _light)
+v0.1-beta (fork: master_custom_4.6.3 / _light) — radar under test
 
 Peer-aircraft radar (iNav Radar / FormationFlight) support
 - New AP_Radar library, MSP backend, OSD widget. Forward-ported
