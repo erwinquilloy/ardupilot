@@ -1,5 +1,24 @@
 ArduPilot Plane Release Notes:
 ------------------------------------------------------------------
+Fork notes (master_custom_4.6.3 / _light)
+
+Knob tuning for PTCH_TRIM_DEG / Q_TRIM_PITCH — REQUIRED seed
+- AP_Tuning's knob math is multiplicative around the parameter's
+  current value: the knob sweeps [seed / TUNE_RANGE,
+  seed * TUNE_RANGE]. If PTCH_TRIM_DEG (TUNE_PARAM=59) or
+  Q_TRIM_PITCH (TUNE_PARAM=92) is exactly 0 when you start
+  tuning, every multiplier is still 0 and the knob will appear
+  dead — the value will not change no matter where you turn it.
+- Before engaging the knob, set the parameter to a small non-zero
+  value (e.g. 0.5, or -0.5 to explore the opposite sign) via the
+  GCS, then re-centre with the TUNE_SELECTOR switch low (<500 ms
+  hold) so the new seed becomes the mid-point.
+- To cross zero or flip sign, re-seed manually and re-centre;
+  multiplicative tuning cannot cross zero on its own.
+- See README_CUSTOM.md "Pitch trim & tuning knob" for the full
+  workflow.
+
+------------------------------------------------------------------
 Release 4.6.3 04-Nov-2025 / 4.6.3-beta1 14-Oct-2025
 
 Changes from 4.6.2

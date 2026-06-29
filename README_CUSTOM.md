@@ -307,8 +307,22 @@ mode and `flight_stage` is past the initial climb.
 during the tune.
 
 - `TUNE_PARAM = 59`, `TUNE_CHAN = <RC channel>`, `TUNE_RANGE = <max-multiplier>`
-- **Note:** AP_Tuning scales multiplicatively, so seed `PTCH_TRIM_DEG`
-  non-zero. To search the negative side, seed negative.
+
+> **REQUIRED: `PTCH_TRIM_DEG` must be non-zero before you engage the knob.**
+> AP_Tuning's knob math is purely multiplicative around the parameter's
+> current value — the knob sweeps `[seed / TUNE_RANGE, seed * TUNE_RANGE]`.
+> If the seed is exactly `0`, every multiplier is still `0`, so the knob
+> appears dead and the value will not change no matter where you turn it.
+>
+> Workflow:
+> 1. Set `PTCH_TRIM_DEG` to a small non-zero value (e.g. `0.5`, or
+>    `-0.5` to explore nose-down) via the GCS *before* engaging the knob.
+> 2. Re-centre the knob (selector switch low, <500 ms hold) so the new
+>    seed becomes the mid-point.
+> 3. To cross zero or flip sign, re-seed manually and re-centre — the
+>    multiplicative scheme cannot cross zero on its own.
+>
+> The same caveat applies to `Q_TRIM_PITCH` via `TUNE_PARAM = 92`.
 
 ### Three switchable tuning sets — `TUNE_PARAM` / `PARAM2` / `PARAM3`
 
@@ -897,6 +911,11 @@ being knob-tunable for fixed-wing.
 - `TUNE_PARAM = 92`, `TUNE_CHAN = <RC channel>`, `TUNE_RANGE = <max-multiplier>`
 - Active only when QuadPlane is enabled
 - OSD `OSDx_TUNED_PN` / `OSDx_TUNED_PV` display the live value
+
+> **REQUIRED: `Q_TRIM_PITCH` must be non-zero before you engage the knob.**
+> Same multiplicative-knob caveat as `PTCH_TRIM_DEG` — a `0` seed means
+> the knob has no effect. Set a small non-zero value first (e.g. `0.5`
+> or `-0.5`), then re-centre with the selector switch.
 
 ## `Q_M_FRTB_RATIO` — Tri-frame front/rear thrust balance
 
