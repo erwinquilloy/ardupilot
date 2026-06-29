@@ -370,6 +370,7 @@ public:
         k_param_quicktune,
         k_param_mode_autoland,
         k_param__gcs,
+        k_param_radar,  // fork: was the slot after k_param_takeoff_options on 4.6.3, which upstream 4.7 gave to TKOFF_THR_IDLE
 
     };
 

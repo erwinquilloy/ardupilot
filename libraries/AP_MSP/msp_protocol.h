@@ -350,3 +350,7 @@
 #define MSP2_SENSOR_COMPASS         0x1F04
 #define MSP2_SENSOR_BAROMETER       0x1F05
 #define MSP2_SENSOR_AIRSPEED        0x1F06
+
+// iNav Radar / FormationFlight (ESP32-based peer-aircraft radar)
+#define MSP2_SET_RADAR_POS          0x100B  // SET radar peer position
+#define MSP2_SET_RADAR_ITD          0x100C  // SET radar information-to-display

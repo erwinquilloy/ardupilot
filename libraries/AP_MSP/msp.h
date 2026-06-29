@@ -129,6 +129,18 @@ typedef enum : uint8_t {
     MSP_BATTERY_INIT
 } battery_state_e;
 
+// iNav Radar / FormationFlight peer position frame (MSP2_SET_RADAR_POS = 0x100B)
+typedef struct PACKED {
+    uint8_t  radar_no;
+    uint8_t  state;
+    int32_t  lat;       // deg * 1e7
+    int32_t  lon;       // deg * 1e7
+    int32_t  alt;       // cm
+    uint16_t heading;   // deg
+    uint16_t speed;     // cm/s
+    uint8_t  lq;        // link quality 0..4
+} msp_radar_pos_message_t;
+
 uint8_t msp_serial_checksum_buf(uint8_t checksum, const uint8_t *data, uint32_t len);
 uint32_t msp_serial_send_frame(msp_port_t *msp, const uint8_t * hdr, uint32_t hdr_len, const uint8_t * data, uint32_t data_len, const uint8_t * crc, uint32_t crc_len);
 uint32_t msp_serial_encode(msp_port_t *msp, msp_packet_t *packet, msp_version_e msp_version, bool is_request=false);
