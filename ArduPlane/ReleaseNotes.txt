@@ -1,6 +1,6 @@
 ArduPilot Plane Release Notes:
 ------------------------------------------------------------------
-v0.1-beta (fork: master_custom_4.6.3 / _light) — radar under test
+v0.2-beta (fork: master_custom_4.6.3 / _light) — radar bench-verified + LAND_WIND_DIST
 
 LAND_WIND_DIST — distance cap for LAND_WIND_BIAS
 - New AP_Float parameter that hard-limits how far selection can
