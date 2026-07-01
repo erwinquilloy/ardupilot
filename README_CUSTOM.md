@@ -1042,22 +1042,29 @@ HAL_MSP_RADAR_ENABLED   = AP_RADAR_ENABLED && HAL_MSP_ENABLED
 i.e. radar follows MSP. Override in a hwdef with `define AP_RADAR_ENABLED 0`
 to force-strip it on a flash-constrained board.
 
-## Fit on the 6 fork-supported boards
+## Fit on the 5 fork-supported boards
 
-Measured against the **light variant** at v0.1-beta with radar on:
+Measured against the **light variant** at v0.2-beta with radar +
+LAND_WIND_DIST + LAND_WIND_STRICT on:
 
-| Board | Flash | Free after radar | Status |
+| Board | Flash | Free after fork features | Status |
 |---|---:|---:|---|
-| KakuteH7-Wing | 2 MB | (huge) | Trivially fits |
-| speedybeef4v3 | 1 MB | **54.9 KB** | Ships — most headroom |
-| MatekF405-TE-bdshot | 1 MB | **43.7 KB** | Ships |
-| SpeedyBeeF405WING | 1 MB | **30.6 KB** | Ships |
-| MatekF405-Wing-bdshot | 1 MB | **28.5 KB** | Ships — tightest of the F4 fleet |
-| LongBowF405WING | 1 MB | not measured | Expected to ship (~30 KB free, similar profile to SBF405WING) |
+| speedybeef4v3 | 1 MB | **53.4 KB** | Ships — most headroom |
+| MatekF405-STD | 1 MB | **47.0 KB** | Ships — new in v0.2-beta |
+| MatekF405-TE-bdshot | 1 MB | **42.5 KB** | Ships |
+| SpeedyBeeF405WING | 1 MB | **29.7 KB** | Ships |
+| MatekF405-Wing-bdshot | 1 MB | **27.6 KB** | Ships — tightest of the F4 fleet |
 
 `MatekF405-Wing-bdshot` is now the canary board — first to bump the
 1 MB ceiling in any future upstream rebase or feature add. Worth
 watching going forward.
+
+**v0.2-beta fleet change vs v0.1-beta:**
+- **Added:** `MatekF405-STD` — a standard (non-bdshot) alternative
+  in the F4 lineup, comfortable ~47 KB free headroom.
+- **Dropped:** `LongBowF405WING` (was unmeasured in v0.1-beta and
+  no bench-verified data yet) and `KakuteH7-Wing` (2 MB H7 board,
+  outside the "tight 1 MB F4" focus of the light variant).
 
 If a 1 MB F4 board overflows, the cheapest first trim is
 `define HAL_SOARING_ENABLED 0` in that board's hwdef (Plane soaring
