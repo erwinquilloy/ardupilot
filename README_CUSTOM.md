@@ -1479,8 +1479,16 @@ pick **Upload file…** and point at the JSON.
   (originally ArduCustom PR #78), plus the "un-cap RF_Mode for CRSF
   protocol" change (PR #205). Same path — landed in ArduCustom, then
   upstream merged it, then we inherited it in 4.6.3.
+- **[@jaroszmm](https://github.com/jaroszmm)** — proposed the
+  distance-cap idea that became `LAND_WIND_DIST` (and, by extension,
+  `LAND_WIND_STRICT`) after flagging that `LAND_WIND_BIAS` alone
+  could pull the plane toward a much farther landing purely for
+  wind alignment. Shaped the anchor semantics (measure from the
+  plane's decision-time position, not always from home) and the
+  soft-fallback-vs-hard-fence design.
 - **Upstream ArduPilot dev team** — the underlying platform.
-- The `LAND_WIND_BIAS` wind-aware DO_LAND_START selection feature is
-  original to this fork (not from any upstream contributor), built
-  on top of AP_Mission's existing landing-sequence selection.
+- The `LAND_WIND_BIAS` / `LAND_WIND_DIST` / `LAND_WIND_STRICT`
+  wind-aware DO_LAND_START selection family is original to this
+  fork (not from any upstream contributor), built on top of
+  AP_Mission's existing landing-sequence selection.
 - Authoring assistance via Claude Code (Anthropic).
