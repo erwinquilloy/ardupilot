@@ -143,7 +143,21 @@ bool Plane::try_upwind_jump_to_landing_sequence(const Location &from_loc)
     }
 
     if (best_idx == 0) {
-        // No candidate scored; let upstream report the failure.
+        // Nothing scored.  Two ways this happens:
+        //   1) LAND_WIND_DIST eliminated every candidate.
+        //   2) The mission has no DO_LAND_START at all, or none had
+        //      a resolvable IP location.
+        // For (1), LAND_WIND_STRICT=1 turns the cap into a hard fence:
+        // refuse the pick so RTL keeps loitering at rally/home instead
+        // of flying to a landing that was explicitly excluded.  For
+        // (2), or STRICT=0, fall through to upstream so the plane
+        // still gets a landing attempt (or upstream's own "unable"
+        // failure path when no DO_LAND_START exists at all).
+        if (have_dist_cap && g2.rtl_land_wind_bias_strict.get() == 1) {
+            gcs().send_text(MAV_SEVERITY_INFO,
+                            "No DO_LAND_START within LAND_WIND_DIST");
+            return false;
+        }
         return mission.jump_to_landing_sequence(from_loc);
     }
 

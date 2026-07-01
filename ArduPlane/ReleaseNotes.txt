@@ -1,10 +1,14 @@
 ArduPilot Plane Release Notes:
 ------------------------------------------------------------------
-v0.2-beta (fork: master_custom_4.6.3 / _light) — radar bench-verified + LAND_WIND_DIST
+v0.2-beta (fork: master_custom_4.6.3 / _light) — radar bench-verified + LAND_WIND_DIST/STRICT
 
 LAND_WIND_DIST — distance cap for LAND_WIND_BIAS
-- New AP_Float parameter that hard-limits how far selection can
-  reach when LAND_WIND_BIAS is active. Candidates whose IP sits
+- Purpose: keep the wind bias from steering the plane toward a
+  much farther DO_LAND_START just because its approach happens to
+  align with the wind. On battery-marginal RTL that extra travel
+  can cost you the airframe; this cap gives you a hard distance
+  ceiling for selection.
+- New AP_Float parameter. Candidates whose start-of-approach sits
   farther than LAND_WIND_DIST metres from the plane's position at
   decision time are excluded outright; the wind bias then picks
   only among the survivors.
@@ -14,15 +18,43 @@ LAND_WIND_DIST — distance cap for LAND_WIND_BIAS
                                     is at the RTL loiter point)
     RTL_AUTOLAND=2 / batt FS / GCS  cap measured from wherever the
     MAV_CMD_DO_LAND_START           plane is when the trigger fires
-- Fallback when zero candidates survive the cap: falls through to
-  upstream mission.jump_to_landing_sequence() — plain nearest, no
-  bias applied for that one pick. LAND_WIND_BIAS is not reset;
-  the next trigger event re-evaluates from scratch.
+- When zero candidates survive the cap, behaviour is controlled by
+  LAND_WIND_STRICT (see below).
 - LAND_WIND_DIST = 0 (default) preserves the pre-existing behaviour
-  of LAND_WIND_BIAS. Setting LAND_WIND_BIAS = 0 still short-circuits
-  the whole feature, so LAND_WIND_DIST has no effect on its own.
+  of LAND_WIND_BIAS. LAND_WIND_BIAS = 0 still short-circuits the
+  whole feature, so LAND_WIND_DIST has no effect on its own.
 - See README_CUSTOM.md "LAND_WIND_DIST" for the full behaviour
   table and worked examples.
+
+LAND_WIND_STRICT — hard-fence toggle for LAND_WIND_DIST
+- Purpose: let the pilot decide whether LAND_WIND_DIST is a soft
+  preference or a hard boundary. By default the cap is soft: if
+  it eliminates every candidate, the code still picks the nearest
+  DO_LAND_START (even if far outside the cap) so the plane always
+  attempts a landing. Strict mode makes the cap a true fence:
+  refuse the autoland and keep loitering instead.
+- New AP_Int8 parameter, 0/1.
+    0 (default, soft fallback): when nothing survives the cap,
+       fall through to upstream mission.jump_to_landing_sequence()
+       -- plane still lands, just outside the cap. Wind bias is
+       skipped for that one pick.
+    1 (hard fence): when nothing survives the cap, return false
+       from the picker; RTL/failsafe stays in RTL and the plane
+       loiters at HOME/rally. GCS text: "No DO_LAND_START within
+       LAND_WIND_DIST". Pilot must intervene to land.
+- Applies to every autoland trigger path (manual RTL, GCS
+  DO_LAND_START, battery failsafe, fence breach, RC failsafe ->
+  RTL when FS_ELAND is not configured).
+- WARNING: under strict mode a battery failsafe that fires when
+  no in-cap landing exists will not attempt to land -- the plane
+  will loiter at HOME/rally until the battery dies. Only enable
+  strict if you're monitoring the flight and can take manual
+  control on failsafe. If you can't guarantee that, leave
+  LAND_WIND_STRICT = 0.
+- Silently ignored when LAND_WIND_DIST = 0 (no cap set) or
+  LAND_WIND_BIAS = 0 (feature entirely off).
+- See README_CUSTOM.md "LAND_WIND_STRICT" for the safety-vs-
+  fence trade-off discussion.
 
 Peer-aircraft radar (iNav Radar / FormationFlight) support
 - New AP_Radar library, MSP backend, OSD widget. Forward-ported

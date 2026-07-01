@@ -509,15 +509,16 @@ flight logs.
 > full variant here — the limitation is in the AHRS estimator, not
 > the build.
 
-### `LAND_WIND_DIST` — hard-cap how far the wind bias can reach
-Companion to `LAND_WIND_BIAS`. On missions with `DO_LAND_START`
-items spread over a wide area, a strong bias can pull selection
-toward a much farther landing purely because its approach aligns
-with the wind. `LAND_WIND_DIST` closes that off by **excluding**
-any `DO_LAND_START` whose start-of-approach sits farther than this
-many metres from **the plane's position at decision time**. The
-wind bias is then applied only among the candidates that survive
-the cap.
+### `LAND_WIND_DIST` — why: cap how far the wind bias can reach
+**The problem it solves:** on missions with several `DO_LAND_START`
+items spread across a wide area, a strong `LAND_WIND_BIAS` can pull
+selection toward a much farther landing just because its approach
+happens to align with the wind. On a battery-marginal RTL that
+extra travel can cost you the airframe. `LAND_WIND_DIST` gives you
+a distance ceiling: any `DO_LAND_START` whose start-of-approach
+sits farther than this many metres from the plane's decision-time
+position is **excluded** from selection outright. The wind bias
+then picks only among the candidates that actually survive the cap.
 
 **What "decision time" means depends on `RTL_AUTOLAND`:**
 
@@ -538,15 +539,55 @@ what you probably had in mind if you set it up on the bench.
   picked, tailwind or not.
 - Multiple within 500 m → `LAND_WIND_BIAS` decides between them
   (into-wind approach preferred).
-- **Zero** within 500 m → falls through to upstream
-  nearest-across-all, so the plane still gets a landing rather
-  than sitting on `Unable to start landing sequence`. The wind
-  bias is skipped for that one pick — even if `LAND_WIND_BIAS = 1`
-  — but the parameter is not reset; the next trigger event
-  re-evaluates from scratch.
+- **Zero** within 500 m → what happens is controlled by
+  `LAND_WIND_STRICT` (below). Default (`= 0`) falls back to
+  upstream nearest-across-all; strict (`= 1`) refuses to autoland.
 
 `LAND_WIND_BIAS = 0` still short-circuits the whole feature, so
 `LAND_WIND_DIST` has no effect on its own.
+
+### `LAND_WIND_STRICT` — why: make the cap a *hard* fence
+**The problem it solves:** by default, if `LAND_WIND_DIST` filters
+out every candidate, the code falls through to upstream nearest-
+across-all so the plane still lands somewhere — even if that
+"somewhere" is far outside the cap you configured. That preserves
+the failsafe safety net (the plane will always try to land) but
+partly defeats the point of the cap. `LAND_WIND_STRICT` lets you
+opt into a stricter interpretation: **when no `DO_LAND_START` is
+within the cap, refuse to autoland at all**. RTL stays in RTL, the
+plane keeps loitering at HOME/rally, and the pilot has to
+intervene.
+
+**Values:**
+
+| `LAND_WIND_STRICT` | Behaviour when zero candidates in cap |
+|---|---|
+| `0` (default, soft fallback) | Fall through to upstream nearest-across-all; the plane still lands, even if the pick is far outside `LAND_WIND_DIST`. Wind bias is skipped for that one pick. |
+| `1` (hard fence) | Refuse the autoland. Return `false` from the picker; RTL stays in RTL, plane loiters at HOME/rally. GCS text: `No DO_LAND_START within LAND_WIND_DIST`. Pilot must intervene. |
+
+**When to use each:**
+- **`= 0`** — you want `LAND_WIND_DIST` to gently guide selection
+  toward nearby landings, but you'd rather the plane always
+  attempt a landing on failsafe (avoid "loiter until battery
+  dies"). This is the safer default for most operations.
+- **`= 1`** — you have several DO_LAND_STARTs spread across a
+  large area and would rather fly the plane home manually than
+  have it commit to an unexpected 5 km cross-country to satisfy
+  autoland. Common on missions where the "far" landings are
+  spare alternates you don't actually want the autopilot to
+  choose without you.
+
+**⚠️ Safety warning:** under `LAND_WIND_STRICT = 1`, a **battery
+failsafe** that triggers when no landing is within the cap will
+**not attempt to land** — the plane will loiter at HOME/rally
+until the battery dies and comes down uncontrolled. Only enable
+strict mode if you are able to monitor the aircraft in flight and
+take manual control on failsafe. If you cannot guarantee that,
+leave `LAND_WIND_STRICT = 0` and accept the occasional far
+landing.
+
+Strict mode is silently ignored when `LAND_WIND_DIST = 0` (no
+cap set) or `LAND_WIND_BIAS = 0` (whole feature off).
 
 ## Emergency landing (RC failsafe)
 
