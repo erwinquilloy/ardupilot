@@ -1465,6 +1465,14 @@ const AP_Param::GroupInfo ParametersG2::var_info[] = {
     // @User: Standard
     AP_GROUPINFO("LAND_WIND_BIAS", 55, ParametersG2, rtl_land_wind_bias, 0),
 
+    // @Param: LAND_WIND_DIST
+    // @DisplayName: Max distance for LAND_WIND_BIAS
+    // @Description: Companion cap for LAND_WIND_BIAS. DO_LAND_START candidates whose start-of-approach sits farther than this many metres from the plane's position at decision time are excluded from selection entirely; wind-bias scoring is then applied only to the candidates within the cap. Under RTL_AUTOLAND=1 the selection runs after the plane has reached the RTL loiter point, so the cap is effectively measured from HOME; under RTL_AUTOLAND=2 / battery failsafe / GCS DO_LAND_START the cap is measured from wherever the plane is when the trigger fires. If no candidate is within the cap, selection falls back to upstream nearest-across-all (LAND_WIND_BIAS is ignored for that one pick). 0 (default) disables the cap; the bias is applied to every candidate as before.
+    // @Units: m
+    // @Range: 0 20000
+    // @User: Standard
+    AP_GROUPINFO("LAND_WIND_DIST", 56, ParametersG2, rtl_land_wind_bias_dist, 0),
+
     // @Param: FLTMODE_EXT
     // @DisplayName: Enable 12-position FLTMODE_CH
     // @Description: Default 0 = upstream 6-position behaviour (FLTMODE1..6 only). 1 = 12-position switch: the FLTMODE_CH PWM range is split into 12 bins of 75 us each mapping to FLTMODE1..6 and FLTMODE7..12. Useful when an OpenTX/EdgeTX multi-position switch source needs more than six slots. The 12 bins are tight (75 us each); use only with stable digital RC links (SBUS / CRSF / ELRS) and not analogue PPM.
