@@ -582,6 +582,16 @@ public:
     // 0 = no cap (upstream behaviour).
     AP_Float rtl_land_wind_bias_dist;
 
+    // Fork companion to LAND_WIND_DIST.  Chooses what happens when the
+    // cap eliminates every candidate.  0 (default) = soft fallback:
+    // fall through to upstream nearest-across-all, so the plane still
+    // gets a landing even if the pick is far outside the cap.  1 =
+    // hard fence: refuse the autoland and let RTL keep loitering at
+    // rally/home, requiring pilot intervention.  Applies to every
+    // autoland trigger path (manual RTL, GCS DO_LAND_START, batt FS,
+    // fence breach, RC FS -> RTL when FS_ELAND is not configured).
+    AP_Int8 rtl_land_wind_bias_strict;
+
     // Fork FLTMODE_EXT (Stavros 2021): when fltmode_ext = 1 the
     // FLTMODE_CH input is interpreted as a 12-position switch (75 us
     // bins instead of 6 wide bins).  flight_mode7..12 are the modes
