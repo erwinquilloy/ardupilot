@@ -572,6 +572,16 @@ public:
     // bias selection toward landings whose approach faces into wind.
     AP_Float rtl_land_wind_bias;
 
+    // Fork companion to LAND_WIND_BIAS.  Candidates farther than this
+    // many metres from the plane's position at decision time are
+    // excluded from selection entirely; the wind bias is then applied
+    // only among the in-cap set.  Under RTL_AUTOLAND=1 the plane is
+    // at home when the selection runs, so the cap is measured from
+    // home; under RTL_AUTOLAND=2 / batt FS / GCS DO_LAND_START it is
+    // measured from wherever the plane is when the trigger fires.
+    // 0 = no cap (upstream behaviour).
+    AP_Float rtl_land_wind_bias_dist;
+
     // Fork FLTMODE_EXT (Stavros 2021): when fltmode_ext = 1 the
     // FLTMODE_CH input is interpreted as a 12-position switch (75 us
     // bins instead of 6 wide bins).  flight_mode7..12 are the modes

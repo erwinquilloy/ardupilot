@@ -40,6 +40,21 @@ bool Plane::try_upwind_jump_to_landing_sequence(const Location &from_loc)
     // "from" direction that approach alignment is measured against.
     const float wind_from_rad = atan2f(-wind.y, -wind.x);
 
+    // LAND_WIND_DIST cap: DO_LAND_STARTs whose start-of-approach sits
+    // farther than dist_limit from the caller's from_loc (the plane's
+    // position at decision time) are excluded from selection entirely.
+    // The wind bias then picks among the survivors.
+    //   - RTL_AUTOLAND=1: caller passes plane.current_loc after the
+    //     plane has reached the RTL loiter point, so from_loc is
+    //     effectively home.  Cap is measured from home.
+    //   - RTL_AUTOLAND=2 / batt FS / GCS DO_LAND_START: caller passes
+    //     the plane's actual current position, so the cap means
+    //     "landings within dist_limit of where I am right now" --
+    //     avoids adding significant travel just for wind alignment.
+    // 0 means no cap.
+    const float dist_limit = g2.rtl_land_wind_bias_dist.get();
+    const bool have_dist_cap = is_positive(dist_limit);
+
     uint16_t best_idx = 0;
     float best_score = -1.0f;
     uint16_t nearest_idx = 0;
@@ -70,6 +85,15 @@ bool Plane::try_upwind_jump_to_landing_sequence(const Location &from_loc)
             ip_loc = first_nav.content.location;
         } else {
             // No usable location for this candidate.
+            continue;
+        }
+
+        // LAND_WIND_DIST hard cap: candidates farther than dist_limit
+        // from from_loc are dropped entirely.  If every candidate is
+        // out of range, best_idx stays 0 and we fall through to
+        // upstream nearest-only selection below (safer than picking
+        // nothing).
+        if (have_dist_cap && from_loc.get_distance(ip_loc) > dist_limit) {
             continue;
         }
 

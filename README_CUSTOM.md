@@ -466,6 +466,45 @@ flight logs.
 > full variant here — the limitation is in the AHRS estimator, not
 > the build.
 
+### `LAND_WIND_DIST` — hard-cap how far the wind bias can reach
+Companion to `LAND_WIND_BIAS`. On missions with `DO_LAND_START`
+items spread over a wide area, a strong bias can pull selection
+toward a much farther landing purely because its approach aligns
+with the wind. `LAND_WIND_DIST` closes that off by **excluding**
+any `DO_LAND_START` whose start-of-approach sits farther than this
+many metres from **the plane's position at decision time**. The
+wind bias is then applied only among the candidates that survive
+the cap.
+
+**What "decision time" means depends on `RTL_AUTOLAND`:**
+
+| `RTL_AUTOLAND` | When the pick runs | Cap effectively measured from |
+|---|---|---|
+| `1` (return then autoland) | after the plane reaches the RTL loiter point | HOME (plane is there) |
+| `2` (autoland immediately) | as soon as RTL is entered | plane's current position |
+| Battery failsafe | when the failsafe fires | plane's current position |
+| GCS `MAV_CMD_DO_LAND_START` | when the command arrives | plane's current position |
+
+So for `RTL_AUTOLAND=2` and mid-mission failsafes the cap prevents
+the bias from pulling the plane *away* from where it already is;
+for `RTL_AUTOLAND=1` it behaves as a home-radius fence, which is
+what you probably had in mind if you set it up on the bench.
+
+**Behaviour cases (`LAND_WIND_DIST = 500`):**
+- Only one `DO_LAND_START` within 500 m of the plane → it is
+  picked, tailwind or not.
+- Multiple within 500 m → `LAND_WIND_BIAS` decides between them
+  (into-wind approach preferred).
+- **Zero** within 500 m → falls through to upstream
+  nearest-across-all, so the plane still gets a landing rather
+  than sitting on `Unable to start landing sequence`. The wind
+  bias is skipped for that one pick — even if `LAND_WIND_BIAS = 1`
+  — but the parameter is not reset; the next trigger event
+  re-evaluates from scratch.
+
+`LAND_WIND_BIAS = 0` still short-circuits the whole feature, so
+`LAND_WIND_DIST` has no effect on its own.
+
 ## Emergency landing (RC failsafe)
 
 A state machine that initiates a controlled glide to the home area
