@@ -20,6 +20,20 @@ bool ModeRTL::_enter()
     plane.rtl.emergency_landing_status = Plane::FSEmergencyLandingStatus::INACTIVE;
     plane.rtl.emergency_landing_tstamp_ms = 0;
 
+    // Fork PR #180 port: seed dynamic loiter radius / direction from
+    // RTL_RADIUS (falling back to WP_LOITER_RAD if RTL_RADIUS = 0) so
+    // update_loiter_radius_and_direction() has a starting point on the
+    // first navigate() tick.  navigate_last_ms = 0 skips the dt
+    // integration on that first tick.
+    {
+        const int16_t rtl_radius = plane.g.rtl_radius != 0
+                                       ? plane.g.rtl_radius.get()
+                                       : plane.aparm.loiter_radius.get();
+        plane.loiter.radius = fabsf(rtl_radius);
+        plane.loiter.direction = rtl_radius < 0 ? -1 : 1;
+        plane.loiter.navigate_last_ms = 0;
+    }
+
     // Fork PR #155: if RTL_MANUAL_ALT_CONTROL is on and we are not in RC
     // failsafe, hand altitude control to the pilot's pitch stick from the
     // very first tick. Seed target_altitude.amsl_cm from prev_WP_loc so the
@@ -331,10 +345,11 @@ void ModeRTL::navigate()
         }
     }
 
-    uint16_t radius = abs(plane.g.rtl_radius);
-    if (radius > 0) {
-        plane.loiter.direction = (plane.g.rtl_radius < 0) ? -1 : 1;
-    }
+    // Fork PR #180 port: pilot rudder-stick flips loiter direction,
+    // roll-stick integrates loiter radius.  Bails when in RC failsafe
+    // so the FS_ELAND override block below still owns the geometry
+    // during emergency landing.
+    plane.update_loiter_radius_and_direction();
 
     // OSD loiter-radius element wants to know when RTL has actually settled into its loiter
     if (plane.reached_loiter_target()) {
@@ -351,11 +366,11 @@ void ModeRTL::navigate()
             plane.g.fs_emergency_landing_loiter_radius != 0) {
             override_radius = plane.g.fs_emergency_landing_loiter_radius;
         }
-        radius = abs(override_radius);
+        plane.loiter.radius = fabsf(override_radius);
         plane.loiter.direction = override_radius < 0 ? -1 : 1;
     }
 
-    plane.update_loiter(radius);
+    plane.update_loiter(lrintf(plane.loiter.radius));
 
     if (!plane.auto_state.checked_for_autoland) {
         if ((plane.g.rtl_autoland == RtlAutoland::RTL_IMMEDIATE_DO_LAND_START) ||

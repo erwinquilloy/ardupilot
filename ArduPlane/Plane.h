@@ -788,6 +788,11 @@ private:
 
         // current value of loiter radius in metres used by the controller
         float radius;
+
+        // Fork PR #180 port: last-tick timestamp for dt-integration of
+        // pilot roll-stick radius adjustments in
+        // Plane::update_loiter_radius_and_direction().
+        uint32_t navigate_last_ms;
     } loiter;
 
     // Conditional command
@@ -1233,6 +1238,11 @@ private:
     void calc_gndspeed_undershoot();
     void update_loiter(uint16_t radius);
     void update_loiter_update_nav(uint16_t radius);
+    // Fork PR #180 port: pilot rudder-stick flips loiter direction and
+    // roll-stick adjusts loiter radius over time, in LOITER and RTL
+    // modes.  Bails during RC failsafe so the FS_ELAND / RTL emergency
+    // radius overrides still win.
+    void update_loiter_radius_and_direction(void);
     void update_fbwb_speed_height(void);
     void setup_turn_angle(void);
     bool reached_loiter_target(void);
