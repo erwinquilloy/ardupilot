@@ -79,6 +79,63 @@ Bug fixes shipping in v0.2-beta
   zero as throttle approaches TRIM_THROTTLE). Credit to
   shellixyz (original ArduCustom implementation) and mf0o
   (master_custom_light maintainer) for the pattern.
+- FS_ELAND: two fixes so the RC-failsafe emergency-landing state
+  machine actually enters the wings-level glide, discovered while
+  SITL-testing v0.2-beta.
+    (i)  update_control_mode's else branch was calling
+         TECS_controller.set_gliding_requested_flag(false) every
+         fast-loop tick when FLIGHT_OPTIONS bit 23
+         (ALLOW_GLIDING_IN_AUTO_THR_MODES) was off -- the default.
+         This stomped mode_rtl::navigate()'s
+         set_gliding_requested_flag(true) at 10 Hz, pinning the
+         plane at FS_ELAND_GLDALT indefinitely with throttle at
+         ~48% (TECS cruise value, not the intended zero).  Fixed
+         by wrapping the whole gliding-management block in
+         !failsafe.rc_failsafe (mf0o's master_custom_light pattern),
+         so during RC failsafe only the FS_ELAND state machine may
+         write the flag.
+    (ii) The fix in (i) initially over-removed the "clear-once-on-
+         FS-entry" step from fork 34c3ab3d8d.  If the pilot had
+         throttle stick at 0 pre-failsafe (e.g. joystick disabled
+         in SITL), gliding_requested was already latched true from
+         the normal ALLOW_GLIDING throttle-stick management path;
+         the fix in (i) let that stale true carry into FS_ELAND's
+         SINKING and ALIGNMENT phases, so the plane glided the whole
+         way in from RTL cruise (descending and turning toward home,
+         sometimes upwind and sometimes downwind) and touched down
+         before FS_ELAND ever left INACTIVE.  Restored the FS-entry
+         clear -- un-gated from bit 23 this time -- so the state
+         machine always starts from gliding=false and its own writes
+         in GLIDING/GLIDING_NO_RETURN are the sole authority.  Net
+         behaviour: TECS handles SINKING with normal throttle,
+         ALIGNMENT holds altitude at FS_ELAND_GLDALT for wind
+         alignment, GLIDING then wings-level glides to touchdown.
+- FS_ELAND now works regardless of FLIGHT_OPTIONS bit 23.  With
+  bit 23 off (default), FS_ELAND works normally; with bit 23 on,
+  the same ALLOW_GLIDING throttle-stick behaviour is available in
+  auto-throttle modes outside of RC failsafe.  Both paths coexist
+  cleanly.
+
+Pilot control of loiter radius and direction (LOITER, RTL)
+- Ports ArduCustom PR #180 (shellixyz dd65f3275f) with the 4.6.x
+  API rename (loiter_radius_max_cd -> loiter_radius, and the
+  companion adjust_nav_pitch_throttle rename).
+- Rudder-stick past 50% left -> loiter direction snaps CCW; past
+  50% right -> snaps CW.  Roll-stick integrates loiter radius at
+  20 m/s scaled by direction, clamped to [20, 1000] m.  Radius is
+  seeded from WP_LOITER_RAD (LOITER) or RTL_RADIUS falling back to
+  WP_LOITER_RAD (RTL) on mode entry.
+- Update_loiter() call is fed lrintf(plane.loiter.radius) instead
+  of the old 0-means-use-WP_LOITER_RAD path, so the L1 controller
+  sees the pilot-adjusted value.
+- Bails on plane.failsafe.rc_failsafe so mode_rtl.cpp's FS_ELAND
+  radius/direction override (FS_ELAND_LOTRAD once past SINKING)
+  and the GLIDING/GLIDING_NO_RETURN wings-level enforcement still
+  own the geometry during emergency landing descent.
+- No parameter to enable; behaviour is on whenever the plane is
+  in LOITER or RTL and not in RC failsafe.
+- See README_CUSTOM.md "Pilot control of loiter radius and
+  direction" for the full pilot input map.
 
 Peer-aircraft radar (iNav Radar / FormationFlight) support
 - New AP_Radar library, MSP backend, OSD widget. Forward-ported
