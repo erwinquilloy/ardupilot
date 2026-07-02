@@ -589,6 +589,39 @@ landing.
 Strict mode is silently ignored when `LAND_WIND_DIST = 0` (no
 cap set) or `LAND_WIND_BIAS = 0` (whole feature off).
 
+## Pilot control of loiter radius and direction (LOITER, RTL)
+
+Ported from ArduCustom PR #180 (shellixyz `dd65f3275f`; carried
+across the 4.5 → 4.6 API rename from
+`fbwa_throttle_to_pitch_compensation` /
+`pitch_limit_max_cd` to `adjust_nav_pitch_throttle` /
+`pitch_limit_max`).
+
+**In LOITER (mode 12) and RTL (mode 11)**, once the plane is
+established in the loiter circle:
+
+- **Rudder-stick more than half deflection to the left** — snap
+  loiter direction to **counter-clockwise** (`loiter.direction = -1`).
+- **Rudder-stick more than half deflection to the right** — snap
+  loiter direction to **clockwise** (`loiter.direction = 1`).
+- **Roll-stick** integrates the loiter radius at 20 m/s scaled by
+  direction, so pushing "outward" always grows the radius regardless
+  of which way the plane is orbiting. Radius is clamped to `[20, 1000]` m.
+
+On mode entry, radius and direction are seeded from `WP_LOITER_RAD`
+(LOITER) or `RTL_RADIUS` with a `WP_LOITER_RAD` fallback (RTL).
+The sign of these params still determines the starting direction
+(negative = CCW).
+
+**Bails during RC failsafe.** The pilot-control helper does not
+run when `plane.failsafe.rc_failsafe` is true, so the emergency-
+landing state machine's `FS_ELAND_LOTRAD` override and the
+GLIDING/GLIDING_NO_RETURN wings-level enforcement still own the
+loiter geometry during the sink.
+
+No parameter to enable — behaviour is on whenever the plane is
+in LOITER or RTL and not in RC failsafe.
+
 ## Emergency landing (RC failsafe)
 
 A state machine that initiates a controlled glide to the home area
