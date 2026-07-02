@@ -381,6 +381,37 @@ void Plane::update_loiter(uint16_t radius)
     loiter.radius = (float)radius;
 
     update_loiter_update_nav(radius);
+}
+
+/*
+  Fork PR #180 port (ArduCustom dd65f3275f, shellixyz).
+  Pilot rudder-stick flips loiter direction (< -50% CCW, > +50% CW);
+  pilot roll-stick integrates loiter radius over time, clamped to
+  [20, 1000] m.  Bails on RC failsafe so the RTL FS_ELAND override
+  block still owns loiter.radius / loiter.direction during
+  emergency-landing descent.
+*/
+void Plane::update_loiter_radius_and_direction(void)
+{
+    if (failsafe.rc_failsafe) {
+        return;
+    }
+    const float rudder_input = channel_rudder->get_control_in() * (1.0f / 45);
+    if (rudder_input < -50) {
+        loiter.direction = -1;
+    }
+    if (rudder_input > 50) {
+        loiter.direction = 1;
+    }
+
+    const uint32_t now = AP_HAL::millis();
+    if (loiter.navigate_last_ms != 0) {
+        const float roll_input = channel_roll->get_control_in() * (1.0f / 4500);
+        const float dt = (now - loiter.navigate_last_ms) * 0.001f;
+        loiter.radius += roll_input * (loiter.direction > 0 ? -1 : 1) * 20 * dt;
+        loiter.radius = constrain_float(loiter.radius, 20, 1000);
+    }
+    loiter.navigate_last_ms = now;
 
     if (loiter.start_time_ms == 0) {
         if (reached_loiter_target() ||
