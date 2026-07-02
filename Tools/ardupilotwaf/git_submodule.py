@@ -159,7 +159,10 @@ def git_submodule_post_fun(bld):
 def _git_head_hash(ctx, path, short=False):
     cmd = [ctx.env.get_flat('GIT'), 'rev-parse']
     if short:
-        cmd.append('--short=8')
+        # fork: shorten hash from upstream's --short=8 to git's default
+        # --short=7. Cleaner in the AUTOPILOT_VERSION / FIRMWARE_STRING
+        # display; hex-int form still parses fine for image tagging.
+        cmd.append('--short=7')
     cmd.append('HEAD')
     try:
         out = ctx.cmd_and_log(cmd, quiet=Context.BOTH, cwd=path)
