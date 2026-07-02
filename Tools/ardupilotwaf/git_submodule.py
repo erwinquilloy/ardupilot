@@ -158,7 +158,9 @@ def _post_fun(bld):
 def git_submodule_post_fun(bld):
     bld.add_post_fun(_post_fun)
 
-def _git_head_hash(ctx, path, short=False, hash_abbrev=8):
+# fork: default short hash is 7 chars (git default) instead of upstream 8.
+# Cleaner in the AUTOPILOT_VERSION / FIRMWARE_STRING display.
+def _git_head_hash(ctx, path, short=False, hash_abbrev=7):
     cmd = [ctx.env.get_flat('GIT'), 'rev-parse']
     if short:
         cmd.append(f'--short={hash_abbrev}')
@@ -172,10 +174,10 @@ def _git_head_hash(ctx, path, short=False, hash_abbrev=8):
     return out.strip()
 
 @conf
-def git_submodule_head_hash(self, name, short=False, hash_abbrev=8):
+def git_submodule_head_hash(self, name, short=False, hash_abbrev=7):
     module_node = self.srcnode.make_node(os.path.join('modules', name))
     return _git_head_hash(self, module_node.abspath(), short=short, hash_abbrev=hash_abbrev)
 
 @conf
-def git_head_hash(self, short=False, hash_abbrev=8):
+def git_head_hash(self, short=False, hash_abbrev=7):
     return _git_head_hash(self, self.srcnode.abspath(), short=short, hash_abbrev=hash_abbrev)
