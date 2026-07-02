@@ -56,6 +56,30 @@ LAND_WIND_STRICT — hard-fence toggle for LAND_WIND_DIST
 - See README_CUSTOM.md "LAND_WIND_STRICT" for the safety-vs-
   fence trade-off discussion.
 
+Bug fixes shipping in v0.2-beta
+- LAND_WIND_STRICT: fixed the AP_GROUPINFO index. The initial
+  implementation used index 64, one past AP_Param's hard limit
+  of 63 (_group_level_shift = 6, so the valid range is 0..63).
+  On boot AP_Param::check_group_info() triggered
+  AP_HAL::panic("Bad parameter table") and the firmware refused
+  to run. Moved to index 37 (a free slot in ParametersG2 within
+  the allowed range). Storage layout is unchanged; no other
+  parameter is renumbered. Discovered on the first SITL boot of
+  the v0.2-beta build.
+- Course Hold (mode 26) and AUTO_TRIM (mode 27): restored the
+  FBWA-style throttle-to-pitch compensation call
+  (adjust_nav_pitch_throttle, previously called
+  fbwa_throttle_to_pitch_compensation in older ArduPlane) that
+  the earlier port of Course Hold into master_custom_4.6.3 lost.
+  Without it, sticks-centered Course Hold at throttle below
+  TRIM_THROTTLE would climb, and AUTO_TRIM couldn't converge on
+  a level-cruise trim without pilot pitch-stick input. With it,
+  Course Hold matches FBWA at low throttle (small nose-down
+  pitch bias, capped at STAB_PITCH_DOWN degrees, that decays to
+  zero as throttle approaches TRIM_THROTTLE). Credit to
+  shellixyz (original ArduCustom implementation) and mf0o
+  (master_custom_light maintainer) for the pattern.
+
 Peer-aircraft radar (iNav Radar / FormationFlight) support
 - New AP_Radar library, MSP backend, OSD widget. Forward-ported
   from MUSTARDTIGERFPV/ArduPilot commit 35f5f0ef4f.
