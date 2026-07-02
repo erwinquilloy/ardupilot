@@ -18,6 +18,14 @@ void ModeCourseHold::update()
     } else {
         plane.nav_pitch_cd = -(pitch_input * plane.pitch_limit_min * 100);
     }
+    // Restore the shellixyz/mf0o compensation the earlier port lost:
+    // below THR_CRUISE apply the STAB_PITCH_DOWN nose-down bias, same
+    // as FBWA (Attitude.cpp Plane::adjust_nav_pitch_throttle).  Without
+    // this the plane climbs at low throttle because sticks-neutral is
+    // a strict 0 deg pitch target instead of the FBWA-style
+    // slightly-nose-down glide target.  AUTO_TRIM inherits the fix
+    // via ModeCourseHold.
+    plane.adjust_nav_pitch_throttle();
     plane.nav_pitch_cd = constrain_int32(plane.nav_pitch_cd,
                                          plane.pitch_limit_min * 100,
                                          plane.aparm.pitch_limit_max.get() * 100);
