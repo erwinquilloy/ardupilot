@@ -1478,7 +1478,7 @@ const AP_Param::GroupInfo ParametersG2::var_info[] = {
     // @Description: Chooses what happens when LAND_WIND_DIST eliminates every DO_LAND_START candidate. Purpose: let the pilot decide whether the distance cap is a soft preference or a hard boundary. 0 (default, soft fallback): fall through to upstream nearest-across-all so the plane still attempts a landing even if the only survivor is far outside the cap -- preserves the failsafe safety-net at the cost of occasionally flying farther than the cap suggests. 1 (hard fence): refuse the autoland when nothing survives the cap; RTL stays in RTL and the plane keeps loitering at HOME/rally requiring pilot intervention. LAND_WIND_DIST becomes a true hard boundary for autoland. WARNING: under strict mode a battery failsafe with no in-cap landing will not attempt to land -- the plane loiters until the battery dies. Only enable strict if you understand this trade-off. Ignored when LAND_WIND_DIST = 0 (no cap) or LAND_WIND_BIAS = 0 (whole feature off).
     // @Values: 0:Soft fallback (attempt landing anyway),1:Hard fence (loiter instead of landing)
     // @User: Standard
-    AP_GROUPINFO("LAND_WIND_STRICT", 64, ParametersG2, rtl_land_wind_bias_strict, 0),
+    AP_GROUPINFO("LAND_WIND_STRICT", 37, ParametersG2, rtl_land_wind_bias_strict, 0),
 
     // @Param: FLTMODE_EXT
     // @DisplayName: Enable 12-position FLTMODE_CH
