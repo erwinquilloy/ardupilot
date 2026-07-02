@@ -1464,8 +1464,12 @@ pick **Upload file…** and point at the JSON.
   This branch re-ports a curated subset of that work onto a modern
   4.6.3 base. Recent additions sourced from him include `OSD_BATBAR_TYPE`
   (DJI battery-bar Wh source, co-authored with Stavros, originally
-  `93c530cdb2`), `MatekH743` ADSB+EFI strip (`26597c8805`), and the
-  `AUTO_TRIM` flight mode (mode 27, ArduCustom v11.2 `9e84d8a1ee`).
+  `93c530cdb2`), `MatekH743` ADSB+EFI strip (`26597c8805`), the
+  `COURSE_HOLD` flight mode (mode 26) and the `AUTO_TRIM` flight
+  mode (mode 27, ArduCustom v11.2 `9e84d8a1ee`) that extends it.
+  The v0.2-beta Course Hold `adjust_nav_pitch_throttle()` restore
+  followed his ArduCustom original after mf0o's `master_custom_light`
+  mirror flagged the missing call.
 - **[Stavros Korokithakis ([@skorokithakis](https://github.com/skorokithakis))]** —
   `FLTMODE_EXT` 12-position FLTMODE_CH mechanism (original 2021 commit
   `e8ff5a8dfd`) and co-author of the DJI battery-bar source option.
