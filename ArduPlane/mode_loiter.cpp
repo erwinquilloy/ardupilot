@@ -3,6 +3,15 @@
 
 bool ModeLoiter::_enter()
 {
+    // Fork PR #180 port: seed dynamic loiter radius / direction from
+    // WP_LOITER_RAD so update_loiter_radius_and_direction() has a
+    // starting point.  navigate_last_ms=0 disables the dt integration
+    // on the first navigate() tick to avoid a huge dt from the last
+    // mode's stale timestamp.
+    plane.loiter.radius = fabsf(plane.aparm.loiter_radius);
+    plane.loiter.direction = plane.aparm.loiter_radius < 0 ? -1 : 1;
+    plane.loiter.navigate_last_ms = 0;
+
     plane.do_loiter_at_location();
     plane.setup_terrain_target_alt(plane.next_WP_loc);
 
@@ -148,8 +157,11 @@ void ModeLoiter::navigate()
     }
 #endif
 
-    // Zero indicates to use WP_LOITER_RAD
-    plane.update_loiter(0);
+    // Fork PR #180 port: pilot rudder flips direction, roll integrates
+    // radius.  Feeds the pilot-adjusted plane.loiter.radius into
+    // update_loiter() instead of the old 0 = use-WP_LOITER_RAD path.
+    plane.update_loiter_radius_and_direction();
+    plane.update_loiter(lrintf(plane.loiter.radius));
 }
 
 void ModeLoiter::update_target_altitude()
