@@ -542,29 +542,31 @@ void Plane::update_control_mode(void)
     // modes other than TAKEOFF/AUTO, route a throttle stick below THR_DZ into
     // TECS as gliding_requested so the throttle drops to zero and pitch holds
     // total energy at AIRSPEED_MIN.
-    if (flight_option_enabled(FlightOptions::ALLOW_GLIDING_IN_AUTO_THR_MODES) &&
-        control_mode->does_auto_throttle() &&
-        control_mode != &mode_takeoff &&
-        control_mode != &mode_auto) {
-        if (failsafe.rc_failsafe) {
-            // Fork 34c3ab3d8d: clear gliding once on FS entry so RTL starts from a known state,
-            //                 then leave the flag alone for the rest of the FS so the
-            //                 emergency-landing state machine in mode_rtl::navigate() can
-            //                 drive it (previously every fast loop reclamped gliding to false
-            //                 while in FS, fighting the RTL eland GLIDING state).
-            if (!prev_rc_failsafe_state) {
-                auto_throttle_gliding = false;
-                TECS_controller.set_gliding_requested_flag(false);
-            }
-            // else: in-FS; leave auto_throttle_gliding / TECS gliding flag untouched
-        } else {
+    //
+    // Ported outer guard from mf0o's master_custom_light: skip the entire
+    // gliding-management block during RC failsafe so mode_rtl::navigate()'s
+    // FS_ELAND state machine owns TECS's gliding_requested flag exclusively.
+    // The previous "clear once on FS entry, then leave alone" pattern only
+    // held when FlightOptions bit 23 was set; with bit 23 off the else branch
+    // clobbered gliding=false every fast-loop tick, stomping the FS_ELAND
+    // state machine's set_gliding_requested_flag(true) and pinning the plane
+    // at FS_ELAND_GLDALT indefinitely.  Wrapping in !failsafe.rc_failsafe
+    // makes FS_ELAND work regardless of the FlightOptions bit.
+    if (!failsafe.rc_failsafe) {
+        if (flight_option_enabled(FlightOptions::ALLOW_GLIDING_IN_AUTO_THR_MODES) &&
+            control_mode->does_auto_throttle() &&
+            control_mode != &mode_takeoff &&
+            control_mode != &mode_auto) {
             auto_throttle_gliding = get_throttle_input() < g.throttle_dz;
             TECS_controller.set_gliding_requested_flag(auto_throttle_gliding);
+        } else {
+            auto_throttle_gliding = false;
+            TECS_controller.set_gliding_requested_flag(false);
         }
-    } else {
-        auto_throttle_gliding = false;
-        TECS_controller.set_gliding_requested_flag(false);
     }
+    // During RC failsafe: mode_rtl::navigate() drives TECS_controller
+    // set_gliding_requested_flag() directly from the FS_ELAND state machine.
+    // Nothing here touches it.
     prev_rc_failsafe_state = failsafe.rc_failsafe;
 
     update_fly_forward();
