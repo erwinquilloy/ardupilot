@@ -543,16 +543,31 @@ void Plane::update_control_mode(void)
     // TECS as gliding_requested so the throttle drops to zero and pitch holds
     // total energy at AIRSPEED_MIN.
     //
-    // Ported outer guard from mf0o's master_custom_light: skip the entire
-    // gliding-management block during RC failsafe so mode_rtl::navigate()'s
-    // FS_ELAND state machine owns TECS's gliding_requested flag exclusively.
-    // The previous "clear once on FS entry, then leave alone" pattern only
-    // held when FlightOptions bit 23 was set; with bit 23 off the else branch
-    // clobbered gliding=false every fast-loop tick, stomping the FS_ELAND
-    // state machine's set_gliding_requested_flag(true) and pinning the plane
-    // at FS_ELAND_GLDALT indefinitely.  Wrapping in !failsafe.rc_failsafe
-    // makes FS_ELAND work regardless of the FlightOptions bit.
-    if (!failsafe.rc_failsafe) {
+    // FS_ELAND ownership rules (mirroring mf0o's master_custom_light intent):
+    //   (a) On the tick RC failsafe *enters*, clear gliding once so the
+    //       FS_ELAND state machine in mode_rtl::navigate() starts from a
+    //       known false and its own set_gliding_requested_flag(true) in the
+    //       GLIDING / GLIDING_NO_RETURN cases is the sole authority.
+    //       Skipping this clear (as the earlier revision did) let a stale
+    //       pre-FS gliding=true (e.g. pilot throttle-at-0 in RTL) survive
+    //       into SINKING/ALIGNMENT and made the plane glide down during the
+    //       return-to-home leg before ever reaching the loiter point.
+    //   (b) During the remainder of RC failsafe, do NOT touch the flag --
+    //       any fast-loop write would clobber the FS_ELAND state machine's
+    //       set_gliding_requested_flag(true) at 10 Hz.  This is why the
+    //       previous "clear only if !prev_rc_failsafe_state" hack was gated
+    //       on FlightOptions bit 23: with bit 23 off, the else branch below
+    //       clobbered gliding=false every fast-loop tick and FS_ELAND never
+    //       actually glided.
+    //   (c) When not in RC failsafe, the normal ALLOW_GLIDING throttle-stick
+    //       management runs.  Unconditional clear when the option is off or
+    //       the mode isn't eligible.
+    if (failsafe.rc_failsafe && !prev_rc_failsafe_state) {
+        // rule (a): FS entry clean-slate
+        auto_throttle_gliding = false;
+        TECS_controller.set_gliding_requested_flag(false);
+    } else if (!failsafe.rc_failsafe) {
+        // rule (c): normal ALLOW_GLIDING management outside FS
         if (flight_option_enabled(FlightOptions::ALLOW_GLIDING_IN_AUTO_THR_MODES) &&
             control_mode->does_auto_throttle() &&
             control_mode != &mode_takeoff &&
@@ -564,9 +579,8 @@ void Plane::update_control_mode(void)
             TECS_controller.set_gliding_requested_flag(false);
         }
     }
-    // During RC failsafe: mode_rtl::navigate() drives TECS_controller
-    // set_gliding_requested_flag() directly from the FS_ELAND state machine.
-    // Nothing here touches it.
+    // rule (b): failsafe.rc_failsafe && prev_rc_failsafe_state -- no writes,
+    // mode_rtl::navigate() FS_ELAND state machine owns the flag.
     prev_rc_failsafe_state = failsafe.rc_failsafe;
 
     update_fly_forward();
