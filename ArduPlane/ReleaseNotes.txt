@@ -115,6 +115,24 @@ Bug fixes shipping in v0.2-beta
   the same ALLOW_GLIDING throttle-stick behaviour is available in
   auto-throttle modes outside of RC failsafe.  Both paths coexist
   cleanly.
+- Build-hygiene rebuild (light .zip assets re-cut 2026-07-03, NO
+  flight-behaviour change) -- two CI-caught fixes folded into the
+  shipped firmware:
+    (i)  AP_GPS::all_consistent() read GPS instance state[1], which
+         on the light variant (GPS_MAX_INSTANCES == 1) is a compile-
+         time out-of-bounds access.  It was already unreachable at
+         runtime behind the num_instances<=1 guard, but clang's
+         -Warray-bounds rejected it and broke the SITL clang build;
+         the two-GPS path is now compiled out when
+         GPS_MAX_INSTANCES == 1.  Runtime behaviour is identical.
+    (ii) AP_Radar's MSP backend allocated with bare `new`; switched
+         to NEW_NOTHROW so the throwing operator new is dropped from
+         the binary (matches every other backend, and returns nullptr
+         on OOM instead of throwing).
+  Neither changes flight behaviour; the five light .zip assets on the
+  light-v0.2-beta release were re-cut so the download matches the
+  fixed sources.  If you already flashed a 2026-07-02 zip you do not
+  need to re-flash.
 
 Pilot control of loiter radius and direction (LOITER, RTL)
 - Ports ArduCustom PR #180 (shellixyz dd65f3275f) with the 4.6.x
