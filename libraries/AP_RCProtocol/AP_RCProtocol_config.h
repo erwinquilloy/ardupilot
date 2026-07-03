@@ -11,9 +11,11 @@
 
 #ifndef AP_RCPROTOCOL_BACKEND_DEFAULT_ENABLED
 // Light variant: flip the global RC-protocol backend default to OFF, then
-// re-enable just CRSF + SBUS + DroneCAN below — the dominant receivers
-// for ELRS / TBS Crossfire / DJI / DroneCAN-RX hardware. Mirrors mf0o's
-// "Disable useless RCIN protocols" commit.
+// re-enable CRSF + SBUS + FPORT + FPORT2 + IBUS below — the dominant
+// receivers for ELRS / TBS Crossfire / FrSky / FlySky hardware. DroneCAN
+// and the rest (DSM, PPMSUM, SRXL/SRXL2, ST24, SUMD, GHST) stay off.
+// Mirrors mf0o's "Disable useless RCIN protocols" commit; note we
+// additionally keep FPORT2 (mf0o's 2022 strip dropped it).
 #define AP_RCPROTOCOL_BACKEND_DEFAULT_ENABLED 0
 #endif
 

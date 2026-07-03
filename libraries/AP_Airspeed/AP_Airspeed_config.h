@@ -10,11 +10,11 @@
 #endif
 
 #ifndef AP_AIRSPEED_BACKEND_DEFAULT_ENABLED
-// Light variant: flip the global airspeed-backend default to OFF. Most
-// FPV/wing builds run without a pitot or use the most common one
-// (MS4525/ASP5033). Re-enable the common ones below; rarer chips
-// (DLVR, MS5525, NMEA, SDP3X) compile out. Mirrors mf0o's
-// "Disable detection of useless airspeed sensors" pattern.
+// Light variant: flip the global airspeed-backend default to OFF. The
+// strict 2022 definition is Analog or MS4525 only, so just those two are
+// re-enabled below; the digital chips (ASP5033, DLVR, MS5525, MSP, NMEA,
+// SDP3X) and DroneCAN all compile out. Mirrors mf0o's "Disable detection
+// of useless airspeed sensors" pattern.
 #define AP_AIRSPEED_BACKEND_DEFAULT_ENABLED 0
 #endif
 

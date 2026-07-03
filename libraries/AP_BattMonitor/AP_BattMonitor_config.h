@@ -11,10 +11,11 @@
 #endif
 
 #ifndef AP_BATTERY_BACKEND_DEFAULT_ENABLED
-// Light variant: flip the global battmon-backend default to OFF.
-// Then below we re-enable only Analog, ESC, and DroneCAN — covering the
-// dominant battery monitoring topologies on FPV/wing builds. Mirrors
-// mf0o's master_custom_light approach to flash savings.
+// Light variant: flip the global battmon-backend default to OFF. Then
+// below we re-enable only Analog and ESC telemetry — the dominant battery
+// monitoring topologies on FPV/wing builds. DroneCAN (UAVCAN), SMBus, the
+// Fuel/INA/Sum/generator backends all stay off. Mirrors mf0o's
+// master_custom_light approach to flash savings.
 #define AP_BATTERY_BACKEND_DEFAULT_ENABLED 0
 #endif
 

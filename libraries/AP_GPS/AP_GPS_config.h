@@ -33,10 +33,10 @@
 #endif
 
 #ifndef AP_GPS_BACKEND_DEFAULT_ENABLED
-// Light variant: flip the global GPS-backend default to OFF, then
-// explicitly re-enable just the three backends our typical user actually
-// uses (UBLOX serial GPS, DroneCAN GPS, MSP GPS from a goggles passthrough).
-// Mirrors mf0o's minimize_common.inc pattern.
+// Light variant: flip the global GPS-backend default to OFF. The strict
+// 2022 definition is UBLOX-only, so UBLOX is the sole backend re-enabled
+// below (see AP_GPS_UBLOX_ENABLED); DroneCAN, MSP, MAV, NMEA and the rest
+// stay off. Mirrors mf0o's minimize_common.inc pattern.
 #define AP_GPS_BACKEND_DEFAULT_ENABLED 0
 #endif
 

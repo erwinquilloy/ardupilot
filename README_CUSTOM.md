@@ -6,10 +6,14 @@
 
 ## What's stripped vs. the full variant
 
-Aligned to the **strict 2022 light-variant definition** mf0o released:
+Aligned to the **strict 2022 light-variant definition** mf0o released,
+with one deliberate addition (FPORT2, noted below):
 - Only **1 GPS** and **1 magnetometer**
 - **No CAN** anywhere (no DroneCAN GPS / RC / battery / airspeed / rangefinder)
-- RC: **SBUS, CRSF, IBUS, FPORT** only
+- RC: **SBUS, CRSF, IBUS, FPORT, FPORT2** — CRSF/SBUS/IBUS/FPORT are the
+  strict-2022 set; **FPORT2 is kept in addition** (mf0o's 2022 strip
+  dropped it) because it shares the FPORT driver and is common on modern
+  FrSky receivers
 - GPS: **UBLOX** only
 - Airspeed: **Analog** or **MS4525** pressure sensors only
 - Rangefinder: **Benewake LIDARs** only
@@ -88,8 +92,8 @@ ArduPlane V<x.y.z> ArduCustom <FORK_VERSION>[ Light] (<git-hash>)
 For example:
 
 ```
-ArduPlane V4.6.3 ArduCustom v0.1-beta (08b10695)        # full branch
-ArduPlane V4.6.3 ArduCustom v0.1-beta Light (08b10695)  # light branch
+ArduPlane V4.6.3 ArduCustom v0.2-beta (08b10695)        # full branch
+ArduPlane V4.6.3 ArduCustom v0.2-beta Light (08b10695)  # light branch
 ```
 
 The upstream `ArduPlane V4.6.3` prefix is kept so GCS tools that parse

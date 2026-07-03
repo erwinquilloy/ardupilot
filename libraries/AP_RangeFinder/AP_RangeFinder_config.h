@@ -12,10 +12,11 @@
 #endif
 
 #ifndef AP_RANGEFINDER_BACKEND_DEFAULT_ENABLED
-// Light variant: flip the global rangefinder-backend default to OFF.
-// Most FPV/wing builds use a single MAVLink-streamed rangefinder if any.
-// Re-enable Analog + MAVLink + Lightware + DroneCAN below as the common
-// modern topologies. Mirrors mf0o's "Disable useless rangefinders" commit.
+// Light variant: flip the global rangefinder-backend default to OFF. The
+// strict 2022 definition is Benewake LIDARs only, so only the Benewake
+// serial variants are re-enabled below; Analog, MAVLink, Lightware,
+// VL53L0X/L1X and DroneCAN all stay off. Mirrors mf0o's "Disable useless
+// rangefinders" commit.
 #define AP_RANGEFINDER_BACKEND_DEFAULT_ENABLED 0
 #endif
 
