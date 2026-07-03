@@ -5,6 +5,7 @@
 #include <AP_Common/AP_FWVersion.h>
 #include <GCS_MAVLink/GCS_Dummy.h>
 #include <AP_Vehicle/AP_Vehicle_Type.h>
+#include <string.h>
 
 const AP_HAL::HAL& hal = AP_HAL::get_HAL();
 
@@ -23,9 +24,14 @@ TEST(AP_FWVersion, FWVersion)
     EXPECT_EQ(AP::fwversion().patch, FW_PATCH);
     EXPECT_EQ(AP::fwversion().fw_type, FW_TYPE);
     EXPECT_EQ(AP::fwversion().os_sw_version, 0u);
-    EXPECT_STREQ(AP::fwversion().fw_string, THISFIRMWARE);
+    // The fork appends " ArduCustom <ver> [Light]" to the upstream
+    // THISFIRMWARE prefix, so fw_string / fw_short_string start with (but no
+    // longer equal) THISFIRMWARE; fw_string_original keeps the bare upstream
+    // string verbatim.
+    EXPECT_EQ(strncmp(AP::fwversion().fw_string, THISFIRMWARE, strlen(THISFIRMWARE)), 0);
     EXPECT_STREQ(AP::fwversion().fw_hash_str, "");
-    EXPECT_STREQ(AP::fwversion().fw_short_string, THISFIRMWARE);
+    EXPECT_EQ(strncmp(AP::fwversion().fw_short_string, THISFIRMWARE, strlen(THISFIRMWARE)), 0);
+    EXPECT_STREQ(AP::fwversion().fw_string_original, THISFIRMWARE);
     EXPECT_EQ(AP::fwversion().fw_hash, 0u);
     EXPECT_EQ(AP::fwversion().middleware_name, nullptr);
     EXPECT_EQ(AP::fwversion().middleware_hash_str, nullptr);
