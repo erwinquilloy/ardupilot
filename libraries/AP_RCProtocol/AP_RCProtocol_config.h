@@ -101,9 +101,16 @@
 #endif
 
 #ifndef AP_RCPROTOCOL_UDP_ENABLED
-#define AP_RCPROTOCOL_UDP_ENABLED AP_RCPROTOCOL_BACKEND_DEFAULT_ENABLED && (CONFIG_HAL_BOARD == HAL_BOARD_SITL)
+// Light variant: the UDP/FDM backends are the SITL RC-input path. They must
+// stay enabled on SITL even though real-hardware RX protocols are stripped
+// (BACKEND_DEFAULT_ENABLED = 0), otherwise a SITL build has no RC at all and
+// autotest hangs at "PreArm: Waiting for RC". They are SITL-only, so this
+// costs zero flash on the F4/H7 targets the light variant actually ships.
+#define AP_RCPROTOCOL_UDP_ENABLED (CONFIG_HAL_BOARD == HAL_BOARD_SITL)
 #endif
 
 #ifndef AP_RCPROTOCOL_FDM_ENABLED
-#define AP_RCPROTOCOL_FDM_ENABLED AP_RCPROTOCOL_BACKEND_DEFAULT_ENABLED && (CONFIG_HAL_BOARD == HAL_BOARD_SITL)
+// Light variant: SITL-only RC-input backend — see AP_RCPROTOCOL_UDP_ENABLED
+// above. Kept on for SITL so autotest has RC; zero flash cost on real boards.
+#define AP_RCPROTOCOL_FDM_ENABLED (CONFIG_HAL_BOARD == HAL_BOARD_SITL)
 #endif
