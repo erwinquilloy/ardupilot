@@ -16,9 +16,15 @@
  */
 #include <AP_gtest.h>
 
-#include <AP_GPS/AP_GPS_NMEA.h>
+#include <AP_GPS/AP_GPS_config.h>
 
 const AP_HAL::HAL &hal = AP_HAL::get_HAL();
+
+// The NMEA backend is compiled out on builds that disable it (e.g. the
+// light variant, AP_GPS_NMEA_ENABLED == 0); guard the test so it doesn't
+// reference the then-undeclared AP_GPS_NMEA class.
+#if AP_GPS_NMEA_ENABLED
+#include <AP_GPS/AP_GPS_NMEA.h>
 
 class AP_GPS_NMEA_Test
 {
@@ -61,5 +67,6 @@ TEST(AP_GPS_NMEA, parse_decimal_100)
     ASSERT_EQ(100, test.parse_decimal_100("1"));
     ASSERT_EQ(-100, test.parse_decimal_100("-1"));
 }
+#endif  // AP_GPS_NMEA_ENABLED
 
 AP_GTEST_MAIN()
