@@ -28,7 +28,7 @@ using namespace MSP;
 AP_Radar_MSP *AP_Radar_MSP::detect(AP_Radar &_frontend)
 {
     // backend is fed by the AP_MSP parser via handle_msp(); no UART of its own.
-    return new AP_Radar_MSP(_frontend);
+    return NEW_NOTHROW AP_Radar_MSP(_frontend);
 }
 
 void AP_Radar_MSP::update(void)
