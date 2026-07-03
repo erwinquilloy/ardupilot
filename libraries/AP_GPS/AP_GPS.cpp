@@ -1490,9 +1490,18 @@ bool AP_GPS::all_consistent(float &distance) const
     }
 
     // calculate distance
+#if GPS_MAX_INSTANCES > 1
     distance = state[0].location.get_distance_NED(state[1].location).length();
     // success if distance is within 50m
     return (distance < 50);
+#else
+    // single-instance builds (e.g. the light variant, GPS_MAX_INSTANCES == 1)
+    // can never reach here past the num_instances<=1 guard above; the guard
+    // exists so clang's -Warray-bounds doesn't flag the state[1] access as a
+    // compile-time out-of-bounds read.
+    distance = 0;
+    return true;
+#endif
 }
 
 /*
