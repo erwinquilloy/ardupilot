@@ -105,6 +105,17 @@ branch (set in the same header).
 
 ## Supported boards
 
+> ⚠️ **The full variant has outgrown 1 MB F4 flash.** As of v0.2-beta the
+> full build overflows the ~1 MB flash on `MatekF405-Wing` (by a few KB) and
+> similar 1 MB F4 boards — the accumulated fork feature set no longer fits
+> alongside *every* upstream hardware backend. **Flash those boards from the
+> [`light`](../../tree/master_custom_4.6.3_light) variant instead**, which
+> strips the rarely-used backends to make room. The board-specific fixes
+> listed below (LED-pad relay, U3 DMA, F4 mount re-enable) still apply — the
+> light variant shares the same hwdefs. H7 / F7 / larger-flash F4 boards run
+> the full variant fine. (This is why the full branch's `test chibios` CI
+> shows MatekF405-Wing red: it is the expected overflow, not a regression.)
+
 Fork-specific board work covers:
 
 - **MatekF405-Wing** — LED-pad-as-relay output, U3 DMA fix, bootloader
