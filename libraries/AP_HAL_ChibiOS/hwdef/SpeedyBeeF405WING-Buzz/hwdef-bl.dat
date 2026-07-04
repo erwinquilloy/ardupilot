@@ -1,0 +1,5 @@
+# Bootloader for the custom SpeedyBee F405 WING tone-buzzer variant.
+# The bootloader is identical to the stock SpeedyBeeF405WING (same board ID
+# 1106, same flash layout and pins) - the tone-buzzer change only affects the
+# application firmware, not the bootloader - so we just reuse it.
+include ../SpeedyBeeF405WING/hwdef-bl.dat
