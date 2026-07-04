@@ -1,0 +1,21 @@
+# hw definition for a custom SpeedyBee F405 WING variant that adds a
+# hardware ToneAlarm (tone) buzzer on the S11 servo pad.
+#
+# Identical to SpeedyBeeF405WING except PWM output 11 (pad S11 / PB15) is
+# remapped from the TIM1 PWM group to TIM12_CH2 and marked ALARM. This
+# defines HAL_PWM_ALARM, so AP_ToneAlarm plays pitched tunes on a passive
+# buzzer wired to S11 instead of routing them through the DShot ESCs.
+# TIM12 is otherwise unused on this board, so no other PWM group is affected.
+#
+# Cost: one servo output (S11 / channel 11) is given up for the buzzer.
+# Board ID is inherited (1106) so this flashes over the stock SpeedyBee
+# bootloader like a normal firmware update. Wire a *passive* buzzer to S11
+# (signal -> transistor -> buzzer, powered from 5V/GND); see Readme.md.
+
+include ../SpeedyBeeF405WING/hwdef.dat
+
+# free S11 (PB15) from the TIM1 PWM group and give it its own tone timer.
+# TIM12 is unused elsewhere on this board, so the other PWM groups
+# (TIM1/2/3/4/8) are unaffected.
+undef PB15
+PB15 TIM12_CH2 TIM12 GPIO(60) ALARM
