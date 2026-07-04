@@ -1103,6 +1103,21 @@ LAND_WIND_DIST + LAND_WIND_STRICT on:
 1 MB ceiling in any future upstream rebase or feature add. Worth
 watching going forward.
 
+### Tone-buzzer board variant: `SpeedyBeeF405WING-Buzz`
+
+A fork-only variant of `SpeedyBeeF405WING` that adds a hardware
+**ToneAlarm** (pitched-tone) buzzer on the **S11** pad (PB15 remapped
+from the TIM1 PWM group to `TIM12_CH2`, marked `ALARM`). This lets the
+FC play the full ArduPilot tunes — arming, GPS lock, the auto-takeoff/
+launch cues above, failsafe — on a dedicated passive buzzer instead of
+routing them through the DShot ESCs. Cost is one servo output (S11 /
+channel 11); outputs 1-10 and 12 (WS2812 LED) are unchanged. Board ID
+is inherited (1106) so the `.apj` flashes over the stock SpeedyBee
+bootloader as a normal update. Flash footprint is essentially identical
+to stock `SpeedyBeeF405WING` (~29 KB free on light). Wiring and build
+notes live in the board's `Readme.md`. Shipped as an extra asset on the
+light release alongside the 5 boards above.
+
 **v0.2-beta fleet change vs v0.1-beta:**
 - **Added:** `MatekF405-STD` — a standard (non-bdshot) alternative
   in the F4 lineup, comfortable ~47 KB free headroom.
