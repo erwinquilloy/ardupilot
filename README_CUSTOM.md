@@ -1161,9 +1161,61 @@ routing them through the DShot ESCs. Cost is one servo output (S11 /
 channel 11); outputs 1-10 and 12 (WS2812 LED) are unchanged. Board ID
 is inherited (1106) so the `.apj` flashes over the stock SpeedyBee
 bootloader as a normal update. Flash footprint is essentially identical
-to stock `SpeedyBeeF405WING` (~29 KB free on light). Wiring and build
-notes live in the board's `Readme.md`. Shipped as an extra asset on the
-light release alongside the 5 boards above.
+to stock `SpeedyBeeF405WING` (~29 KB free on light). Shipped as an extra
+asset on the light release alongside the 5 boards above.
+
+#### Hardware requirements
+
+- **A passive buzzer** — a bare piezo or a magnetic *passive* buzzer.
+  Do **not** use an active buzzer: it has a fixed internal oscillator
+  and can only switch on/off, so it cannot reproduce the pitched tunes.
+- **Recommended:** an LS3040 passive piezo (~4 kHz resonance, rated
+  2 mA, 1–30 V). Its draw is well under the MCU pin limit, so it wires
+  straight to the pad — no transistor, no diode (a piezo is capacitive,
+  not inductive).
+- **For a louder or magnetic buzzer:** a small NPN transistor
+  (2N2222 / S8050 / MMBT2222) or a logic-level N-MOSFET, plus a 1 kΩ
+  base resistor (~100 Ω for a MOSFET gate), a 10 kΩ base/gate pull-down
+  to GND, and — for a magnetic (coil) buzzer only — a 1N4148 flyback
+  diode.
+- **Signal pad:** S11 (**PB15**). Power the buzzer high side / transistor
+  stage from the **5 V servo rail** (confirm the BEC feeds it) and GND.
+  This costs servo output 11; outputs 1–10 and 12 (WS2812 LED) remain.
+
+#### Wiring
+
+Direct-drive passive piezo (recommended — e.g. LS3040):
+
+```
+S11 (PB15) ------[ LS3040 piezo ]------ GND
+```
+
+Polarity does not matter; a bare piezo needs no transistor and no diode.
+Driven off the 3.3 V pin swing it is a little quieter than its rated
+80 dB but normally plenty audible.
+
+Magnetic passive buzzer, or a louder piezo (transistor-driven):
+
+```
+5V (servo rail) ---+----------------+
+                   |                |
+              [ buzzer ]        1N4148  (band/cathode -> 5V)
+                   |                |
+                   +----------------+
+                   |
+               collector
+S11 (PB15) -[1k]- base    NPN (2N2222 / S8050)
+               emitter
+                   |
+         [10k] ----+   (base->GND pull-down: keeps it silent at boot)
+                   |
+                  GND
+```
+
+Omit the 1N4148 for a bare piezo (no coil to snub). The board leaves the
+stock active buzzer on PC15 in place — ignore it, or remove
+`HAL_BUZZER_PIN` from the hwdef if you don't want two noise-makers. Full
+notes and wiring photos live in the board's `Readme.md`.
 
 **v0.2-beta fleet change vs v0.1-beta:**
 - **Added:** `MatekF405-STD` — a standard (non-bdshot) alternative
