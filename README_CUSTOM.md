@@ -50,6 +50,25 @@ about which hardware backends compile in.
 > battery, rangefinder, or airspeed. CAN-attached anything needs the
 > full variant.
 
+> ⚠️ **Upstream 1 MB-flash-gated features are OFF on the F4 fleet — this is
+> not a light strip.** Separately from the strips above, ArduPilot compiles
+> a set of features out on 1 MB boards via `BOARD_FLASH_SIZE > 1024`. This
+> is **upstream behaviour** — identical on stock ArduPlane and on the full
+> variant when run on the same 1 MB F4 (the H7 boards, being 2 MB, keep
+> them). Notable ones absent on the F4 boards: **VisualOdom / external-nav,
+> ADSB, EFI, GyroFFT, object-avoidance proximity, gimbal mounts
+> (CADDX/Gremsy/Viewpro/Xacti), Lua scripting serial devices, INA2xx
+> battery monitors, and EK3 drag / body-odom / external-nav fusion.**
+>
+> **Common migration gotcha:** a saved parameter with `EK3_SRCx_* =
+> ExternalNav` triggers the prearm **`EK3 sources require VisualOdom`** —
+> VisualOdom isn't compiled in on 1 MB F4. Set those sources off
+> `ExternalNav`: use the `GPS`/`Baro`/`Compass` defaults, or `RangeFinder`
+> (`EK3_SRC1_POSZ = 2`) if you want a downward lidar as the EKF height
+> source. **A Benewake TFmini is a *rangefinder*, not external nav — it is
+> fully supported on light** (all Benewake serial variants are kept); only
+> the `ExternalNav` source value needs the (absent) VisualOdom backend.
+
 **Binary size:** SITL build is meaningfully smaller than the full
 variant — actual per-board delta depends on which backends that
 board's hwdef would have pulled in.
