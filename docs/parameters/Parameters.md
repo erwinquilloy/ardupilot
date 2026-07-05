@@ -25596,7 +25596,7 @@ This sets the method used to switch different OSD screens.
 
 This sets options that change the display
 
-- Bitmask: 0:UseDecimalPack, 1:InvertedWindArrow, 2:InvertedAHRoll, 3:Convert feet to miles at 5280ft instead of 10000ft, 4:DisableCrosshair, 5:TranslateArrows, 6:AviationStyleAH, 7:Prefix LQ with RF Mode, 18:TwoDecimalsVerticalSpeed, 19:RightJustifyTunedParamName, 21:OneDecimalAttitude, 23:ShortenPluscode
+- Bitmask: 0:UseDecimalPack, 1:InvertedWindArrow, 2:InvertedAHRoll, 3:Convert feet to miles at 5280ft instead of 10000ft, 4:DisableCrosshair, 5:TranslateArrows, 6:AviationStyleAH, 7:Prefix LQ with RF Mode, 18:TwoDecimalsVerticalSpeed, 19:RightJustifyTunedParamName, 21:OneDecimalAttitude
 
 ## OSD_FONT: OSD Font
 

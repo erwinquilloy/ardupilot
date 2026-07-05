@@ -921,7 +921,10 @@ seeded non-zero to search a range, sign of the seed picks polarity.
 |----:|--------------------------------------------|-----------------------------------------------------|
 | 18  | `OPTION_TWO_DECIMALS_VERTICAL_SPEED`       | Vspeed shown to 2 decimals                          |
 | 21  | `OPTION_ONE_DECIMAL_ATTITUDE`              | Pitch / roll shown to 1 decimal (default ON)        |
-| 23  | `OPTION_SHORTEN_PLUSCODE`                  | Strip leading digits from plus codes when home is near |
+
+> `OSD_OPTIONS` bit 23 (`ShortenPluscode`) was **removed** along with the
+> plus code element it modified (see
+> [Deliberately *not* included](#deliberately-not-included)).
 
 ## Tunables added
 
@@ -1163,6 +1166,16 @@ is inherited (1106) so the `.apj` flashes over the stock SpeedyBee
 bootloader as a normal update. Flash footprint is essentially identical
 to stock `SpeedyBeeF405WING` (~29 KB free on light). Shipped as an extra
 asset on the light release alongside the 5 boards above.
+
+A sibling variant, **`KakuteF4-Wing-Buzz`**, applies the same idea to the
+Holybro **Kakute F4 Wing** — which has *no* buzzer at all on the stock
+board. The tone buzzer goes on the WS2812 **LED** pad (`PA1`, remapped from
+`TIM5_CH2` to the unused `TIM2_CH2`, marked `ALARM`); it costs the
+addressable-LED-strip output, **no** servo/motor output, and keeps the
+onboard status LED. Board ID is inherited (`Holybro-KakuteF4-Wing`).
+Together with the **`MatekH743-bdshot`** (Holybro H743 Wing, bidirectional
+DShot), both are added as **light-v0.2-beta** assets. Wire a *passive*
+buzzer to the LED pad — see the board's `Readme.md`.
 
 #### Hardware requirements
 
@@ -1456,6 +1469,12 @@ Items evaluated and deliberately skipped, with reasoning:
   (`8aafe85f6f`); needs reconciliation, not a parallel port
 - **`#164` Plane-only OSD element gating** — namespace cleanup with no
   Plane-only benefit; this build targets Plane only
+- **Plus code (OLC) OSD element** — dropped fork-wide. A user survey showed
+  little demand, so `HAL_PLUSCODE_ENABLE` is forced to `0` in `AP_OLC.h` on
+  **all** boards (upstream enables it by default on `BOARD_FLASH_SIZE > 1024`
+  boards). The `OSDx_PLUSCODE_*` Open Location Code panel is not compiled in
+  on any board — F4 or H7 — and the related `OSD_OPTIONS` bit 23
+  (`ShortenPluscode`) was removed from the bitmask with it.
 
 ---
 

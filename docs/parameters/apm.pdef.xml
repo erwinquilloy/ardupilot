@@ -17050,9 +17050,8 @@
           <bit code="18">TwoDecimalsVerticalSpeed</bit>
           <bit code="19">RightJustifyTunedParamName</bit>
           <bit code="21">OneDecimalAttitude</bit>
-          <bit code="23">ShortenPluscode</bit>
         </bitmask>
-        <field name="Bitmask">0:UseDecimalPack, 1:InvertedWindArrow, 2:InvertedAHRoll, 3:Convert feet to miles at 5280ft instead of 10000ft, 4:DisableCrosshair, 5:TranslateArrows, 6:AviationStyleAH, 7:Prefix LQ with RF Mode, 18:TwoDecimalsVerticalSpeed, 19:RightJustifyTunedParamName, 21:OneDecimalAttitude, 23:ShortenPluscode</field>
+        <field name="Bitmask">0:UseDecimalPack, 1:InvertedWindArrow, 2:InvertedAHRoll, 3:Convert feet to miles at 5280ft instead of 10000ft, 4:DisableCrosshair, 5:TranslateArrows, 6:AviationStyleAH, 7:Prefix LQ with RF Mode, 18:TwoDecimalsVerticalSpeed, 19:RightJustifyTunedParamName, 21:OneDecimalAttitude</field>
       </param>
       <param humanName="OSD Font" name="OSD_FONT" documentation="This sets which OSD font to use. It is an integer from 0 to the number of fonts available" user="Standard">
         <field name="RebootRequired">True</field>
