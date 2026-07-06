@@ -1192,9 +1192,15 @@ board. The tone buzzer goes on the WS2812 **LED** pad (`PA1`, remapped from
 `TIM5_CH2` to the unused `TIM2_CH2`, marked `ALARM`); it costs the
 addressable-LED-strip output, **no** servo/motor output, and keeps the
 onboard status LED. Board ID is inherited (`Holybro-KakuteF4-Wing`).
-Together with the **`MatekH743-bdshot`** (Holybro H743 Wing, bidirectional
-DShot), both are added as **light-v0.2-beta** assets. Wire a *passive*
-buzzer to the LED pad — see the board's `Readme.md`.
+For `KakuteF4-Wing-Buzz`, wire a *passive* buzzer to the LED pad — see the
+board's `Readme.md`.
+
+Alongside it, the **`MatekH743-bdshot`** (Matek **H743-WING**, bidirectional
+DShot) is also added as a **light-v0.2-beta** asset — but it is a *stock
+upstream* board, **not** a fork `*-Buzz` variant: it already carries an
+onboard buzzer (GPIO single-tone on `PA15`, since bidirectional DShot claims
+the `TIM2` timer the non-bdshot base uses for a multi-tone `ALARM`), so no
+external buzzer wiring is needed.
 
 #### Hardware requirements
 
