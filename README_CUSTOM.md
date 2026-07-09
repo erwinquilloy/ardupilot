@@ -1656,6 +1656,19 @@ pick **Upload file…** and point at the JSON.
   wind alignment. Shaped the anchor semantics (measure from the
   plane's decision-time position, not always from home) and the
   soft-fallback-vs-hard-fence design.
+- **[MUSTARDTIGERFPV](https://github.com/MUSTARDTIGERFPV)** — the
+  ArduPilot `AP_Radar` peer-aircraft radar implementation
+  (`35f5f0ef4f`, March 2023) that this fork forward-ported wholesale
+  into the 4.6.3 base. See the
+  [Peer-aircraft radar](#peer-aircraft-radar-inav-radar--formationflight)
+  section.
+- **[OlivierC-FR](https://github.com/OlivierC-FR)** and the
+  **[FormationFlight](https://github.com/FormationFlight/FormationFlight)
+  project** — the original
+  [ESP32-INAV-Radar](https://github.com/OlivierC-FR/ESP32-INAV-Radar)
+  and its active successor FormationFlight, whose
+  `MSP2_SET_RADAR_POS` (`0x100B`) wire format the radar feature
+  consumes and stays compatible with.
 - **Upstream ArduPilot dev team** — the underlying platform.
 - The `LAND_WIND_BIAS` / `LAND_WIND_DIST` / `LAND_WIND_STRICT`
   wind-aware DO_LAND_START selection family is original to this
