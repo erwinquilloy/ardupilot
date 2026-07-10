@@ -1155,7 +1155,7 @@ HAL_MSP_RADAR_ENABLED   = AP_RADAR_ENABLED && HAL_MSP_ENABLED
 i.e. radar follows MSP. Override in a hwdef with `define AP_RADAR_ENABLED 0`
 to force-strip it on a flash-constrained board.
 
-## Fit on the 5 fork-supported boards
+## Fit on the 6 fork-supported boards
 
 Measured against the **light variant** at v0.2-beta with radar +
 LAND_WIND_DIST + LAND_WIND_STRICT on:
@@ -1165,6 +1165,7 @@ LAND_WIND_DIST + LAND_WIND_STRICT on:
 | speedybeef4v3 | 1 MB | **53.4 KB** | Ships — most headroom |
 | MatekF405-STD | 1 MB | **47.0 KB** | Ships — new in v0.2-beta |
 | MatekF405-TE-bdshot | 1 MB | **42.5 KB** | Ships |
+| omnibusf4pro | 1 MB | **41.6 KB** | Ships — Omnibus F4 Pro FPV FC |
 | SpeedyBeeF405WING | 1 MB | **29.7 KB** | Ships |
 | MatekF405-Wing-bdshot | 1 MB | **27.6 KB** | Ships — tightest of the F4 fleet |
 
@@ -1261,6 +1262,14 @@ notes and wiring photos live in the board's `Readme.md`.
 - **Dropped:** `LongBowF405WING` (was unmeasured in v0.1-beta and
   no bench-verified data yet) and `KakuteH7-Wing` (2 MB H7 board,
   outside the "tight 1 MB F4" focus of the light variant).
+
+**Post-v0.2-beta fleet addition:**
+- **Added:** `omnibusf4pro` (Omnibus F4 Pro) — user-requested. A stock
+  upstream 1 MB F405 FPV flight controller (MPU6000/BMI270 IMU, BMP280
+  baro, onboard OSD), so no fork hwdef work was needed — it already pulls
+  in `minimize_fpv_osd.inc`. Measured **41.6 KB free** on the light variant
+  (940,436 B of 1 MB used), right in the middle of the F4 fleet's headroom
+  band. Shipped as a light-release asset alongside the boards above.
 
 If a 1 MB F4 board overflows, the cheapest first trim is
 `define HAL_SOARING_ENABLED 0` in that board's hwdef (Plane soaring
