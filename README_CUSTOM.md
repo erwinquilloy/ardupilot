@@ -1155,7 +1155,31 @@ HAL_MSP_RADAR_ENABLED   = AP_RADAR_ENABLED && HAL_MSP_ENABLED
 i.e. radar follows MSP. Override in a hwdef with `define AP_RADAR_ENABLED 0`
 to force-strip it on a flash-constrained board.
 
-## Fit on the 6 fork-supported boards
+## Full release fleet (`full-v0.2-beta`)
+
+The fork ships two parallel per-board release tracks — `full-v0.2-beta`
+(this branch) and `light-v0.2-beta` (the light branch). Both carry the
+**identical fork feature set**; they differ only in which hardware
+backends are compiled in. A board's version string tells you which you
+flashed: the light build appends ` Light`
+(`... ArduCustom v0.2-beta Light (…)`), the full build has no suffix.
+
+The **full** fleet is built from `master_custom_4.6.3` with every upstream
+backend plus the fork additions, scoped to boards with the flash headroom
+to carry all of it — H7 / 2 MB targets. (1 MB F4 boards overflow the full
+build; flash those from the light release instead.)
+
+| Board | MCU / Flash | Status |
+|---|---|---|
+| MatekH743-bdshot | H7 / 2 MB | Ships — Matek H743-WING (bidirectional DShot) |
+| KakuteH7-Wing | H7 / 2 MB | Ships — Holybro Kakute H743 Wing |
+
+Both keep hundreds of KB free with the full backend set (exact figures in
+the release notes). `KakuteH7-Wing` is the very board dropped from the
+*light* fleet for being an H7 — it belongs here, where the extra flash is
+an asset, not overkill.
+
+## Light release fleet (`light-v0.2-beta`) — the 6 flash-constrained F4 boards
 
 Measured against the **light variant** at v0.2-beta with radar +
 LAND_WIND_DIST + LAND_WIND_STRICT on:
@@ -1615,11 +1639,21 @@ pick **Upload file…** and point at the JSON.
 
 # Branch / repository layout
 
-- `master_custom_4.6.3` — current mainline. All ongoing work goes here.
+- `master_custom_4.6.3` — full-variant mainline (this branch). All
+  ongoing work goes here; the light branch follows via periodic merge.
+- `master_custom_4.6.3_light` — light variant. Same fork feature set,
+  with rarely-used hardware backends stripped to fit 1 MB F4 flash.
+  Merged forward from `master_custom_4.6.3` after each change.
 - `master_custom` — legacy 2022-era fork from upstream 4.3.0-dev.
   Frozen reference, do not develop on it.
 - `legacy-pre-rebase-2026` — tag pointing at the last commit of the
   legacy mainline.
+
+**Releases:** two parallel per-board tracks — `full-v0.2-beta` (H7 / 2 MB
+boards, built from this branch) and `light-v0.2-beta` (1 MB F4 boards,
+built from the light branch). Each asset is
+`<board>_plane_bin_<variant>-<tag>_.zip` with the 4 build products
+(`arduplane`, `.apj`, `.bin`, `_with_bl.hex`).
 
 ---
 
