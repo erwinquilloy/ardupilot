@@ -1,5 +1,33 @@
 ArduPilot Plane Release Notes:
 ------------------------------------------------------------------
+v0.3-beta (fork: master_custom_4.6.3 / _light) — serial port numbering matched to chip UART numbers
+
+Serial port numbering matched to chip UART numbers
+- On boards whose stock ArduPilot SERIAL_ORDER was scrambled, SERIALn
+  now equals the silkscreen UARTn pad again, restoring the mapping that
+  shipped in ArduCustom custom-v11.3 and earlier. The pad marked
+  "TX2/RX2" is SERIAL2 (not SERIAL6), "TX3/RX3" is SERIAL3, etc.
+- Affected boards:
+    MatekF405-TE(-bdshot)  SERIAL_ORDER -> OTG1 USART1 USART2 USART3 UART4 UART5 USART6
+    MatekF405-STD          SERIAL_ORDER -> OTG1 USART1 USART2 USART3 UART4 UART5
+    omnibusf4pro           SERIAL_ORDER -> OTG1 USART1 EMPTY USART3 UART4 EMPTY USART6
+    MatekH743(-bdshot)     SERIAL_ORDER -> OTG1 USART1 USART2 USART3 UART4 EMPTY USART6 UART7 UART8 OTG2
+- omnibusf4pro has no USART2 / UART5, so SERIAL2 / SERIAL5 are EMPTY
+  placeholders that keep USART3=SERIAL3 and USART6=SERIAL6 aligned.
+- Like v11.3 this is a SERIAL_ORDER-only change: no serial protocol
+  defaults were added, so ports fall on the stock per-index defaults
+  (S1/S2 MAVLink, S3/S4 GPS, rest off). Set SERIALx_PROTOCOL to match
+  your wiring as before.
+- KakuteH7-Wing is intentionally left on upstream numbering (it was
+  never remapped in v11.3).
+
+WARNING (upgrade from any prior v0.2-beta build on the four boards
+above): your saved SERIALx_PROTOCOL / _BAUD / _OPTIONS values now point
+at different physical UARTs. Re-check your serial config after flashing
+-- GPS, telemetry and RC (CRSF/ELRS) may need reassigning to the new
+SERIALn. See README_CUSTOM.md "Serial port numbering" for the full map.
+
+------------------------------------------------------------------
 v0.2-beta (fork: master_custom_4.6.3 / _light) — radar bench-verified + LAND_WIND_DIST/STRICT
 
 LAND_WIND_DIST — distance cap for LAND_WIND_BIAS
