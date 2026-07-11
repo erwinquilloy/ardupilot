@@ -89,25 +89,6 @@ Fork-specific board work covers:
   to preserve flash budget). LongBow's existing upstream attempt used
   `#undef`/`#define` which is a hwdef comment, not a directive —
   fixed by dropping the `#`.
-- **Serial port numbering matched to chip UART numbers** on the boards
-  whose stock `SERIAL_ORDER` was scrambled, restoring the mapping that
-  shipped in ArduCustom `custom-v11.3` and earlier. On these boards
-  `SERIALn` now equals the silkscreen `UARTn` pad (e.g. the pad marked
-  `TX2/RX2` is `SERIAL2`, not `SERIAL6`), removing the mismatch that
-  confused users. Affected: `MatekF405-TE(-bdshot)`, `MatekF405-STD`,
-  `omnibusf4pro`, `MatekH743(-bdshot)`. `omnibusf4pro` has no USART2 /
-  UART5, so `SERIAL2` / `SERIAL5` are `EMPTY` placeholders that keep the
-  rest aligned. Like v11.3 this is a `SERIAL_ORDER`-only change (no
-  protocol defaults added), so default protocols fall on the stock
-  per-index defaults (S1/S2 MAVLink, S3/S4 GPS) — set `SERIALx_PROTOCOL`
-  to match your wiring as before.
-  > ⚠️ **Upgrade note:** if you are moving from stock-upstream serial
-  > numbering (any prior v0.2-beta build) on these four boards, your
-  > saved `SERIALx_PROTOCOL` / `_BAUD` / `_OPTIONS` values now point at
-  > different physical UARTs. Re-check your serial config after flashing
-  > — GPS, telemetry and RC (CRSF/ELRS) may need reassigning to the new
-  > `SERIALn`. `KakuteH7-Wing` is intentionally left on upstream
-  > numbering (it was never remapped in v11.3).
 - All stock-upstream boards build and run as-is, including: SpeedyBee
   F405 / F405 Wing / F405 V3 / F405 V4 / F405 AIO / F405 Mini,
   CoreWing F405 Wing, Lefei Longbow F405 Wing, FlyingRC F405 mini,
@@ -764,6 +745,32 @@ Boards that benefit: every F4 board in the supported list
 SpeedyBee F405 / Wing / V3 / V4 / AIO / Mini, CoreWing F405 Wing,
 Lefei Longbow F405 Wing, FlyingRC F405 mini). H7 boards have
 abundant RAM and weren't affected.
+
+## Serial port numbering matched to chip UART numbers
+
+On the boards whose stock ArduPilot `SERIAL_ORDER` was scrambled, `SERIALn`
+now equals the silkscreen `UARTn` pad again — restoring the mapping that
+shipped in ArduCustom `custom-v11.3` and earlier. The pad marked `TX2/RX2`
+is `SERIAL2` (not `SERIAL6`), `TX3/RX3` is `SERIAL3`, and so on, removing the
+mismatch that confused users (e.g. an ELRS receiver wired to the `RX2/TX2`
+pads showing up on `SERIAL6`).
+
+Affected boards: `MatekF405-TE(-bdshot)`, `MatekF405-STD`, `omnibusf4pro`,
+`MatekH743(-bdshot)`. `omnibusf4pro` has no USART2 / UART5, so `SERIAL2` /
+`SERIAL5` are `EMPTY` placeholders that keep `USART3=SERIAL3` and
+`USART6=SERIAL6` aligned. `KakuteH7-Wing` is intentionally left on upstream
+numbering (it was never remapped in v11.3, and its connectors are labelled
+functionally rather than by chip UART number).
+
+Like v11.3 this is a `SERIAL_ORDER`-only change (no protocol defaults added),
+so default protocols fall on the stock per-index defaults (S1/S2 MAVLink,
+S3/S4 GPS) — set `SERIALx_PROTOCOL` to match your wiring.
+
+> ⚠️ **Upgrade note:** moving from stock-upstream serial numbering (any prior
+> v0.2-beta build) on the four affected boards means saved `SERIALx_PROTOCOL`
+> / `_BAUD` / `_OPTIONS` values now point at different physical UARTs.
+> Re-check your serial config after flashing — GPS, telemetry and RC
+> (CRSF/ELRS) may need reassigning to the new `SERIALn`.
 
 ## `is_flying` heuristic — fixed thresholds
 
