@@ -1,8 +1,11 @@
 # ArduPlane Custom Build — **LIGHT VARIANT**
 
-> 🪶 **This is the light variant of the fork.** A stripped-down build
-> that fits more easily on F4 boards. For the full-features build, see
-> the [`master_custom_4.6.3`](../../tree/master_custom_4.6.3) branch.
+> 🪶 **This is the light variant of the fork** — a stripped-down build that
+> fits more easily on 1 MB F4 boards.
+> **⬇ Download:** [`light-v0.3-beta` release](https://github.com/erwinquilloy/ardupilot/releases/tag/light-v0.3-beta).
+> **Full variant** (H7 / 2 MB, every backend compiled in): see the
+> [`master_custom_4.6.3`](../../tree/master_custom_4.6.3) branch README, or the
+> [`full-v0.3-beta` release](https://github.com/erwinquilloy/ardupilot/releases/tag/full-v0.3-beta).
 
 ## What's stripped vs. the full variant
 
