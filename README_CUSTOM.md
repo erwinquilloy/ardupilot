@@ -3,10 +3,13 @@
 > 🛠️ **This is the full variant of the fork** — every hardware backend
 > upstream ArduPlane 4.6.3 ships, plus this fork's additions. Larger
 > binary, fits comfortably on H7 / F7 / large-flash F4 targets.
-> **⬇ Download:** [`full-v0.3-beta` release](https://github.com/erwinquilloy/ardupilot/releases/tag/full-v0.3-beta).
+> **⬇ Download:** grab the newest `full-v*` build from the
+> [**Releases** page](https://github.com/erwinquilloy/ardupilot/releases)
+> (every version, newest first — the latest is `full-v0.3-beta`).
 > **Light variant** (1 MB F4, fewer GPS / RC / battery / rangefinder backends): see the
 > [light variant `README_CUSTOM.md`](https://github.com/erwinquilloy/ardupilot/blob/master_custom_4.6.3_light/README_CUSTOM.md),
-> or the [`light-v0.3-beta` release](https://github.com/erwinquilloy/ardupilot/releases/tag/light-v0.3-beta).
+> or the `light-v*` builds on the same
+> [Releases page](https://github.com/erwinquilloy/ardupilot/releases).
 
 A curated fork of ArduPlane, rebased onto upstream **ArduPlane 4.6.3**
 (tag `Plane-4.6.3`, commit `3fc7011a7d`). This branch carries a set of
