@@ -4,8 +4,8 @@
 > fits more easily on 1 MB F4 boards.
 > **⬇ Download:** [`light-v0.3-beta` release](https://github.com/erwinquilloy/ardupilot/releases/tag/light-v0.3-beta).
 > **Full variant** (H7 / 2 MB, every backend compiled in): see the
-> [`master_custom_4.6.3`](../../tree/master_custom_4.6.3) branch README, or the
-> [`full-v0.3-beta` release](https://github.com/erwinquilloy/ardupilot/releases/tag/full-v0.3-beta).
+> [full variant `README_CUSTOM.md`](https://github.com/erwinquilloy/ardupilot/blob/master_custom_4.6.3/README_CUSTOM.md),
+> or the [`full-v0.3-beta` release](https://github.com/erwinquilloy/ardupilot/releases/tag/full-v0.3-beta).
 
 ## What's stripped vs. the full variant
 
