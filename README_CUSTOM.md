@@ -972,10 +972,13 @@ seeded non-zero to search a range, sign of the seed picks polarity.
 |----:|--------------------------------------------|-----------------------------------------------------|
 | 18  | `OPTION_TWO_DECIMALS_VERTICAL_SPEED`       | Vspeed shown to 2 decimals                          |
 | 21  | `OPTION_ONE_DECIMAL_ATTITUDE`              | Pitch / roll shown to 1 decimal (default ON)        |
+| 23  | `OPTION_SHORTEN_PLUSCODE`                  | Strip leading digits from the plus code panel when near home |
 
-> `OSD_OPTIONS` bit 23 (`ShortenPluscode`) was **removed** along with the
-> plus code element it modified (see
-> [Deliberately *not* included](#deliberately-not-included)).
+> **Plus code (OLC):** the `OSDx_PLUSCODE_*` Open Location Code panel is
+> compiled in on **both variants** from v1.0 — the light variant forces it on
+> for every board including the 1 MB F4s (~2–3 KB flash), and the full variant
+> uses the upstream `BOARD_FLASH_SIZE > 1024` gate (its boards are H7).
+> `OSD_OPTIONS` bit 23 shortens the code when the aircraft is near home.
 
 ## Tunables added
 
@@ -1590,12 +1593,6 @@ Items evaluated and deliberately skipped, with reasoning:
   (`8aafe85f6f`); needs reconciliation, not a parallel port
 - **`#164` Plane-only OSD element gating** — namespace cleanup with no
   Plane-only benefit; this build targets Plane only
-- **Plus code (OLC) OSD element** — dropped fork-wide. A user survey showed
-  little demand, so `HAL_PLUSCODE_ENABLE` is forced to `0` in `AP_OLC.h` on
-  **all** boards (upstream enables it by default on `BOARD_FLASH_SIZE > 1024`
-  boards). The `OSDx_PLUSCODE_*` Open Location Code panel is not compiled in
-  on any board — F4 or H7 — and the related `OSD_OPTIONS` bit 23
-  (`ShortenPluscode`) was removed from the bitmask with it.
 
 ---
 
