@@ -263,6 +263,7 @@ const AP_Param::GroupInfo RC_Channel::var_info[] = {
     // @Values{Copter, Rover, Plane, Blimp, Sub}:  218:Loweheiser throttle
     // @Values{Copter}: 219:Transmitter Tuning
     // @Values{Plane}: 200:Servos Auto Trim
+    // @Values{Plane}: 251:RTL Autoland Commit
     // @Values{All-Vehicles}: 300:Scripting1, 301:Scripting2, 302:Scripting3, 303:Scripting4, 304:Scripting5, 305:Scripting6, 306:Scripting7, 307:Scripting8, 308:Scripting9, 309:Scripting10, 310:Scripting11, 311:Scripting12, 312:Scripting13, 313:Scripting14, 314:Scripting15, 315:Scripting16
     // @Values{All-Vehicles}: 316:Stop-Restart Scripting
     // @User: Standard
