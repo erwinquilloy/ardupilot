@@ -174,6 +174,8 @@ void RC_Channel_Plane::init_aux_function(const RC_Channel::AUX_FUNC ch_option,
     // needed, the handler reads ch_flag at runtime.
     case AUX_FUNC::AUTOTUNE_MODE:
     case AUX_FUNC::SERVOS_AUTO_TRIM:
+    // Fork: RTL_AUTOLAND_COMMIT flag defaults to "hold"; set on switch read.
+    case AUX_FUNC::RTL_AUTOLAND_COMMIT:
 #if AP_TUNING_ENABLED
     case AUX_FUNC::TUNE_PARAM_SELECT:
 #endif
@@ -472,6 +474,25 @@ bool RC_Channel_Plane::do_aux_function(const AUX_FUNC ch_option, const AuxSwitch
             break;
         case AuxSwitchPos::LOW:
             plane.emergency_landing = false;
+            break;
+        }
+        break;
+
+    // Fork: RTL_AUTOLAND_COMMIT (251) -- HIGH allows a RTL_AUTOLAND=1 return
+    // to jump from the home loiter into the DO_LAND_START landing sequence;
+    // LOW keeps it loitering at home. Only the RTL trigger block acts on this
+    // flag (mode_rtl.cpp), and only when the switch is assigned, so unassigned
+    // setups are unaffected.
+    case AUX_FUNC::RTL_AUTOLAND_COMMIT:
+        switch (ch_flag) {
+        case AuxSwitchPos::HIGH:
+            plane.rtl_autoland_commit = true;
+            gcs().send_text(MAV_SEVERITY_INFO, "RTL autoland: commit");
+            break;
+        case AuxSwitchPos::MIDDLE:
+        case AuxSwitchPos::LOW:
+            plane.rtl_autoland_commit = false;
+            gcs().send_text(MAV_SEVERITY_INFO, "RTL autoland: hold");
             break;
         }
         break;
