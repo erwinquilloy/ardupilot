@@ -1,5 +1,32 @@
 ArduPilot Plane Release Notes:
 ------------------------------------------------------------------
+v1.0 (fork: master_custom_4.6.3 / _light) — first stable release
+
+First non-beta release. Built on ArduPlane 4.6.3; everything stock
+4.6.3 does still applies underneath the ArduCustom additions. See
+README_CUSTOM.md for the full feature and parameter reference.
+
+New
+- RTL Autoland Commit (RCx_OPTION = 251): with RTL_AUTOLAND = 1 the
+  aircraft holds over the home loiter until an assigned switch is set
+  HIGH, then commits to DO_LAND_START. Bypassed during RC failsafe so
+  a link-loss RTL still lands. Plane-only; gates RTL_AUTOLAND = 1.
+
+Changed
+- Plus code (OLC) OSD element now ships on BOTH variants. The light
+  variant enables it on every board including the 1 MB F4s (previously
+  off on light); the full variant already carried it.
+
+Carried from v0.3-beta
+- Serial-port numbering matched to the chip UARTs (SERIALn =
+  USARTn/UARTn) on boards whose stock SERIAL_ORDER was scrambled.
+
+WARNING (upgrade from an older build on the remapped boards --
+MatekF405-TE/STD, omnibusf4pro, MatekH743): saved SERIALx_PROTOCOL /
+_BAUD / _OPTIONS now point at different physical UARTs. Re-check GPS,
+telemetry and RC (CRSF/ELRS) wiring after flashing.
+
+------------------------------------------------------------------
 v0.3-beta (fork: master_custom_4.6.3 / _light) — serial port numbering matched to chip UART numbers
 
 Serial port numbering matched to chip UART numbers
