@@ -20,10 +20,10 @@
 #include <AP_HAL/AP_HAL_Boards.h>
 
 #ifndef HAL_PLUSCODE_ENABLE
-// fork: plus code (OLC) OSD element dropped fork-wide - low user demand
-// (survey). Off on every board including H7 (upstream default was
-// BOARD_FLASH_SIZE > 1024). See README_CUSTOM "Deliberately not included".
-#define HAL_PLUSCODE_ENABLE 0
+// Plus code (OLC) OSD element enabled from v1.0. The light variant forces it
+// on for every board including the 1 MB F4s (~2-3 KB flash); the full variant
+// keeps the upstream BOARD_FLASH_SIZE > 1024 gate (its boards are H7).
+#define HAL_PLUSCODE_ENABLE 1
 #endif
 
 
