@@ -35,7 +35,7 @@
 //
 // Sets ORIGINAL_FWSTR to the bare THISFIRMWARE so anything that
 // specifically wants the upstream "ArduPlane V4.6.3" can still get it.
-#define FORK_VERSION "v0.3-beta"
+#define FORK_VERSION "v1.0"
 
 /*
   allow vendors to set AP_CUSTOM_FIRMWARE_STRING in hwdef.dat
