@@ -295,6 +295,12 @@ public:
 
         TUNE_PARAM_SELECT  = 250, // 3-position switch selects TUNE_PARAM / PARAM2 / PARAM3 (plane only)
 
+        // Fork: RTL_AUTOLAND_COMMIT (plane only). When assigned, a
+        // RTL_AUTOLAND=1 return holds at the home loiter until this switch is
+        // HIGH, then commits to the DO_LAND_START landing sequence. LOW/unset
+        // at the home loiter => keep loitering. Not assigned => no change.
+        RTL_AUTOLAND_COMMIT = 251,
+
         // inputs 248-249 are reserved for the Skybrush fork at
         // https://github.com/skybrush-io/ardupilot
 

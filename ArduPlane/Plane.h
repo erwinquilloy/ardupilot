@@ -913,6 +913,9 @@ private:
         // the plane is still in the descent/climb to home altitude.
         bool reached_home_altitude;
         bool loitering = false;  // fork loiter-radius OSD: true when RTL has reached the home loiter
+        // fork RTL_AUTOLAND_COMMIT: one-shot latch so the "holding" GCS notice
+        // is sent once per RTL entry while the commit switch gates the jump
+        bool autoland_hold_announced;
         // fork PR #194: emergency-landing state machine timestamp + status (replaces the auto_state.* bools from PR #150)
         uint32_t emergency_landing_tstamp_ms;
         FSEmergencyLandingStatus emergency_landing_status = FSEmergencyLandingStatus::INACTIVE;
@@ -1364,6 +1367,9 @@ private:
 
     // RC_Channel.cpp
     bool emergency_landing;
+    // fork RTL_AUTOLAND_COMMIT (RCx_OPTION 251): mirrors the aux switch --
+    // HIGH allows the RTL->DO_LAND_START jump, LOW holds at the home loiter
+    bool rtl_autoland_commit;
 
     // vehicle specific waypoint info helpers
     bool get_wp_distance_m(float &distance) const override;

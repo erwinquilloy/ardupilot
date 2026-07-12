@@ -19,6 +19,8 @@ bool ModeRTL::_enter()
     // fork PR #194: reset the emergency-landing state machine on each fresh RTL entry
     plane.rtl.emergency_landing_status = Plane::FSEmergencyLandingStatus::INACTIVE;
     plane.rtl.emergency_landing_tstamp_ms = 0;
+    // fork RTL_AUTOLAND_COMMIT: re-arm the one-shot "holding" notice
+    plane.rtl.autoland_hold_announced = false;
 
     // Fork PR #180 port: seed dynamic loiter radius / direction from
     // RTL_RADIUS (falling back to WP_LOITER_RAD if RTL_RADIUS = 0) so
@@ -373,9 +375,36 @@ void ModeRTL::navigate()
     plane.update_loiter(lrintf(plane.loiter.radius));
 
     if (!plane.auto_state.checked_for_autoland) {
-        if ((plane.g.rtl_autoland == RtlAutoland::RTL_IMMEDIATE_DO_LAND_START) ||
+        // Fork RTL_AUTOLAND_COMMIT (RCx_OPTION 251): when this switch is
+        // assigned, a RTL_AUTOLAND=1 return holds at the home loiter until the
+        // switch is HIGH. This lets the pilot loiter over home and pick the
+        // commit moment, and defers the wind-biased DO_LAND_START selection
+        // (try_upwind_jump_to_landing_sequence) until the wind estimate has
+        // settled. Switch unassigned => commit_gated is false => behaviour is
+        // exactly upstream. Only gates the return-then-land case; RTL_AUTOLAND=2
+        // (immediate) never loiters at home so it is left ungated.
+        //
+        // Safety: never hold during RC failsafe. If the link is lost the pilot
+        // cannot flip the switch to commit, so holding would loiter at home
+        // until the battery dies. Dropping the gate here makes a failsafe RTL
+        // autoland exactly like stock RTL_AUTOLAND=1. If the link recovers
+        // before touchdown, in_rc_failsafe() clears and the gate re-engages
+        // (reverts to holding for the pilot).
+        const bool commit_gated =
+            (plane.g.rtl_autoland == RtlAutoland::RTL_THEN_DO_LAND_START) &&
+            (rc().find_channel_for_option(RC_Channel::AUX_FUNC::RTL_AUTOLAND_COMMIT) != nullptr) &&
+            !plane.rtl_autoland_commit &&
+            !rc().in_rc_failsafe();
+
+        if (commit_gated) {
+            // keep loitering; announce the hold once we've settled on the circle
+            if (plane.reached_loiter_target() && !plane.rtl.autoland_hold_announced) {
+                plane.rtl.autoland_hold_announced = true;
+                GCS_SEND_TEXT(MAV_SEVERITY_INFO, "RTL: holding, AUTOLAND switch to land");
+            }
+        } else if ((plane.g.rtl_autoland == RtlAutoland::RTL_IMMEDIATE_DO_LAND_START) ||
             (plane.g.rtl_autoland == RtlAutoland::RTL_THEN_DO_LAND_START &&
-            plane.reached_loiter_target() && 
+            plane.reached_loiter_target() &&
             labs(plane.calc_altitude_error_cm()) < 1000)) {
                 // we've reached the RTL point, see if we have a landing sequence
                 if (plane.have_position && plane.try_upwind_jump_to_landing_sequence(plane.current_loc)) {
