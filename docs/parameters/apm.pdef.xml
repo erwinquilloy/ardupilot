@@ -1051,6 +1051,17 @@
       <param humanName="Landing sequence wind bias" name="ArduPlane:LAND_WIND_BIAS" documentation="Bias the DO_LAND_START selection toward landings whose final approach faces into the wind. Applies wherever ArduPlane chooses a landing sequence -- RTL autoland, fence breach, battery failsafe, and the GCS DO_LAND_START command. 0 = pure nearest-distance (upstream default; no behaviour change). &gt; 0 = penalise tailwind candidates; full headwind earns no penalty. Falls back to nearest-distance when AHRS wind estimate &lt; 1 m/s or an approach heading cannot be derived from the mission sequence." user="Standard">
         <field name="Range">0 1</field>
       </param>
+      <param humanName="Max distance for LAND_WIND_BIAS" name="ArduPlane:LAND_WIND_DIST" documentation="Companion cap for LAND_WIND_BIAS. Purpose: keep the wind bias from steering the plane toward a much farther DO_LAND_START just because its approach happens to align with the wind. DO_LAND_START candidates whose start-of-approach sits farther than this many metres from the plane's position at decision time are excluded from selection entirely; wind-bias scoring is then applied only to the candidates within the cap. Under RTL_AUTOLAND=1 the selection runs after the plane has reached the RTL loiter point, so the cap is effectively measured from HOME; under RTL_AUTOLAND=2 / battery failsafe / GCS DO_LAND_START the cap is measured from wherever the plane is when the trigger fires. If no candidate is within the cap, the behaviour is controlled by LAND_WIND_STRICT: 0 (default) falls back to upstream nearest-across-all so the plane still lands; 1 refuses to autoland so RTL keeps loitering. 0 (default) here disables the cap entirely; the bias is applied to every candidate as before." user="Standard">
+        <field name="Units">m</field>
+        <field name="UnitText">meters</field>
+        <field name="Range">0 20000</field>
+      </param>
+      <param humanName="LAND_WIND_DIST hard-fence toggle" name="ArduPlane:LAND_WIND_STRICT" documentation="Chooses what happens when LAND_WIND_DIST eliminates every DO_LAND_START candidate. Purpose: let the pilot decide whether the distance cap is a soft preference or a hard boundary. 0 (default, soft fallback): fall through to upstream nearest-across-all so the plane still attempts a landing even if the only survivor is far outside the cap -- preserves the failsafe safety-net at the cost of occasionally flying farther than the cap suggests. 1 (hard fence): refuse the autoland when nothing survives the cap; RTL stays in RTL and the plane keeps loitering at HOME/rally requiring pilot intervention. LAND_WIND_DIST becomes a true hard boundary for autoland. WARNING: under strict mode a battery failsafe with no in-cap landing will not attempt to land -- the plane loiters until the battery dies. Only enable strict if you understand this trade-off. Ignored when LAND_WIND_DIST = 0 (no cap) or LAND_WIND_BIAS = 0 (whole feature off)." user="Standard">
+        <values>
+          <value code="0">Soft fallback (attempt landing anyway)</value>
+          <value code="1">Hard fence (loiter instead of landing)</value>
+        </values>
+      </param>
       <param humanName="Enable 12-position FLTMODE_CH" name="ArduPlane:FLTMODE_EXT" documentation="Default 0 = upstream 6-position behaviour (FLTMODE1..6 only). 1 = 12-position switch: the FLTMODE_CH PWM range is split into 12 bins of 75 us each mapping to FLTMODE1..6 and FLTMODE7..12. Useful when an OpenTX/EdgeTX multi-position switch source needs more than six slots. The 12 bins are tight (75 us each); use only with stable digital RC links (SBUS / CRSF / ELRS) and not analogue PPM." user="Advanced">
         <values>
           <value code="0">Disabled</value>
@@ -9295,6 +9306,7 @@
           <value code="181">QuickTune</value>
           <value code="46">RC Override Enable</value>
           <value code="4">RTL</value>
+          <value code="251">RTL Autoland Commit</value>
           <value code="28">Relay1 On/Off</value>
           <value code="34">Relay2 On/Off</value>
           <value code="35">Relay3 On/Off</value>
@@ -9403,6 +9415,7 @@
           <value code="181">QuickTune</value>
           <value code="46">RC Override Enable</value>
           <value code="4">RTL</value>
+          <value code="251">RTL Autoland Commit</value>
           <value code="28">Relay1 On/Off</value>
           <value code="34">Relay2 On/Off</value>
           <value code="35">Relay3 On/Off</value>
@@ -9511,6 +9524,7 @@
           <value code="181">QuickTune</value>
           <value code="46">RC Override Enable</value>
           <value code="4">RTL</value>
+          <value code="251">RTL Autoland Commit</value>
           <value code="28">Relay1 On/Off</value>
           <value code="34">Relay2 On/Off</value>
           <value code="35">Relay3 On/Off</value>
@@ -9619,6 +9633,7 @@
           <value code="181">QuickTune</value>
           <value code="46">RC Override Enable</value>
           <value code="4">RTL</value>
+          <value code="251">RTL Autoland Commit</value>
           <value code="28">Relay1 On/Off</value>
           <value code="34">Relay2 On/Off</value>
           <value code="35">Relay3 On/Off</value>
@@ -18187,6 +18202,18 @@
       <param humanName="ASPD_DEM_Y" name="OSD1_ASPD_DEM_Y" documentation="Vertical position on screen">
         <field name="Range">0 15</field>
       </param>
+      <param humanName="RADAR_EN" name="OSD1_RADAR_EN" documentation="Displays iNav Radar / FormationFlight peer-aircraft info (callsign letter A..F + bearing arrow + distance + relative altitude). Cycles through healthy peers every 2 seconds.">
+        <values>
+          <value code="0">Disabled</value>
+          <value code="1">Enabled</value>
+        </values>
+      </param>
+      <param humanName="RADAR_X" name="OSD1_RADAR_X" documentation="Horizontal position on screen">
+        <field name="Range">0 29</field>
+      </param>
+      <param humanName="RADAR_Y" name="OSD1_RADAR_Y" documentation="Vertical position on screen">
+        <field name="Range">0 15</field>
+      </param>
     </parameters>
     <parameters name="OSD2_">
       <param humanName="Enable screen" name="OSD2_ENABLE" documentation="Enable this screen" user="Standard">
@@ -19196,6 +19223,18 @@
         <field name="Range">0 29</field>
       </param>
       <param humanName="ASPD_DEM_Y" name="OSD2_ASPD_DEM_Y" documentation="Vertical position on screen">
+        <field name="Range">0 15</field>
+      </param>
+      <param humanName="RADAR_EN" name="OSD2_RADAR_EN" documentation="Displays iNav Radar / FormationFlight peer-aircraft info (callsign letter A..F + bearing arrow + distance + relative altitude). Cycles through healthy peers every 2 seconds.">
+        <values>
+          <value code="0">Disabled</value>
+          <value code="1">Enabled</value>
+        </values>
+      </param>
+      <param humanName="RADAR_X" name="OSD2_RADAR_X" documentation="Horizontal position on screen">
+        <field name="Range">0 29</field>
+      </param>
+      <param humanName="RADAR_Y" name="OSD2_RADAR_Y" documentation="Vertical position on screen">
         <field name="Range">0 15</field>
       </param>
     </parameters>
@@ -20209,6 +20248,18 @@
       <param humanName="ASPD_DEM_Y" name="OSD3_ASPD_DEM_Y" documentation="Vertical position on screen">
         <field name="Range">0 15</field>
       </param>
+      <param humanName="RADAR_EN" name="OSD3_RADAR_EN" documentation="Displays iNav Radar / FormationFlight peer-aircraft info (callsign letter A..F + bearing arrow + distance + relative altitude). Cycles through healthy peers every 2 seconds.">
+        <values>
+          <value code="0">Disabled</value>
+          <value code="1">Enabled</value>
+        </values>
+      </param>
+      <param humanName="RADAR_X" name="OSD3_RADAR_X" documentation="Horizontal position on screen">
+        <field name="Range">0 29</field>
+      </param>
+      <param humanName="RADAR_Y" name="OSD3_RADAR_Y" documentation="Vertical position on screen">
+        <field name="Range">0 15</field>
+      </param>
     </parameters>
     <parameters name="OSD4_">
       <param humanName="Enable screen" name="OSD4_ENABLE" documentation="Enable this screen" user="Standard">
@@ -21220,6 +21271,18 @@
       <param humanName="ASPD_DEM_Y" name="OSD4_ASPD_DEM_Y" documentation="Vertical position on screen">
         <field name="Range">0 15</field>
       </param>
+      <param humanName="RADAR_EN" name="OSD4_RADAR_EN" documentation="Displays iNav Radar / FormationFlight peer-aircraft info (callsign letter A..F + bearing arrow + distance + relative altitude). Cycles through healthy peers every 2 seconds.">
+        <values>
+          <value code="0">Disabled</value>
+          <value code="1">Enabled</value>
+        </values>
+      </param>
+      <param humanName="RADAR_X" name="OSD4_RADAR_X" documentation="Horizontal position on screen">
+        <field name="Range">0 29</field>
+      </param>
+      <param humanName="RADAR_Y" name="OSD4_RADAR_Y" documentation="Vertical position on screen">
+        <field name="Range">0 15</field>
+      </param>
     </parameters>
     <parameters name="OSD5_">
       <param humanName="Enable screen" name="OSD5_ENABLE" documentation="Enable this screen" user="Standard">
@@ -22229,6 +22292,18 @@
         <field name="Range">0 29</field>
       </param>
       <param humanName="ASPD_DEM_Y" name="OSD5_ASPD_DEM_Y" documentation="Vertical position on screen">
+        <field name="Range">0 15</field>
+      </param>
+      <param humanName="RADAR_EN" name="OSD5_RADAR_EN" documentation="Displays iNav Radar / FormationFlight peer-aircraft info (callsign letter A..F + bearing arrow + distance + relative altitude). Cycles through healthy peers every 2 seconds.">
+        <values>
+          <value code="0">Disabled</value>
+          <value code="1">Enabled</value>
+        </values>
+      </param>
+      <param humanName="RADAR_X" name="OSD5_RADAR_X" documentation="Horizontal position on screen">
+        <field name="Range">0 29</field>
+      </param>
+      <param humanName="RADAR_Y" name="OSD5_RADAR_Y" documentation="Vertical position on screen">
         <field name="Range">0 15</field>
       </param>
     </parameters>
@@ -24421,6 +24496,15 @@
         <field name="Bitmask">0:Use pitch when nose or tail-in for faster weathervaning</field>
       </param>
     </parameters>
+    <parameters name="RADAR">
+      <param humanName="Radar sensor type" name="RADAR_TYPE" documentation="Selects the peer-aircraft radar backend. MSP listens for iNav Radar / FormationFlight position frames (MSP2_SET_RADAR_POS 0x100B) on any serial port configured as MSP (SERIALn_PROTOCOL=33)." user="Standard">
+        <values>
+          <value code="0">None</value>
+          <value code="1">MSP</value>
+        </values>
+        <field name="RebootRequired">True</field>
+      </param>
+    </parameters>
     <parameters name="RALLY_">
       <param humanName="Rally Total" name="RALLY_TOTAL" documentation="Number of rally points currently loaded" user="Advanced">
 </param>
@@ -24596,6 +24680,7 @@
           <value code="181">QuickTune</value>
           <value code="46">RC Override Enable</value>
           <value code="4">RTL</value>
+          <value code="251">RTL Autoland Commit</value>
           <value code="28">Relay1 On/Off</value>
           <value code="34">Relay2 On/Off</value>
           <value code="35">Relay3 On/Off</value>
@@ -24735,6 +24820,7 @@
           <value code="181">QuickTune</value>
           <value code="46">RC Override Enable</value>
           <value code="4">RTL</value>
+          <value code="251">RTL Autoland Commit</value>
           <value code="28">Relay1 On/Off</value>
           <value code="34">Relay2 On/Off</value>
           <value code="35">Relay3 On/Off</value>
@@ -24874,6 +24960,7 @@
           <value code="181">QuickTune</value>
           <value code="46">RC Override Enable</value>
           <value code="4">RTL</value>
+          <value code="251">RTL Autoland Commit</value>
           <value code="28">Relay1 On/Off</value>
           <value code="34">Relay2 On/Off</value>
           <value code="35">Relay3 On/Off</value>
@@ -25013,6 +25100,7 @@
           <value code="181">QuickTune</value>
           <value code="46">RC Override Enable</value>
           <value code="4">RTL</value>
+          <value code="251">RTL Autoland Commit</value>
           <value code="28">Relay1 On/Off</value>
           <value code="34">Relay2 On/Off</value>
           <value code="35">Relay3 On/Off</value>
@@ -25152,6 +25240,7 @@
           <value code="181">QuickTune</value>
           <value code="46">RC Override Enable</value>
           <value code="4">RTL</value>
+          <value code="251">RTL Autoland Commit</value>
           <value code="28">Relay1 On/Off</value>
           <value code="34">Relay2 On/Off</value>
           <value code="35">Relay3 On/Off</value>
@@ -25291,6 +25380,7 @@
           <value code="181">QuickTune</value>
           <value code="46">RC Override Enable</value>
           <value code="4">RTL</value>
+          <value code="251">RTL Autoland Commit</value>
           <value code="28">Relay1 On/Off</value>
           <value code="34">Relay2 On/Off</value>
           <value code="35">Relay3 On/Off</value>
@@ -25430,6 +25520,7 @@
           <value code="181">QuickTune</value>
           <value code="46">RC Override Enable</value>
           <value code="4">RTL</value>
+          <value code="251">RTL Autoland Commit</value>
           <value code="28">Relay1 On/Off</value>
           <value code="34">Relay2 On/Off</value>
           <value code="35">Relay3 On/Off</value>
@@ -25569,6 +25660,7 @@
           <value code="181">QuickTune</value>
           <value code="46">RC Override Enable</value>
           <value code="4">RTL</value>
+          <value code="251">RTL Autoland Commit</value>
           <value code="28">Relay1 On/Off</value>
           <value code="34">Relay2 On/Off</value>
           <value code="35">Relay3 On/Off</value>
@@ -25708,6 +25800,7 @@
           <value code="181">QuickTune</value>
           <value code="46">RC Override Enable</value>
           <value code="4">RTL</value>
+          <value code="251">RTL Autoland Commit</value>
           <value code="28">Relay1 On/Off</value>
           <value code="34">Relay2 On/Off</value>
           <value code="35">Relay3 On/Off</value>
@@ -25847,6 +25940,7 @@
           <value code="181">QuickTune</value>
           <value code="46">RC Override Enable</value>
           <value code="4">RTL</value>
+          <value code="251">RTL Autoland Commit</value>
           <value code="28">Relay1 On/Off</value>
           <value code="34">Relay2 On/Off</value>
           <value code="35">Relay3 On/Off</value>
@@ -25986,6 +26080,7 @@
           <value code="181">QuickTune</value>
           <value code="46">RC Override Enable</value>
           <value code="4">RTL</value>
+          <value code="251">RTL Autoland Commit</value>
           <value code="28">Relay1 On/Off</value>
           <value code="34">Relay2 On/Off</value>
           <value code="35">Relay3 On/Off</value>
@@ -26125,6 +26220,7 @@
           <value code="181">QuickTune</value>
           <value code="46">RC Override Enable</value>
           <value code="4">RTL</value>
+          <value code="251">RTL Autoland Commit</value>
           <value code="28">Relay1 On/Off</value>
           <value code="34">Relay2 On/Off</value>
           <value code="35">Relay3 On/Off</value>
@@ -26264,6 +26360,7 @@
           <value code="181">QuickTune</value>
           <value code="46">RC Override Enable</value>
           <value code="4">RTL</value>
+          <value code="251">RTL Autoland Commit</value>
           <value code="28">Relay1 On/Off</value>
           <value code="34">Relay2 On/Off</value>
           <value code="35">Relay3 On/Off</value>
@@ -26403,6 +26500,7 @@
           <value code="181">QuickTune</value>
           <value code="46">RC Override Enable</value>
           <value code="4">RTL</value>
+          <value code="251">RTL Autoland Commit</value>
           <value code="28">Relay1 On/Off</value>
           <value code="34">Relay2 On/Off</value>
           <value code="35">Relay3 On/Off</value>
@@ -26542,6 +26640,7 @@
           <value code="181">QuickTune</value>
           <value code="46">RC Override Enable</value>
           <value code="4">RTL</value>
+          <value code="251">RTL Autoland Commit</value>
           <value code="28">Relay1 On/Off</value>
           <value code="34">Relay2 On/Off</value>
           <value code="35">Relay3 On/Off</value>
@@ -26681,6 +26780,7 @@
           <value code="181">QuickTune</value>
           <value code="46">RC Override Enable</value>
           <value code="4">RTL</value>
+          <value code="251">RTL Autoland Commit</value>
           <value code="28">Relay1 On/Off</value>
           <value code="34">Relay2 On/Off</value>
           <value code="35">Relay3 On/Off</value>

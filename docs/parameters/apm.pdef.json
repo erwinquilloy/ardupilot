@@ -11970,6 +11970,7 @@
         "217": "Mount2 Yaw",
         "22": "Parachute Release",
         "24": "Auto Mission Reset",
+        "251": "RTL Autoland Commit",
         "27": "Retract Mount1",
         "28": "Relay1 On/Off",
         "29": "Landing Gear",
@@ -12081,6 +12082,7 @@
         "217": "Mount2 Yaw",
         "22": "Parachute Release",
         "24": "Auto Mission Reset",
+        "251": "RTL Autoland Commit",
         "27": "Retract Mount1",
         "28": "Relay1 On/Off",
         "29": "Landing Gear",
@@ -12192,6 +12194,7 @@
         "217": "Mount2 Yaw",
         "22": "Parachute Release",
         "24": "Auto Mission Reset",
+        "251": "RTL Autoland Commit",
         "27": "Retract Mount1",
         "28": "Relay1 On/Off",
         "29": "Landing Gear",
@@ -12303,6 +12306,7 @@
         "217": "Mount2 Yaw",
         "22": "Parachute Release",
         "24": "Auto Mission Reset",
+        "251": "RTL Autoland Commit",
         "27": "Retract Mount1",
         "28": "Relay1 On/Off",
         "29": "Landing Gear",
@@ -25617,6 +25621,30 @@
         "low": "0"
       }
     },
+    "OSD1_RADAR_EN": {
+      "Description": "Displays iNav Radar / FormationFlight peer-aircraft info (callsign letter A..F + bearing arrow + distance + relative altitude). Cycles through healthy peers every 2 seconds.",
+      "DisplayName": "RADAR_EN",
+      "Values": {
+        "0": "Disabled",
+        "1": "Enabled"
+      }
+    },
+    "OSD1_RADAR_X": {
+      "Description": "Horizontal position on screen",
+      "DisplayName": "RADAR_X",
+      "Range": {
+        "high": "29",
+        "low": "0"
+      }
+    },
+    "OSD1_RADAR_Y": {
+      "Description": "Vertical position on screen",
+      "DisplayName": "RADAR_Y",
+      "Range": {
+        "high": "15",
+        "low": "0"
+      }
+    },
     "OSD1_RC_ANT_EN": {
       "Description": "Displays the current RC link active antenna",
       "DisplayName": "RC_ANT_EN",
@@ -27638,6 +27666,30 @@
       "DisplayName": "POWER_Y",
       "Range": {
         "high": "21",
+        "low": "0"
+      }
+    },
+    "OSD2_RADAR_EN": {
+      "Description": "Displays iNav Radar / FormationFlight peer-aircraft info (callsign letter A..F + bearing arrow + distance + relative altitude). Cycles through healthy peers every 2 seconds.",
+      "DisplayName": "RADAR_EN",
+      "Values": {
+        "0": "Disabled",
+        "1": "Enabled"
+      }
+    },
+    "OSD2_RADAR_X": {
+      "Description": "Horizontal position on screen",
+      "DisplayName": "RADAR_X",
+      "Range": {
+        "high": "29",
+        "low": "0"
+      }
+    },
+    "OSD2_RADAR_Y": {
+      "Description": "Vertical position on screen",
+      "DisplayName": "RADAR_Y",
+      "Range": {
+        "high": "15",
         "low": "0"
       }
     },
@@ -29665,6 +29717,30 @@
         "low": "0"
       }
     },
+    "OSD3_RADAR_EN": {
+      "Description": "Displays iNav Radar / FormationFlight peer-aircraft info (callsign letter A..F + bearing arrow + distance + relative altitude). Cycles through healthy peers every 2 seconds.",
+      "DisplayName": "RADAR_EN",
+      "Values": {
+        "0": "Disabled",
+        "1": "Enabled"
+      }
+    },
+    "OSD3_RADAR_X": {
+      "Description": "Horizontal position on screen",
+      "DisplayName": "RADAR_X",
+      "Range": {
+        "high": "29",
+        "low": "0"
+      }
+    },
+    "OSD3_RADAR_Y": {
+      "Description": "Vertical position on screen",
+      "DisplayName": "RADAR_Y",
+      "Range": {
+        "high": "15",
+        "low": "0"
+      }
+    },
     "OSD3_RC_ANT_EN": {
       "Description": "Displays the current RC link active antenna",
       "DisplayName": "RC_ANT_EN",
@@ -31689,6 +31765,30 @@
         "low": "0"
       }
     },
+    "OSD4_RADAR_EN": {
+      "Description": "Displays iNav Radar / FormationFlight peer-aircraft info (callsign letter A..F + bearing arrow + distance + relative altitude). Cycles through healthy peers every 2 seconds.",
+      "DisplayName": "RADAR_EN",
+      "Values": {
+        "0": "Disabled",
+        "1": "Enabled"
+      }
+    },
+    "OSD4_RADAR_X": {
+      "Description": "Horizontal position on screen",
+      "DisplayName": "RADAR_X",
+      "Range": {
+        "high": "29",
+        "low": "0"
+      }
+    },
+    "OSD4_RADAR_Y": {
+      "Description": "Vertical position on screen",
+      "DisplayName": "RADAR_Y",
+      "Range": {
+        "high": "15",
+        "low": "0"
+      }
+    },
     "OSD4_RC_ANT_EN": {
       "Description": "Displays the current RC link active antenna",
       "DisplayName": "RC_ANT_EN",
@@ -33710,6 +33810,30 @@
       "DisplayName": "POWER_Y",
       "Range": {
         "high": "21",
+        "low": "0"
+      }
+    },
+    "OSD5_RADAR_EN": {
+      "Description": "Displays iNav Radar / FormationFlight peer-aircraft info (callsign letter A..F + bearing arrow + distance + relative altitude). Cycles through healthy peers every 2 seconds.",
+      "DisplayName": "RADAR_EN",
+      "Values": {
+        "0": "Disabled",
+        "1": "Enabled"
+      }
+    },
+    "OSD5_RADAR_X": {
+      "Description": "Horizontal position on screen",
+      "DisplayName": "RADAR_X",
+      "Range": {
+        "high": "29",
+        "low": "0"
+      }
+    },
+    "OSD5_RADAR_Y": {
+      "Description": "Vertical position on screen",
+      "DisplayName": "RADAR_Y",
+      "Range": {
+        "high": "15",
         "low": "0"
       }
     },
@@ -37128,6 +37252,25 @@
       },
       "User": "Standard"
     },
+    "LAND_WIND_DIST": {
+      "Description": "Companion cap for LAND_WIND_BIAS. Purpose: keep the wind bias from steering the plane toward a much farther DO_LAND_START just because its approach happens to align with the wind. DO_LAND_START candidates whose start-of-approach sits farther than this many metres from the plane's position at decision time are excluded from selection entirely; wind-bias scoring is then applied only to the candidates within the cap. Under RTL_AUTOLAND=1 the selection runs after the plane has reached the RTL loiter point, so the cap is effectively measured from HOME; under RTL_AUTOLAND=2 / battery failsafe / GCS DO_LAND_START the cap is measured from wherever the plane is when the trigger fires. If no candidate is within the cap, the behaviour is controlled by LAND_WIND_STRICT: 0 (default) falls back to upstream nearest-across-all so the plane still lands; 1 refuses to autoland so RTL keeps loitering. 0 (default) here disables the cap entirely; the bias is applied to every candidate as before.",
+      "DisplayName": "Max distance for LAND_WIND_BIAS",
+      "Range": {
+        "high": "20000",
+        "low": "0"
+      },
+      "Units": "m",
+      "User": "Standard"
+    },
+    "LAND_WIND_STRICT": {
+      "Description": "Chooses what happens when LAND_WIND_DIST eliminates every DO_LAND_START candidate. Purpose: let the pilot decide whether the distance cap is a soft preference or a hard boundary. 0 (default, soft fallback): fall through to upstream nearest-across-all so the plane still attempts a landing even if the only survivor is far outside the cap -- preserves the failsafe safety-net at the cost of occasionally flying farther than the cap suggests. 1 (hard fence): refuse the autoland when nothing survives the cap; RTL stays in RTL and the plane keeps loitering at HOME/rally requiring pilot intervention. LAND_WIND_DIST becomes a true hard boundary for autoland. WARNING: under strict mode a battery failsafe with no in-cap landing will not attempt to land -- the plane loiters until the battery dies. Only enable strict if you understand this trade-off. Ignored when LAND_WIND_DIST = 0 (no cap) or LAND_WIND_BIAS = 0 (whole feature off).",
+      "DisplayName": "LAND_WIND_DIST hard-fence toggle",
+      "User": "Standard",
+      "Values": {
+        "0": "Soft fallback (attempt landing anyway)",
+        "1": "Hard fence (loiter instead of landing)"
+      }
+    },
     "LEVEL_ROLL_LIMIT": {
       "Description": "This controls the maximum bank angle in degrees during flight modes where level flight is desired, such as in the final stages of landing, and during auto takeoff. This should be a small angle (such as 5 degrees) to prevent a wing hitting the runway during takeoff or landing. Setting this to zero will completely disable heading hold on auto takeoff while below 5 meters and during the flare portion of a final landing approach.",
       "DisplayName": "Level flight roll limit",
@@ -37479,7 +37622,7 @@
       }
     },
     "STICK_MIXING": {
-      "Description": "When enabled, this adds user stick input to the control surfaces in auto modes, allowing the user to have some degree of flight control without changing modes. Default is 0 (Disabled) in this build \u00e2\u20ac\u201d pilot stick input is ignored in AUTO/RTL/GUIDED. Set to 1 to use \"fly by wire\" mixing, which controls the roll and pitch in the same way that the FBWA mode does. Set to 3 to apply yaw only while in quadplane modes, such as during automatic VTOL takeoff/landing.",
+      "Description": "When enabled, this adds user stick input to the control surfaces in auto modes, allowing the user to have some degree of flight control without changing modes. Default is 0 (Disabled) in this build \u2014 pilot stick input is ignored in AUTO/RTL/GUIDED. Set to 1 to use \"fly by wire\" mixing, which controls the roll and pitch in the same way that the FBWA mode does. Set to 3 to apply yaw only while in quadplane modes, such as during automatic VTOL takeoff/landing.",
       "DisplayName": "Stick Mixing",
       "User": "Advanced",
       "Values": {
@@ -40485,6 +40628,18 @@
       "User": "Standard"
     }
   },
+  "RADAR": {
+    "RADAR_TYPE": {
+      "Description": "Selects the peer-aircraft radar backend. MSP listens for iNav Radar / FormationFlight position frames (MSP2_SET_RADAR_POS 0x100B) on any serial port configured as MSP (SERIALn_PROTOCOL=33).",
+      "DisplayName": "Radar sensor type",
+      "RebootRequired": "True",
+      "User": "Standard",
+      "Values": {
+        "0": "None",
+        "1": "MSP"
+      }
+    }
+  },
   "RALLY_": {
     "RALLY_INCL_HOME": {
       "Description": "Controls if Home is included as a Rally point (i.e. as a safe landing place) for RTL",
@@ -40668,6 +40823,7 @@
         "217": "Mount2 Yaw",
         "22": "Parachute Release",
         "24": "Auto Mission Reset",
+        "251": "RTL Autoland Commit",
         "27": "Retract Mount1",
         "28": "Relay1 On/Off",
         "29": "Landing Gear",
@@ -40833,6 +40989,7 @@
         "217": "Mount2 Yaw",
         "22": "Parachute Release",
         "24": "Auto Mission Reset",
+        "251": "RTL Autoland Commit",
         "27": "Retract Mount1",
         "28": "Relay1 On/Off",
         "29": "Landing Gear",
@@ -40998,6 +41155,7 @@
         "217": "Mount2 Yaw",
         "22": "Parachute Release",
         "24": "Auto Mission Reset",
+        "251": "RTL Autoland Commit",
         "27": "Retract Mount1",
         "28": "Relay1 On/Off",
         "29": "Landing Gear",
@@ -41163,6 +41321,7 @@
         "217": "Mount2 Yaw",
         "22": "Parachute Release",
         "24": "Auto Mission Reset",
+        "251": "RTL Autoland Commit",
         "27": "Retract Mount1",
         "28": "Relay1 On/Off",
         "29": "Landing Gear",
@@ -41328,6 +41487,7 @@
         "217": "Mount2 Yaw",
         "22": "Parachute Release",
         "24": "Auto Mission Reset",
+        "251": "RTL Autoland Commit",
         "27": "Retract Mount1",
         "28": "Relay1 On/Off",
         "29": "Landing Gear",
@@ -41493,6 +41653,7 @@
         "217": "Mount2 Yaw",
         "22": "Parachute Release",
         "24": "Auto Mission Reset",
+        "251": "RTL Autoland Commit",
         "27": "Retract Mount1",
         "28": "Relay1 On/Off",
         "29": "Landing Gear",
@@ -41658,6 +41819,7 @@
         "217": "Mount2 Yaw",
         "22": "Parachute Release",
         "24": "Auto Mission Reset",
+        "251": "RTL Autoland Commit",
         "27": "Retract Mount1",
         "28": "Relay1 On/Off",
         "29": "Landing Gear",
@@ -41823,6 +41985,7 @@
         "217": "Mount2 Yaw",
         "22": "Parachute Release",
         "24": "Auto Mission Reset",
+        "251": "RTL Autoland Commit",
         "27": "Retract Mount1",
         "28": "Relay1 On/Off",
         "29": "Landing Gear",
@@ -41988,6 +42151,7 @@
         "217": "Mount2 Yaw",
         "22": "Parachute Release",
         "24": "Auto Mission Reset",
+        "251": "RTL Autoland Commit",
         "27": "Retract Mount1",
         "28": "Relay1 On/Off",
         "29": "Landing Gear",
@@ -42153,6 +42317,7 @@
         "217": "Mount2 Yaw",
         "22": "Parachute Release",
         "24": "Auto Mission Reset",
+        "251": "RTL Autoland Commit",
         "27": "Retract Mount1",
         "28": "Relay1 On/Off",
         "29": "Landing Gear",
@@ -42318,6 +42483,7 @@
         "217": "Mount2 Yaw",
         "22": "Parachute Release",
         "24": "Auto Mission Reset",
+        "251": "RTL Autoland Commit",
         "27": "Retract Mount1",
         "28": "Relay1 On/Off",
         "29": "Landing Gear",
@@ -42483,6 +42649,7 @@
         "217": "Mount2 Yaw",
         "22": "Parachute Release",
         "24": "Auto Mission Reset",
+        "251": "RTL Autoland Commit",
         "27": "Retract Mount1",
         "28": "Relay1 On/Off",
         "29": "Landing Gear",
@@ -42648,6 +42815,7 @@
         "217": "Mount2 Yaw",
         "22": "Parachute Release",
         "24": "Auto Mission Reset",
+        "251": "RTL Autoland Commit",
         "27": "Retract Mount1",
         "28": "Relay1 On/Off",
         "29": "Landing Gear",
@@ -42813,6 +42981,7 @@
         "217": "Mount2 Yaw",
         "22": "Parachute Release",
         "24": "Auto Mission Reset",
+        "251": "RTL Autoland Commit",
         "27": "Retract Mount1",
         "28": "Relay1 On/Off",
         "29": "Landing Gear",
@@ -42978,6 +43147,7 @@
         "217": "Mount2 Yaw",
         "22": "Parachute Release",
         "24": "Auto Mission Reset",
+        "251": "RTL Autoland Commit",
         "27": "Retract Mount1",
         "28": "Relay1 On/Off",
         "29": "Landing Gear",
@@ -43143,6 +43313,7 @@
         "217": "Mount2 Yaw",
         "22": "Parachute Release",
         "24": "Auto Mission Reset",
+        "251": "RTL Autoland Commit",
         "27": "Retract Mount1",
         "28": "Relay1 On/Off",
         "29": "Landing Gear",
@@ -56792,7 +56963,7 @@
       "Values": {
         "0": "None",
         "1": "MegaSquirt EFI system",
-        "2": "L\u00c3\u00b6weheiser EFI system",
+        "2": "L\u00f6weheiser EFI system",
         "8": "Hirth engines"
       }
     },
