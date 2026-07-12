@@ -298,9 +298,9 @@ whenever `TKOFF_THR_IDLE` is configured.
 ### Pilot altitude control during TAKEOFF loiter
 
 After the initial climb in `TAKEOFF` mode, the plane enters a loiter
-circle around the target waypoint. The throttle stick now adjusts
-altitude during this loiter phase the same way FBW-B does it — push
-the stick up to climb, pull down to descend — so the pilot can settle
+circle around the target waypoint. The pitch (elevator) stick now
+adjusts altitude during this loiter phase the same way FBW-B does it —
+pull back to climb, push forward to descend — so the pilot can settle
 the plane at the right altitude before flipping to `AUTO` or `RTL`.
 
 No parameter to enable; behaviour is on whenever TAKEOFF is the active
