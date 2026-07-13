@@ -1190,22 +1190,23 @@ HAL_MSP_RADAR_ENABLED   = AP_RADAR_ENABLED && HAL_MSP_ENABLED
 i.e. radar follows MSP. Override in a hwdef with `define AP_RADAR_ENABLED 0`
 to force-strip it on a flash-constrained board.
 
-## Full release fleet (`full-v0.3-beta`)
+## Full release fleet (`full-v1.0`)
 
-The fork ships two parallel per-board release tracks — `full-v0.3-beta`
-(this branch) and `light-v0.3-beta` (the light branch). Both carry the
+The fork ships two parallel per-board release tracks — `full-v1.0`
+(this branch) and `light-v1.0` (the light branch). Both carry the
 **identical fork feature set**; they differ only in which hardware
 backends are compiled in. A board's version string tells you which you
 flashed: the light build appends ` Light`
-(`... ArduCustom v0.3-beta Light (…)`), the full build has no suffix.
+(`... ArduCustom v1.0 Light (…)`), the full build has no suffix.
 
 The **full** fleet is built from `master_custom_4.6.3` with every upstream
 backend plus the fork additions, scoped to boards with the flash headroom
-to carry all of it — H7 / 2 MB targets. (1 MB F4 boards overflow the full
-build; flash those from the light release instead.)
+to carry all of it — H7 / F7 / 2 MB targets. (1 MB F4 boards overflow the
+full build; flash those from the light release instead.)
 
 | Board | MCU / Flash | Status |
 |---|---|---|
+| MatekF765-Wing | F7 / 2 MB | Ships — Matek F765-WING (most flash headroom in the fleet, 521 KB free) |
 | MatekH743-bdshot | H7 / 2 MB | Ships — Matek H743-WING (bidirectional DShot) |
 | KakuteH7-Wing | H7 / 2 MB | Ships — Holybro Kakute H743 Wing |
 
@@ -1214,27 +1215,29 @@ the release notes). `KakuteH7-Wing`, an H7 with generous flash, is carried
 on **both** tracks — it belongs here where the extra headroom is an asset,
 and is also offered on the light release for convenience.
 
-## Light release fleet (`light-v0.3-beta`) — 9 boards (8 × 1 MB F4 + 1 × H7)
+## Light release fleet (`light-v1.0`) — 10 boards (8 × 1 MB F4 + 1 × H7 + 1 × F7)
 
-Measured against the **light variant** at v0.3-beta with radar +
+Measured against the **light variant** at v1.0 with radar +
 LAND_WIND_DIST + LAND_WIND_STRICT on:
 
 | Board | Flash | Free after fork features | Status |
 |---|---:|---:|---|
-| KakuteH7-Wing | 2 MB | **105.3 KB** | Ships — Holybro Kakute H743 Wing (H7; also on full) |
-| KakuteF4-Wing-Buzz | 1 MB | **81.2 KB** | Ships — Kakute F4 Wing + tone buzzer (see below) |
-| speedybeef4v3 | 1 MB | **53.0 KB** | Ships — most F4 headroom |
-| MatekF405-STD | 1 MB | **46.7 KB** | Ships |
-| MatekF405-TE-bdshot | 1 MB | **42.3 KB** | Ships |
-| omnibusf4pro | 1 MB | **41.5 KB** | Ships — Omnibus F4 Pro FPV FC |
-| SpeedyBeeF405WING | 1 MB | **29.5 KB** | Ships |
-| SpeedyBeeF405WING-Buzz | 1 MB | **29.1 KB** | Ships — SpeedyBee F405 WING + tone buzzer (see below) |
-| MatekF405-Wing-bdshot | 1 MB | **27.2 KB** | Ships — tightest of the F4 fleet |
+| MatekF765-Wing | 2 MB | **613.2 KB** | Ships — Matek F765-WING (F7; also on full) |
+| KakuteH7-Wing | 2 MB | **281.9 KB** | Ships — Holybro Kakute H743 Wing (H7; also on full) |
+| KakuteF4-Wing-Buzz | 1 MB | **80.2 KB** | Ships — Kakute F4 Wing + tone buzzer (see below) |
+| speedybeef4v3 | 1 MB | **52.0 KB** | Ships — most F4 headroom |
+| MatekF405-STD | 1 MB | **45.6 KB** | Ships |
+| MatekF405-TE-bdshot | 1 MB | **41.2 KB** | Ships |
+| omnibusf4pro | 1 MB | **40.4 KB** | Ships — Omnibus F4 Pro FPV FC |
+| SpeedyBeeF405WING | 1 MB | **28.7 KB** | Ships |
+| SpeedyBeeF405WING-Buzz | 1 MB | **28.4 KB** | Ships — SpeedyBee F405 WING + tone buzzer (see below) |
+| MatekF405-Wing-bdshot | 1 MB | **26.3 KB** | Ships — tightest of the F4 fleet |
 
 `MatekF405-Wing-bdshot` is now the canary board — first to bump the
 1 MB ceiling in any future upstream rebase or feature add. Worth
-watching going forward. (`KakuteH7-Wing`, an H7 / 2 MB target, is not
-flash-constrained here — it is carried on both tracks for convenience.)
+watching going forward. (`KakuteH7-Wing` and `MatekF765-Wing`, 2 MB H7/F7
+targets, are not flash-constrained here — they are carried on both tracks
+for convenience.)
 
 ### Tone-buzzer board variant: `SpeedyBeeF405WING-Buzz`
 
@@ -1360,6 +1363,18 @@ notes and wiring photos live in the board's `Readme.md`.
   be pulled from either track; it has ample flash for both variants.
 - **Now full-only:** `MatekH743-bdshot` — the other H7 board no longer ships
   as a light asset; it lives on `full-v0.3-beta`.
+
+**v1.0 fleet change vs v0.3-beta:**
+- **Added:** `MatekF765-Wing` (Matek **F765-WING**, F7 / 2 MB) — the first
+  F7 board in either fleet, shipped on **both** tracks (`full-v1.0` and
+  `light-v1.0`). Stock upstream board, no fork hwdef work needed. It has the
+  most headroom of any board here: **521.0 KB free** on full, **613.2 KB
+  free** on light.
+- Plus code (OLC) is now compiled into **every** light board, including the
+  1 MB F4s (it was already on full and on the H7 light build). The ~2–3 KB
+  cost trimmed each F4's free-flash figure above by roughly 1 KB versus
+  v0.3-beta; every board still clears its ceiling (tightest is
+  `MatekF405-Wing-bdshot` at 26.3 KB free).
 
 If a 1 MB F4 board overflows, the cheapest first trim is
 `define HAL_SOARING_ENABLED 0` in that board's hwdef (Plane soaring
