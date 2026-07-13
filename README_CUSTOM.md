@@ -10,6 +10,97 @@
 > or the `full-v*` builds on the same
 > [Releases page](https://github.com/erwinquilloy/ardupilot/releases).
 
+## Why flash this instead of stock ArduPlane 4.6.3?
+
+Everything stock ArduPlane 4.6.3 does still works underneath — this fork
+only **adds** on top (both variants carry the identical feature set; they
+differ only in which hardware backends are compiled in). If you fly
+long-range or FPV fixed-wing, these are the additions most worth flashing
+for. Each group links to its full reference below.
+
+### 🖥️ A much richer FPV / long-range OSD
+
+The single biggest visible difference from stock — dozens of new elements
+aimed at efficiency and situational awareness:
+
+- **Efficiency in Wh/km or mAh/km**, **resting cell voltage** (sag-free
+  pack health at a glance), and **battery used since arming**.
+- **End-of-flight stats grid** (distance, time, peak values) plus a
+  **persistent max-flight-time** record.
+- **Angle of attack**, **demanded vs actual airspeed**, attitude-corrected
+  **rangefinder AGL altitude**, longitudinal/lateral/vertical **G**, **peak
+  roll/pitch rates**, **auto-flap %**, **input throttle %**, **live tuning
+  param name + value**, and **loiter radius**.
+- **Under/over-speed warning flashes**, one/two-decimal polish on speed,
+  vertical speed and attitude, and a shortenable **plus code** home locator.
+
+→ [OSD additions](#osd-additions)
+
+### 🛟 Wind-aware autoland & a real failsafe glide-in
+
+Protecting the airframe when the link drops or the battery runs marginal:
+
+- **`LAND_WIND_BIAS` auto-picks the upwind `DO_LAND_START`**, with
+  **`LAND_WIND_DIST`** capping how far the wind bias may reach and
+  **`LAND_WIND_STRICT`** turning that cap into a hard fence — so a
+  battery-marginal RTL doesn't fly away to a distant wind-aligned approach.
+- **Emergency-landing state machine on RC failsafe**: instead of orbiting
+  home until the battery dies, it sinks to a glide altitude, aligns **into
+  wind**, glides down and disarms. Fully parameterised (`FS_ELAND_*`).
+- **RTL Autoland Commit** (`RCx_OPTION 251`): hold over home until you flip
+  a switch, then commit to the landing sequence (bypassed on failsafe).
+
+→ [Emergency landing](#emergency-landing-rc-failsafe) ·
+[RTL & failsafe behaviour](#rtl--failsafe-behaviour)
+
+### 🚀 Hand-launch & arming ergonomics
+
+Built for throwing a wing off your hand safely:
+
+- **`TKOFF_THR_IDLE`** idles the prop once armed and the stick is raised —
+  a clear "armed and ready" cue in the palm — with **`TKOFF_IDL_DELAY`** to
+  pause before the ramp.
+- **Pre-launch audio cues** and a **lost-vehicle alarm** on failsafe.
+- **Arm-switch safety**: an in-flight disarm **cuts throttle and drops to
+  FBWA** rather than killing the servos and dropping the plane out of the
+  sky. **`ARMING_MODE_SW`** auto-switches to TAKEOFF/AUTO after arming.
+- **`FLTMODE_EXT`** gives a full **12 flight-mode positions** on one channel.
+
+→ [Arming & takeoff](#arming--takeoff) · [Flight modes](#flight-modes)
+
+### 🎛️ Tune and take control in the air
+
+- **Knob-tunable pitch trim** (`PTCH_TRIM_DEG`, plus `Q_TRIM_PITCH` on
+  VTOL) and **three switchable tuning sets** (`TUNE_PARAM`/`PARAM2`/`PARAM3`)
+  — retune live without a laptop.
+- **AUTO → FBWA stick takeover**: nudge the sticks mid-mission to grab
+  manual control instantly, hand back by re-centring.
+- **Throttle stick sets target airspeed** in RTL/LOITER/CIRCLE/AUTO, plus
+  **pilot loiter radius + direction** control in LOITER/RTL.
+- Extra modes: **Course Hold** (heading hold) and **Auto Trim** as a mode.
+
+→ [Pitch trim & tuning](#pitch-trim--tuning) ·
+[Manual airspeed](#manual-airspeed-control-in-nav-modes) ·
+[AUTO → FBWA takeover](#auto--fbwa-stick-takeover)
+
+### 📡 Long-range extras
+
+- **Peer-aircraft radar** (iNav Radar / FormationFlight) — see other
+  aircraft on your OSD.
+- **Richer telemetry**: CRSF relative altitude + link quality, MSP/DJI
+  numeric-attitude fix, wind in km/h, vehicle UID.
+- **Expanded battery monitoring**: Wh accounting, cell count/voltage, and
+  capacity-remaining plus low/critical thresholds feeding the OSD readouts.
+
+→ [Peer-aircraft radar](#peer-aircraft-radar-inav-radar--formationflight) ·
+[Telemetry](#telemetry) ·
+[Battery monitoring](#battery-monitoring-ap_battmonitor)
+
+> Most additions are opt-in via parameters and change nothing until you
+> enable them — but a few **defaults do differ** from stock. Skim
+> [Behaviour changes vs upstream](#behaviour-changes-vs-upstream--migration-notes)
+> before your first flight.
+
 ## What's stripped vs. the full variant
 
 Aligned to the **strict 2022 light-variant definition** mf0o released,
