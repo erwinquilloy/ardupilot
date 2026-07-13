@@ -17,6 +17,12 @@ Changed
   variant enables it on every board including the 1 MB F4s (previously
   off on light); the full variant already carried it.
 
+Fleet
+- Added MatekF765-Wing (Matek F765-WING, F7 / 2 MB) to BOTH the full and
+  light release fleets -- the first F7 board in either fleet. Stock
+  upstream board, no fork hwdef work needed; huge headroom (521 KB free
+  on full, 613 KB free on light).
+
 Carried from v0.3-beta
 - Serial-port numbering matched to the chip UARTs (SERIALn =
   USARTn/UARTn) on boards whose stock SERIAL_ORDER was scrambled.
