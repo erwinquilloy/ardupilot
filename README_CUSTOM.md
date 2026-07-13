@@ -1306,7 +1306,7 @@ the release notes). `KakuteH7-Wing`, an H7 with generous flash, is carried
 on **both** tracks — it belongs here where the extra headroom is an asset,
 and is also offered on the light release for convenience.
 
-## Light release fleet (`light-v1.0`) — 10 boards (8 × 1 MB F4 + 1 × H7 + 1 × F7)
+## Light release fleet (`light-v1.0`) — 11 boards (9 × 1 MB F4 + 1 × H7 + 1 × F7)
 
 Measured against the **light variant** at v1.0 with radar +
 LAND_WIND_DIST + LAND_WIND_STRICT on:
@@ -1318,6 +1318,7 @@ LAND_WIND_DIST + LAND_WIND_STRICT on:
 | KakuteF4-Wing-Buzz | 1 MB | **80.2 KB** | Ships — Kakute F4 Wing + tone buzzer (see below) |
 | speedybeef4v3 | 1 MB | **52.0 KB** | Ships — most F4 headroom |
 | MatekF405-STD | 1 MB | **45.6 KB** | Ships |
+| AtomRCF405NAVI | 1 MB | **44.2 KB** | Ships — AtomRC F405 Navi FPV FC |
 | MatekF405-TE-bdshot | 1 MB | **41.2 KB** | Ships |
 | omnibusf4pro | 1 MB | **40.4 KB** | Ships — Omnibus F4 Pro FPV FC |
 | SpeedyBeeF405WING | 1 MB | **28.7 KB** | Ships |
@@ -1461,6 +1462,10 @@ notes and wiring photos live in the board's `Readme.md`.
   `light-v1.0`). Stock upstream board, no fork hwdef work needed. It has the
   most headroom of any board here: **521.0 KB free** on full, **613.2 KB
   free** on light.
+- **Added (light only):** `AtomRCF405NAVI` (AtomRC **F405 Navi**, 1 MB F4) —
+  stock upstream FPV board, no fork hwdef work needed. **44.2 KB free** on
+  light, right in the middle of the F4 headroom band. 1 MB F4 → light-only
+  (it overflows the full build, like the rest of the F4 fleet).
 - Plus code (OLC) is now compiled into **every** light board, including the
   1 MB F4s (it was already on full and on the H7 light build). The ~2–3 KB
   cost trimmed each F4's free-flash figure above by roughly 1 KB versus
