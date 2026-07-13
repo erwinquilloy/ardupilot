@@ -22,6 +22,9 @@ Fleet
   light release fleets -- the first F7 board in either fleet. Stock
   upstream board, no fork hwdef work needed; huge headroom (521 KB free
   on full, 613 KB free on light).
+- Added AtomRCF405NAVI (AtomRC F405 Navi, 1 MB F4) to the light fleet.
+  Stock upstream FPV board, no fork hwdef work needed; 44.2 KB free
+  (mid-F4-band headroom). Light-only -- a 1 MB F4 overflows the full build.
 
 Carried from v0.3-beta
 - Serial-port numbering matched to the chip UARTs (SERIALn =
