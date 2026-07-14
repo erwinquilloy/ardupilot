@@ -9,8 +9,15 @@ README_CUSTOM.md for the full feature and parameter reference.
 New
 - RTL Autoland Commit (RCx_OPTION = 251): with RTL_AUTOLAND = 1 the
   aircraft holds over the home loiter until an assigned switch is set
-  HIGH, then commits to DO_LAND_START. Bypassed during RC failsafe so
-  a link-loss RTL still lands. Plane-only; gates RTL_AUTOLAND = 1.
+  HIGH, then commits to DO_LAND_START. Plane-only; gates RTL_AUTOLAND = 1.
+- RTL_AUTOLAND_DLY (default 30 s): failsafe grace timer for the above.
+  On RC failsafe the switch can no longer be flipped, so the plane keeps
+  circling home for this many seconds (counted from when it reaches the
+  home loiter) before committing to the landing sequence -- long enough
+  that a brief RC dropout or a single-frame glitch can't trigger the
+  landing. If the link recovers within the window the switch gate
+  re-engages and the plane keeps holding. 0 = commit immediately on
+  failsafe (the pre-v1.0 behaviour).
 
 Changed
 - Plus code (OLC) OSD element now ships on BOTH variants. The light

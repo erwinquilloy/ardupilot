@@ -62,7 +62,9 @@ Protecting the airframe when the link drops or the battery runs marginal:
   home until the battery dies, it sinks to a glide altitude, aligns **into
   wind**, glides down and disarms. Fully parameterised (`FS_ELAND_*`).
 - **RTL Autoland Commit** (`RCx_OPTION 251`): hold over home until you flip
-  a switch, then commit to the landing sequence (bypassed on failsafe).
+  a switch, then commit to the landing sequence. On RC failsafe it waits
+  `RTL_AUTOLAND_DLY` seconds (default 30) before committing, so a brief
+  dropout can't trigger the landing.
 
 → [Emergency landing](#emergency-landing-rc-failsafe) ·
 [RTL & failsafe behaviour](#rtl--failsafe-behaviour)
@@ -238,9 +240,9 @@ adjustments. Exiting the mode stops the loop.
   give a meaning to 27 in a later release).
 
 ### RC aux switch entries (Plane)
-Plane's `RCx_OPTION` enum gains two entries so the pilot can put
-autotrim and autotune on momentary aux switches without burning a
-FLTMODE_n slot:
+Plane's `RCx_OPTION` enum gains three entries — two so the pilot can
+put autotrim and autotune on momentary aux switches without burning a
+FLTMODE_n slot, plus the RTL Autoland Commit gate:
 
 - **`RCx_OPTION = 17` — AUTOTUNE Mode.** Switches into Plane's
   AUTOTUNE flight mode (mode 8) on switch HIGH. Upstream had this
@@ -257,6 +259,11 @@ FLTMODE_n slot:
   so saved `RCx_OPTION = 200` params from mf0o-based builds keep
   working. (The legacy 2022 fork used slot 162 for the same option;
   re-save the param if you're migrating from the old fork.)
+- **`RCx_OPTION = 251` — RTL Autoland Commit.** Gates the RTL → landing
+  jump when `RTL_AUTOLAND = 1`: the plane holds at the home loiter until
+  you flip this switch HIGH, then commits to `DO_LAND_START`. See
+  [RTL & failsafe behaviour](#rtl--failsafe-behaviour) for the full
+  behaviour and the `RTL_AUTOLAND_DLY` failsafe grace timer.
 
 ### `FLTMODE_EXT` — 12-position FLTMODE_CH
 Default `0` keeps the upstream 6-position behaviour bit-for-bit. Set
@@ -512,6 +519,49 @@ Interactions:
 > `COURSE_HOLD_HEADING_CONTROL_WITH_YAW_STICK` feature. Update your
 > `FLIGHT_OPTIONS` saved value when migrating from the 2022 fork:
 > `1<<20` becomes `1<<24`.
+
+### RTL Autoland Commit (`RCx_OPTION 251`) — hold at home, commit on your command
+With `RTL_AUTOLAND = 1` the plane normally flies home and then jumps
+straight into the nearest `DO_LAND_START` landing sequence. Assign
+`RCx_OPTION = 251` to a two-position switch and that jump becomes
+**pilot-gated**: the plane holds at the home loiter (circling) until you
+flip the switch HIGH, then commits to the landing sequence. This lets
+you loiter over the field and pick the moment to land, and it defers the
+wind-biased `DO_LAND_START` selection (see `LAND_WIND_BIAS`) until the
+wind estimate has settled.
+
+Behaviour at a glance (with `RTL_AUTOLAND = 1` and the switch assigned):
+
+| Switch (`RCx_OPTION 251`) | RC link | What the plane does |
+| --- | --- | --- |
+| **LOW / hold** | OK | Circles the home loiter **indefinitely**, waiting for you. GCS: `RTL: holding, AUTOLAND switch to land` |
+| **HIGH / commit** | OK | **Commits immediately** — GCS `RTL autoland: commit`, RTL → AUTO, flies `DO_LAND_START` |
+| **LOW / hold** | RC failsafe, `RTL_AUTOLAND_DLY > 0` | Keeps circling home, then **commits after `RTL_AUTOLAND_DLY` s** (timed from reaching the loiter). GCS: `RTL autoland: FS, committing in <n>s` |
+| **LOW / hold** | RC failsafe, link recovers before the timer expires | Timer **resets**, gate re-engages → back to holding for you |
+| **LOW / hold** | RC failsafe, `RTL_AUTOLAND_DLY = 0` | **Commits immediately** (pre-v1.0 behaviour) |
+| **HIGH / commit** | RC failsafe | Already committed before the link dropped → lands |
+| **Unassigned** (any) | any | No hold — exactly **stock ArduPlane** (commits per `RTL_AUTOLAND` on reaching home) |
+
+> `RTL_AUTOLAND = 2` (go directly to the landing sequence) never loiters
+> at home, so it is **never gated** by this switch — only `RTL_AUTOLAND = 1`
+> is.
+
+**`RTL_AUTOLAND_DLY` — failsafe grace timer (default 30 s).** During RC
+failsafe you can no longer flip the switch, so the plane would otherwise
+commit to the landing immediately. `RTL_AUTOLAND_DLY` keeps it circling
+home for this many seconds (counted from when it settles at the home
+loiter) before committing — long enough that a brief dropout or a
+single-frame RC glitch can't trigger the landing. If the link recovers
+inside the window the gate re-engages and the plane goes back to holding
+for you; GCS shows `RTL autoland: FS, committing in <n>s` when the timer
+starts. Set `0` to commit immediately on failsafe (the pre-v1.0
+behaviour). Has no effect when the commit switch is unassigned or already
+in the commit position.
+
+> Why this exists: on a real flight a ~0.4 s ELRS dropout (with the
+> switch still in hold) dropped the gate and committed the landing. The
+> grace timer makes transient link glitches harmless while still
+> guaranteeing the plane lands if the link is genuinely gone.
 
 ### Lost-vehicle audio alarm during RC failsafe
 Once armed in RC failsafe, the lost-vehicle alarm fires. Reuses the
