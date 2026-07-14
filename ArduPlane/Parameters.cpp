@@ -825,6 +825,15 @@ const AP_Param::Info Plane::var_info[] = {
     // @User: Standard
     GSCALAR(rtl_autoland,         "RTL_AUTOLAND",   float(RtlAutoland::RTL_DISABLE)),
 
+    // @Param: RTL_AUTOLAND_DLY
+    // @DisplayName: RTL autoland commit failsafe delay
+    // @Description: Only used when RTL_AUTOLAND is 1 and an RCx_OPTION RTL Autoland Commit switch is assigned and held in the hold position. On RC failsafe the commit switch can no longer be flipped so the plane would normally commit to the DO_LAND_START sequence immediately. This parameter keeps the plane circling the home loiter for the given number of seconds (counting from when it has settled at the home loiter altitude) before committing, giving a transient RC dropout time to recover so the pilot keeps control. If the link recovers within this window the gate re-engages and the plane keeps holding for the pilot. 0 commits immediately on failsafe (legacy behaviour). Has no effect when the commit switch is unassigned or already in the commit position.
+    // @Units: s
+    // @Range: 0 600
+    // @Increment: 1
+    // @User: Standard
+    GSCALAR(rtl_autoland_commit_delay, "RTL_AUTOLAND_DLY", 30),
+
     // @Param: CRASH_ACC_THRESH
     // @DisplayName: Crash Deceleration Threshold
     // @Description: X-Axis deceleration threshold to notify the crash detector that there was a possible impact which helps disarm the motor quickly after a crash. This value should be much higher than normal negative x-axis forces during normal flight, check flight log files to determine the average IMU.x values for your aircraft and motor type. Higher value means less sensative (triggers on higher impact). For electric planes that don't vibrate much during fight a value of 25 is good (that's about 2.5G). For petrol/nitro planes you'll want a higher value. Set to 0 to disable the collision detector.
