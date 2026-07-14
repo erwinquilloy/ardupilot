@@ -363,6 +363,7 @@ public:
 
         k_param_pullup = 270,
         k_param_quicktune,
+        k_param_rtl_autoland_commit_delay,  // fork RTL_AUTOLAND_DLY: RC-failsafe grace before the gated autoland commit
     };
 
     AP_Int16 format_version;
@@ -374,6 +375,11 @@ public:
     AP_Int8 telem_delay;
 
     AP_Enum<RtlAutoland> rtl_autoland;
+
+    // fork RTL_AUTOLAND_DLY: seconds to keep circling the home loiter under RC
+    // failsafe before the RTL_AUTOLAND_COMMIT gate is dropped and the plane
+    // commits to the DO_LAND_START sequence. 0 = commit immediately (legacy).
+    AP_Int16 rtl_autoland_commit_delay;
 
     AP_Int8  crash_accel_threshold;
 

@@ -916,6 +916,12 @@ private:
         // fork RTL_AUTOLAND_COMMIT: one-shot latch so the "holding" GCS notice
         // is sent once per RTL entry while the commit switch gates the jump
         bool autoland_hold_announced;
+        // fork RTL_AUTOLAND_DLY: timestamp (ms) at which RC failsafe was first
+        // observed while the commit switch is gating and the plane has settled
+        // at the home loiter. 0 = not counting. The gate is held for
+        // RTL_AUTOLAND_DLY seconds from this stamp before the failsafe commit
+        // is allowed, giving a transient dropout time to recover.
+        uint32_t autoland_commit_fs_ms;
         // fork PR #194: emergency-landing state machine timestamp + status (replaces the auto_state.* bools from PR #150)
         uint32_t emergency_landing_tstamp_ms;
         FSEmergencyLandingStatus emergency_landing_status = FSEmergencyLandingStatus::INACTIVE;

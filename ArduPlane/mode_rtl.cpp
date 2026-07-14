@@ -21,6 +21,8 @@ bool ModeRTL::_enter()
     plane.rtl.emergency_landing_tstamp_ms = 0;
     // fork RTL_AUTOLAND_COMMIT: re-arm the one-shot "holding" notice
     plane.rtl.autoland_hold_announced = false;
+    // fork RTL_AUTOLAND_DLY: clear the RC-failsafe commit grace timer
+    plane.rtl.autoland_commit_fs_ms = 0;
 
     // Fork PR #180 port: seed dynamic loiter radius / direction from
     // RTL_RADIUS (falling back to WP_LOITER_RAD if RTL_RADIUS = 0) so
@@ -384,17 +386,52 @@ void ModeRTL::navigate()
         // exactly upstream. Only gates the return-then-land case; RTL_AUTOLAND=2
         // (immediate) never loiters at home so it is left ungated.
         //
-        // Safety: never hold during RC failsafe. If the link is lost the pilot
-        // cannot flip the switch to commit, so holding would loiter at home
-        // until the battery dies. Dropping the gate here makes a failsafe RTL
-        // autoland exactly like stock RTL_AUTOLAND=1. If the link recovers
-        // before touchdown, in_rc_failsafe() clears and the gate re-engages
-        // (reverts to holding for the pilot).
-        const bool commit_gated =
+        // Safety: without RTL_AUTOLAND_DLY we would never hold during RC
+        // failsafe -- if the link is lost the pilot cannot flip the switch to
+        // commit, so an indefinite hold would loiter at home until the battery
+        // dies. RTL_AUTOLAND_DLY relaxes this to a bounded grace window: keep
+        // circling home for that many seconds (counting from when we settle at
+        // the home loiter) before dropping the gate and committing exactly like
+        // stock RTL_AUTOLAND=1. This gives a transient dropout time to recover
+        // and debounces single-frame glitches. If the link recovers before the
+        // window expires, in_rc_failsafe() clears, the timer resets and the
+        // gate re-engages (reverts to holding for the pilot). DLY = 0 keeps the
+        // legacy immediate-commit-on-failsafe behaviour.
+        const bool have_commit_switch =
             (plane.g.rtl_autoland == RtlAutoland::RTL_THEN_DO_LAND_START) &&
             (rc().find_channel_for_option(RC_Channel::AUX_FUNC::RTL_AUTOLAND_COMMIT) != nullptr) &&
-            !plane.rtl_autoland_commit &&
-            !rc().in_rc_failsafe();
+            !plane.rtl_autoland_commit;
+
+        bool commit_gated = false;
+        if (have_commit_switch) {
+            if (!rc().in_rc_failsafe()) {
+                // link is up: hold indefinitely so the pilot picks the moment
+                commit_gated = true;
+                plane.rtl.autoland_commit_fs_ms = 0;
+            } else {
+                const uint32_t commit_delay_ms =
+                    uint32_t(MAX(0, plane.g.rtl_autoland_commit_delay.get())) * 1000;
+                if (commit_delay_ms == 0) {
+                    // legacy: no grace window, commit immediately on failsafe
+                    commit_gated = false;
+                } else if (plane.reached_loiter_target()) {
+                    // circling home under failsafe: run the grace timer. Gated on
+                    // reached_loiter_target only (not reached_home_altitude) so the
+                    // window always eventually expires and can never hold until the
+                    // battery dies if the plane cannot settle to RTL_ALT_HOME.
+                    if (plane.rtl.autoland_commit_fs_ms == 0) {
+                        plane.rtl.autoland_commit_fs_ms = now;
+                        GCS_SEND_TEXT(MAV_SEVERITY_WARNING,
+                                      "RTL autoland: FS, committing in %us",
+                                      (unsigned)(commit_delay_ms / 1000));
+                    }
+                    commit_gated = (now - plane.rtl.autoland_commit_fs_ms) < commit_delay_ms;
+                } else {
+                    // not yet settled at home: keep holding, don't commit mid-approach
+                    commit_gated = true;
+                }
+            }
+        }
 
         if (commit_gated) {
             // keep loitering; announce the hold once we've settled on the circle
