@@ -25,6 +25,9 @@
 #include <AP_Notify/AP_Notify.h>
 #include <AP_OpticalFlow/AP_OpticalFlow.h>
 #include <AP_Radar/AP_Radar.h>
+#if HAL_MSP_HEADTRACKER_ENABLED
+#include <AP_Mount/AP_Mount.h>
+#endif
 #include <AP_RangeFinder/AP_RangeFinder.h>
 #include <AP_RSSI/AP_RSSI.h>
 #include <AP_RTC/AP_RTC.h>
@@ -558,10 +561,30 @@ MSPCommandResult AP_MSP_Telem_Backend::msp_process_sensor_command(uint16_t cmd_m
     }
     break;
 #endif
+#if HAL_MSP_HEADTRACKER_ENABLED
+    case MSP2_SENSOR_HEADTRACKER: {
+        const MSP::msp_headtracker_data_message_t *pkt = (const MSP::msp_headtracker_data_message_t *)src->ptr;
+        msp_handle_headtracker(*pkt);
+    }
+    break;
+#endif
     }
 
     return MSP_RESULT_NO_REPLY;
 }
+
+#if HAL_MSP_HEADTRACKER_ENABLED
+void AP_MSP_Telem_Backend::msp_handle_headtracker(const MSP::msp_headtracker_data_message_t &pkt)
+{
+    AP_Mount *mount = AP::mount();
+    if (mount == nullptr) {
+        return;
+    }
+    // forward the raw -2048..2047 pan/tilt/roll; the mount applies the
+    // enable/center-lock switch state and scales to the gimbal angle limits
+    mount->handle_msp_headtracker(pkt.pan, pkt.tilt, pkt.roll);
+}
+#endif
 
 void AP_MSP_Telem_Backend::msp_handle_radar(const MSP::msp_radar_pos_message_t &pkt)
 {

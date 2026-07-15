@@ -264,6 +264,8 @@ const AP_Param::GroupInfo RC_Channel::var_info[] = {
     // @Values{Copter}: 219:Transmitter Tuning
     // @Values{Plane}: 200:Servos Auto Trim
     // @Values{Plane}: 251:RTL Autoland Commit
+    // @Values{Plane}: 252:Mount1 Head Track Enable
+    // @Values{Plane}: 253:Mount1 Head Track Center Lock
     // @Values{All-Vehicles}: 300:Scripting1, 301:Scripting2, 302:Scripting3, 303:Scripting4, 304:Scripting5, 305:Scripting6, 306:Scripting7, 307:Scripting8, 308:Scripting9, 309:Scripting10, 310:Scripting11, 311:Scripting12, 312:Scripting13, 313:Scripting14, 314:Scripting15, 315:Scripting16
     // @Values{All-Vehicles}: 316:Stop-Restart Scripting
     // @User: Standard
@@ -798,6 +800,8 @@ void RC_Channel::init_aux_function(const AUX_FUNC ch_option, const AuxSwitchPos 
 #if AP_MOUNT_POI_LOCK_ENABLED
     case AUX_FUNC::MOUNT_POI_LOCK:
 #endif //AP_MOUNT_POI_LOCK_ENABLED
+    case AUX_FUNC::MOUNT1_HEADTRACK:
+    case AUX_FUNC::MOUNT1_HEADTRACK_CENTER:
 #endif //HAL_MOUNT_ENABLED
 #if HAL_LOGGING_ENABLED
     case AUX_FUNC::LOG_PAUSE:
@@ -880,6 +884,8 @@ const RC_Channel::LookupTable RC_Channel::lookuptable[] = {
 #if HAL_MOUNT_ENABLED
     { AUX_FUNC::RETRACT_MOUNT1,"RetractMount1"},
     { AUX_FUNC::RETRACT_MOUNT2,"RetractMount2"},
+    { AUX_FUNC::MOUNT1_HEADTRACK,"Mount1HeadTrack"},
+    { AUX_FUNC::MOUNT1_HEADTRACK_CENTER,"Mount1HeadTrackCenter"},
 #endif
 #if AP_SERVORELAYEVENTS_ENABLED && AP_RELAY_ENABLED
     { AUX_FUNC::RELAY,"Relay1"},
@@ -1477,6 +1483,46 @@ void RC_Channel::do_aux_function_retract_mount(const AuxSwitchPos ch_flag, const
         break;
     }
 }
+
+// fork: toggle MSP head tracker control of the mount on/off
+void RC_Channel::do_aux_function_mount_headtrack(const AuxSwitchPos ch_flag, const uint8_t instance)
+{
+    AP_Mount *mount = AP::mount();
+    if (mount == nullptr) {
+        return;
+    }
+    switch (ch_flag) {
+    case AuxSwitchPos::HIGH:
+        mount->set_headtracking_enabled(instance, true);
+        break;
+    case AuxSwitchPos::MIDDLE:
+        // nothing
+        break;
+    case AuxSwitchPos::LOW:
+        mount->set_headtracking_enabled(instance, false);
+        break;
+    }
+}
+
+// fork: lock the mount to its neutral (forward) position, overriding head tracking
+void RC_Channel::do_aux_function_mount_headtrack_center(const AuxSwitchPos ch_flag, const uint8_t instance)
+{
+    AP_Mount *mount = AP::mount();
+    if (mount == nullptr) {
+        return;
+    }
+    switch (ch_flag) {
+    case AuxSwitchPos::HIGH:
+        mount->set_headtracking_center_lock(instance, true);
+        break;
+    case AuxSwitchPos::MIDDLE:
+        // nothing
+        break;
+    case AuxSwitchPos::LOW:
+        mount->set_headtracking_center_lock(instance, false);
+        break;
+    }
+}
 #endif  // HAL_MOUNT_ENABLED
 
 bool RC_Channel::run_aux_function(AUX_FUNC ch_option, AuxSwitchPos pos, AuxFuncTrigger::Source source, uint16_t source_index)
@@ -1830,6 +1876,14 @@ bool RC_Channel::do_aux_function(const AuxFuncTrigger &trigger)
 
     case AUX_FUNC::RETRACT_MOUNT2:
         do_aux_function_retract_mount(ch_flag, 1);
+        break;
+
+    case AUX_FUNC::MOUNT1_HEADTRACK:
+        do_aux_function_mount_headtrack(ch_flag, 0);
+        break;
+
+    case AUX_FUNC::MOUNT1_HEADTRACK_CENTER:
+        do_aux_function_mount_headtrack_center(ch_flag, 0);
         break;
 
     case AUX_FUNC::MOUNT_YAW_LOCK: {
