@@ -350,6 +350,7 @@
 #define MSP2_SENSOR_COMPASS         0x1F04
 #define MSP2_SENSOR_BAROMETER       0x1F05
 #define MSP2_SENSOR_AIRSPEED        0x1F06
+#define MSP2_SENSOR_HEADTRACKER     0x1F07  // iNav-compatible: head tracker pan/tilt/roll pushed by VTX/goggles
 
 // iNav Radar / FormationFlight (ESP32-based peer-aircraft radar)
 #define MSP2_SET_RADAR_POS          0x100B  // SET radar peer position

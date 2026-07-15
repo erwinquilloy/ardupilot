@@ -204,6 +204,9 @@ void AP_Mount::update()
     // update each instance
     for (uint8_t instance=0; instance<AP_MOUNT_MAX_INSTANCES; instance++) {
         if (_backends[instance] != nullptr) {
+            // fork: head tracker stream-loss auto center-lock (runs before the backend
+            // update so the mode is applied this cycle)
+            _backends[instance]->update_headtracker();
             _backends[instance]->update();
         }
     }
@@ -315,6 +318,34 @@ void AP_Mount::set_rate_target(uint8_t instance, float roll_degs, float pitch_de
 
     // send command to backend
     backend->set_rate_target(roll_degs, pitch_degs, yaw_degs, yaw_lock);
+}
+
+// iNav-style MSP head tracker support (fork feature)
+void AP_Mount::handle_msp_headtracker(uint8_t instance, int16_t pan, int16_t tilt, int16_t roll)
+{
+    auto *backend = get_instance(instance);
+    if (backend == nullptr) {
+        return;
+    }
+    backend->handle_msp_headtracker(pan, tilt, roll);
+}
+
+void AP_Mount::set_headtracking_enabled(uint8_t instance, bool enable)
+{
+    auto *backend = get_instance(instance);
+    if (backend == nullptr) {
+        return;
+    }
+    backend->set_headtracking_enabled(enable);
+}
+
+void AP_Mount::set_headtracking_center_lock(uint8_t instance, bool locked)
+{
+    auto *backend = get_instance(instance);
+    if (backend == nullptr) {
+        return;
+    }
+    backend->set_headtracking_center_lock(locked);
 }
 
 MAV_RESULT AP_Mount::handle_command_do_mount_configure(const mavlink_command_int_t &packet)

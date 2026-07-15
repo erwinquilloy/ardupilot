@@ -119,6 +119,127 @@ void AP_Mount_Backend::set_rate_target(float roll_degs, float pitch_degs, float 
     }
 }
 
+// iNav-style MSP head tracker input (fork feature).
+// pan/tilt/roll are abstract -2048..2047 mapping onto the gimbal's configured
+// angle limits. Applied only while head tracking is enabled and not center-locked;
+// each frame re-asserts MAVLINK_TARGETING via set_angle_target() so the gimbal
+// follows the head continuously.
+void AP_Mount_Backend::handle_msp_headtracker(int16_t pan, int16_t tilt, int16_t roll)
+{
+    // stamp stream liveness (regardless of lock state) and clear any stream-loss
+    // auto-lock now that a frame has arrived, re-baselining the yaw unwrap
+    _ht_last_frame_ms = AP_HAL::millis();
+    if (_ht_stream_lost) {
+        _ht_stream_lost = false;
+        _ht_pan_valid = false;
+    }
+
+    // center-lock overrides head tracking; enable gates it
+    if (_ht_center_lock || !_ht_enabled) {
+        return;
+    }
+
+    // Pan (yaw) is an absolute value that wraps at +/-2048 (like a heading). Unwrap it
+    // into a continuous value so that turning past the extreme keeps the gimbal pinned
+    // at its yaw limit (via the clamp in set_angle_target) instead of flipping to the
+    // opposite side; turning back in resumes tracking.
+    if (!_ht_pan_valid) {
+        _ht_pan_unwrapped = pan;
+        _ht_pan_valid = true;
+    } else {
+        int32_t d = (int32_t)pan - _ht_pan_prev;
+        if (d > 2048) {
+            d -= 4096;
+        } else if (d < -2048) {
+            d += 4096;
+        }
+        _ht_pan_unwrapped += d;
+    }
+    _ht_pan_prev = pan;
+
+    // Map value so that 0 (head centred / looking forward) -> 0 deg, and full deflection
+    // reaches the axis limit in that direction. Centring is independent of whether the
+    // MNTx limits are symmetric, so "head forward" is always "gimbal forward".
+    const auto scale = [](float v, float min_deg, float max_deg) -> float {
+        if (v >= 0) {
+            return (v / 2047.0f) * MAX(max_deg, 0.0f);
+        }
+        return (v / 2048.0f) * (-MIN(min_deg, 0.0f));
+    };
+
+    const float roll_deg  = scale(roll, _params.roll_angle_min,  _params.roll_angle_max);
+    const float pitch_deg = scale(tilt, _params.pitch_angle_min, _params.pitch_angle_max);
+    float yaw_deg         = scale(_ht_pan_unwrapped, _params.yaw_angle_min, _params.yaw_angle_max);
+
+    // body-frame yaw targets wrap at +/-180 inside set_angle_target(); clamp here so a
+    // MNTx_YAW limit beyond +/-180 saturates the gimbal at its extreme instead of
+    // flipping to the opposite side.
+    yaw_deg = constrain_float(yaw_deg, -180.0f, 180.0f);
+
+    // body-frame yaw so the gimbal follows the head relative to the airframe
+    set_angle_target(roll_deg, pitch_deg, yaw_deg, false);
+}
+
+// enable/disable head tracking (RCx_OPTION toggle)
+void AP_Mount_Backend::set_headtracking_enabled(bool enable)
+{
+    if (_ht_enabled == enable) {
+        return;
+    }
+    _ht_enabled = enable;
+    _ht_pan_valid = false;   // re-baseline the yaw unwrap on the next frame
+    _ht_stream_lost = false; // clear any stream-loss auto-lock on toggle
+    if (enable) {
+        // give the stream a grace period before the stream-loss timeout can trip
+        _ht_last_frame_ms = AP_HAL::millis();
+    } else if (!_ht_center_lock) {
+        // returning control to the pilot: restore the configured default mode
+        set_mode((MAV_MOUNT_MODE)_params.default_mode.get());
+    }
+}
+
+// lock the gimbal to neutral (forward), overriding head tracking (RCx_OPTION toggle)
+void AP_Mount_Backend::set_headtracking_center_lock(bool locked)
+{
+    if (_ht_center_lock == locked) {
+        return;
+    }
+    _ht_center_lock = locked;
+    _ht_pan_valid = false;  // re-baseline the yaw unwrap when lock state changes
+    if (locked) {
+        // park at the neutral (forward) position and hold there
+        set_mode(MAV_MOUNT_MODE_NEUTRAL);
+    } else if (!_ht_enabled) {
+        // released with head tracking off: hand back to the pilot
+        set_mode((MAV_MOUNT_MODE)_params.default_mode.get());
+    }
+    // released with head tracking on: the next MSP frame re-asserts MAVLINK_TARGETING
+}
+
+// head tracker stream-loss auto center-lock: if head tracking is enabled and no MSP
+// frame has arrived for AP_MOUNT_HT_STREAM_TIMEOUT_MS (e.g. the goggles' own lock
+// button halts the stream, or the link drops), center + FPV-lock the gimbal exactly
+// like the RCx_OPTION center-lock. Auto-releases when frames resume (see
+// handle_msp_headtracker). Called every mount update.
+#ifndef AP_MOUNT_HT_STREAM_TIMEOUT_MS
+#define AP_MOUNT_HT_STREAM_TIMEOUT_MS 1000
+#endif
+void AP_Mount_Backend::update_headtracker()
+{
+    if (!_ht_enabled) {
+        _ht_stream_lost = false;  // only relevant while head tracking is enabled
+        return;
+    }
+    // detect a stale stream (manual center-lock takes precedence but doesn't block detection)
+    if (!_ht_stream_lost && (AP_HAL::millis() - _ht_last_frame_ms > AP_MOUNT_HT_STREAM_TIMEOUT_MS)) {
+        _ht_stream_lost = true;
+        if (!_ht_center_lock) {
+            // engage the center + FPV lock (manual center-lock already holds NEUTRAL)
+            set_mode(MAV_MOUNT_MODE_NEUTRAL);
+        }
+    }
+}
+
 // set_roi_target - sets target location that mount should attempt to point towards
 void AP_Mount_Backend::set_roi_target(const Location &target_loc)
 {
@@ -605,6 +726,13 @@ void AP_Mount_Backend::calculate_poi()
 // should be called on every update
 void AP_Mount_Backend::set_rctargeting_on_rcinput_change()
 {
+    // don't let mount RC input steal control while MSP head tracking is active
+    // (enabled or center-locked); otherwise a stationary/assigned MOUNT RC channel
+    // yanks the mount out of MAVLINK_TARGETING/NEUTRAL back to RC_TARGETING.
+    if (_ht_enabled || _ht_center_lock) {
+        return;
+    }
+
     // exit immediately if no RC input
     if (!rc().has_valid_input()) {
         return;

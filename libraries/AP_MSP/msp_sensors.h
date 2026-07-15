@@ -63,4 +63,16 @@ typedef struct PACKED {
     float pressure;
     int16_t temp; // centi-degrees C
 } msp_airspeed_data_message_t;
+
+// iNav-compatible head tracker message (MSP2_SENSOR_HEADTRACKER).
+// Observed on-wire from Walksnail Goggles X: 9 bytes = a leading instance/status
+// byte followed by four int16 (LE). pan/tilt/roll are abstract -2048..2047 which
+// map to the gimbal's configured min/max angle; sensitivity is unused by ArduPilot.
+typedef struct PACKED {
+    uint8_t instance;    // leading byte (0 observed); instance/status - ignored
+    int16_t pan;         // -2048..2047 -> MNTx_YAW_MIN..MAX
+    int16_t tilt;        // -2048..2047 -> MNTx_PITCH_MIN..MAX
+    int16_t roll;        // -2048..2047 -> MNTx_ROLL_MIN..MAX
+    int16_t sensitivity; // -16..15 (unused)
+} msp_headtracker_data_message_t;
 }
