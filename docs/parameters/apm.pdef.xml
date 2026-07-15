@@ -9294,6 +9294,8 @@
           <value code="31">Motor Emergency Stop</value>
           <value code="177">Mount LRF enable</value>
           <value code="163">Mount Lock</value>
+          <value code="253">Mount1 Head Track Center Lock</value>
+          <value code="252">Mount1 Head Track Enable</value>
           <value code="213">Mount1 Pitch</value>
           <value code="212">Mount1 Roll</value>
           <value code="214">Mount1 Yaw</value>
@@ -9403,6 +9405,8 @@
           <value code="31">Motor Emergency Stop</value>
           <value code="177">Mount LRF enable</value>
           <value code="163">Mount Lock</value>
+          <value code="253">Mount1 Head Track Center Lock</value>
+          <value code="252">Mount1 Head Track Enable</value>
           <value code="213">Mount1 Pitch</value>
           <value code="212">Mount1 Roll</value>
           <value code="214">Mount1 Yaw</value>
@@ -9512,6 +9516,8 @@
           <value code="31">Motor Emergency Stop</value>
           <value code="177">Mount LRF enable</value>
           <value code="163">Mount Lock</value>
+          <value code="253">Mount1 Head Track Center Lock</value>
+          <value code="252">Mount1 Head Track Enable</value>
           <value code="213">Mount1 Pitch</value>
           <value code="212">Mount1 Roll</value>
           <value code="214">Mount1 Yaw</value>
@@ -9621,6 +9627,8 @@
           <value code="31">Motor Emergency Stop</value>
           <value code="177">Mount LRF enable</value>
           <value code="163">Mount Lock</value>
+          <value code="253">Mount1 Head Track Center Lock</value>
+          <value code="252">Mount1 Head Track Enable</value>
           <value code="213">Mount1 Pitch</value>
           <value code="212">Mount1 Roll</value>
           <value code="214">Mount1 Yaw</value>
@@ -24669,6 +24677,8 @@
           <value code="31">Motor Emergency Stop</value>
           <value code="177">Mount LRF enable</value>
           <value code="163">Mount Lock</value>
+          <value code="253">Mount1 Head Track Center Lock</value>
+          <value code="252">Mount1 Head Track Enable</value>
           <value code="213">Mount1 Pitch</value>
           <value code="212">Mount1 Roll</value>
           <value code="214">Mount1 Yaw</value>
@@ -24809,6 +24819,8 @@
           <value code="31">Motor Emergency Stop</value>
           <value code="177">Mount LRF enable</value>
           <value code="163">Mount Lock</value>
+          <value code="253">Mount1 Head Track Center Lock</value>
+          <value code="252">Mount1 Head Track Enable</value>
           <value code="213">Mount1 Pitch</value>
           <value code="212">Mount1 Roll</value>
           <value code="214">Mount1 Yaw</value>
@@ -24949,6 +24961,8 @@
           <value code="31">Motor Emergency Stop</value>
           <value code="177">Mount LRF enable</value>
           <value code="163">Mount Lock</value>
+          <value code="253">Mount1 Head Track Center Lock</value>
+          <value code="252">Mount1 Head Track Enable</value>
           <value code="213">Mount1 Pitch</value>
           <value code="212">Mount1 Roll</value>
           <value code="214">Mount1 Yaw</value>
@@ -25089,6 +25103,8 @@
           <value code="31">Motor Emergency Stop</value>
           <value code="177">Mount LRF enable</value>
           <value code="163">Mount Lock</value>
+          <value code="253">Mount1 Head Track Center Lock</value>
+          <value code="252">Mount1 Head Track Enable</value>
           <value code="213">Mount1 Pitch</value>
           <value code="212">Mount1 Roll</value>
           <value code="214">Mount1 Yaw</value>
@@ -25229,6 +25245,8 @@
           <value code="31">Motor Emergency Stop</value>
           <value code="177">Mount LRF enable</value>
           <value code="163">Mount Lock</value>
+          <value code="253">Mount1 Head Track Center Lock</value>
+          <value code="252">Mount1 Head Track Enable</value>
           <value code="213">Mount1 Pitch</value>
           <value code="212">Mount1 Roll</value>
           <value code="214">Mount1 Yaw</value>
@@ -25369,6 +25387,8 @@
           <value code="31">Motor Emergency Stop</value>
           <value code="177">Mount LRF enable</value>
           <value code="163">Mount Lock</value>
+          <value code="253">Mount1 Head Track Center Lock</value>
+          <value code="252">Mount1 Head Track Enable</value>
           <value code="213">Mount1 Pitch</value>
           <value code="212">Mount1 Roll</value>
           <value code="214">Mount1 Yaw</value>
@@ -25509,6 +25529,8 @@
           <value code="31">Motor Emergency Stop</value>
           <value code="177">Mount LRF enable</value>
           <value code="163">Mount Lock</value>
+          <value code="253">Mount1 Head Track Center Lock</value>
+          <value code="252">Mount1 Head Track Enable</value>
           <value code="213">Mount1 Pitch</value>
           <value code="212">Mount1 Roll</value>
           <value code="214">Mount1 Yaw</value>
@@ -25649,6 +25671,8 @@
           <value code="31">Motor Emergency Stop</value>
           <value code="177">Mount LRF enable</value>
           <value code="163">Mount Lock</value>
+          <value code="253">Mount1 Head Track Center Lock</value>
+          <value code="252">Mount1 Head Track Enable</value>
           <value code="213">Mount1 Pitch</value>
           <value code="212">Mount1 Roll</value>
           <value code="214">Mount1 Yaw</value>
@@ -25789,6 +25813,8 @@
           <value code="31">Motor Emergency Stop</value>
           <value code="177">Mount LRF enable</value>
           <value code="163">Mount Lock</value>
+          <value code="253">Mount1 Head Track Center Lock</value>
+          <value code="252">Mount1 Head Track Enable</value>
           <value code="213">Mount1 Pitch</value>
           <value code="212">Mount1 Roll</value>
           <value code="214">Mount1 Yaw</value>
@@ -25929,6 +25955,8 @@
           <value code="31">Motor Emergency Stop</value>
           <value code="177">Mount LRF enable</value>
           <value code="163">Mount Lock</value>
+          <value code="253">Mount1 Head Track Center Lock</value>
+          <value code="252">Mount1 Head Track Enable</value>
           <value code="213">Mount1 Pitch</value>
           <value code="212">Mount1 Roll</value>
           <value code="214">Mount1 Yaw</value>
@@ -26069,6 +26097,8 @@
           <value code="31">Motor Emergency Stop</value>
           <value code="177">Mount LRF enable</value>
           <value code="163">Mount Lock</value>
+          <value code="253">Mount1 Head Track Center Lock</value>
+          <value code="252">Mount1 Head Track Enable</value>
           <value code="213">Mount1 Pitch</value>
           <value code="212">Mount1 Roll</value>
           <value code="214">Mount1 Yaw</value>
@@ -26209,6 +26239,8 @@
           <value code="31">Motor Emergency Stop</value>
           <value code="177">Mount LRF enable</value>
           <value code="163">Mount Lock</value>
+          <value code="253">Mount1 Head Track Center Lock</value>
+          <value code="252">Mount1 Head Track Enable</value>
           <value code="213">Mount1 Pitch</value>
           <value code="212">Mount1 Roll</value>
           <value code="214">Mount1 Yaw</value>
@@ -26349,6 +26381,8 @@
           <value code="31">Motor Emergency Stop</value>
           <value code="177">Mount LRF enable</value>
           <value code="163">Mount Lock</value>
+          <value code="253">Mount1 Head Track Center Lock</value>
+          <value code="252">Mount1 Head Track Enable</value>
           <value code="213">Mount1 Pitch</value>
           <value code="212">Mount1 Roll</value>
           <value code="214">Mount1 Yaw</value>
@@ -26489,6 +26523,8 @@
           <value code="31">Motor Emergency Stop</value>
           <value code="177">Mount LRF enable</value>
           <value code="163">Mount Lock</value>
+          <value code="253">Mount1 Head Track Center Lock</value>
+          <value code="252">Mount1 Head Track Enable</value>
           <value code="213">Mount1 Pitch</value>
           <value code="212">Mount1 Roll</value>
           <value code="214">Mount1 Yaw</value>
@@ -26629,6 +26665,8 @@
           <value code="31">Motor Emergency Stop</value>
           <value code="177">Mount LRF enable</value>
           <value code="163">Mount Lock</value>
+          <value code="253">Mount1 Head Track Center Lock</value>
+          <value code="252">Mount1 Head Track Enable</value>
           <value code="213">Mount1 Pitch</value>
           <value code="212">Mount1 Roll</value>
           <value code="214">Mount1 Yaw</value>
@@ -26769,6 +26807,8 @@
           <value code="31">Motor Emergency Stop</value>
           <value code="177">Mount LRF enable</value>
           <value code="163">Mount Lock</value>
+          <value code="253">Mount1 Head Track Center Lock</value>
+          <value code="252">Mount1 Head Track Enable</value>
           <value code="213">Mount1 Pitch</value>
           <value code="212">Mount1 Roll</value>
           <value code="214">Mount1 Yaw</value>
