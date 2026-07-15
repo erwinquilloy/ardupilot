@@ -18,6 +18,15 @@ New
   landing. If the link recovers within the window the switch gate
   re-engages and the plane keeps holding. 0 = commit immediately on
   failsafe (the pre-v1.0 behaviour).
+- MSP head tracker gimbal control: point a camera gimbal with your head.
+  Head-tracker angles from the goggles arrive over the MSP DisplayPort link
+  and drive the mount (pan/tilt/roll). Implements the iNav head-tracker
+  protocol (MSP2_SENSOR_HEADTRACKER) -- credit and thanks to the iNav project
+  (github.com/iNavFlight/inav). RCx_OPTION 252 enables head tracking; 253
+  centres and FPV-locks the gimbal (also triggered by the goggles' own lock
+  button via a 1 s stream-loss timeout). The full (H7) build drives any
+  ArduPilot gimbal backend (Siyi, SToRM32-serial, Topotek, Viewpro, CADDX,
+  servo, ...); mount-enabled boards only. See README_CUSTOM.md.
 
 Changed
 - Plus code (OLC) OSD element now ships on BOTH variants. The light

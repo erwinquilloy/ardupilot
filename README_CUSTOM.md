@@ -112,6 +112,19 @@ Built for throwing a wing off your hand safely:
 [Telemetry](#telemetry) ·
 [Battery monitoring](#battery-monitoring-ap_battmonitor)
 
+### 🎥 Head-tracked FPV gimbal (MSP)
+
+- **Point your gimbal with your head** — head-tracker angles come from the
+  goggles over the MSP DisplayPort link and drive the mount (pan/tilt/roll),
+  using the [iNav](https://github.com/iNavFlight/inav) `MSP2_SENSOR_HEADTRACKER`
+  protocol. Drives **any gimbal ArduPilot supports** on the full (H7) build —
+  Siyi, SToRM32-serial, Topotek, Viewpro, CADDX, servo, …
+- Switch to **enable** head tracking (`RCx_OPTION 252`) and to **centre + FPV-lock**
+  it (`253`); the goggles' own lock button also parks it via a 1 s stream-loss
+  timeout.
+
+→ [MSP head tracker → gimbal control](#msp-head-tracker--gimbal-control)
+
 > Most additions are opt-in via parameters and change nothing until you
 > enable them — but a few **defaults do differ** from stock. Skim
 > [Behaviour changes vs upstream](#behaviour-changes-vs-upstream--migration-notes)
@@ -1012,6 +1025,76 @@ Both knobs are exposed to in-flight RC tuning:
 
 Standard single-param multiplicative-scaling caveat applies: must be
 seeded non-zero to search a range, sign of the seed picks polarity.
+
+---
+
+# MSP head tracker → gimbal control
+
+Point a camera gimbal with your head. When your FPV goggles feed their
+head-tracker angles to the flight controller over the **MSP DisplayPort** link
+(the same wire that already carries the OSD), the FC steers the mount to follow
+your head — pan, tilt and roll.
+
+This implements the head-tracker-over-MSP protocol **originated by the
+[iNav flight control project](https://github.com/iNavFlight/inav)**
+(`MSP2_SENSOR_HEADTRACKER`, message `0x1F07`). Full credit and thanks to the
+iNav project and its head-tracking contributors for the protocol and reference
+implementation — this is an independent ArduPilot implementation of it.
+(Upstream ArduPilot has the CADDX gimbal *output* driver but no MSP
+head-tracker *input*, so this fills that gap.)
+
+Verified on hardware with **Walksnail Goggles X + a CADDX GM3 gimbal**, and with
+a plain PWM servo pan/tilt.
+
+## How it flows
+
+    goggles ──air link──► VTX ──MSP DisplayPort──► FC ──serial/PWM──► gimbal
+
+The head angles ride the existing DisplayPort/OSD link into the FC; the FC
+scales them and drives whatever mount backend is configured — so it works with
+**any gimbal ArduPilot supports**. The **full (H7) build carries the complete
+backend set** (Siyi, SToRM32-serial, Alexmos, Topotek, Viewpro, CADDX, servo, …);
+the light variant's 1 MB F4 boards are trimmed to CADDX serial + PWM servo to
+save flash. (Verified with a GM3, but nothing here is GM3-specific.)
+
+## Setup
+
+| Param | Value | Purpose |
+|---|---|---|
+| `MNT1_TYPE` | e.g. `13` (CADDX), `8` (Siyi), `1` (Servo) | gimbal backend |
+| `MNT1_DEFLT_MODE` | `3` (RC_TARGETING) | control when head tracking is off |
+| `SERIALx_PROTOCOL` | `42` (MSP DisplayPort) | head-tracker **input** (goggles/VTX UART) |
+| `SERIALy_PROTOCOL` | `8` (Gimbal) | serial-gimbal **output** UART |
+| `MNT1_YAW_MIN` / `MNT1_YAW_MAX` | e.g. `-170` / `170` | yaw travel — doubles as the pan gain |
+| `MNT1_PITCH_*`, `MNT1_ROLL_*` | your gimbal's travel | pitch/roll gain |
+| `RCa_OPTION` | `252` | head-tracking **enable** switch |
+| `RCb_OPTION` | `253` | **centre-lock** switch |
+
+Servo gimbal: assign the outputs with `SERVOn_FUNCTION` = `6` (Mount1Yaw),
+`7` (Mount1Tilt), `8` (Mount1Roll).
+
+## Controls
+
+- **`RCx_OPTION 252` — head-tracking enable.** HIGH follows your head; LOW hands
+  the gimbal back to `MNT1_DEFLT_MODE` (normal RC/manual gimbal control).
+- **`RCx_OPTION 253` — centre-lock.** HIGH recenters the gimbal and locks it
+  **FPV-style** — bolted to the airframe on all three axes with **no horizon
+  stabilisation** (roll and pitch follow the aircraft rather than self-levelling).
+  LOW resumes head tracking. (FPV-lock is implemented for the CADDX backend; other
+  backends centre to their neutral.)
+- **The goggles' own lock button.** Walksnail's lock button just stops the
+  head-tracker stream; the FC treats **1 s of silence** as a lock and does the
+  same centre + lock, resuming when the stream returns. A genuine link dropout
+  parks the gimbal the same way — a handy failsafe.
+
+## Notes
+
+- Head-tracker yaw is body-frame, so the usable range is **±180°** (±180 is
+  straight back). Keep `MNT1_YAW_MIN/MAX` within that; a GM3 realistically
+  reaches ~±170°, so use `-170 / 170`.
+- Head-forward always maps to gimbal-forward, even with asymmetric limits.
+- Compiles only on **mount-enabled boards** (H7, or F4 boards with the mount
+  re-enabled). Where the mount is disabled, the feature is compiled out.
 
 ---
 
