@@ -64,13 +64,20 @@ void AP_Mount_CADDX::send_target_angles(const MountAngleTarget& angle_target_rad
     // byte 2's lower 3 bits are mode
     // lower 5 bits are sensitivity but always left as zero
     uint8_t mode = 0; //start with axes in bf
-    // CADDX yaw lock is not required and is duplication since we get yaw via get_bf_yaw, the gimbal accs would be fighting our yaw target potentially
-    // but we need to reset roll and pitch locks to body frame if set by RP_LOCK aux switch or by FPV mnt option
-    if (angle_target_rad.pitch_is_ef) {
-        mode |= (uint8_t)LockMode::PITCH_LOCK;
-    }
-    if (angle_target_rad.roll_is_ef) {
-        mode |= (uint8_t)LockMode::ROLL_LOCK;
+    if (center_locked()) {
+        // fork head-tracker center-lock (RCx_OPTION switch or stream-loss auto-lock):
+        // FPV lock (no earth-frame stabilization) so the gimbal stays bolted to the
+        // airframe at the neutral position on all three axes, rather than self-levelling
+        // roll/pitch to the horizon.
+    } else {
+        // CADDX yaw lock is not required and is duplication since we get yaw via get_bf_yaw, the gimbal accs would be fighting our yaw target potentially
+        // but we need to reset roll and pitch locks to body frame if set by RP_LOCK aux switch or by FPV mnt option
+        if (angle_target_rad.pitch_is_ef) {
+            mode |= (uint8_t)LockMode::PITCH_LOCK;
+        }
+        if (angle_target_rad.roll_is_ef) {
+            mode |= (uint8_t)LockMode::ROLL_LOCK;
+        }
     }
     set_attitude_cmd_buf[2] = mode & 0x07;
 
