@@ -301,6 +301,13 @@ public:
         // at the home loiter => keep loitering. Not assigned => no change.
         RTL_AUTOLAND_COMMIT = 251,
 
+        // Fork: MSP head tracker control of mount1. MOUNT1_HEADTRACK toggles
+        // whether incoming MSP head tracker angles drive the gimbal (LOW/unset
+        // => normal RC/default mount control). MOUNT1_HEADTRACK_CENTER locks the
+        // gimbal to its neutral (forward) position, overriding head tracking.
+        MOUNT1_HEADTRACK        = 252,
+        MOUNT1_HEADTRACK_CENTER = 253,
+
         // inputs 248-249 are reserved for the Skybrush fork at
         // https://github.com/skybrush-io/ardupilot
 
@@ -396,6 +403,9 @@ protected:
     void do_aux_function_generator(const AuxSwitchPos ch_flag);
     void do_aux_function_fft_notch_tune(const AuxSwitchPos ch_flag);
     void do_aux_function_retract_mount(const AuxSwitchPos ch_flag, const uint8_t instance);
+    // fork: MSP head tracker mount control
+    void do_aux_function_mount_headtrack(const AuxSwitchPos ch_flag, const uint8_t instance);
+    void do_aux_function_mount_headtrack_center(const AuxSwitchPos ch_flag, const uint8_t instance);
 
     typedef int8_t modeswitch_pos_t;
     virtual void mode_switch_changed(modeswitch_pos_t new_pos) {

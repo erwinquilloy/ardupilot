@@ -92,6 +92,22 @@ public:
     // yaw_lock should be true if the yaw rate is earth-frame, false if body-frame (e.g. rotates with body of vehicle)
     void set_rate_target(float roll_degs, float pitch_degs, float yaw_degs, bool yaw_is_earth_frame);
 
+    // iNav-style MSP head tracker support (fork feature).
+    // handle_msp_headtracker: pan/tilt/roll are abstract -2048..2047 scaled to the
+    // gimbal's configured angle limits. Applied only while head tracking is enabled
+    // and not center-locked.
+    void handle_msp_headtracker(int16_t pan, int16_t tilt, int16_t roll);
+    // enable/disable head tracking (RCx_OPTION toggle). Disabling returns the mount
+    // to its default mode (e.g. manual RC targeting).
+    void set_headtracking_enabled(bool enable);
+    // lock the gimbal to its neutral (forward) position, overriding head tracking
+    // (RCx_OPTION toggle). Releasing resumes head tracking if still enabled.
+    void set_headtracking_center_lock(bool locked);
+    // called every mount update: auto center+FPV-lock when the head tracker stream
+    // stops (e.g. the goggles' own lock button, or link loss) while head tracking is
+    // enabled. Releases automatically when frames resume.
+    void update_headtracker();
+
     // set_roi_target - sets target location that mount should attempt to point towards
     void set_roi_target(const Location &target_loc);
     // clear_roi_target - clears target location that mount should attempt to point towards
@@ -316,6 +332,19 @@ protected:
 
     MAV_MOUNT_MODE  _mode;          // current mode (see MAV_MOUNT_MODE enum)
     bool _yaw_lock;                 // yaw_lock used in RC_TARGETING mode. True if the gimbal's yaw target is maintained in earth-frame, if false (aka "follow") it is maintained in body-frame
+
+    // MSP head tracker state (fork feature)
+    bool _ht_enabled = false;       // true when RCx_OPTION head-tracking toggle is high
+    bool _ht_center_lock = false;   // true when RCx_OPTION center-lock toggle is high (overrides head tracking)
+    bool _ht_stream_lost = false;   // true when the head tracker stream has gone stale (auto center-lock)
+    bool _ht_pan_valid = false;     // false until the first frame baselines the pan unwrap
+    int16_t _ht_pan_prev = 0;       // previous raw pan value (for wrap detection)
+    float _ht_pan_unwrapped = 0;    // continuous (unwrapped) pan used for yaw targeting
+    uint32_t _ht_last_frame_ms = 0; // system time of the last head tracker frame (for stream-loss timeout)
+
+    // true if the gimbal should be centered + FPV-locked, whether by the RCx_OPTION
+    // center-lock switch or by head tracker stream loss (goggles lock button / link loss)
+    bool center_locked() const { return _ht_center_lock || _ht_stream_lost; }
 
     // structure for MAVLink Targeting angle and rate targets
     struct {

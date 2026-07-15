@@ -188,6 +188,9 @@ protected:
     void msp_handle_baro(const MSP::msp_baro_data_message_t &pkt);
     void msp_handle_airspeed(const MSP::msp_airspeed_data_message_t &pkt);
     void msp_handle_radar(const MSP::msp_radar_pos_message_t &pkt);
+#if HAL_MSP_HEADTRACKER_ENABLED
+    void msp_handle_headtracker(const MSP::msp_headtracker_data_message_t &pkt);
+#endif
 
     // implementation specific helpers
     // we only set arming status

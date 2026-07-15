@@ -177,6 +177,15 @@ public:
     void set_rate_target(float roll_degs, float pitch_degs, float yaw_degs, bool yaw_lock) { set_rate_target(_primary, roll_degs, pitch_degs, yaw_degs, yaw_lock); }
     void set_rate_target(uint8_t instance, float roll_degs, float pitch_degs, float yaw_degs, bool yaw_lock);
 
+    // iNav-style MSP head tracker support (fork feature)
+    // handle_msp_headtracker: apply -2048..2047 pan/tilt/roll from an MSP head tracker to the primary mount
+    void handle_msp_headtracker(int16_t pan, int16_t tilt, int16_t roll) { handle_msp_headtracker(_primary, pan, tilt, roll); }
+    void handle_msp_headtracker(uint8_t instance, int16_t pan, int16_t tilt, int16_t roll);
+    // enable/disable head tracking (RCx_OPTION toggle)
+    void set_headtracking_enabled(uint8_t instance, bool enable);
+    // lock the gimbal to neutral (forward), overriding head tracking (RCx_OPTION toggle)
+    void set_headtracking_center_lock(uint8_t instance, bool locked);
+
     // set_roi_target - sets target location that mount should attempt to point towards
     void set_roi_target(const Location &target_loc) { set_roi_target(_primary,target_loc); }
     void set_roi_target(uint8_t instance, const Location &target_loc);
