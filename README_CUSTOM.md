@@ -101,15 +101,13 @@ Built for throwing a wing off your hand safely:
 ### 🎥 Head-tracked FPV gimbal (MSP)
 
 - **Point your gimbal with your head** — head-tracker angles come from the
-  goggles over the MSP DisplayPort link and drive the mount (pan/tilt/roll),
-  using the [iNav](https://github.com/iNavFlight/inav) `MSP2_SENSOR_HEADTRACKER`
-  protocol (introduced to iNav by mmosca). Works with **CADDXFPV GM-series serial**
-  gimbals (GM1/GM2/GM3) or a **PWM servo**.
+  goggles over the MSP DisplayPort link and drive the mount (pan/tilt/roll).
+  Works with **CADDXFPV GM-series serial** gimbals (GM1/GM2/GM3) or a **PWM servo**.
 - Switch to **enable** head tracking (`RCx_OPTION 252`) and to **centre + FPV-lock**
   it (`253`). You can also use the **Walksnail Goggles X Gimbal Lock** feature to
   switch the gimbal to FPV mode.
 
-→ [MSP head tracker → gimbal control](#msp-head-tracker--gimbal-control)
+→ [Walksnail Headtracking via MSP and Serial Gimbal](#walksnail-headtracking-via-msp-and-serial-gimbal)
 
 > Most additions are opt-in via parameters and change nothing until you
 > enable them — but a few **defaults do differ** from stock. Skim
@@ -1097,12 +1095,15 @@ seeded non-zero to search a range, sign of the seed picks polarity.
 
 ---
 
-# MSP head tracker → gimbal control
+# Walksnail Headtracking via MSP and Serial Gimbal
 
-Point a camera gimbal with your head. When your FPV goggles feed their
-head-tracker angles to the flight controller over the **MSP DisplayPort** link
-(the same wire that already carries the OSD), the FC steers the mount to follow
-your head — pan, tilt and roll.
+Point a camera gimbal with your head. A **head-tracker device** — such as the
+Walksnail Goggles X — transmits its head angles over a **side channel** (the MSP DisplayPort
+link that already carries your OSD) rather than over the RC link, and the flight
+controller drives the mount to follow your head in pan, tilt and roll. The gimbal
+is steered the same way it is for normal RC/manual pointing, but while head
+tracking is active it **ignores the RC axis inputs and uses the head-tracker
+angles instead**.
 
 This implements the Walksnail head-tracker-over-MSP protocol
 (`MSP2_SENSOR_HEADTRACKER`, message `0x1F07`), **introduced to iNav by
@@ -1149,7 +1150,7 @@ Servo gimbal: assign the outputs with `SERVOn_FUNCTION` = `6` (Mount1Yaw),
 - **`RCx_OPTION 253` — centre-lock.** HIGH recenters the gimbal and locks it
   **FPV-style** — bolted to the airframe on all three axes with **no horizon
   stabilisation** (roll and pitch follow the aircraft rather than self-levelling).
-  LOW resumes head tracking.
+  Handy to reset the camera if you lose orientation. LOW resumes head tracking.
 - **The Walksnail Goggles X Gimbal Lock feature.** You can also switch the gimbal
   to FPV mode straight from the goggles — the Gimbal Lock button stops the
   head-tracker stream, and the FC treats **~1 s of silence** as a centre + FPV-lock,
