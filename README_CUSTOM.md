@@ -2022,6 +2022,13 @@ the H7 `KakuteH7-Wing`, built from the light branch). Each asset is
   and its active successor FormationFlight, whose
   `MSP2_SET_RADAR_POS` (`0x100B`) wire format the radar feature
   consumes and stays compatible with.
+- **[mmosca](https://github.com/mmosca)** — introduced the Walksnail
+  head-tracker-over-MSP protocol (`MSP2_SENSOR_HEADTRACKER`) to the
+  [iNav project](https://github.com/iNavFlight/inav). This fork's MSP
+  head-tracking → serial-gimbal feature is an independent ArduPilot
+  implementation of that protocol. See the
+  [Walksnail Headtracking](#walksnail-headtracking-via-msp-and-serial-gimbal)
+  section.
 - **Upstream ArduPilot dev team** — the underlying platform.
 - The `LAND_WIND_BIAS` / `LAND_WIND_DIST` / `LAND_WIND_STRICT`
   wind-aware DO_LAND_START selection family is original to this
@@ -2031,7 +2038,5 @@ the H7 `KakuteH7-Wing`, built from the light branch). Each asset is
 
 ---
 
-# ☕ Support this fork
-
-If it saved you time (or a plane), a tip is hugely appreciated:
-**[paypal.me/iamwinq](https://paypal.me/iamwinq)**. Thank you! 🙏
+☕ **Support this fork** — if it saved you time (or a plane), a tip is hugely
+appreciated: **[paypal.me/iamwinq](https://paypal.me/iamwinq)**. Thank you! 🙏
