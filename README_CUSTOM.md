@@ -195,7 +195,129 @@ plus a few additions originating in this fork.
 > document, you are on the wrong firmware — go to [ardupilot.org](https://ardupilot.org)
 > instead.
 
+> 📋 **Read first — your GCS won't describe this fork's parameters.**
+> Mission Planner and QGroundControl ship the *upstream* parameter
+> metadata, so every parameter this fork adds (and every fork-added bit
+> on `FLIGHT_OPTIONS`, `RC_OPTIONS`, `OSD_OPTIONS`, …) shows up with a
+> blank description, no value list, and no bitmask checkboxes. The
+> parameter still works — your GCS just doesn't know what it is. Use
+> this fork's own docs instead of guessing:
+>
+> - **[Full parameter reference](#full-parameter-reference)** — every
+>   parameter this firmware exposes, with descriptions, units and ranges.
+> - **[Bitmask calculator](#bitmask-calculator)** — tick the bits you
+>   want and copy out the integer to paste into your GCS (or paste a
+>   value back to see which bits are set).
+>
+> Both are per-variant — use the **light** links if you flash this build,
+> the **full** links if you flash the full variant.
+
 ---
+
+## Why flash this instead of stock ArduPlane 4.6.3?
+
+Everything stock ArduPlane 4.6.3 does still works underneath — this fork
+only **adds** on top (both variants carry the identical feature set; they
+differ only in which hardware backends are compiled in). If you fly
+long-range or FPV fixed-wing, these are the additions most worth flashing
+for. Each group links to its full reference below.
+
+### 🖥️ A much richer FPV / long-range OSD
+
+The single biggest visible difference from stock — dozens of new elements
+aimed at efficiency and situational awareness:
+
+- **Efficiency in Wh/km or mAh/km**, **resting cell voltage** (sag-free
+  pack health at a glance), and **battery used since arming**.
+- **End-of-flight stats grid** (distance, time, peak values) plus a
+  **persistent max-flight-time** record.
+- **Angle of attack**, **demanded vs actual airspeed**, attitude-corrected
+  **rangefinder AGL altitude**, longitudinal/lateral/vertical **G**, **peak
+  roll/pitch rates**, **auto-flap %**, **input throttle %**, **live tuning
+  param name + value**, and **loiter radius**.
+- **Under/over-speed warning flashes**, one/two-decimal polish on speed,
+  vertical speed and attitude, and a shortenable **plus code** home locator.
+
+→ [OSD additions](#osd-additions)
+
+### 🛟 Wind-aware autoland & a real failsafe glide-in
+
+Protecting the airframe when the link drops or the battery runs marginal:
+
+- **`LAND_WIND_BIAS` auto-picks the upwind `DO_LAND_START`**, with
+  **`LAND_WIND_DIST`** capping how far the wind bias may reach and
+  **`LAND_WIND_STRICT`** turning that cap into a hard fence — so a
+  battery-marginal RTL doesn't fly away to a distant wind-aligned approach.
+- **Emergency-landing state machine on RC failsafe**: instead of orbiting
+  home until the battery dies, it sinks to a glide altitude, aligns **into
+  wind**, glides down and disarms. Fully parameterised (`FS_ELAND_*`).
+- **RTL Autoland Commit** (`RCx_OPTION 251`): hold over home until you flip
+  a switch, then commit to the landing sequence. On RC failsafe it waits
+  `RTL_AUTOLAND_DLY` seconds (default 30) before committing, so a brief
+  dropout can't trigger the landing.
+
+→ [Emergency landing](#emergency-landing-rc-failsafe) ·
+[RTL & failsafe behaviour](#rtl--failsafe-behaviour)
+
+### 🚀 Hand-launch & arming ergonomics
+
+Built for throwing a wing off your hand safely:
+
+- **`TKOFF_THR_IDLE`** idles the prop once armed and the stick is raised —
+  a clear "armed and ready" cue in the palm — with **`TKOFF_IDL_DELAY`** to
+  pause before the ramp.
+- **Pre-launch audio cues** and a **lost-vehicle alarm** on failsafe.
+- **Arm-switch safety**: an in-flight disarm **cuts throttle and drops to
+  FBWA** rather than killing the servos and dropping the plane out of the
+  sky. **`ARMING_MODE_SW`** auto-switches to TAKEOFF/AUTO after arming.
+- **`FLTMODE_EXT`** gives a full **12 flight-mode positions** on one channel.
+
+→ [Arming & takeoff](#arming--takeoff) · [Flight modes](#flight-modes)
+
+### 🎛️ Tune and take control in the air
+
+- **Knob-tunable pitch trim** (`PTCH_TRIM_DEG`, plus `Q_TRIM_PITCH` on
+  VTOL) and **three switchable tuning sets** (`TUNE_PARAM`/`PARAM2`/`PARAM3`)
+  — retune live without a laptop.
+- **AUTO → FBWA stick takeover**: nudge the sticks mid-mission to grab
+  manual control instantly, hand back by re-centring.
+- **Throttle stick sets target airspeed** in RTL/LOITER/CIRCLE/AUTO, plus
+  **pilot loiter radius + direction** control in LOITER/RTL.
+- Extra modes: **Course Hold** (heading hold) and **Auto Trim** as a mode.
+
+→ [Pitch trim & tuning](#pitch-trim--tuning-knob) ·
+[Manual airspeed](#manual-airspeed-control-in-nav-modes) ·
+[AUTO → FBWA takeover](#auto--fbwa-stick-takeover)
+
+### 📡 Long-range extras
+
+- **Peer-aircraft radar** (iNav Radar / FormationFlight) — see other
+  aircraft on your OSD.
+- **Richer telemetry**: CRSF relative altitude + link quality, MSP/DJI
+  numeric-attitude fix, wind in km/h, vehicle UID.
+- **Expanded battery monitoring**: Wh accounting, cell count/voltage, and
+  capacity-remaining plus low/critical thresholds feeding the OSD readouts.
+
+→ [Peer-aircraft radar](#peer-aircraft-radar-inav-radar--formationflight) ·
+[Telemetry](#telemetry) ·
+[Battery monitoring](#battery-monitoring-ap_battmonitor)
+
+### 🎥 Head-tracked FPV gimbal (MSP)
+
+- **Point your gimbal with your head** — head-tracker angles come from the
+  goggles over the MSP DisplayPort link and drive the mount (pan/tilt/roll).
+  Drives **any gimbal ArduPilot supports** on the full (H7) build — Siyi,
+  SToRM32-serial, Topotek, Viewpro, CADDX (CADDXFPV GM-series), servo, …
+- Switch to **enable** head tracking (`RCx_OPTION 252`) and to **centre + FPV-lock**
+  it (`253`). You can also use the **Walksnail Goggles X Gimbal Lock** feature to
+  switch the gimbal to FPV mode.
+
+→ [Walksnail Headtracking via MSP and Serial Gimbal](#walksnail-headtracking-via-msp-and-serial-gimbal)
+
+> Most additions are opt-in via parameters and change nothing until you
+> enable them — but a few **defaults do differ** from stock. Skim
+> [Behaviour changes vs upstream](#behaviour-changes-vs-upstream--migration-notes)
+> before your first flight.
 
 ## Building
 
@@ -872,6 +994,27 @@ to flip the mode switch back manually.
 Works both pre-launch (sitting on the runway waiting for `TKOFF_THR_MINSPD`)
 and in-flight — `ModeAuto::update()` runs every loop AUTO is the active
 mode.
+
+> ⚠️ **Coming from upstream? This is ON by default and stock ArduPlane
+> has no equivalent — it will drop you out of AUTO when you don't expect
+> it.** Habits that are harmless on stock will now end your mission: a
+> stick bump on the bench, a knock while hand-carrying an armed plane, a
+> reflexive nudge to "help" the plane through a gust, or a radio whose
+> sticks don't centre cleanly. 10 % deflection on pitch **or** roll is
+> all it takes, and the takeover is sticky — the plane stays in FBWA
+> flying your sticks until you flip the mode switch back, so if you
+> weren't watching the mode, you are now hand-flying a plane you think
+> is on a mission. Nothing announces this beyond the mode change.
+>
+> If you'd rather keep upstream's behaviour, clear bit 20 —
+> `param set RC_OPTIONS 544` — before your first AUTO flight. If you do
+> want the feature, know the trigger threshold and check `STICK_MIXING`
+> is `0` (it is, in this build) so the sticks aren't doing two jobs.
+>
+> **Default may flip to OFF in a future release** — the opt-out is the
+> safer default for pilots migrating from stock. Set bit 20 explicitly
+> if you rely on the takeover and don't want a later flash to silently
+> take it away.
 
 > ℹ️ AUTO only — RTL and other nav modes aren't covered. If you want
 > stick-takeover from RTL too, holler and I'll extend it.
@@ -1816,6 +1959,7 @@ stock 4.6.3 build and then load this firmware:
 | Default change                                                                                  | Effect                                                                       |
 |-------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------|
 | `STICK_MIXING` 1 → 0                                                                            | Pilot stick no longer overrides nav controllers in AUTO/RTL/GUIDED.          |
+| `RC_OPTIONS` default gains bit 20 (`AUTO_SWITCH_TO_FBWA_WITH_STICKS`) — default `1049120` (bits 5+9+20) | **⚠️ Behaviour change with no upstream equivalent.** Moving pitch or roll past 10 % while in AUTO switches to FBWA and *stays* there until you flip the mode switch back — an accidental stick bump silently ends the mission. `param set RC_OPTIONS 544` restores upstream behaviour. See [AUTO → FBWA stick takeover](#auto--fbwa-stick-takeover). May become opt-in (default OFF) in a future release. |
 | `TECS_INTEG_GAIN` 0.3 → 0.4                                                                     | Slightly snappier altitude tracking.                                         |
 | `OSD_OPTIONS` default gains bit 18 (2-decimal vspeed) and bit 21 (1-decimal attitude)           | Cosmetic OSD-only; saved values preserved.                                   |
 | `OSD_EFF_UNIT` default Wh                                                                       | Was mAh in pre-2024 upstream; upstream now also Wh-default.                  |
