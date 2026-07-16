@@ -20,12 +20,15 @@ New
   failsafe (the pre-v1.0 behaviour).
 - MSP head tracker gimbal control: point a camera gimbal with your head.
   Head-tracker angles from the goggles arrive over the MSP DisplayPort link
-  and drive the mount (pan/tilt/roll). Implements the iNav head-tracker
-  protocol (MSP2_SENSOR_HEADTRACKER) -- credit and thanks to the iNav project
+  and drive the mount (pan/tilt/roll). Implements MSP2_SENSOR_HEADTRACKER
+  similar to how iNav implements it -- credit and thanks to mmosca (who
+  introduced Walksnail head tracking to iNav, PR #10109) and the iNav project
   (github.com/iNavFlight/inav). RCx_OPTION 252 enables head tracking; 253
-  centres and FPV-locks the gimbal (also triggered by the goggles' own lock
-  button via a 1 s stream-loss timeout). Works with CADDX (GM3) serial or PWM
-  servo gimbals; mount-enabled boards only. See README_CUSTOM.md.
+  centres and FPV-locks the gimbal (the Walksnail Goggles X Gimbal Lock button
+  does the same via a 1 s stream-loss timeout). Works with CADDXFPV GM-series
+  serial gimbals (GM1/GM2/GM3) or PWM servo gimbals, on mount-capable boards
+  (H7 + the F4 wing boards; the compact stock-FPV F4s ship stock, without
+  gimbal support). See README_CUSTOM.md.
 
 Changed
 - Plus code (OLC) OSD element now ships on BOTH variants. The light

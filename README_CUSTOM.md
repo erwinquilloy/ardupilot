@@ -103,10 +103,11 @@ Built for throwing a wing off your hand safely:
 - **Point your gimbal with your head** — head-tracker angles come from the
   goggles over the MSP DisplayPort link and drive the mount (pan/tilt/roll),
   using the [iNav](https://github.com/iNavFlight/inav) `MSP2_SENSOR_HEADTRACKER`
-  protocol. Works with a **CADDX (GM3) serial** gimbal or a **PWM servo**.
+  protocol (introduced to iNav by mmosca). Works with **CADDXFPV GM-series serial**
+  gimbals (GM1/GM2/GM3) or a **PWM servo**.
 - Switch to **enable** head tracking (`RCx_OPTION 252`) and to **centre + FPV-lock**
-  it (`253`); the goggles' own lock button also parks it via a 1 s stream-loss
-  timeout.
+  it (`253`). You can also use the **Walksnail Goggles X Gimbal Lock** feature to
+  switch the gimbal to FPV mode.
 
 → [MSP head tracker → gimbal control](#msp-head-tracker--gimbal-control)
 
@@ -1103,13 +1104,13 @@ head-tracker angles to the flight controller over the **MSP DisplayPort** link
 (the same wire that already carries the OSD), the FC steers the mount to follow
 your head — pan, tilt and roll.
 
-This implements the head-tracker-over-MSP protocol **originated by the
-[iNav flight control project](https://github.com/iNavFlight/inav)**
-(`MSP2_SENSOR_HEADTRACKER`, message `0x1F07`). Full credit and thanks to the
-iNav project and its head-tracking contributors for the protocol and reference
-implementation — this is an independent ArduPilot implementation of it.
-(Upstream ArduPilot has the CADDX gimbal *output* driver but no MSP
-head-tracker *input*, so this fills that gap.)
+This implements the Walksnail head-tracker-over-MSP protocol
+(`MSP2_SENSOR_HEADTRACKER`, message `0x1F07`), **introduced to iNav by
+[mmosca in PR #10109](https://github.com/iNavFlight/inav/pull/10109)** — full
+credit and thanks to mmosca and the
+[iNav project](https://github.com/iNavFlight/inav). This is an independent
+ArduPilot implementation of that protocol. (Upstream ArduPilot has the CADDX
+gimbal *output* driver but no MSP head-tracker *input*, so this fills that gap.)
 
 Verified on hardware with **Walksnail Goggles X + a CADDX GM3 gimbal**, and with
 a plain PWM servo pan/tilt.
@@ -1149,10 +1150,11 @@ Servo gimbal: assign the outputs with `SERVOn_FUNCTION` = `6` (Mount1Yaw),
   **FPV-style** — bolted to the airframe on all three axes with **no horizon
   stabilisation** (roll and pitch follow the aircraft rather than self-levelling).
   LOW resumes head tracking.
-- **The goggles' own lock button.** Walksnail's lock button just stops the
-  head-tracker stream; the FC treats **1 s of silence** as a lock and does the
-  same centre + FPV-lock, resuming when the stream returns. A genuine link
-  dropout parks the gimbal the same way — a handy failsafe.
+- **The Walksnail Goggles X Gimbal Lock feature.** You can also switch the gimbal
+  to FPV mode straight from the goggles — the Gimbal Lock button stops the
+  head-tracker stream, and the FC treats **~1 s of silence** as a centre + FPV-lock,
+  resuming when the stream returns. A genuine link dropout parks the gimbal the
+  same way — a handy failsafe.
 
 ## Notes
 
@@ -1160,8 +1162,14 @@ Servo gimbal: assign the outputs with `SERVOn_FUNCTION` = `6` (Mount1Yaw),
   straight back). Keep `MNT1_YAW_MIN/MAX` within that; a GM3 realistically
   reaches ~±170°, so use `-170 / 170`.
 - Head-forward always maps to gimbal-forward, even with asymmetric limits.
-- Compiles only on **mount-enabled boards** (the F4s with mount re-enabled
-  above, or H7). Where the mount is disabled, the feature is compiled out.
+- **Which boards have it.** Head tracking (and gimbal control in general) runs on
+  every **mount-capable** board in the fleet — all the H7 boards and the F4 "wing"
+  boards (`SpeedyBeeF405WING`, `MatekF405-Wing`, `MatekF405-TE`, `speedybeef4v3`).
+  A few compact FPV controllers — `AtomRCF405NAVI`, `KakuteF4-Wing-Buzz`,
+  `MatekF405-STD` — ship **stock, exactly as upstream ArduPilot**, which keeps the
+  mount subsystem off to save flash, so they carry no gimbal support by default.
+  Running a gimbal on one of those? Turning it on is a small hwdef change — just
+  ask (open an issue) and we'll enable it wherever flash allows.
 
 ---
 
