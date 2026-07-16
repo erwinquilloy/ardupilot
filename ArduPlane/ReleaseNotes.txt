@@ -22,7 +22,7 @@ New
   Head-tracker angles from the goggles arrive over the MSP DisplayPort link
   and drive the mount (pan/tilt/roll). Implements MSP2_SENSOR_HEADTRACKER
   similar to how iNav implements it -- credit and thanks to mmosca (who
-  introduced Walksnail head tracking to iNav, PR #10109) and the iNav project
+  introduced Walksnail head tracking to iNav) and the iNav project
   (github.com/iNavFlight/inav). RCx_OPTION 252 enables head tracking; 253
   centres and FPV-locks the gimbal (the Walksnail Goggles X Gimbal Lock button
   does the same via a 1 s stream-loss timeout). The full (H7) build drives any

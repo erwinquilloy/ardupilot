@@ -1039,8 +1039,7 @@ angles instead**.
 
 This implements the Walksnail head-tracker-over-MSP protocol
 (`MSP2_SENSOR_HEADTRACKER`, message `0x1F07`), **introduced to iNav by
-[mmosca in PR #10109](https://github.com/iNavFlight/inav/pull/10109)** — full
-credit and thanks to mmosca and the
+[mmosca](https://github.com/mmosca)** — full credit and thanks to mmosca and the
 [iNav project](https://github.com/iNavFlight/inav). This is an independent
 ArduPilot implementation of that protocol. (Upstream ArduPilot has the CADDX
 gimbal *output* driver but no MSP head-tracker *input*, so this fills that gap.)
