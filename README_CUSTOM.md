@@ -1007,9 +1007,10 @@ mode.
 > is on a mission. Nothing announces this beyond the mode change.
 >
 > If you'd rather keep upstream's behaviour, clear bit 20 —
-> `param set RC_OPTIONS 544` — before your first AUTO flight. If you do
-> want the feature, know the trigger threshold and check `STICK_MIXING`
-> is `0` (it is, in this build) so the sticks aren't doing two jobs.
+> `param set RC_OPTIONS 544` — before your first AUTO flight. Note that
+> `STICK_MIXING` does **not** gate this: the takeover reads the sticks
+> directly and never consults it, so `STICK_MIXING = 0` does not protect
+> you from the takeover and `STICK_MIXING = 1` does not weaken it.
 >
 > **Default may flip to OFF in a future release** — the opt-out is the
 > safer default for pilots migrating from stock. Set bit 20 explicitly
@@ -1018,6 +1019,35 @@ mode.
 
 > ℹ️ AUTO only — RTL and other nav modes aren't covered. If you want
 > stick-takeover from RTL too, holler and I'll extend it.
+
+### How this interacts with `STICK_MIXING`
+
+They are independent — neither one gates the other. The takeover is the
+first check in `ModeAuto::update()` and reads `channel_pitch` /
+`channel_roll` `norm_input()` directly; it never looks at `STICK_MIXING`.
+Stick mixing is applied much later, in `Mode::run()` →
+`stabilize_stick_mixing_fbw()`.
+
+What decides the outcome is ordering, not precedence. `stick_mixing_enabled()`
+only permits mixing in modes that are both auto-throttle **and**
+auto-navigation. Once the takeover fires you are in FBWA, which is
+neither — and FBWA's sticks command attitude directly anyway — so mixing
+simply stops being reachable.
+
+The practical result, if you enable both, is a threshold split in AUTO:
+
+| Stick deflection in AUTO | With `STICK_MIXING = 0` (this build's default) | With `STICK_MIXING = 1` |
+|---|---|---|
+| Under 10 % | Nothing; nav controller flies | Mixing nudges the plane against the nav controller |
+| Over 10 % | **Takeover → FBWA** | **Takeover → FBWA** (mixing never gets a look-in) |
+
+That split is worth avoiding: a small nudge quietly biases the mission, a
+slightly larger one ends it, and the boundary is invisible from the
+cockpit. Pick one behaviour rather than running both.
+
+`STICK_MIXING` is still live everywhere else — the takeover is AUTO-only,
+so mixing continues to govern RTL, LOITER, GUIDED and the other nav modes
+regardless of bit 20.
 
 ## Manual airspeed control in nav modes
 
