@@ -2031,5 +2031,7 @@ the H7 `KakuteH7-Wing`, built from the light branch). Each asset is
 
 ---
 
-☕ **Support this fork** — if it saved you time (or a plane), a tip is hugely
-appreciated: **[paypal.me/iamwinq](https://paypal.me/iamwinq)**. Thank you! 🙏
+# ☕ Support this fork
+
+If it saved you time (or a plane), a tip is hugely appreciated:
+**[paypal.me/iamwinq](https://paypal.me/iamwinq)**. Thank you! 🙏
