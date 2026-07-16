@@ -4,11 +4,14 @@
 > fits more easily on 1 MB F4 boards.
 > **⬇ Download:** grab the newest `light-v*` build from the
 > [**Releases** page](https://github.com/erwinquilloy/ardupilot/releases)
-> (every version, newest first — the latest is `light-v0.3-beta`).
+> (every version, newest first — the current release is `light-v1.0`).
 > **Full variant** (H7 / 2 MB, every backend compiled in): see the
 > [full variant `README_CUSTOM.md`](https://github.com/erwinquilloy/ardupilot/blob/master_custom_4.6.3/README_CUSTOM.md),
 > or the `full-v*` builds on the same
 > [Releases page](https://github.com/erwinquilloy/ardupilot/releases).
+
+> 💛 **Support development:** if this fork saved you time (or a plane), tips are
+> hugely appreciated — **[paypal.me/iamwinq](https://paypal.me/iamwinq)**. Thank you! 🙏
 
 ## Why flash this instead of stock ArduPlane 4.6.3?
 
