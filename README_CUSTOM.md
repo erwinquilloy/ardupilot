@@ -1932,8 +1932,3 @@ the H7 `KakuteH7-Wing`, built from the light branch). Each asset is
   fork (not from any upstream contributor), built on top of
   AP_Mission's existing landing-sequence selection.
 - Authoring assistance via Claude Code (Anthropic).
-
----
-
-☕ **Support this fork** — if it saved you time (or a plane), a tip is hugely
-appreciated: **[paypal.me/iamwinq](https://paypal.me/iamwinq)**. Thank you! 🙏
