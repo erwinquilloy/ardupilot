@@ -11,9 +11,6 @@
 > or the `light-v*` builds on the same
 > [Releases page](https://github.com/erwinquilloy/ardupilot/releases).
 
-> 💛 **Support development:** if this fork saved you time (or a plane), tips are
-> hugely appreciated — **[paypal.me/iamwinq](https://paypal.me/iamwinq)**. Thank you! 🙏
-
 A curated fork of ArduPlane, rebased onto upstream **ArduPlane 4.6.3**
 (tag `Plane-4.6.3`, commit `3fc7011a7d`). This branch carries a set of
 additions and behaviour changes on top of stock 4.6.3, mostly ported
@@ -1928,3 +1925,8 @@ the H7 `KakuteH7-Wing`, built from the light branch). Each asset is
   fork (not from any upstream contributor), built on top of
   AP_Mission's existing landing-sequence selection.
 - Authoring assistance via Claude Code (Anthropic).
+
+---
+
+☕ **Support this fork** — if it saved you time (or a plane), a tip is hugely
+appreciated: **[paypal.me/iamwinq](https://paypal.me/iamwinq)**. Thank you! 🙏
