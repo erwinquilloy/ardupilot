@@ -27,6 +27,14 @@ hear the cue.** Yaapu derives the WAV filename from the same table entry
 as the display name, so a correct `plane.lua` with a misplaced WAV gives
 you exactly that: right name, no audio.
 
+| Build | `coursehold.wav` goes in |
+|---|---|
+| EdgeTX widget (TX16S) | `WIDGETS/yaapu/sounds/en/` |
+| OpenTX / Horus script | `SOUNDS/yaapu0/en/` |
+| FrSky Ethos | `scripts/yaaputelemetry/audio/en/` |
+
+Substitute your language folder for `en` throughout.
+
 ### EdgeTX widget (e.g. RadioMaster TX16S) — verified
 
 On the radio's SD card:
@@ -48,8 +56,16 @@ The pre-widget script build keeps its files elsewhere:
 2. Delete `SCRIPTS/YAAPU/LIB/plane.luac`.
 3. Copy `coursehold.wav` into **`SOUNDS/yaapu0/en/`**.
 
-> ⚠️ **FrSky Ethos** uses a different layout again — neither path above
-> applies. Check your Yaapu Ethos install before copying.
+### FrSky Ethos
+
+Ethos uses a third layout — neither path above applies:
+
+1. Replace Yaapu's `plane.lua` in your `scripts/yaaputelemetry/` install
+   with **this** `plane.lua`, and delete any `plane.luac` beside it.
+2. Copy `coursehold.wav` into **`scripts/yaaputelemetry/audio/en/`**.
+
+Note this is `audio/`, not `sounds/`, and it lives under `scripts/`
+rather than `WIDGETS/`.
 
 ## Install — Yaapu GCS (desktop)
 
