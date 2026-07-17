@@ -999,7 +999,7 @@ SpeedyBee F405 / Wing / V3 / V4 / AIO / Mini, CoreWing F405 Wing,
 Lefei Longbow F405 Wing, FlyingRC F405 mini). H7 boards have
 abundant RAM and weren't affected.
 
-## `EKF3 allocation failed` on 1 MB F4 — free RAM with `LOG_FILE_BUFSIZE`
+## `EKF3 allocation failed` on 1 MB F4 — allocation order and the fix
 
 On 1 MB F4 boards (192 KB RAM) the runtime limit is **RAM, not flash**. If
 the heap runs short, EKF3 can't allocate its core, the estimator falls back
@@ -1017,36 +1017,62 @@ PreArm: Terrain out of memory
 AHRS: DCM active
 ```
 
-**The fix is `LOG_FILE_BUFSIZE 8`** (default on F4 is 16). Reboot afterwards.
-That frees ~8 KB of contiguous heap — enough, on the board where this was
-diagnosed, for the terrain cache *and* EKF3 to both allocate cleanly with
-every other parameter left at its default. The only cost is log quality: a
-smaller buffer means more "gaps" in SD card logging when writes stall.
-ArduPilot's own parameter description says as much — *"This buffer size may
-be reduced to free up available memory"*. The permitted floor is `4` if you
-ever need another 4 KB.
+**These boards cannot fit the log buffer, the terrain cache and the EKF3
+core all at once.** You are choosing which one goes short — and the choice
+is made for you by the order they allocate in:
 
-The 16 KB default isn't a fork choice: F405 is `HAL_MEM_CLASS_192`, which
-falls to the smallest tier of `HAL_LOGGING_FILE_BUFSIZE` upstream. It's the
-largest single param-tunable allocation on the board, which is what makes it
-the right lever.
+1. **Logger**, at boot — the write buffer, plus filesystem structures once a
+   log file is actually opened.
+2. **Terrain**, about a second later, on its first height lookup.
+3. **EKF3**, last, several seconds in — its init is deliberately delayed.
 
-> ⚠️ **Do not "fix" this by lowering `TERRAIN_CACHE_SZ` — it backfires.**
-> The terrain cache allocates about a second after boot, while EKF3's init is
-> deliberately delayed several seconds, so **terrain allocates first**. A
-> *smaller* cache is more likely to fit, which means terrain succeeds and
-> takes the RAM that EKF3 then can't have. Observed on an F405: at the
-> default `CACHE_SZ 12` the 21.6 KB request failed and EKF3 started fine; at
-> `CACHE_SZ 9` the 16.2 KB request succeeded and **EKF3 failed instead**.
-> Leave `TERRAIN_CACHE_SZ` alone and free the memory with
-> `LOG_FILE_BUFSIZE`.
+**EKF3 asks last, so it gets the leftovers.** Every counter-intuitive result
+below follows from that one fact.
 
-> ⚠️ Values below `9` are independently unsafe. Terrain prefetches a **3×3
-> ring of 9 blocks** around the vehicle every update cycle, plus home,
-> mission and rally blocks — which is exactly what the default of 12 is
-> sized for. A cache smaller than the working set thrashes its LRU, so
-> pending block requests may never reach zero and you can sit at
-> `PreArm: waiting for terrain data` forever.
+### The fix
+
+```
+LOG_DISARMED     0
+TERRAIN_CACHE_SZ 9
+```
+
+Reboot. `LOG_DISARMED 0` stops a log file being opened while you're
+disarmed, so the filesystem allocations that come with an open file aren't
+held during boot — which is the window EKF3 needs. `TERRAIN_CACHE_SZ 9`
+(~16.2 KB rather than the default 12's ~21.6 KB) then leaves room for the
+estimator. On the board this was diagnosed on, that combination brought up
+EKF3 cleanly with satellites locked, where `CACHE_SZ 12` still failed with
+`Terrain: Allocation failed`.
+
+> ⚠️ **`LOG_DISARMED 0` moves the allocation to arming time — it doesn't
+> remove it.** When you arm, the log file opens and allocates. EKF3 is safe
+> by then (it already holds its core), but **logging can fail silently and
+> you'd fly with no dataflash log**. The internal "out of memory for
+> logging" complaint never reaches your GCS, so no error message is *not*
+> evidence it worked. Arm on the bench with **props off**, confirm a log
+> file is actually created and grows, and confirm EKF3 stays healthy.
+
+> ⚠️ **Don't try to free RAM by lowering `TERRAIN_CACHE_SZ` further — below
+> 9 it backfires twice.** Because terrain allocates *before* EKF3, a
+> *smaller* cache is more likely to succeed, which means terrain takes the
+> RAM EKF3 then can't have. Observed on an F405: `CACHE_SZ 12` (21.6 KB) was
+> too big, terrain failed, and **EKF3 started fine**; `CACHE_SZ 9` (16.2 KB)
+> fitted, terrain took it, and **EKF3 failed** — until `LOG_DISARMED 0`
+> freed enough for both. Separately, terrain prefetches a **3×3 ring of 9
+> blocks** every update, so a cache below 9 thrashes its LRU and pending
+> requests may never reach zero, leaving you at `PreArm: waiting for terrain
+> data` forever. `9` is the floor, and it has no spare for the home, mission
+> and rally blocks the default 12 accounts for — expect extra reloads.
+
+> ℹ️ `TERRAIN_SPACING` costs **zero RAM** — the cache is `CACHE_SZ` blocks of
+> ~1.8 KB regardless of spacing; spacing only changes how much ground each
+> block covers. Raising it also invalidates every `.DAT` on your SD card
+> (spacing is recorded inside each block, and filenames are lat/lon only),
+> forcing a full re-download. Leave it at `100` unless you have a reason.
+
+> ℹ️ Only trust a result taken with a **3D GPS fix**. Indoors, terrain never
+> really populates, so a configuration can look healthy on the bench and
+> then fail once you have satellites.
 
 ### Reading the messages
 
@@ -1079,11 +1105,12 @@ allocated *and* initialised. Then check `freemem` (Mission Planner → Status
 tab) for your remaining margin.
 
 > ℹ️ **Scope, honestly:** this was diagnosed on a SoloGood F405 Wing running
-> the `SpeedyBeeF405WING-Buzz` build. A genuine SpeedyBee F405 WING runs the
-> same binary with the same 16 KB default and shows none of it — that
-> difference is **unexplained**, and it is params or detected hardware rather
-> than firmware. So treat this as a lever to reach for **if you see the
-> messages above**, not as a setting every F4 board needs.
+> the `SpeedyBeeF405WING-Buzz` build (there is no SoloGood target — the
+> SpeedyBee one is a stand-in). A genuine SpeedyBee F405 WING runs the same
+> binary with the same defaults and shows none of it. That difference is
+> **unexplained**: same chip, same 192 KB, same firmware, so it's params or
+> detected hardware rather than the build. Treat this as a lever to reach for
+> **if you see the messages above**, not as a setting every F4 board needs.
 
 ## Serial port numbering matched to chip UART numbers
 
