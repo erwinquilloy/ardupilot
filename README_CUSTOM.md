@@ -76,7 +76,8 @@ Built for throwing a wing off your hand safely:
   VTOL) and **three switchable tuning sets** (`TUNE_PARAM`/`PARAM2`/`PARAM3`)
   — retune live without a laptop.
 - **AUTO → FBWA stick takeover**: nudge the sticks mid-mission to grab
-  manual control instantly, hand back by re-centring.
+  manual control instantly — it switches the mode to FBWA and stays
+  there; flip the mode switch back to resume the mission.
 - **Throttle stick sets target airspeed** in RTL/LOITER/CIRCLE/AUTO, plus
   **pilot loiter radius + direction** control in LOITER/RTL.
 - Extra modes: **Course Hold** (heading hold) and **Auto Trim** as a mode.
@@ -280,7 +281,8 @@ Built for throwing a wing off your hand safely:
   VTOL) and **three switchable tuning sets** (`TUNE_PARAM`/`PARAM2`/`PARAM3`)
   — retune live without a laptop.
 - **AUTO → FBWA stick takeover**: nudge the sticks mid-mission to grab
-  manual control instantly, hand back by re-centring.
+  manual control instantly — it switches the mode to FBWA and stays
+  there; flip the mode switch back to resume the mission.
 - **Throttle stick sets target airspeed** in RTL/LOITER/CIRCLE/AUTO, plus
   **pilot loiter radius + direction** control in LOITER/RTL.
 - Extra modes: **Course Hold** (heading hold) and **Auto Trim** as a mode.
