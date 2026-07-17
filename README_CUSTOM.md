@@ -438,11 +438,17 @@ On an **EdgeTX widget install** (e.g. RadioMaster TX16S):
 
 > ⚠️ **Right name but no sound?** That's the WAV being in a folder
 > Yaapu doesn't read — the two things are looked up separately, so the
-> HUD text can work while the audio silently doesn't. The **older
-> OpenTX/Horus script** layout uses `SCRIPTS/YAAPU/LIB/plane.lua` and
-> `SOUNDS/yaapu0/en/` instead, and **FrSky Ethos** differs again.
-> Neither is the same as EdgeTX's own `SOUNDS/en/` folder, which is
-> for Special Functions and unrelated to Yaapu.
+> HUD text can work while the audio silently doesn't. The sound folder
+> depends on which Yaapu build you run:
+>
+> | Build | `coursehold.wav` goes in |
+> |---|---|
+> | EdgeTX widget (TX16S) | `WIDGETS/yaapu/sounds/en/` |
+> | OpenTX / Horus script | `SOUNDS/yaapu0/en/` |
+> | FrSky Ethos | `scripts/yaaputelemetry/audio/en/` |
+>
+> None of these is EdgeTX's own `SOUNDS/en/` folder, which is for
+> Special Functions and unrelated to Yaapu.
 
 The same `plane.lua` works for the Yaapu **GCS desktop tool** — see
 [`Tools/yaapu-coursehold/README.md`](Tools/yaapu-coursehold/README.md)
