@@ -245,12 +245,35 @@ input still rolls the plane; releasing returns to the locked course.
 > `modules/mavlink/pymavlink/mavutil.py` `mode_mapping_apm` to teach
 > MAVProxy the right name, or change `FLTMODE_n` to 27+ locally.
 
-> 📡 **Yaapu telemetry users:** stock Yaapu's plane-mode table stops
-> at mode 25 (Thermal) so Course Hold shows as a blank chip + no
-> audio cue. Drop-in `plane.lua` and `coursehold.wav` are in
-> [`Tools/yaapu-coursehold/`](Tools/yaapu-coursehold/README.md) —
-> see that directory's README for install paths on both the radio
-> SD card and the Yaapu GCS desktop tool.
+#### 📡 Yaapu telemetry — showing and announcing Course Hold
+
+Stock Yaapu's plane-mode table stops short of mode 26, so Course Hold
+shows as a blank chip with no audio cue. Two drop-in files fix it —
+[`Tools/yaapu-coursehold/`](Tools/yaapu-coursehold/README.md) in this
+repo, and attached to every release as `plane.lua` + `coursehold.wav`
+so you don't need to clone anything.
+
+On an **EdgeTX widget install** (e.g. RadioMaster TX16S):
+
+1. Replace Yaapu's `plane.lua` under `WIDGETS/yaapu/` with the one
+   provided — this adds `CourseHold` at index 27 (Yaapu indexes
+   `flight_mode + 1`, so 27 = our mode 26).
+2. Delete the `plane.luac` next to it; it's a compiled cache and will
+   regenerate.
+3. Copy `coursehold.wav` into **`WIDGETS/yaapu/sounds/en/`** (your
+   language folder if not English).
+
+> ⚠️ **Right name but no sound?** That's the WAV being in a folder
+> Yaapu doesn't read — the two things are looked up separately, so the
+> HUD text can work while the audio silently doesn't. The **older
+> OpenTX/Horus script** layout uses `SCRIPTS/YAAPU/LIB/plane.lua` and
+> `SOUNDS/yaapu0/en/` instead, and **FrSky Ethos** differs again.
+> Neither is the same as EdgeTX's own `SOUNDS/en/` folder, which is
+> for Special Functions and unrelated to Yaapu.
+
+The same `plane.lua` works for the Yaapu **GCS desktop tool** — see
+[`Tools/yaapu-coursehold/README.md`](Tools/yaapu-coursehold/README.md)
+for that and for recording your own cue.
 
 ### Auto Trim (mode 27)
 Flies like Course Hold (locked ground-track heading, pilot trims
@@ -969,6 +992,92 @@ Boards that benefit: every F4 board in the supported list
 SpeedyBee F405 / Wing / V3 / V4 / AIO / Mini, CoreWing F405 Wing,
 Lefei Longbow F405 Wing, FlyingRC F405 mini). H7 boards have
 abundant RAM and weren't affected.
+
+## `EKF3 allocation failed` on 1 MB F4 — free RAM with `LOG_FILE_BUFSIZE`
+
+On 1 MB F4 boards (192 KB RAM) the runtime limit is **RAM, not flash**. If
+the heap runs short, EKF3 can't allocate its core, the estimator falls back
+to DCM, and prearm refuses to arm. Nothing crashes — the vehicle is
+protecting itself.
+
+Symptoms, at boot, any of:
+
+```
+EKF3 allocation failed
+EKF3 not enough memory
+Terrain: Allocation failed
+PreArm: AHRS: EKF3 not started
+PreArm: Terrain out of memory
+AHRS: DCM active
+```
+
+**The fix is `LOG_FILE_BUFSIZE 8`** (default on F4 is 16). Reboot afterwards.
+That frees ~8 KB of contiguous heap — enough, on the board where this was
+diagnosed, for the terrain cache *and* EKF3 to both allocate cleanly with
+every other parameter left at its default. The only cost is log quality: a
+smaller buffer means more "gaps" in SD card logging when writes stall.
+ArduPilot's own parameter description says as much — *"This buffer size may
+be reduced to free up available memory"*. The permitted floor is `4` if you
+ever need another 4 KB.
+
+The 16 KB default isn't a fork choice: F405 is `HAL_MEM_CLASS_192`, which
+falls to the smallest tier of `HAL_LOGGING_FILE_BUFSIZE` upstream. It's the
+largest single param-tunable allocation on the board, which is what makes it
+the right lever.
+
+> ⚠️ **Do not "fix" this by lowering `TERRAIN_CACHE_SZ` — it backfires.**
+> The terrain cache allocates about a second after boot, while EKF3's init is
+> deliberately delayed several seconds, so **terrain allocates first**. A
+> *smaller* cache is more likely to fit, which means terrain succeeds and
+> takes the RAM that EKF3 then can't have. Observed on an F405: at the
+> default `CACHE_SZ 12` the 21.6 KB request failed and EKF3 started fine; at
+> `CACHE_SZ 9` the 16.2 KB request succeeded and **EKF3 failed instead**.
+> Leave `TERRAIN_CACHE_SZ` alone and free the memory with
+> `LOG_FILE_BUFSIZE`.
+
+> ⚠️ Values below `9` are independently unsafe. Terrain prefetches a **3×3
+> ring of 9 blocks** around the vehicle every update cycle, plus home,
+> mission and rally blocks — which is exactly what the default of 12 is
+> sized for. A cache smaller than the working set thrashes its LRU, so
+> pending block requests may never reach zero and you can sit at
+> `PreArm: waiting for terrain data` forever.
+
+### Reading the messages
+
+The two EKF3 messages are **different faults** — check which one you have
+before changing anything:
+
+| Message | Meaning |
+|---|---|
+| `EKF3 not enough memory` | The free-memory precheck failed. Genuinely out of heap. |
+| `EKF3 allocation failed` | The precheck *passed* but the allocation still failed — heap fragmentation. |
+
+Either way EKF3 disables itself in RAM only, so a reboot always retries and
+each boot prints at most one of these.
+
+Several messages that look like this problem are **not** memory faults:
+
+- `PreArm: AHRS: EKF3 not started` **with** `GPS: Bad fix` — on a plane EKF3
+  won't finish init until a **3D GPS fix**. It's waiting for satellites.
+- `PreArm: AHRS: Not healthy` — EKF3 is running but not yet healthy; also
+  usually a GPS fix away. Note this message *replacing* `EKF3 not started`
+  is progress, not a regression.
+- `PreArm: waiting for terrain data` — terrain can't fetch blocks until it
+  knows where it is. Clears with GPS.
+- `AHRS: DCM active` in the first seconds of boot — normal, DCM covers the
+  window before EKF3 initialises.
+
+Confirmation you're actually fixed is `EKF3 IMU0 initialised` followed by
+`EKF3 IMU0 tilt alignment complete`. Those only print from a core that
+allocated *and* initialised. Then check `freemem` (Mission Planner → Status
+tab) for your remaining margin.
+
+> ℹ️ **Scope, honestly:** this was diagnosed on a SoloGood F405 Wing running
+> the `SpeedyBeeF405WING-Buzz` build. A genuine SpeedyBee F405 WING runs the
+> same binary with the same 16 KB default and shows none of it — that
+> difference is **unexplained**, and it is params or detected hardware rather
+> than firmware. So treat this as a lever to reach for **if you see the
+> messages above**, not as a setting every F4 board needs.
 
 ## Serial port numbering matched to chip UART numbers
 
