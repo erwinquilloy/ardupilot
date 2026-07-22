@@ -1447,7 +1447,7 @@ but nothing here is GM3-specific.)
 
 | Param | Value | Purpose |
 |---|---|---|
-| `MNT1_TYPE` | `13` (CADDX) or `1` (Servo) | gimbal backend |
+| `MNT1_TYPE` | `13` (CADDX), `7` (Servo, FPV/no-stab), or `1` (Servo, stabilised) | gimbal backend |
 | `MNT1_DEFLT_MODE` | `3` (RC_TARGETING) | control when head tracking is off |
 | `SERIALx_PROTOCOL` | `42` (MSP DisplayPort) | head-tracker **input** (goggles/VTX UART) |
 | `SERIALy_PROTOCOL` | `8` (Gimbal) | CADDX **output** UART (serial gimbal only) |
@@ -1458,6 +1458,13 @@ but nothing here is GM3-specific.)
 
 Servo gimbal: assign the outputs with `SERVOn_FUNCTION` = `6` (Mount1Yaw),
 `7` (Mount1Tilt), `8` (Mount1Roll).
+
+> 💡 **For head tracking, use `MNT1_TYPE = 7` (BrushlessPWM), not `1` (Servo).**
+> Both drive the same servo outputs and the same `SERVOn_FUNCTION` pins, but
+> type `1` earth-frame stabilises — the pan/tilt servos counter-rotate to hold
+> the horizon as the airframe moves, which fights the head tracker. Type `7`
+> drives the servos in body frame with no stabilisation, so pan/tilt follow only
+> your head (FPV behaviour). `MNT1_TYPE` is reboot-required.
 
 ## Controls
 
