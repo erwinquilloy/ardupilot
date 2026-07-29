@@ -4,8 +4,8 @@
 > fits more easily on 1 MB F4 boards.
 > **⬇ Download:** grab the newest `light-v*` build from the
 > [**Releases** page](https://github.com/erwinquilloy/ardupilot/releases)
-> (every version, newest first — the current release is `light-v1.0`).
-> **Full variant** (H7 / 2 MB, every backend compiled in): see the
+> (every version, newest first — the current release is `light-v1.1`).
+> **Full variant** (F7 / H7 / 2 MB, every backend compiled in): see the
 > [full variant `README_CUSTOM.md`](https://github.com/erwinquilloy/ardupilot/blob/master_custom_4.6.3/README_CUSTOM.md),
 > or the `full-v*` builds on the same
 > [Releases page](https://github.com/erwinquilloy/ardupilot/releases).
@@ -625,6 +625,30 @@ sequence so the pilot doesn't have to watch the GCS:
 Tones loop until the state changes — works the same way pre-arm and
 EKF-failsafe cont tones do. No parameter to enable; it's automatic
 whenever `TKOFF_THR_IDLE` is configured.
+
+**Plain GPIO buzzers (v1.1).** The table above needs a **ToneAlarm** output
+(a pitched buzzer on a PWM/`ALARM` pin) to play actual tones. Boards with
+only a plain on/off GPIO buzzer — `AtomRCF405NAVI` among them — previously
+got no pre-launch cues at all. They now play the same three states as
+distinct **cadences** instead of pitches:
+
+| State | GPIO buzzer cadence |
+|-------|---------------------|
+| `TKOFS_WAITING_TO_RAISE_THROTTLE` | Slow lone beeps |
+| `TKOFS_WAITING_FOR_IDLE_THROTTLE` | Medium double-beeps |
+| `TKOFS_WAITING_FOR_LAUNCH` | Fast continuous |
+
+The three are deliberately far apart in rhythm so they stay tellable apart
+by ear on a buzzer that can only be on or off. Nothing to configure — the
+cues appear automatically on boards that have a GPIO buzzer and no
+ToneAlarm; boards with a ToneAlarm are unchanged and still play the tones
+in the first table.
+
+> **Timing note.** The GPIO buzzer enforces a 3.3 s minimum gap between
+> patterns (32 bits × 100 ms). State-change cues bypass that gap so they
+> sound the moment the state changes — otherwise a "ready to launch" cue
+> could arrive up to 3.3 s late, well after a hand launch has happened.
+> The repeat of the launch-ready cue still respects the gap.
 
 ### Pilot altitude control during TAKEOFF loiter
 
@@ -1487,13 +1511,16 @@ Servo gimbal: assign the outputs with `SERVOn_FUNCTION` = `6` (Mount1Yaw),
   reaches ~±170°, so use `-170 / 170`.
 - Head-forward always maps to gimbal-forward, even with asymmetric limits.
 - **Which boards have it.** Head tracking (and gimbal control in general) runs on
-  every **mount-capable** board in the fleet — all the H7 boards and the F4 "wing"
-  boards (`SpeedyBeeF405WING`, `MatekF405-Wing`, `MatekF405-TE`, `speedybeef4v3`).
-  A few compact FPV controllers — `AtomRCF405NAVI`, `KakuteF4-Wing-Buzz`,
-  `MatekF405-STD` — ship **stock, exactly as upstream ArduPilot**, which keeps the
-  mount subsystem off to save flash, so they carry no gimbal support by default.
+  every **mount-capable** board in the light fleet — the F4 "wing" boards
+  (`SpeedyBeeF405WING`, `MatekF405-Wing`, `MatekF405-TE`, `speedybeef4v3`) and,
+  as of **v1.1**, `AtomRCF405NAVI`, which now enables the servo (PWM) and CADDX
+  mount backends instead of shipping with the mount subsystem off.
+  Two compact FPV controllers — `KakuteF4-Wing-Buzz` and `MatekF405-STD` — still
+  ship **stock, exactly as upstream ArduPilot**, which keeps the mount subsystem
+  off to save flash, so they carry no gimbal support by default.
   Running a gimbal on one of those? Turning it on is a small hwdef change — just
   ask (open an issue) and we'll enable it wherever flash allows.
+  (Every board on the **full** track is F7/H7 and mount-capable.)
 
 ---
 
@@ -1744,14 +1771,18 @@ HAL_MSP_RADAR_ENABLED   = AP_RADAR_ENABLED && HAL_MSP_ENABLED
 i.e. radar follows MSP. Override in a hwdef with `define AP_RADAR_ENABLED 0`
 to force-strip it on a flash-constrained board.
 
-## Full release fleet (`full-v1.0`)
+## Full release fleet (`full-v1.1`)
 
-The fork ships two parallel per-board release tracks — `full-v1.0`
-(this branch) and `light-v1.0` (the light branch). Both carry the
+The fork ships two parallel per-board release tracks — `full-v1.1`
+(this branch) and `light-v1.1` (the light branch). Both carry the
 **identical fork feature set**; they differ only in which hardware
 backends are compiled in. A board's version string tells you which you
 flashed: the light build appends ` Light`
-(`... ArduCustom v1.0 Light (…)`), the full build has no suffix.
+(`... ArduCustom v1.1 Light (…)`), the full build has no suffix.
+
+As of v1.1 the two tracks no longer overlap: **full is the F7 / H7 track,
+light is the 1 MB F4 track.** A given board appears on exactly one of them,
+so there is no longer any ambiguity about which asset to flash.
 
 The **full** fleet is built from `master_custom_4.6.3` with every upstream
 backend plus the fork additions, scoped to boards with the flash headroom
@@ -1764,20 +1795,19 @@ full build; flash those from the light release instead.)
 | MatekH743-bdshot | H7 / 2 MB | Ships — Matek H743-WING (bidirectional DShot) |
 | KakuteH7-Wing | H7 / 2 MB | Ships — Holybro Kakute H743 Wing |
 
-Both keep hundreds of KB free with the full backend set (exact figures in
-the release notes). `KakuteH7-Wing`, an H7 with generous flash, is carried
-on **both** tracks — it belongs here where the extra headroom is an asset,
-and is also offered on the light release for convenience.
+All three keep hundreds of KB free with the full backend set (exact figures
+in the release notes). From v1.1 these three F7/H7 targets are **full-only**
+— they were previously also built for the light release, which made sense
+while light was the more complete track, but a 2 MB board has no reason to
+run a backend-stripped build.
 
-## Light release fleet (`light-v1.0`) — 11 boards (9 × 1 MB F4 + 1 × H7 + 1 × F7)
+## Light release fleet (`light-v1.1`) — 9 boards (all 1 MB F4)
 
-Measured against the **light variant** at v1.0 with radar +
+Measured against the **light variant** at v1.1 with radar +
 LAND_WIND_DIST + LAND_WIND_STRICT on:
 
 | Board | Flash | Free after fork features | Status |
 |---|---:|---:|---|
-| MatekF765-Wing | 2 MB | **613.2 KB** | Ships — Matek F765-WING (F7; also on full) |
-| KakuteH7-Wing | 2 MB | **281.9 KB** | Ships — Holybro Kakute H743 Wing (H7; also on full) |
 | KakuteF4-Wing-Buzz | 1 MB | **80.2 KB** | Ships — Kakute F4 Wing + tone buzzer (see below) |
 | speedybeef4v3 | 1 MB | **52.0 KB** | Ships — most F4 headroom |
 | MatekF405-STD | 1 MB | **45.6 KB** | Ships |
@@ -1790,9 +1820,10 @@ LAND_WIND_DIST + LAND_WIND_STRICT on:
 
 `MatekF405-Wing-bdshot` is now the canary board — first to bump the
 1 MB ceiling in any future upstream rebase or feature add. Worth
-watching going forward. (`KakuteH7-Wing` and `MatekF765-Wing`, 2 MB H7/F7
-targets, are not flash-constrained here — they are carried on both tracks
-for convenience.)
+watching going forward. With the F7/H7 targets moved to full-only in v1.1,
+every board on this track is flash-constrained, so the canary matters more
+than it did before: nothing in this fleet has spare headroom to absorb a
+regression.
 
 ### Tone-buzzer board variant: `SpeedyBeeF405WING-Buzz`
 
@@ -1934,6 +1965,18 @@ notes and wiring photos live in the board's `Readme.md`.
   cost trimmed each F4's free-flash figure above by roughly 1 KB versus
   v0.3-beta; every board still clears its ceiling (tightest is
   `MatekF405-Wing-bdshot` at 26.3 KB free).
+
+**v1.1 fleet change vs v1.0:**
+- **Removed from light:** `MatekF765-Wing` (F7 / 2 MB) and `KakuteH7-Wing`
+  (H7 / 2 MB). Both continue to ship on **full**, unchanged. Carrying 2 MB
+  targets on a backend-stripped track never bought anything — the light
+  variant exists to fit 1 MB F4 flash, and these boards were never
+  constrained. Users on those two boards should flash the **full** asset.
+- The tracks are now cleanly split by MCU class: **full = F7/H7**
+  (3 boards), **light = 1 MB F4** (9 boards). No board appears on both,
+  so there is no longer a choice to get wrong.
+- No board was added, and no F4 board changed status. Light goes 11 → 9
+  purely by removing the two unconstrained targets.
 
 If a 1 MB F4 board overflows, the cheapest first trim is
 `define HAL_SOARING_ENABLED 0` in that board's hwdef (Plane soaring

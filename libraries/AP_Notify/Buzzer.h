@@ -18,6 +18,7 @@
 #pragma once
 
 #include "NotifyDevice.h"
+#include "AP_Notify.h"   // for AP_Notify::takeoffStatus (takeoff cues)
 
 class Buzzer: public NotifyDevice
 {
@@ -45,6 +46,13 @@ private:
     static const uint32_t        EKF_BAD = 0b11101101010000000000000000000000UL;
     static const uint32_t      INIT_GYRO = 0b10010010010010010010000000000000UL;
     static const uint32_t   PRE_ARM_GOOD = 0b10101011111111110000000000000000UL;
+    // Fork: takeoff cue patterns (PR #174 extended to the GPIO buzzer
+    // backend for boards without a PWM/ALARM ToneAlarm output, e.g.
+    // AtomRCF405NAVI). Distinct cadences so the pre-launch state is
+    // recognisable by ear on a plain on/off buzzer.
+    static const uint32_t  TKOF_RAISE_BUZZ = 0b10000000001000000000100000000000UL; // slow lone beeps: raise throttle
+    static const uint32_t   TKOF_IDLE_BUZZ = 0b10100000101000001010000000000000UL; // medium double-beeps: spooling to idle
+    static const uint32_t TKOF_LAUNCH_BUZZ = 0b10101010101010101010101010101010UL; // fast continuous: ready to launch
 
     /// play_pattern - plays the defined buzzer pattern
     void play_pattern(const uint32_t pattern);
@@ -63,6 +71,9 @@ private:
     uint32_t _pattern;           // current pattern
     int8_t _pin;
     uint32_t _pattern_start_time;
+
+    // Fork: last takeoff_status seen, to detect transitions for takeoff cues
+    AP_Notify::takeoffStatus _takeoff_status = AP_Notify::TKOFS_IDLE;
 
     // enforce minumum 100ms interval between patterns:
     const uint16_t _pattern_start_interval_time_ms = 32*100 + 100;

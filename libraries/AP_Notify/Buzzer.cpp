@@ -61,8 +61,46 @@ void Buzzer::update_pattern_to_play()
         return;
     }
 
+    // Fork: takeoff cues (PR #174 extended from ToneAlarm to the GPIO
+    // buzzer backend, for boards without a PWM/ALARM ToneAlarm output
+    // e.g. AtomRCF405NAVI). Play a distinct cadence on each pre-launch
+    // state change; the launch-ready cue repeats until the pilot launches
+    // (status leaves TKOFS_WAITING_FOR_LAUNCH). Takes priority during the
+    // narrow pre-launch window (takeoff_status is non-IDLE only then).
+    //
+    // The state-change cues sit ahead of the minimum-separation guard, like
+    // the arming-failed buzz above, so they sound immediately. Behind the
+    // guard they were delayed by up to _pattern_start_interval_time_ms
+    // (3.3s), which is far too late to be useful on a hand launch.
+    if (_takeoff_status != AP_Notify::takeoff_status) {
+        _takeoff_status = AP_Notify::takeoff_status;
+        switch (_takeoff_status) {
+        case AP_Notify::TKOFS_WAITING_TO_RAISE_THROTTLE:
+            play_pattern(TKOF_RAISE_BUZZ);
+            return;
+        case AP_Notify::TKOFS_WAITING_FOR_IDLE_THROTTLE:
+            play_pattern(TKOF_IDLE_BUZZ);
+            return;
+        case AP_Notify::TKOFS_WAITING_FOR_LAUNCH:
+            play_pattern(TKOF_LAUNCH_BUZZ);
+            return;
+        case AP_Notify::TKOFS_IDLE:
+        default:
+            break;
+        }
+    }
+
     if (AP_HAL::millis() - _pattern_start_time < _pattern_start_interval_time_ms) {
         // do not interrupt playing patterns / enforce minumum separation
+        return;
+    }
+
+    // Repeat of the launch-ready cue has to stay behind the guard: update()
+    // runs at 50Hz, so ahead of it play_pattern() would reset
+    // _pattern_start_time every 20ms and the pattern would never advance
+    // past its first bit.
+    if (_takeoff_status == AP_Notify::TKOFS_WAITING_FOR_LAUNCH) {
+        play_pattern(TKOF_LAUNCH_BUZZ);
         return;
     }
 
