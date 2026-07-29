@@ -64,7 +64,12 @@
 #endif
 
 #ifndef AP_AIRSPEED_SITL_ENABLED
-#define AP_AIRSPEED_SITL_ENABLED AP_AIRSPEED_BACKEND_DEFAULT_ENABLED && AP_SIM_ENABLED
+// Light variant: the backend trim above targets flash on real boards, where
+// AP_SIM_ENABLED is 0 and this costs nothing either way. Gating the SITL
+// backend on that trim left sensor[i] permanently null for ARSPD_TYPE=100,
+// so airspeed could never become healthy and SITL could never arm with
+// ARSPD_USE=1 - i.e. no airspeed-dependent behaviour was testable at all.
+#define AP_AIRSPEED_SITL_ENABLED AP_SIM_ENABLED
 #endif
 
 // other AP_Airspeed options:
