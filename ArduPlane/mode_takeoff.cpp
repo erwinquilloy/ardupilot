@@ -64,8 +64,21 @@ bool ModeTakeoff::_enter()
 {
     takeoff_mode_setup = false;
     have_autoenabled_fences = false;
+    target_alt_seeded = false;
 
     return true;
+}
+
+/*
+  Seed target_altitude from the loiter waypoint. Until this has run,
+  target_altitude still holds whatever the previous mode left in it, so
+  navigate() must not write it back into next_WP_loc.
+ */
+void ModeTakeoff::seed_target_altitude()
+{
+    plane.setup_terrain_target_alt(plane.next_WP_loc);
+    plane.set_target_altitude_location(plane.next_WP_loc);
+    target_alt_seeded = true;
 }
 
 void ModeTakeoff::update()
@@ -161,8 +174,7 @@ void ModeTakeoff::update()
         // Seed the target_altitude struct off the loiter WP so the pilot's
         // throttle-stick (FBW-B style, see update_fbwb_speed_height below)
         // can nudge altitude up and down during the takeoff loiter phase.
-        plane.setup_terrain_target_alt(plane.next_WP_loc);
-        plane.set_target_altitude_location(plane.next_WP_loc);
+        seed_target_altitude();
 
         plane.steer_state.hold_course_cd = wrap_360_cd(direction*100); // Necessary to allow Plane::takeoff_calc_roll() to function.
     }
@@ -194,6 +206,14 @@ void ModeTakeoff::update()
             have_autoenabled_fences = true;
         }
 #endif
+        // We can reach the loiter phase without the seeding above having run,
+        // e.g. entering TAKEOFF already above TKOFF_ALT, or via one of the
+        // takeoff timeouts. Seed off the loiter WP now so the pilot adjustment
+        // below starts from the intended altitude rather than a stale one.
+        if (!target_alt_seeded) {
+            seed_target_altitude();
+        }
+
         // Pilot stick adjustment of loiter altitude (FBW-B style), per
         // ArduCustom v11.0 #226. Reads channel_pitch->norm_input() and
         // shifts target_altitude.amsl_cm; navigate() then bakes the new
@@ -215,7 +235,13 @@ void ModeTakeoff::navigate()
 {
     // Bake the pilot-adjusted target altitude (from update_fbwb_speed_height)
     // back into next_WP_loc so the loiter circle holds the new altitude.
-    plane.next_WP_loc.set_alt_cm(plane.target_altitude.amsl_cm, Location::AltFrame::ABSOLUTE);
+    // Only once target_altitude has been seeded off the loiter WP: before that
+    // it still holds the previous mode's value, and writing it back would drag
+    // the climb target down to a stale altitude (and latch there, since
+    // Mode::update_target_altitude() reads next_WP_loc straight back out).
+    if (target_alt_seeded) {
+        plane.next_WP_loc.set_alt_cm(plane.target_altitude.amsl_cm, Location::AltFrame::ABSOLUTE);
+    }
     // Zero indicates to use WP_LOITER_RAD (manual radius / direction control
     // not ported yet - depends on fork PR #180).
     plane.update_loiter(0);
