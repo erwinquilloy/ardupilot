@@ -925,6 +925,15 @@ private:
     // flag that we have already called autoenable fences once in MODE TAKEOFF
     bool have_autoenabled_fences;
 
+    // seed target_altitude from next_WP_loc so the pilot can adjust the
+    // loiter altitude with the pitch stick. Sets target_alt_seeded.
+    void seed_target_altitude();
+
+    // true once seed_target_altitude() has run. navigate() must not write
+    // target_altitude back into next_WP_loc before this, or it would clobber
+    // the climb target with a stale altitude left over from the previous mode.
+    bool target_alt_seeded;
+
 };
 
 #if HAL_SOARING_ENABLED
