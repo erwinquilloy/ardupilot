@@ -163,3 +163,20 @@ include ../include/minimize_fpv_osd.inc
 define HAL_PARACHUTE_ENABLED 0
 
 
+
+# Fork: re-enable AP_Mount on this F4 board for gimbal users
+# (minimize_common.inc disables HAL_MOUNT_ENABLED + zeros the
+# backends to save flash). Mirrors the speedybeef4v3 pattern:
+# standard servo (PWM) mount backend + the CADDX backend for
+# users running CADDX GM3-type serial gimbals. Backends default
+# off, only servo + CADDX explicitly enabled to keep flash small.
+undef AP_CAMERA_MOUNT_ENABLED
+undef HAL_MOUNT_ENABLED
+undef HAL_MOUNT_SERVO_ENABLED
+undef HAL_MOUNT_CADDX_ENABLED
+
+define AP_CAMERA_MOUNT_ENABLED 1
+define HAL_MOUNT_ENABLED 1
+define AP_MOUNT_BACKEND_DEFAULT_ENABLED 0
+define HAL_MOUNT_SERVO_ENABLED 1
+define HAL_MOUNT_CADDX_ENABLED 1
