@@ -139,7 +139,7 @@ This controls the height above the glide slope the plane may be before rebuildin
 
 *Note: This parameter is for advanced users*
 
-When enabled, this adds user stick input to the control surfaces in auto modes, allowing the user to have some degree of flight control without changing modes. Default is 0 (Disabled) in this build — pilot stick input is ignored in AUTO/RTL/GUIDED. Set to 1 to use "fly by wire" mixing, which controls the roll and pitch in the same way that the FBWA mode does. Set to 3 to apply yaw only while in quadplane modes, such as during automatic VTOL takeoff/landing.
+When enabled, this adds user stick input to the control surfaces in auto modes, allowing the user to have some degree of flight control without changing modes. Set to 1 to use "fly by wire" mixing, which controls the roll and pitch in the same way that the FBWA mode does. Set to 3 to apply yaw only while in quadplane modes, such as during automatic VTOL takeoff/landing. Set to 0 to ignore pilot stick input in AUTO/RTL/GUIDED entirely.
 
 |Value|Meaning|
 |:---:|:---:|
@@ -1160,6 +1160,16 @@ Automatically begin landing sequence after arriving at RTL location. This requir
 |3|OnlyForGoAround|
 |4|Go directly to landing sequence via DO_RETURN_PATH_START mission item|
 
+## RTL_AUTOLAND_DLY: RTL autoland commit failsafe delay
+
+Only used when RTL_AUTOLAND is 1 and an RCx_OPTION RTL Autoland Commit switch is assigned and held in the hold position. On RC failsafe the commit switch can no longer be flipped so the plane would normally commit to the DO_LAND_START sequence immediately. This parameter keeps the plane circling the home loiter for the given number of seconds (counting from when it has settled at the home loiter altitude) before committing, giving a transient RC dropout time to recover so the pilot keeps control. If the link recovers within this window the gate re-engages and the plane keeps holding for the pilot. 0 commits immediately on failsafe (legacy behaviour). Has no effect when the commit switch is unassigned or already in the commit position.
+
+- Units: s
+
+- Range: 0 600
+
+- Increment: 1
+
 ## CRASH_ACC_THRESH: Crash Deceleration Threshold
 
 *Note: This parameter is for advanced users*
@@ -1479,6 +1489,23 @@ Amount of differential throws applied to the elevator. A positive number reduces
 Bias the DO_LAND_START selection toward landings whose final approach faces into the wind. Applies wherever ArduPlane chooses a landing sequence -- RTL autoland, fence breach, battery failsafe, and the GCS DO_LAND_START command. 0 = pure nearest-distance (upstream default; no behaviour change). > 0 = penalise tailwind candidates; full headwind earns no penalty. Falls back to nearest-distance when AHRS wind estimate < 1 m/s or an approach heading cannot be derived from the mission sequence.
 
 - Range: 0 1
+
+## LAND_WIND_DIST: Max distance for LAND_WIND_BIAS
+
+Companion cap for LAND_WIND_BIAS. Purpose: keep the wind bias from steering the plane toward a much farther DO_LAND_START just because its approach happens to align with the wind. DO_LAND_START candidates whose start-of-approach sits farther than this many metres from the plane's position at decision time are excluded from selection entirely; wind-bias scoring is then applied only to the candidates within the cap. Under RTL_AUTOLAND=1 the selection runs after the plane has reached the RTL loiter point, so the cap is effectively measured from HOME; under RTL_AUTOLAND=2 / battery failsafe / GCS DO_LAND_START the cap is measured from wherever the plane is when the trigger fires. If no candidate is within the cap, the behaviour is controlled by LAND_WIND_STRICT: 0 (default) falls back to upstream nearest-across-all so the plane still lands; 1 refuses to autoland so RTL keeps loitering. 0 (default) here disables the cap entirely; the bias is applied to every candidate as before.
+
+- Units: m
+
+- Range: 0 20000
+
+## LAND_WIND_STRICT: LAND_WIND_DIST hard-fence toggle
+
+Chooses what happens when LAND_WIND_DIST eliminates every DO_LAND_START candidate. Purpose: let the pilot decide whether the distance cap is a soft preference or a hard boundary. 0 (default, soft fallback): fall through to upstream nearest-across-all so the plane still attempts a landing even if the only survivor is far outside the cap -- preserves the failsafe safety-net at the cost of occasionally flying farther than the cap suggests. 1 (hard fence): refuse the autoland when nothing survives the cap; RTL stays in RTL and the plane keeps loitering at HOME/rally requiring pilot intervention. LAND_WIND_DIST becomes a true hard boundary for autoland. WARNING: under strict mode a battery failsafe with no in-cap landing will not attempt to land -- the plane loiters until the battery dies. Only enable strict if you understand this trade-off. Ignored when LAND_WIND_DIST = 0 (no cap) or LAND_WIND_BIAS = 0 (whole feature off).
+
+|Value|Meaning|
+|:---:|:---:|
+|0|Soft fallback (attempt landing anyway)|
+|1|Hard fence (loiter instead of landing)|
 
 ## FLTMODE_EXT: Enable 12-position FLTMODE_CH
 
@@ -13799,6 +13826,9 @@ Auxiliary RC Options function executed on pin change
 |216|Mount2 Pitch|
 |217|Mount2 Yaw|
 |200|Servos Auto Trim|
+|251|RTL Autoland Commit|
+|252|Mount1 Head Track Enable|
+|253|Mount1 Head Track Center Lock|
 |300|Scripting1|
 |301|Scripting2|
 |302|Scripting3|
@@ -13910,6 +13940,9 @@ Auxiliary RC Options function executed on pin change
 |216|Mount2 Pitch|
 |217|Mount2 Yaw|
 |200|Servos Auto Trim|
+|251|RTL Autoland Commit|
+|252|Mount1 Head Track Enable|
+|253|Mount1 Head Track Center Lock|
 |300|Scripting1|
 |301|Scripting2|
 |302|Scripting3|
@@ -14021,6 +14054,9 @@ Auxiliary RC Options function executed on pin change
 |216|Mount2 Pitch|
 |217|Mount2 Yaw|
 |200|Servos Auto Trim|
+|251|RTL Autoland Commit|
+|252|Mount1 Head Track Enable|
+|253|Mount1 Head Track Center Lock|
 |300|Scripting1|
 |301|Scripting2|
 |302|Scripting3|
@@ -14132,6 +14168,9 @@ Auxiliary RC Options function executed on pin change
 |216|Mount2 Pitch|
 |217|Mount2 Yaw|
 |200|Servos Auto Trim|
+|251|RTL Autoland Commit|
+|252|Mount1 Head Track Enable|
+|253|Mount1 Head Track Center Lock|
 |300|Scripting1|
 |301|Scripting2|
 |302|Scripting3|
@@ -27585,6 +27624,27 @@ Vertical position on screen
 
 - Range: 0 15
 
+## OSD1_RADAR_EN: RADAR_EN
+
+Displays iNav Radar / FormationFlight peer-aircraft info (callsign letter A..F + bearing arrow + distance + relative altitude). Cycles through healthy peers every 2 seconds.
+
+|Value|Meaning|
+|:---:|:---:|
+|0|Disabled|
+|1|Enabled|
+
+## OSD1_RADAR_X: RADAR_X
+
+Horizontal position on screen
+
+- Range: 0 29
+
+## OSD1_RADAR_Y: RADAR_Y
+
+Vertical position on screen
+
+- Range: 0 15
+
 # OSD2 Parameters
 
 ## OSD2_ENABLE: Enable screen
@@ -29347,6 +29407,27 @@ Horizontal position on screen
 - Range: 0 29
 
 ## OSD2_ASPD_DEM_Y: ASPD_DEM_Y
+
+Vertical position on screen
+
+- Range: 0 15
+
+## OSD2_RADAR_EN: RADAR_EN
+
+Displays iNav Radar / FormationFlight peer-aircraft info (callsign letter A..F + bearing arrow + distance + relative altitude). Cycles through healthy peers every 2 seconds.
+
+|Value|Meaning|
+|:---:|:---:|
+|0|Disabled|
+|1|Enabled|
+
+## OSD2_RADAR_X: RADAR_X
+
+Horizontal position on screen
+
+- Range: 0 29
+
+## OSD2_RADAR_Y: RADAR_Y
 
 Vertical position on screen
 
@@ -31119,6 +31200,27 @@ Vertical position on screen
 
 - Range: 0 15
 
+## OSD3_RADAR_EN: RADAR_EN
+
+Displays iNav Radar / FormationFlight peer-aircraft info (callsign letter A..F + bearing arrow + distance + relative altitude). Cycles through healthy peers every 2 seconds.
+
+|Value|Meaning|
+|:---:|:---:|
+|0|Disabled|
+|1|Enabled|
+
+## OSD3_RADAR_X: RADAR_X
+
+Horizontal position on screen
+
+- Range: 0 29
+
+## OSD3_RADAR_Y: RADAR_Y
+
+Vertical position on screen
+
+- Range: 0 15
+
 # OSD4 Parameters
 
 ## OSD4_ENABLE: Enable screen
@@ -32886,6 +32988,27 @@ Vertical position on screen
 
 - Range: 0 15
 
+## OSD4_RADAR_EN: RADAR_EN
+
+Displays iNav Radar / FormationFlight peer-aircraft info (callsign letter A..F + bearing arrow + distance + relative altitude). Cycles through healthy peers every 2 seconds.
+
+|Value|Meaning|
+|:---:|:---:|
+|0|Disabled|
+|1|Enabled|
+
+## OSD4_RADAR_X: RADAR_X
+
+Horizontal position on screen
+
+- Range: 0 29
+
+## OSD4_RADAR_Y: RADAR_Y
+
+Vertical position on screen
+
+- Range: 0 15
+
 # OSD5 Parameters
 
 ## OSD5_ENABLE: Enable screen
@@ -34648,6 +34771,27 @@ Horizontal position on screen
 - Range: 0 29
 
 ## OSD5_ASPD_DEM_Y: ASPD_DEM_Y
+
+Vertical position on screen
+
+- Range: 0 15
+
+## OSD5_RADAR_EN: RADAR_EN
+
+Displays iNav Radar / FormationFlight peer-aircraft info (callsign letter A..F + bearing arrow + distance + relative altitude). Cycles through healthy peers every 2 seconds.
+
+|Value|Meaning|
+|:---:|:---:|
+|0|Disabled|
+|1|Enabled|
+
+## OSD5_RADAR_X: RADAR_X
+
+Horizontal position on screen
+
+- Range: 0 29
+
+## OSD5_RADAR_Y: RADAR_Y
 
 Vertical position on screen
 
@@ -38462,6 +38606,19 @@ Options impacting weathervaning behaviour
 
 - Bitmask: 0:Use pitch when nose or tail-in for faster weathervaning
 
+# RADAR Parameters
+
+## RADAR_TYPE: Radar sensor type
+
+Selects the peer-aircraft radar backend. MSP listens for iNav Radar / FormationFlight position frames (MSP2_SET_RADAR_POS 0x100B) on any serial port configured as MSP (SERIALn_PROTOCOL=33).
+
+|Value|Meaning|
+|:---:|:---:|
+|0|None|
+|1|MSP|
+
+- RebootRequired: True
+
 # RALLY Parameters
 
 ## RALLY_TOTAL: Rally Total
@@ -38507,7 +38664,7 @@ Timeout after which RC overrides will no longer be used, and RC input will resum
 
 RC input options
 
-- Bitmask: 0:Ignore RC Receiver, 1:Ignore MAVLink Overrides, 2:Ignore Receiver Failsafe bit but allow other RC failsafes if setup, 3:FPort Pad, 4:Log RC input bytes, 5:Arming check throttle for 0 input, 6:Skip the arming check for neutral Roll/Pitch/Yaw sticks, 7:Allow Switch reverse, 8:Use passthrough for CRSF telemetry, 9:Suppress CRSF mode/rate message for ELRS systems,10:Enable multiple receiver support, 11:Use Link Quality for RSSI with CRSF, 12:Annotate CRSF flight mode with * on disarm, 13: Use 420kbaud for ELRS protocol, 20: Plane only - while in AUTO mode switch to FBWA if the roll or pitch stick moves more than 10%, 22: Plane only - disable throttle battery voltage compensation in MANUAL mode (fork PR #139)
+- Bitmask: 0:Ignore RC Receiver, 1:Ignore MAVLink Overrides, 2:Ignore Receiver Failsafe bit but allow other RC failsafes if setup, 3:FPort Pad, 4:Log RC input bytes, 5:Arming check throttle for 0 input, 6:Skip the arming check for neutral Roll/Pitch/Yaw sticks, 7:Allow Switch reverse, 8:Use passthrough for CRSF telemetry, 9:Suppress CRSF mode/rate message for ELRS systems,10:Enable multiple receiver support, 11:Use Link Quality for RSSI with CRSF, 12:Annotate CRSF flight mode with * on disarm, 13: Use 420kbaud for ELRS protocol, 22: Plane only - disable throttle battery voltage compensation in MANUAL mode (fork PR #139)
 
 ## RC_PROTOCOLS: RC protocols enabled
 
@@ -38686,6 +38843,9 @@ Function assigned to this RC channel
 |216|Mount2 Pitch|
 |217|Mount2 Yaw|
 |200|Servos Auto Trim|
+|251|RTL Autoland Commit|
+|252|Mount1 Head Track Enable|
+|253|Mount1 Head Track Center Lock|
 |300|Scripting1|
 |301|Scripting2|
 |302|Scripting3|
@@ -49750,6 +49910,16 @@ Degrees of pitch angle demanded during the takeoff run before speed reaches TKOF
 - Units: deg
 
 - Range: -5.0 10.0
+
+- Increment: 0.1
+
+## TKOFF_CNCL_DLY: Takeoff cancel stick grace period
+
+Time after launch during which roll and pitch stick input will not cancel an automatic takeoff. Protects against a hand launch aborting itself when the throwing motion disturbs the sticks. Applies to TAKEOFF mode and to a NAV_TAKEOFF running in AUTO. The cancel option becomes available once this time has elapsed and is announced over the GCS. Set to 0 to allow cancelling from the moment of launch.
+
+- Units: s
+
+- Range: 0 10.0
 
 - Increment: 0.1
 

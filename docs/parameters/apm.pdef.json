@@ -37642,7 +37642,7 @@
       }
     },
     "STICK_MIXING": {
-      "Description": "When enabled, this adds user stick input to the control surfaces in auto modes, allowing the user to have some degree of flight control without changing modes. Default is 0 (Disabled) in this build \u2014 pilot stick input is ignored in AUTO/RTL/GUIDED. Set to 1 to use \"fly by wire\" mixing, which controls the roll and pitch in the same way that the FBWA mode does. Set to 3 to apply yaw only while in quadplane modes, such as during automatic VTOL takeoff/landing.",
+      "Description": "When enabled, this adds user stick input to the control surfaces in auto modes, allowing the user to have some degree of flight control without changing modes. Set to 1 to use \"fly by wire\" mixing, which controls the roll and pitch in the same way that the FBWA mode does. Set to 3 to apply yaw only while in quadplane modes, such as during automatic VTOL takeoff/landing. Set to 0 to ignore pilot stick input in AUTO/RTL/GUIDED entirely.",
       "DisplayName": "Stick Mixing",
       "User": "Advanced",
       "Values": {
@@ -40703,7 +40703,6 @@
         "12": "Annotate CRSF flight mode with * on disarm",
         "13": "Use 420kbaud for ELRS protocol",
         "2": "Ignore Receiver Failsafe bit but allow other RC failsafes if setup",
-        "20": "Plane only - while in AUTO mode switch to FBWA if the roll or pitch stick moves more than 10%",
         "22": "Plane only - disable throttle battery voltage compensation in MANUAL mode (fork PR #139)",
         "3": "FPort Pad",
         "4": "Log RC input bytes",
@@ -61490,6 +61489,17 @@
         "low": "0"
       },
       "Units": "m",
+      "User": "Standard"
+    },
+    "TKOFF_CNCL_DLY": {
+      "Description": "Time after launch during which roll and pitch stick input will not cancel an automatic takeoff. Protects against a hand launch aborting itself when the throwing motion disturbs the sticks. Applies to TAKEOFF mode and to a NAV_TAKEOFF running in AUTO. The cancel option becomes available once this time has elapsed and is announced over the GCS. Set to 0 to allow cancelling from the moment of launch.",
+      "DisplayName": "Takeoff cancel stick grace period",
+      "Increment": "0.1",
+      "Range": {
+        "high": "10.0",
+        "low": "0"
+      },
+      "Units": "s",
       "User": "Standard"
     },
     "TKOFF_DIST": {

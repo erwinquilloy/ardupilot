@@ -106,16 +106,17 @@ Built for throwing a wing off your hand safely:
 - **Knob-tunable pitch trim** (`PTCH_TRIM_DEG`, plus `Q_TRIM_PITCH` on
   VTOL) and **three switchable tuning sets** (`TUNE_PARAM`/`PARAM2`/`PARAM3`)
   — retune live without a laptop.
-- **AUTO → FBWA stick takeover**: nudge the sticks mid-mission to grab
-  manual control instantly — it switches the mode to FBWA and stays
-  there; flip the mode switch back to resume the mission.
+- **Move sticks to cancel auto launch**: nudge pitch or roll during an
+  automatic takeoff and the plane drops to FBWA so you can abort a bad
+  launch — iNav-style, active only while the takeoff is running.
 - **Throttle stick sets target airspeed** in RTL/LOITER/CIRCLE/AUTO, plus
-  **pilot loiter radius + direction** control in LOITER/RTL.
+  **pilot loiter radius + direction** control in LOITER/RTL, and in the
+  TAKEOFF-mode loiter once the climb finishes.
 - Extra modes: **Course Hold** (heading hold) and **Auto Trim** as a mode.
 
 → [Pitch trim & tuning](#pitch-trim--tuning-knob) ·
 [Manual airspeed](#manual-airspeed-control-in-nav-modes) ·
-[AUTO → FBWA takeover](#auto--fbwa-stick-takeover)
+[Cancel auto launch](#move-sticks-to-cancel-auto-launch)
 
 ### 📡 Long-range extras
 
@@ -784,7 +785,7 @@ landing.
 Strict mode is silently ignored when `LAND_WIND_DIST = 0` (no
 cap set) or `LAND_WIND_BIAS = 0` (whole feature off).
 
-## Pilot control of loiter radius and direction (LOITER, RTL)
+## Pilot control of loiter radius and direction (LOITER, RTL, TAKEOFF)
 
 Ported from ArduCustom PR #180 (shellixyz `dd65f3275f`; carried
 across the 4.5 → 4.6 API rename from
@@ -803,10 +804,33 @@ established in the loiter circle:
   direction, so pushing "outward" always grows the radius regardless
   of which way the plane is orbiting. Radius is clamped to `[20, 1000]` m.
 
+**In TAKEOFF mode (mode 13)**, the same control applies once the climb
+finishes and the plane settles into its loiter — see
+[cancel auto launch](#move-sticks-to-cancel-auto-launch) for why the sticks
+mean something different during the climb itself. The plane stays in TAKEOFF
+mode while circling, so this is pilot control of a TAKEOFF-mode loiter, not a
+switch to LOITER. Combined with the pitch-stick altitude control below, all
+three axes are live in that phase:
+
+| Stick | Effect in the TAKEOFF loiter |
+|---|---|
+| Pitch | loiter altitude (`FBWB_CLIMB_RATE`, release to lock) |
+| Roll | loiter radius, clamped `[20, 1000]` m |
+| Rudder | loiter direction, beyond 50% deflection |
+
+During the climb none of this applies: roll and pitch beyond 10 % cancel the
+launch instead, and normal `STICK_MIXING` is in effect below that threshold.
+
 On mode entry, radius and direction are seeded from `WP_LOITER_RAD`
-(LOITER) or `RTL_RADIUS` with a `WP_LOITER_RAD` fallback (RTL).
+(LOITER, TAKEOFF) or `RTL_RADIUS` with a `WP_LOITER_RAD` fallback (RTL).
 The sign of these params still determines the starting direction
-(negative = CCW).
+(negative = CCW). In TAKEOFF mode the seeding happens when the loiter phase
+begins rather than at mode entry, since the climb comes first.
+
+> ⚠️ **Stick mixing is suppressed in the TAKEOFF loiter phase.** With all
+> three sticks assigned to loiter geometry, `stabilize_stick_mixing_fbw()`
+> returns early there, so the same input is not applied twice. Mixing is
+> unaffected everywhere else, including during the takeoff climb.
 
 **Bails during RC failsafe.** The pilot-control helper does not
 run when `plane.failsafe.rc_failsafe` is true, so the emergency-
@@ -859,76 +883,95 @@ Terrain-aware via `AP_Terrain` where available.
   ArduCustom, so users with mechanical slop or noisy inputs see
   autotrim settle faster.
 
-## AUTO → FBWA stick takeover
+## Move sticks to cancel auto launch
 
-Move the pitch or roll stick past 10 % deflection while in AUTO and the
-plane immediately switches to FBWA. Lets the pilot take over instantly
-without reaching for a mode switch. The takeover is **sticky** —
-returning the stick to centre does **not** re-enter AUTO; you'd need
-to flip the mode switch back manually.
+Move the pitch or roll stick past 10 % deflection **during an automatic
+takeoff** and the plane switches to FBWA, handing you manual control so
+you can save a bad launch without reaching for the mode switch. Modelled
+on iNav's "move sticks to cancel auto launch".
 
-- `RC_OPTIONS` bit 20 = `AUTO_SWITCH_TO_FBWA_WITH_STICKS`
-- **Default ON** in this build. New-storage `RC_OPTIONS` default is
-  `1049120` (= bits 5+9+20).
-- Clear bit 20 to disable (`param set RC_OPTIONS 544`).
+There are two windows, matching iNav's fixed-wing launch behaviour:
 
-Works both pre-launch (sitting on the runway waiting for `TKOFF_THR_MINSPD`)
-and in-flight — `ModeAuto::update()` runs every loop AUTO is the active
-mode.
+- **Before launch — available immediately.** Once armed and waiting for the
+  throw, moving pitch or roll cancels the takeoff. Same as iNav, where stick
+  movement in `NAV_STATE_LAUNCH_WAIT` aborts the launch and leaves the mode.
+  Nothing has been thrown yet, so there is no throw motion to guard against.
+- **During the throw — locked for `TKOFF_CNCL_DLY`** (default **1 s**, from
+  launch detection). You throw one-handed while holding the transmitter, so
+  the throwing motion must not be able to abort the launch it just started.
+  Equivalent to iNav's `nav_fw_launch_min_time`. Set `0` to disable the
+  lock-out.
+- **Climb-out — available again** until the target altitude is reached:
+  `TKOFF_ALT` in TAKEOFF mode, or the `NAV_TAKEOFF` item's altitude in AUTO.
+  Either takeoff timeout closes it too.
+- **After the takeoff — never.** No stick takeover for the rest of the flight.
 
-> ⚠️ **Coming from upstream? This is ON by default and stock ArduPlane
-> has no equivalent — it will drop you out of AUTO when you don't expect
-> it.** Habits that are harmless on stock will now end your mission: a
-> stick bump on the bench, a knock while hand-carrying an armed plane, a
-> reflexive nudge to "help" the plane through a gust, or a radio whose
-> sticks don't centre cleanly. 10 % deflection on pitch **or** roll is
-> all it takes, and the takeover is sticky — the plane stays in FBWA
-> flying your sticks until you flip the mode switch back, so if you
-> weren't watching the mode, you are now hand-flying a plane you think
-> is on a mission. Nothing announces this beyond the mode change.
->
-> If you'd rather keep upstream's behaviour, clear bit 20 —
-> `param set RC_OPTIONS 544` — before your first AUTO flight. Note that
-> `STICK_MIXING` does **not** gate this: the takeover reads the sticks
-> directly and never consults it, so `STICK_MIXING = 0` does not protect
-> you from the takeover and `STICK_MIXING = 1` does not weaken it.
->
-> **Default may flip to OFF in a future release** — the opt-out is the
-> safer default for pilots migrating from stock. Set bit 20 explicitly
-> if you rely on the takeover and don't want a later flash to silently
-> take it away.
+| Parameter | Default | Meaning |
+|---|---:|---|
+| `TKOFF_CNCL_DLY` | `1.0` s | Stick input is ignored for this long after launch. Range 0-10 s. |
 
-> ℹ️ AUTO only — RTL and other nav modes aren't covered. If you want
-> stick-takeover from RTL too, holler and I'll extend it.
+Active in **TAKEOFF mode** and in **AUTO** while a `NAV_TAKEOFF` item is
+the command in progress. The takeover is **sticky**: you stay in FBWA
+until you flip the mode switch.
+
+Two GCS announcements make it visible:
+
+| When | Message |
+|---|---|
+| Grace period elapsed, window opens | `Move sticks to cancel auto launch` |
+| Sticks moved, takeover fires | `Auto launch cancelled` |
+
+The first message is your cue that cancelling is now possible — it is sent
+when the window actually opens, not at the moment of launch.
+
+### What it deliberately does *not* do
+
+- **No stick takeover before launch, during the throw, or after the climb.**
+  The window opens `TKOFF_CNCL_DLY` after launch detection and closes at the
+  target altitude (`Takeoff complete` in AUTO). Switching back to AUTO later
+  in the flight gives you a normal mission with no takeover — a stick bump at
+  altitude can no longer end your mission.
+- **No option bit.** There is no `RC_OPTIONS` bit for this. Because it is
+  scoped to the takeoff phase it is always available, with nothing to
+  configure.
+- **VTOL takeoffs are excluded.** `NAV_VTOL_TAKEOFF` is not covered, so
+  quadplane takeoffs behave exactly as upstream.
+
+> ⚠️ **Changed in v1.1 — read this if you used the old behaviour.**
+> Earlier builds had `RC_OPTIONS` bit 20
+> (`AUTO_SWITCH_TO_FBWA_WITH_STICKS`), which fired **any time** you were
+> in AUTO, at any altitude, mid-mission. That was easy to trigger by
+> accident and silently ended missions. **Bit 20 is gone** — the option no
+> longer exists and the behaviour is now takeoff-only. If your saved
+> `RC_OPTIONS` still has bit 20 set it is simply ignored; you can clear it
+> for tidiness but nothing depends on it. For mid-mission pilot nudges
+> use `STICK_MIXING`, which is what it is for and now defaults to `1`.
 
 ### How this interacts with `STICK_MIXING`
 
-They are independent — neither one gates the other. The takeover is the
-first check in `ModeAuto::update()` and reads `channel_pitch` /
-`channel_roll` `norm_input()` directly; it never looks at `STICK_MIXING`.
-Stick mixing is applied much later, in `Mode::run()` →
-`stabilize_stick_mixing_fbw()`.
+They no longer overlap, which was the point of the rescope. The cancel
+check runs only during takeoff; `STICK_MIXING` governs pilot input for the
+rest of the mission.
 
-What decides the outcome is ordering, not precedence. `stick_mixing_enabled()`
-only permits mixing in modes that are both auto-throttle **and**
-auto-navigation. Once the takeover fires you are in FBWA, which is
-neither — and FBWA's sticks command attitude directly anyway — so mixing
-simply stops being reachable.
+`stick_mixing_enabled()` only permits mixing in modes that are both
+auto-throttle **and** auto-navigation. Once a cancel fires you are in
+FBWA, which is neither — and FBWA's sticks command attitude directly — so
+mixing simply stops being reachable.
 
-The practical result, if you enable both, is a threshold split in AUTO:
-
-| Stick deflection in AUTO | With `STICK_MIXING = 0` (this build's default) | With `STICK_MIXING = 1` |
+| Stick deflection | During an automatic takeoff | Rest of the mission (`STICK_MIXING = 1`) |
 |---|---|---|
-| Under 10 % | Nothing; nav controller flies | Mixing nudges the plane against the nav controller |
-| Over 10 % | **Takeover → FBWA** | **Takeover → FBWA** (mixing never gets a look-in) |
+| Under 10 % | Nothing; the takeoff controller flies | Mixing nudges the plane against the nav controller |
+| Over 10 % | **Cancel → FBWA** | Mixing nudges harder; the mission continues |
 
-That split is worth avoiding: a small nudge quietly biases the mission, a
-slightly larger one ends it, and the boundary is invisible from the
-cockpit. Pick one behaviour rather than running both.
+The old build had a threshold split in AUTO where a small nudge biased the
+mission and a slightly larger one ended it, with an invisible boundary in
+between. That is gone: nudging mid-mission now only ever mixes.
 
-`STICK_MIXING` is still live everywhere else — the takeover is AUTO-only,
-so mixing continues to govern RTL, LOITER, GUIDED and the other nav modes
-regardless of bit 20.
+> ℹ️ In TAKEOFF mode the pitch stick has a second job **after** the climb:
+> it nudges the loiter altitude (see
+> [pilot loiter altitude](#pilot-altitude-control-in-takeoff-loiter)). The
+> two never overlap — cancel applies during the takeoff phase, altitude
+> nudging only once the plane reaches the loiter.
 
 ## Manual airspeed control in nav modes
 
@@ -1184,9 +1227,14 @@ crash detection, auto state) all become slightly more responsive.
 
 ## Stick mixing default
 
-`STICK_MIXING` now defaults to `0` (no FBW-style pilot override) in
-auto/RTL/guided. Pilots used to upstream's behaviour can set
-`STICK_MIXING = 1` to restore it.
+`STICK_MIXING` defaults to `1` (FBW-style pilot override in
+auto/RTL/guided), matching upstream. Earlier builds of this fork shipped
+`0`, which made sense while the old always-on AUTO→FBWA takeover existed —
+running both gave you an invisible threshold where a small nudge biased the
+mission and a larger one ended it. Now that the takeover is scoped to
+[auto-launch cancel](#move-sticks-to-cancel-auto-launch) only, mixing is
+the right tool for mid-mission nudges and there is no conflict. Set
+`STICK_MIXING = 0` if you want pilot input ignored in nav modes.
 
 ## Aileron / elevator differential throws
 

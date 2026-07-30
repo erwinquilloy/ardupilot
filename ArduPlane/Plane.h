@@ -483,6 +483,14 @@ private:
         float throttle_lim_min;
         uint32_t throttle_max_timer_ms;
         uint32_t level_off_start_time_ms;
+        // set once the "move sticks to cancel" prompt has been sent for this
+        // takeoff, so it is announced once rather than at the loop rate
+        bool cancel_prompt_sent;
+        // millis() at which the aircraft launched, used only to time
+        // TKOFF_CNCL_DLY. Deliberately not start_time_ms: that belongs to the
+        // TKOFF_TIMEOUT feature, which zeroes it once ground speed reaches
+        // 4 m/s and would silently close the cancel window.
+        uint32_t cancel_launch_ms;
     } takeoff_state;
 
     // ground steering controller state
@@ -1296,6 +1304,8 @@ private:
 
     // takeoff.cpp
     bool auto_takeoff_check(void);
+    bool in_takeoff_cancel_window(void);
+    bool takeoff_stick_cancel_check(void);
     void takeoff_calc_roll(void);
     void takeoff_calc_pitch(void);
     void takeoff_calc_throttle();

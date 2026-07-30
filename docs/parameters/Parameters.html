@@ -145,7 +145,7 @@ DO NOT EDIT
 
 <h2>Stick Mixing (ArduPlane:STICK_MIXING)</h2><em>Note: This parameter is for advanced users</em><br>
 
-<p>When enabled, this adds user stick input to the control surfaces in auto modes, allowing the user to have some degree of flight control without changing modes. Default is 0 (Disabled) in this build — pilot stick input is ignored in AUTO/RTL/GUIDED. Set to 1 to use &quot;fly by wire&quot; mixing, which controls the roll and pitch in the same way that the FBWA mode does. Set to 3 to apply yaw only while in quadplane modes, such as during automatic VTOL takeoff/landing.</p>
+<p>When enabled, this adds user stick input to the control surfaces in auto modes, allowing the user to have some degree of flight control without changing modes. Set to 1 to use &quot;fly by wire&quot; mixing, which controls the roll and pitch in the same way that the FBWA mode does. Set to 3 to apply yaw only while in quadplane modes, such as during automatic VTOL takeoff/landing. Set to 0 to ignore pilot stick input in AUTO/RTL/GUIDED entirely.</p>
 <ul>
 <table><th>Value</th><th>Meaning</th>
 <tr><td>0</td><td>Disabled</td></tr>
@@ -1195,6 +1195,16 @@ DO NOT EDIT
 </ul>
 
 
+<h2>RTL autoland commit failsafe delay (ArduPlane:RTL_AUTOLAND_DLY)</h2>
+
+<p>Only used when RTL_AUTOLAND is 1 and an RCx_OPTION RTL Autoland Commit switch is assigned and held in the hold position. On RC failsafe the commit switch can no longer be flipped so the plane would normally commit to the DO_LAND_START sequence immediately. This parameter keeps the plane circling the home loiter for the given number of seconds (counting from when it has settled at the home loiter altitude) before committing, giving a transient RC dropout time to recover so the pilot keeps control. If the link recovers within this window the gate re-engages and the plane keeps holding for the pilot. 0 commits immediately on failsafe (legacy behaviour). Has no effect when the commit switch is unassigned or already in the commit position.</p>
+<ul>
+<li>Units: seconds</li>
+<li>Range: 0 600</li>
+<li>Increment: 1</li>
+</ul>
+
+
 <h2>Crash Deceleration Threshold (ArduPlane:CRASH_ACC_THRESH)</h2><em>Note: This parameter is for advanced users</em><br>
 
 <p>X-Axis deceleration threshold to notify the crash detector that there was a possible impact which helps disarm the motor quickly after a crash. This value should be much higher than normal negative x-axis forces during normal flight, check flight log files to determine the average IMU.x values for your aircraft and motor type. Higher value means less sensative (triggers on higher impact). For electric planes that don&#x27;t vibrate much during fight a value of 25 is good (that&#x27;s about 2.5G). For petrol/nitro planes you&#x27;ll want a higher value. Set to 0 to disable the collision detector.</p>
@@ -1509,6 +1519,26 @@ DO NOT EDIT
 <p>Bias the DO_LAND_START selection toward landings whose final approach faces into the wind. Applies wherever ArduPlane chooses a landing sequence -- RTL autoland, fence breach, battery failsafe, and the GCS DO_LAND_START command. 0 = pure nearest-distance (upstream default; no behaviour change). &gt; 0 = penalise tailwind candidates; full headwind earns no penalty. Falls back to nearest-distance when AHRS wind estimate &lt; 1 m/s or an approach heading cannot be derived from the mission sequence.</p>
 <ul>
 <li>Range: 0 1</li>
+</ul>
+
+
+<h2>Max distance for LAND_WIND_BIAS (ArduPlane:LAND_WIND_DIST)</h2>
+
+<p>Companion cap for LAND_WIND_BIAS. Purpose: keep the wind bias from steering the plane toward a much farther DO_LAND_START just because its approach happens to align with the wind. DO_LAND_START candidates whose start-of-approach sits farther than this many metres from the plane&#x27;s position at decision time are excluded from selection entirely; wind-bias scoring is then applied only to the candidates within the cap. Under RTL_AUTOLAND=1 the selection runs after the plane has reached the RTL loiter point, so the cap is effectively measured from HOME; under RTL_AUTOLAND=2 / battery failsafe / GCS DO_LAND_START the cap is measured from wherever the plane is when the trigger fires. If no candidate is within the cap, the behaviour is controlled by LAND_WIND_STRICT: 0 (default) falls back to upstream nearest-across-all so the plane still lands; 1 refuses to autoland so RTL keeps loitering. 0 (default) here disables the cap entirely; the bias is applied to every candidate as before.</p>
+<ul>
+<li>Units: meters</li>
+<li>Range: 0 20000</li>
+</ul>
+
+
+<h2>LAND_WIND_DIST hard-fence toggle (ArduPlane:LAND_WIND_STRICT)</h2>
+
+<p>Chooses what happens when LAND_WIND_DIST eliminates every DO_LAND_START candidate. Purpose: let the pilot decide whether the distance cap is a soft preference or a hard boundary. 0 (default, soft fallback): fall through to upstream nearest-across-all so the plane still attempts a landing even if the only survivor is far outside the cap -- preserves the failsafe safety-net at the cost of occasionally flying farther than the cap suggests. 1 (hard fence): refuse the autoland when nothing survives the cap; RTL stays in RTL and the plane keeps loitering at HOME/rally requiring pilot intervention. LAND_WIND_DIST becomes a true hard boundary for autoland. WARNING: under strict mode a battery failsafe with no in-cap landing will not attempt to land -- the plane loiters until the battery dies. Only enable strict if you understand this trade-off. Ignored when LAND_WIND_DIST = 0 (no cap) or LAND_WIND_BIAS = 0 (whole feature off).</p>
+<ul>
+<table><th>Value</th><th>Meaning</th>
+<tr><td>0</td><td>Soft fallback (attempt landing anyway)</td></tr>
+<tr><td>1</td><td>Hard fence (loiter instead of landing)</td></tr>
+</table>
 </ul>
 
 
@@ -14387,6 +14417,9 @@ DO NOT EDIT
 <tr><td>216</td><td>Mount2 Pitch</td></tr>
 <tr><td>217</td><td>Mount2 Yaw</td></tr>
 <tr><td>200</td><td>Servos Auto Trim</td></tr>
+<tr><td>251</td><td>RTL Autoland Commit</td></tr>
+<tr><td>252</td><td>Mount1 Head Track Enable</td></tr>
+<tr><td>253</td><td>Mount1 Head Track Center Lock</td></tr>
 <tr><td>300</td><td>Scripting1</td></tr>
 <tr><td>301</td><td>Scripting2</td></tr>
 <tr><td>302</td><td>Scripting3</td></tr>
@@ -14500,6 +14533,9 @@ DO NOT EDIT
 <tr><td>216</td><td>Mount2 Pitch</td></tr>
 <tr><td>217</td><td>Mount2 Yaw</td></tr>
 <tr><td>200</td><td>Servos Auto Trim</td></tr>
+<tr><td>251</td><td>RTL Autoland Commit</td></tr>
+<tr><td>252</td><td>Mount1 Head Track Enable</td></tr>
+<tr><td>253</td><td>Mount1 Head Track Center Lock</td></tr>
 <tr><td>300</td><td>Scripting1</td></tr>
 <tr><td>301</td><td>Scripting2</td></tr>
 <tr><td>302</td><td>Scripting3</td></tr>
@@ -14613,6 +14649,9 @@ DO NOT EDIT
 <tr><td>216</td><td>Mount2 Pitch</td></tr>
 <tr><td>217</td><td>Mount2 Yaw</td></tr>
 <tr><td>200</td><td>Servos Auto Trim</td></tr>
+<tr><td>251</td><td>RTL Autoland Commit</td></tr>
+<tr><td>252</td><td>Mount1 Head Track Enable</td></tr>
+<tr><td>253</td><td>Mount1 Head Track Center Lock</td></tr>
 <tr><td>300</td><td>Scripting1</td></tr>
 <tr><td>301</td><td>Scripting2</td></tr>
 <tr><td>302</td><td>Scripting3</td></tr>
@@ -14726,6 +14765,9 @@ DO NOT EDIT
 <tr><td>216</td><td>Mount2 Pitch</td></tr>
 <tr><td>217</td><td>Mount2 Yaw</td></tr>
 <tr><td>200</td><td>Servos Auto Trim</td></tr>
+<tr><td>251</td><td>RTL Autoland Commit</td></tr>
+<tr><td>252</td><td>Mount1 Head Track Enable</td></tr>
+<tr><td>253</td><td>Mount1 Head Track Center Lock</td></tr>
 <tr><td>300</td><td>Scripting1</td></tr>
 <tr><td>301</td><td>Scripting2</td></tr>
 <tr><td>302</td><td>Scripting3</td></tr>
@@ -28509,6 +28551,33 @@ DO NOT EDIT
 </ul>
 
 
+<h2>RADAR_EN (OSD1_RADAR_EN)</h2>
+
+<p>Displays iNav Radar / FormationFlight peer-aircraft info (callsign letter A..F + bearing arrow + distance + relative altitude). Cycles through healthy peers every 2 seconds.</p>
+<ul>
+<table><th>Value</th><th>Meaning</th>
+<tr><td>0</td><td>Disabled</td></tr>
+<tr><td>1</td><td>Enabled</td></tr>
+</table>
+</ul>
+
+
+<h2>RADAR_X (OSD1_RADAR_X)</h2>
+
+<p>Horizontal position on screen</p>
+<ul>
+<li>Range: 0 29</li>
+</ul>
+
+
+<h2>RADAR_Y (OSD1_RADAR_Y)</h2>
+
+<p>Vertical position on screen</p>
+<ul>
+<li>Range: 0 15</li>
+</ul>
+
+
 <h1>OSD2_ Parameters</h1>
 
 
@@ -30774,6 +30843,33 @@ DO NOT EDIT
 
 
 <h2>ASPD_DEM_Y (OSD2_ASPD_DEM_Y)</h2>
+
+<p>Vertical position on screen</p>
+<ul>
+<li>Range: 0 15</li>
+</ul>
+
+
+<h2>RADAR_EN (OSD2_RADAR_EN)</h2>
+
+<p>Displays iNav Radar / FormationFlight peer-aircraft info (callsign letter A..F + bearing arrow + distance + relative altitude). Cycles through healthy peers every 2 seconds.</p>
+<ul>
+<table><th>Value</th><th>Meaning</th>
+<tr><td>0</td><td>Disabled</td></tr>
+<tr><td>1</td><td>Enabled</td></tr>
+</table>
+</ul>
+
+
+<h2>RADAR_X (OSD2_RADAR_X)</h2>
+
+<p>Horizontal position on screen</p>
+<ul>
+<li>Range: 0 29</li>
+</ul>
+
+
+<h2>RADAR_Y (OSD2_RADAR_Y)</h2>
 
 <p>Vertical position on screen</p>
 <ul>
@@ -33053,6 +33149,33 @@ DO NOT EDIT
 </ul>
 
 
+<h2>RADAR_EN (OSD3_RADAR_EN)</h2>
+
+<p>Displays iNav Radar / FormationFlight peer-aircraft info (callsign letter A..F + bearing arrow + distance + relative altitude). Cycles through healthy peers every 2 seconds.</p>
+<ul>
+<table><th>Value</th><th>Meaning</th>
+<tr><td>0</td><td>Disabled</td></tr>
+<tr><td>1</td><td>Enabled</td></tr>
+</table>
+</ul>
+
+
+<h2>RADAR_X (OSD3_RADAR_X)</h2>
+
+<p>Horizontal position on screen</p>
+<ul>
+<li>Range: 0 29</li>
+</ul>
+
+
+<h2>RADAR_Y (OSD3_RADAR_Y)</h2>
+
+<p>Vertical position on screen</p>
+<ul>
+<li>Range: 0 15</li>
+</ul>
+
+
 <h1>OSD4_ Parameters</h1>
 
 
@@ -35325,6 +35448,33 @@ DO NOT EDIT
 </ul>
 
 
+<h2>RADAR_EN (OSD4_RADAR_EN)</h2>
+
+<p>Displays iNav Radar / FormationFlight peer-aircraft info (callsign letter A..F + bearing arrow + distance + relative altitude). Cycles through healthy peers every 2 seconds.</p>
+<ul>
+<table><th>Value</th><th>Meaning</th>
+<tr><td>0</td><td>Disabled</td></tr>
+<tr><td>1</td><td>Enabled</td></tr>
+</table>
+</ul>
+
+
+<h2>RADAR_X (OSD4_RADAR_X)</h2>
+
+<p>Horizontal position on screen</p>
+<ul>
+<li>Range: 0 29</li>
+</ul>
+
+
+<h2>RADAR_Y (OSD4_RADAR_Y)</h2>
+
+<p>Vertical position on screen</p>
+<ul>
+<li>Range: 0 15</li>
+</ul>
+
+
 <h1>OSD5_ Parameters</h1>
 
 
@@ -37590,6 +37740,33 @@ DO NOT EDIT
 
 
 <h2>ASPD_DEM_Y (OSD5_ASPD_DEM_Y)</h2>
+
+<p>Vertical position on screen</p>
+<ul>
+<li>Range: 0 15</li>
+</ul>
+
+
+<h2>RADAR_EN (OSD5_RADAR_EN)</h2>
+
+<p>Displays iNav Radar / FormationFlight peer-aircraft info (callsign letter A..F + bearing arrow + distance + relative altitude). Cycles through healthy peers every 2 seconds.</p>
+<ul>
+<table><th>Value</th><th>Meaning</th>
+<tr><td>0</td><td>Disabled</td></tr>
+<tr><td>1</td><td>Enabled</td></tr>
+</table>
+</ul>
+
+
+<h2>RADAR_X (OSD5_RADAR_X)</h2>
+
+<p>Horizontal position on screen</p>
+<ul>
+<li>Range: 0 29</li>
+</ul>
+
+
+<h2>RADAR_Y (OSD5_RADAR_Y)</h2>
 
 <p>Vertical position on screen</p>
 <ul>
@@ -41975,6 +42152,21 @@ DO NOT EDIT
 </ul>
 
 
+<h1>RADAR Parameters</h1>
+
+
+<h2>Radar sensor type (RADAR_TYPE)</h2>
+
+<p>Selects the peer-aircraft radar backend. MSP listens for iNav Radar / FormationFlight position frames (MSP2_SET_RADAR_POS 0x100B) on any serial port configured as MSP (SERIALn_PROTOCOL=33).</p>
+<ul>
+<table><th>Value</th><th>Meaning</th>
+<tr><td>0</td><td>None</td></tr>
+<tr><td>1</td><td>MSP</td></tr>
+</table>
+<li>RebootRequired: True</li>
+</ul>
+
+
 <h1>RALLY_ Parameters</h1>
 
 
@@ -42021,7 +42213,7 @@ DO NOT EDIT
 
 <p>RC input options</p>
 <ul>
-<li>Bitmask: 0:Ignore RC Receiver, 1:Ignore MAVLink Overrides, 2:Ignore Receiver Failsafe bit but allow other RC failsafes if setup, 3:FPort Pad, 4:Log RC input bytes, 5:Arming check throttle for 0 input, 6:Skip the arming check for neutral Roll/Pitch/Yaw sticks, 7:Allow Switch reverse, 8:Use passthrough for CRSF telemetry, 9:Suppress CRSF mode/rate message for ELRS systems,10:Enable multiple receiver support, 11:Use Link Quality for RSSI with CRSF, 12:Annotate CRSF flight mode with * on disarm, 13: Use 420kbaud for ELRS protocol, 20: Plane only - while in AUTO mode switch to FBWA if the roll or pitch stick moves more than 10%, 22: Plane only - disable throttle battery voltage compensation in MANUAL mode (fork PR #139)</li>
+<li>Bitmask: 0:Ignore RC Receiver, 1:Ignore MAVLink Overrides, 2:Ignore Receiver Failsafe bit but allow other RC failsafes if setup, 3:FPort Pad, 4:Log RC input bytes, 5:Arming check throttle for 0 input, 6:Skip the arming check for neutral Roll/Pitch/Yaw sticks, 7:Allow Switch reverse, 8:Use passthrough for CRSF telemetry, 9:Suppress CRSF mode/rate message for ELRS systems,10:Enable multiple receiver support, 11:Use Link Quality for RSSI with CRSF, 12:Annotate CRSF flight mode with * on disarm, 13: Use 420kbaud for ELRS protocol, 22: Plane only - disable throttle battery voltage compensation in MANUAL mode (fork PR #139)</li>
 </ul>
 
 
@@ -42196,6 +42388,9 @@ DO NOT EDIT
 <tr><td>216</td><td>Mount2 Pitch</td></tr>
 <tr><td>217</td><td>Mount2 Yaw</td></tr>
 <tr><td>200</td><td>Servos Auto Trim</td></tr>
+<tr><td>251</td><td>RTL Autoland Commit</td></tr>
+<tr><td>252</td><td>Mount1 Head Track Enable</td></tr>
+<tr><td>253</td><td>Mount1 Head Track Center Lock</td></tr>
 <tr><td>300</td><td>Scripting1</td></tr>
 <tr><td>301</td><td>Scripting2</td></tr>
 <tr><td>302</td><td>Scripting3</td></tr>
@@ -42362,6 +42557,9 @@ DO NOT EDIT
 <tr><td>216</td><td>Mount2 Pitch</td></tr>
 <tr><td>217</td><td>Mount2 Yaw</td></tr>
 <tr><td>200</td><td>Servos Auto Trim</td></tr>
+<tr><td>251</td><td>RTL Autoland Commit</td></tr>
+<tr><td>252</td><td>Mount1 Head Track Enable</td></tr>
+<tr><td>253</td><td>Mount1 Head Track Center Lock</td></tr>
 <tr><td>300</td><td>Scripting1</td></tr>
 <tr><td>301</td><td>Scripting2</td></tr>
 <tr><td>302</td><td>Scripting3</td></tr>
@@ -42528,6 +42726,9 @@ DO NOT EDIT
 <tr><td>216</td><td>Mount2 Pitch</td></tr>
 <tr><td>217</td><td>Mount2 Yaw</td></tr>
 <tr><td>200</td><td>Servos Auto Trim</td></tr>
+<tr><td>251</td><td>RTL Autoland Commit</td></tr>
+<tr><td>252</td><td>Mount1 Head Track Enable</td></tr>
+<tr><td>253</td><td>Mount1 Head Track Center Lock</td></tr>
 <tr><td>300</td><td>Scripting1</td></tr>
 <tr><td>301</td><td>Scripting2</td></tr>
 <tr><td>302</td><td>Scripting3</td></tr>
@@ -42694,6 +42895,9 @@ DO NOT EDIT
 <tr><td>216</td><td>Mount2 Pitch</td></tr>
 <tr><td>217</td><td>Mount2 Yaw</td></tr>
 <tr><td>200</td><td>Servos Auto Trim</td></tr>
+<tr><td>251</td><td>RTL Autoland Commit</td></tr>
+<tr><td>252</td><td>Mount1 Head Track Enable</td></tr>
+<tr><td>253</td><td>Mount1 Head Track Center Lock</td></tr>
 <tr><td>300</td><td>Scripting1</td></tr>
 <tr><td>301</td><td>Scripting2</td></tr>
 <tr><td>302</td><td>Scripting3</td></tr>
@@ -42860,6 +43064,9 @@ DO NOT EDIT
 <tr><td>216</td><td>Mount2 Pitch</td></tr>
 <tr><td>217</td><td>Mount2 Yaw</td></tr>
 <tr><td>200</td><td>Servos Auto Trim</td></tr>
+<tr><td>251</td><td>RTL Autoland Commit</td></tr>
+<tr><td>252</td><td>Mount1 Head Track Enable</td></tr>
+<tr><td>253</td><td>Mount1 Head Track Center Lock</td></tr>
 <tr><td>300</td><td>Scripting1</td></tr>
 <tr><td>301</td><td>Scripting2</td></tr>
 <tr><td>302</td><td>Scripting3</td></tr>
@@ -43026,6 +43233,9 @@ DO NOT EDIT
 <tr><td>216</td><td>Mount2 Pitch</td></tr>
 <tr><td>217</td><td>Mount2 Yaw</td></tr>
 <tr><td>200</td><td>Servos Auto Trim</td></tr>
+<tr><td>251</td><td>RTL Autoland Commit</td></tr>
+<tr><td>252</td><td>Mount1 Head Track Enable</td></tr>
+<tr><td>253</td><td>Mount1 Head Track Center Lock</td></tr>
 <tr><td>300</td><td>Scripting1</td></tr>
 <tr><td>301</td><td>Scripting2</td></tr>
 <tr><td>302</td><td>Scripting3</td></tr>
@@ -43192,6 +43402,9 @@ DO NOT EDIT
 <tr><td>216</td><td>Mount2 Pitch</td></tr>
 <tr><td>217</td><td>Mount2 Yaw</td></tr>
 <tr><td>200</td><td>Servos Auto Trim</td></tr>
+<tr><td>251</td><td>RTL Autoland Commit</td></tr>
+<tr><td>252</td><td>Mount1 Head Track Enable</td></tr>
+<tr><td>253</td><td>Mount1 Head Track Center Lock</td></tr>
 <tr><td>300</td><td>Scripting1</td></tr>
 <tr><td>301</td><td>Scripting2</td></tr>
 <tr><td>302</td><td>Scripting3</td></tr>
@@ -43358,6 +43571,9 @@ DO NOT EDIT
 <tr><td>216</td><td>Mount2 Pitch</td></tr>
 <tr><td>217</td><td>Mount2 Yaw</td></tr>
 <tr><td>200</td><td>Servos Auto Trim</td></tr>
+<tr><td>251</td><td>RTL Autoland Commit</td></tr>
+<tr><td>252</td><td>Mount1 Head Track Enable</td></tr>
+<tr><td>253</td><td>Mount1 Head Track Center Lock</td></tr>
 <tr><td>300</td><td>Scripting1</td></tr>
 <tr><td>301</td><td>Scripting2</td></tr>
 <tr><td>302</td><td>Scripting3</td></tr>
@@ -43524,6 +43740,9 @@ DO NOT EDIT
 <tr><td>216</td><td>Mount2 Pitch</td></tr>
 <tr><td>217</td><td>Mount2 Yaw</td></tr>
 <tr><td>200</td><td>Servos Auto Trim</td></tr>
+<tr><td>251</td><td>RTL Autoland Commit</td></tr>
+<tr><td>252</td><td>Mount1 Head Track Enable</td></tr>
+<tr><td>253</td><td>Mount1 Head Track Center Lock</td></tr>
 <tr><td>300</td><td>Scripting1</td></tr>
 <tr><td>301</td><td>Scripting2</td></tr>
 <tr><td>302</td><td>Scripting3</td></tr>
@@ -43690,6 +43909,9 @@ DO NOT EDIT
 <tr><td>216</td><td>Mount2 Pitch</td></tr>
 <tr><td>217</td><td>Mount2 Yaw</td></tr>
 <tr><td>200</td><td>Servos Auto Trim</td></tr>
+<tr><td>251</td><td>RTL Autoland Commit</td></tr>
+<tr><td>252</td><td>Mount1 Head Track Enable</td></tr>
+<tr><td>253</td><td>Mount1 Head Track Center Lock</td></tr>
 <tr><td>300</td><td>Scripting1</td></tr>
 <tr><td>301</td><td>Scripting2</td></tr>
 <tr><td>302</td><td>Scripting3</td></tr>
@@ -43856,6 +44078,9 @@ DO NOT EDIT
 <tr><td>216</td><td>Mount2 Pitch</td></tr>
 <tr><td>217</td><td>Mount2 Yaw</td></tr>
 <tr><td>200</td><td>Servos Auto Trim</td></tr>
+<tr><td>251</td><td>RTL Autoland Commit</td></tr>
+<tr><td>252</td><td>Mount1 Head Track Enable</td></tr>
+<tr><td>253</td><td>Mount1 Head Track Center Lock</td></tr>
 <tr><td>300</td><td>Scripting1</td></tr>
 <tr><td>301</td><td>Scripting2</td></tr>
 <tr><td>302</td><td>Scripting3</td></tr>
@@ -44022,6 +44247,9 @@ DO NOT EDIT
 <tr><td>216</td><td>Mount2 Pitch</td></tr>
 <tr><td>217</td><td>Mount2 Yaw</td></tr>
 <tr><td>200</td><td>Servos Auto Trim</td></tr>
+<tr><td>251</td><td>RTL Autoland Commit</td></tr>
+<tr><td>252</td><td>Mount1 Head Track Enable</td></tr>
+<tr><td>253</td><td>Mount1 Head Track Center Lock</td></tr>
 <tr><td>300</td><td>Scripting1</td></tr>
 <tr><td>301</td><td>Scripting2</td></tr>
 <tr><td>302</td><td>Scripting3</td></tr>
@@ -44188,6 +44416,9 @@ DO NOT EDIT
 <tr><td>216</td><td>Mount2 Pitch</td></tr>
 <tr><td>217</td><td>Mount2 Yaw</td></tr>
 <tr><td>200</td><td>Servos Auto Trim</td></tr>
+<tr><td>251</td><td>RTL Autoland Commit</td></tr>
+<tr><td>252</td><td>Mount1 Head Track Enable</td></tr>
+<tr><td>253</td><td>Mount1 Head Track Center Lock</td></tr>
 <tr><td>300</td><td>Scripting1</td></tr>
 <tr><td>301</td><td>Scripting2</td></tr>
 <tr><td>302</td><td>Scripting3</td></tr>
@@ -44354,6 +44585,9 @@ DO NOT EDIT
 <tr><td>216</td><td>Mount2 Pitch</td></tr>
 <tr><td>217</td><td>Mount2 Yaw</td></tr>
 <tr><td>200</td><td>Servos Auto Trim</td></tr>
+<tr><td>251</td><td>RTL Autoland Commit</td></tr>
+<tr><td>252</td><td>Mount1 Head Track Enable</td></tr>
+<tr><td>253</td><td>Mount1 Head Track Center Lock</td></tr>
 <tr><td>300</td><td>Scripting1</td></tr>
 <tr><td>301</td><td>Scripting2</td></tr>
 <tr><td>302</td><td>Scripting3</td></tr>
@@ -44520,6 +44754,9 @@ DO NOT EDIT
 <tr><td>216</td><td>Mount2 Pitch</td></tr>
 <tr><td>217</td><td>Mount2 Yaw</td></tr>
 <tr><td>200</td><td>Servos Auto Trim</td></tr>
+<tr><td>251</td><td>RTL Autoland Commit</td></tr>
+<tr><td>252</td><td>Mount1 Head Track Enable</td></tr>
+<tr><td>253</td><td>Mount1 Head Track Center Lock</td></tr>
 <tr><td>300</td><td>Scripting1</td></tr>
 <tr><td>301</td><td>Scripting2</td></tr>
 <tr><td>302</td><td>Scripting3</td></tr>
@@ -44686,6 +44923,9 @@ DO NOT EDIT
 <tr><td>216</td><td>Mount2 Pitch</td></tr>
 <tr><td>217</td><td>Mount2 Yaw</td></tr>
 <tr><td>200</td><td>Servos Auto Trim</td></tr>
+<tr><td>251</td><td>RTL Autoland Commit</td></tr>
+<tr><td>252</td><td>Mount1 Head Track Enable</td></tr>
+<tr><td>253</td><td>Mount1 Head Track Center Lock</td></tr>
 <tr><td>300</td><td>Scripting1</td></tr>
 <tr><td>301</td><td>Scripting2</td></tr>
 <tr><td>302</td><td>Scripting3</td></tr>
@@ -63621,6 +63861,16 @@ DO NOT EDIT
 <ul>
 <li>Units: degrees</li>
 <li>Range: -5.0 10.0</li>
+<li>Increment: 0.1</li>
+</ul>
+
+
+<h2>Takeoff cancel stick grace period (TKOFF_CNCL_DLY)</h2>
+
+<p>Time after launch during which roll and pitch stick input will not cancel an automatic takeoff. Protects against a hand launch aborting itself when the throwing motion disturbs the sticks. Applies to TAKEOFF mode and to a NAV_TAKEOFF running in AUTO. The cancel option becomes available once this time has elapsed and is announced over the GCS. Set to 0 to allow cancelling from the moment of launch.</p>
+<ul>
+<li>Units: seconds</li>
+<li>Range: 0 10.0</li>
 <li>Increment: 0.1</li>
 </ul>
 
