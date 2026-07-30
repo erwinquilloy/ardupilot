@@ -68,10 +68,10 @@ void ModeAuto::_exit()
 
 void ModeAuto::update()
 {
-    if (plane.g2.rc_channels.auto_switch_to_fbwa_with_sticks() &&
-        (fabsf(plane.channel_pitch->norm_input()) > 0.1f ||
-         fabsf(plane.channel_roll->norm_input()) > 0.1f)) {
-        plane.set_mode(plane.mode_fbwa, ModeReason::RC_COMMAND);
+    // allow the pilot to abort an automatic takeoff with the sticks. Only
+    // active while a NAV_TAKEOFF is the command in progress - once the takeoff
+    // completes the mission runs without any stick takeover.
+    if (plane.takeoff_stick_cancel_check()) {
         return;
     }
 
