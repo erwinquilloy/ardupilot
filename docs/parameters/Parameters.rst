@@ -303,7 +303,7 @@ STICK\_MIXING: Stick Mixing
 
 | *Note: This parameter is for advanced users*
 
-When enabled\, this adds user stick input to the control surfaces in auto modes\, allowing the user to have some degree of flight control without changing modes\. Default is 0 \(Disabled\) in this build \â\€\” pilot stick input is ignored in AUTO\/RTL\/GUIDED\. Set to 1 to use \"fly by wire\" mixing\, which controls the roll and pitch in the same way that the FBWA mode does\. Set to 3 to apply yaw only while in quadplane modes\, such as during automatic VTOL takeoff\/landing\.
+When enabled\, this adds user stick input to the control surfaces in auto modes\, allowing the user to have some degree of flight control without changing modes\. Set to 1 to use \"fly by wire\" mixing\, which controls the roll and pitch in the same way that the FBWA mode does\. Set to 3 to apply yaw only while in quadplane modes\, such as during automatic VTOL takeoff\/landing\. Set to 0 to ignore pilot stick input in AUTO\/RTL\/GUIDED entirely\.
 
 
 +---------------------------+
@@ -2520,6 +2520,24 @@ Automatically begin landing sequence after arriving at RTL location\. This requi
 
 
 
+.. _RTL_AUTOLAND_DLY:
+
+RTL\_AUTOLAND\_DLY: RTL autoland commit failsafe delay
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+Only used when RTL\_AUTOLAND is 1 and an RCx\_OPTION RTL Autoland Commit switch is assigned and held in the hold position\. On RC failsafe the commit switch can no longer be flipped so the plane would normally commit to the DO\_LAND\_START sequence immediately\. This parameter keeps the plane circling the home loiter for the given number of seconds \(counting from when it has settled at the home loiter altitude\) before committing\, giving a transient RC dropout time to recover so the pilot keeps control\. If the link recovers within this window the gate re\-engages and the plane keeps holding for the pilot\. 0 commits immediately on failsafe \(legacy behaviour\)\. Has no effect when the commit switch is unassigned or already in the commit position\.
+
+
++-----------+----------+---------+
+| Increment | Range    | Units   |
++===========+==========+=========+
+| 1         | 0 to 600 | seconds |
++-----------+----------+---------+
+
+
+
+
 .. _CRASH_ACC_THRESH:
 
 CRASH\_ACC\_THRESH: Crash Deceleration Threshold
@@ -3311,6 +3329,49 @@ Bias the DO\_LAND\_START selection toward landings whose final approach faces in
 +========+
 | 0 to 1 |
 +--------+
+
+
+
+
+.. _LAND_WIND_DIST:
+
+LAND\_WIND\_DIST: Max distance for LAND\_WIND\_BIAS
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+Companion cap for LAND\_WIND\_BIAS\. Purpose\: keep the wind bias from steering the plane toward a much farther DO\_LAND\_START just because its approach happens to align with the wind\. DO\_LAND\_START candidates whose start\-of\-approach sits farther than this many metres from the plane\'s position at decision time are excluded from selection entirely\; wind\-bias scoring is then applied only to the candidates within the cap\. Under RTL\_AUTOLAND\=1 the selection runs after the plane has reached the RTL loiter point\, so the cap is effectively measured from HOME\; under RTL\_AUTOLAND\=2 \/ battery failsafe \/ GCS DO\_LAND\_START the cap is measured from wherever the plane is when the trigger fires\. If no candidate is within the cap\, the behaviour is controlled by LAND\_WIND\_STRICT\: 0 \(default\) falls back to upstream nearest\-across\-all so the plane still lands\; 1 refuses to autoland so RTL keeps loitering\. 0 \(default\) here disables the cap entirely\; the bias is applied to every candidate as before\.
+
+
++------------+--------+
+| Range      | Units  |
++============+========+
+| 0 to 20000 | meters |
++------------+--------+
+
+
+
+
+.. _LAND_WIND_STRICT:
+
+LAND\_WIND\_STRICT: LAND\_WIND\_DIST hard\-fence toggle
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+Chooses what happens when LAND\_WIND\_DIST eliminates every DO\_LAND\_START candidate\. Purpose\: let the pilot decide whether the distance cap is a soft preference or a hard boundary\. 0 \(default\, soft fallback\)\: fall through to upstream nearest\-across\-all so the plane still attempts a landing even if the only survivor is far outside the cap \-\- preserves the failsafe safety\-net at the cost of occasionally flying farther than the cap suggests\. 1 \(hard fence\)\: refuse the autoland when nothing survives the cap\; RTL stays in RTL and the plane keeps loitering at HOME\/rally requiring pilot intervention\. LAND\_WIND\_DIST becomes a true hard boundary for autoland\. WARNING\: under strict mode a battery failsafe with no in\-cap landing will not attempt to land \-\- the plane loiters until the battery dies\. Only enable strict if you understand this trade\-off\. Ignored when LAND\_WIND\_DIST \= 0 \(no cap\) or LAND\_WIND\_BIAS \= 0 \(whole feature off\)\.
+
+
++----------------------------------------------------+
+| Values                                             |
++====================================================+
+| +-------+----------------------------------------+ |
+| | Value | Meaning                                | |
+| +=======+========================================+ |
+| | 0     | Soft fallback (attempt landing anyway) | |
+| +-------+----------------------------------------+ |
+| | 1     | Hard fence (loiter instead of landing) | |
+| +-------+----------------------------------------+ |
+|                                                    |
++----------------------------------------------------+
 
 
 
@@ -27890,6 +27951,12 @@ Auxiliary RC Options function executed on pin change
 | +-------+-----------------------------------------------------+ |
 | | 200   | Servos Auto Trim                                    | |
 | +-------+-----------------------------------------------------+ |
+| | 251   | RTL Autoland Commit                                 | |
+| +-------+-----------------------------------------------------+ |
+| | 252   | Mount1 Head Track Enable                            | |
+| +-------+-----------------------------------------------------+ |
+| | 253   | Mount1 Head Track Center Lock                       | |
+| +-------+-----------------------------------------------------+ |
 | | 300   | Scripting1                                          | |
 | +-------+-----------------------------------------------------+ |
 | | 301   | Scripting2                                          | |
@@ -28118,6 +28185,12 @@ Auxiliary RC Options function executed on pin change
 | | 217   | Mount2 Yaw                                          | |
 | +-------+-----------------------------------------------------+ |
 | | 200   | Servos Auto Trim                                    | |
+| +-------+-----------------------------------------------------+ |
+| | 251   | RTL Autoland Commit                                 | |
+| +-------+-----------------------------------------------------+ |
+| | 252   | Mount1 Head Track Enable                            | |
+| +-------+-----------------------------------------------------+ |
+| | 253   | Mount1 Head Track Center Lock                       | |
 | +-------+-----------------------------------------------------+ |
 | | 300   | Scripting1                                          | |
 | +-------+-----------------------------------------------------+ |
@@ -28348,6 +28421,12 @@ Auxiliary RC Options function executed on pin change
 | +-------+-----------------------------------------------------+ |
 | | 200   | Servos Auto Trim                                    | |
 | +-------+-----------------------------------------------------+ |
+| | 251   | RTL Autoland Commit                                 | |
+| +-------+-----------------------------------------------------+ |
+| | 252   | Mount1 Head Track Enable                            | |
+| +-------+-----------------------------------------------------+ |
+| | 253   | Mount1 Head Track Center Lock                       | |
+| +-------+-----------------------------------------------------+ |
 | | 300   | Scripting1                                          | |
 | +-------+-----------------------------------------------------+ |
 | | 301   | Scripting2                                          | |
@@ -28576,6 +28655,12 @@ Auxiliary RC Options function executed on pin change
 | | 217   | Mount2 Yaw                                          | |
 | +-------+-----------------------------------------------------+ |
 | | 200   | Servos Auto Trim                                    | |
+| +-------+-----------------------------------------------------+ |
+| | 251   | RTL Autoland Commit                                 | |
+| +-------+-----------------------------------------------------+ |
+| | 252   | Mount1 Head Track Enable                            | |
+| +-------+-----------------------------------------------------+ |
+| | 253   | Mount1 Head Track Center Lock                       | |
 | +-------+-----------------------------------------------------+ |
 | | 300   | Scripting1                                          | |
 | +-------+-----------------------------------------------------+ |
@@ -59197,6 +59282,67 @@ Vertical position on screen
 
 
 
+.. _OSD1_RADAR_EN:
+
+OSD1\_RADAR\_EN: RADAR\_EN
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+Displays iNav Radar \/ FormationFlight peer\-aircraft info \(callsign letter A\.\.F \+ bearing arrow \+ distance \+ relative altitude\)\. Cycles through healthy peers every 2 seconds\.
+
+
++----------------------+
+| Values               |
++======================+
+| +-------+----------+ |
+| | Value | Meaning  | |
+| +=======+==========+ |
+| | 0     | Disabled | |
+| +-------+----------+ |
+| | 1     | Enabled  | |
+| +-------+----------+ |
+|                      |
++----------------------+
+
+
+
+
+.. _OSD1_RADAR_X:
+
+OSD1\_RADAR\_X: RADAR\_X
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+Horizontal position on screen
+
+
++---------+
+| Range   |
++=========+
+| 0 to 29 |
++---------+
+
+
+
+
+.. _OSD1_RADAR_Y:
+
+OSD1\_RADAR\_Y: RADAR\_Y
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+Vertical position on screen
+
+
++---------+
+| Range   |
++=========+
+| 0 to 15 |
++---------+
+
+
+
+
 
 .. _parameters_OSD2_:
 
@@ -64316,6 +64462,67 @@ Horizontal position on screen
 
 OSD2\_ASPD\_DEM\_Y: ASPD\_DEM\_Y
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+Vertical position on screen
+
+
++---------+
+| Range   |
++=========+
+| 0 to 15 |
++---------+
+
+
+
+
+.. _OSD2_RADAR_EN:
+
+OSD2\_RADAR\_EN: RADAR\_EN
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+Displays iNav Radar \/ FormationFlight peer\-aircraft info \(callsign letter A\.\.F \+ bearing arrow \+ distance \+ relative altitude\)\. Cycles through healthy peers every 2 seconds\.
+
+
++----------------------+
+| Values               |
++======================+
+| +-------+----------+ |
+| | Value | Meaning  | |
+| +=======+==========+ |
+| | 0     | Disabled | |
+| +-------+----------+ |
+| | 1     | Enabled  | |
+| +-------+----------+ |
+|                      |
++----------------------+
+
+
+
+
+.. _OSD2_RADAR_X:
+
+OSD2\_RADAR\_X: RADAR\_X
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+Horizontal position on screen
+
+
++---------+
+| Range   |
++=========+
+| 0 to 29 |
++---------+
+
+
+
+
+.. _OSD2_RADAR_Y:
+
+OSD2\_RADAR\_Y: RADAR\_Y
+~~~~~~~~~~~~~~~~~~~~~~~~
 
 
 Vertical position on screen
@@ -69463,6 +69670,67 @@ Vertical position on screen
 
 
 
+.. _OSD3_RADAR_EN:
+
+OSD3\_RADAR\_EN: RADAR\_EN
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+Displays iNav Radar \/ FormationFlight peer\-aircraft info \(callsign letter A\.\.F \+ bearing arrow \+ distance \+ relative altitude\)\. Cycles through healthy peers every 2 seconds\.
+
+
++----------------------+
+| Values               |
++======================+
+| +-------+----------+ |
+| | Value | Meaning  | |
+| +=======+==========+ |
+| | 0     | Disabled | |
+| +-------+----------+ |
+| | 1     | Enabled  | |
+| +-------+----------+ |
+|                      |
++----------------------+
+
+
+
+
+.. _OSD3_RADAR_X:
+
+OSD3\_RADAR\_X: RADAR\_X
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+Horizontal position on screen
+
+
++---------+
+| Range   |
++=========+
+| 0 to 29 |
++---------+
+
+
+
+
+.. _OSD3_RADAR_Y:
+
+OSD3\_RADAR\_Y: RADAR\_Y
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+Vertical position on screen
+
+
++---------+
+| Range   |
++=========+
+| 0 to 15 |
++---------+
+
+
+
+
 
 .. _parameters_OSD4_:
 
@@ -74596,6 +74864,67 @@ Vertical position on screen
 
 
 
+.. _OSD4_RADAR_EN:
+
+OSD4\_RADAR\_EN: RADAR\_EN
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+Displays iNav Radar \/ FormationFlight peer\-aircraft info \(callsign letter A\.\.F \+ bearing arrow \+ distance \+ relative altitude\)\. Cycles through healthy peers every 2 seconds\.
+
+
++----------------------+
+| Values               |
++======================+
+| +-------+----------+ |
+| | Value | Meaning  | |
+| +=======+==========+ |
+| | 0     | Disabled | |
+| +-------+----------+ |
+| | 1     | Enabled  | |
+| +-------+----------+ |
+|                      |
++----------------------+
+
+
+
+
+.. _OSD4_RADAR_X:
+
+OSD4\_RADAR\_X: RADAR\_X
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+Horizontal position on screen
+
+
++---------+
+| Range   |
++=========+
+| 0 to 29 |
++---------+
+
+
+
+
+.. _OSD4_RADAR_Y:
+
+OSD4\_RADAR\_Y: RADAR\_Y
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+Vertical position on screen
+
+
++---------+
+| Range   |
++=========+
+| 0 to 15 |
++---------+
+
+
+
+
 
 .. _parameters_OSD5_:
 
@@ -79715,6 +80044,67 @@ Horizontal position on screen
 
 OSD5\_ASPD\_DEM\_Y: ASPD\_DEM\_Y
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+Vertical position on screen
+
+
++---------+
+| Range   |
++=========+
+| 0 to 15 |
++---------+
+
+
+
+
+.. _OSD5_RADAR_EN:
+
+OSD5\_RADAR\_EN: RADAR\_EN
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+Displays iNav Radar \/ FormationFlight peer\-aircraft info \(callsign letter A\.\.F \+ bearing arrow \+ distance \+ relative altitude\)\. Cycles through healthy peers every 2 seconds\.
+
+
++----------------------+
+| Values               |
++======================+
+| +-------+----------+ |
+| | Value | Meaning  | |
+| +=======+==========+ |
+| | 0     | Disabled | |
+| +-------+----------+ |
+| | 1     | Enabled  | |
+| +-------+----------+ |
+|                      |
++----------------------+
+
+
+
+
+.. _OSD5_RADAR_X:
+
+OSD5\_RADAR\_X: RADAR\_X
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+Horizontal position on screen
+
+
++---------+
+| Range   |
++=========+
+| 0 to 29 |
++---------+
+
+
+
+
+.. _OSD5_RADAR_Y:
+
+OSD5\_RADAR\_Y: RADAR\_Y
+~~~~~~~~~~~~~~~~~~~~~~~~
 
 
 Vertical position on screen
@@ -88361,6 +88751,39 @@ Options impacting weathervaning behaviour
 
 
 
+.. _parameters_RADAR:
+
+RADAR Parameters
+----------------
+
+
+.. _RADAR_TYPE:
+
+RADAR\_TYPE: Radar sensor type
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+| *Note: Reboot required after change*
+
+Selects the peer\-aircraft radar backend\. MSP listens for iNav Radar \/ FormationFlight position frames \(MSP2\_SET\_RADAR\_POS 0x100B\) on any serial port configured as MSP \(SERIALn\_PROTOCOL\=33\)\.
+
+
++---------------------+
+| Values              |
++=====================+
+| +-------+---------+ |
+| | Value | Meaning | |
+| +=======+=========+ |
+| | 0     | None    | |
+| +-------+---------+ |
+| | 1     | MSP     | |
+| +-------+---------+ |
+|                     |
++---------------------+
+
+
+
+
+
 .. _parameters_RALLY_:
 
 RALLY\_ Parameters
@@ -88457,46 +88880,44 @@ RC\_OPTIONS: RC options
 RC input options
 
 
-+---------------------------------------------------------------------------------------------------------+
-| Bitmask                                                                                                 |
-+=========================================================================================================+
-| +-----+-----------------------------------------------------------------------------------------------+ |
-| | Bit | Meaning                                                                                       | |
-| +=====+===============================================================================================+ |
-| | 0   | Ignore RC Receiver                                                                            | |
-| +-----+-----------------------------------------------------------------------------------------------+ |
-| | 1   | Ignore MAVLink Overrides                                                                      | |
-| +-----+-----------------------------------------------------------------------------------------------+ |
-| | 2   | Ignore Receiver Failsafe bit but allow other RC failsafes if setup                            | |
-| +-----+-----------------------------------------------------------------------------------------------+ |
-| | 3   | FPort Pad                                                                                     | |
-| +-----+-----------------------------------------------------------------------------------------------+ |
-| | 4   | Log RC input bytes                                                                            | |
-| +-----+-----------------------------------------------------------------------------------------------+ |
-| | 5   | Arming check throttle for 0 input                                                             | |
-| +-----+-----------------------------------------------------------------------------------------------+ |
-| | 6   | Skip the arming check for neutral Roll/Pitch/Yaw sticks                                       | |
-| +-----+-----------------------------------------------------------------------------------------------+ |
-| | 7   | Allow Switch reverse                                                                          | |
-| +-----+-----------------------------------------------------------------------------------------------+ |
-| | 8   | Use passthrough for CRSF telemetry                                                            | |
-| +-----+-----------------------------------------------------------------------------------------------+ |
-| | 9   | Suppress CRSF mode/rate message for ELRS systems                                              | |
-| +-----+-----------------------------------------------------------------------------------------------+ |
-| | 10  | Enable multiple receiver support                                                              | |
-| +-----+-----------------------------------------------------------------------------------------------+ |
-| | 11  | Use Link Quality for RSSI with CRSF                                                           | |
-| +-----+-----------------------------------------------------------------------------------------------+ |
-| | 12  | Annotate CRSF flight mode with * on disarm                                                    | |
-| +-----+-----------------------------------------------------------------------------------------------+ |
-| | 13  | Use 420kbaud for ELRS protocol                                                                | |
-| +-----+-----------------------------------------------------------------------------------------------+ |
-| | 20  | Plane only - while in AUTO mode switch to FBWA if the roll or pitch stick moves more than 10% | |
-| +-----+-----------------------------------------------------------------------------------------------+ |
-| | 22  | Plane only - disable throttle battery voltage compensation in MANUAL mode (fork PR #139)      | |
-| +-----+-----------------------------------------------------------------------------------------------+ |
-|                                                                                                         |
-+---------------------------------------------------------------------------------------------------------+
++----------------------------------------------------------------------------------------------------+
+| Bitmask                                                                                            |
++====================================================================================================+
+| +-----+------------------------------------------------------------------------------------------+ |
+| | Bit | Meaning                                                                                  | |
+| +=====+==========================================================================================+ |
+| | 0   | Ignore RC Receiver                                                                       | |
+| +-----+------------------------------------------------------------------------------------------+ |
+| | 1   | Ignore MAVLink Overrides                                                                 | |
+| +-----+------------------------------------------------------------------------------------------+ |
+| | 2   | Ignore Receiver Failsafe bit but allow other RC failsafes if setup                       | |
+| +-----+------------------------------------------------------------------------------------------+ |
+| | 3   | FPort Pad                                                                                | |
+| +-----+------------------------------------------------------------------------------------------+ |
+| | 4   | Log RC input bytes                                                                       | |
+| +-----+------------------------------------------------------------------------------------------+ |
+| | 5   | Arming check throttle for 0 input                                                        | |
+| +-----+------------------------------------------------------------------------------------------+ |
+| | 6   | Skip the arming check for neutral Roll/Pitch/Yaw sticks                                  | |
+| +-----+------------------------------------------------------------------------------------------+ |
+| | 7   | Allow Switch reverse                                                                     | |
+| +-----+------------------------------------------------------------------------------------------+ |
+| | 8   | Use passthrough for CRSF telemetry                                                       | |
+| +-----+------------------------------------------------------------------------------------------+ |
+| | 9   | Suppress CRSF mode/rate message for ELRS systems                                         | |
+| +-----+------------------------------------------------------------------------------------------+ |
+| | 10  | Enable multiple receiver support                                                         | |
+| +-----+------------------------------------------------------------------------------------------+ |
+| | 11  | Use Link Quality for RSSI with CRSF                                                      | |
+| +-----+------------------------------------------------------------------------------------------+ |
+| | 12  | Annotate CRSF flight mode with * on disarm                                               | |
+| +-----+------------------------------------------------------------------------------------------+ |
+| | 13  | Use 420kbaud for ELRS protocol                                                           | |
+| +-----+------------------------------------------------------------------------------------------+ |
+| | 22  | Plane only - disable throttle battery voltage compensation in MANUAL mode (fork PR #139) | |
+| +-----+------------------------------------------------------------------------------------------+ |
+|                                                                                                    |
++----------------------------------------------------------------------------------------------------+
 
 
 
@@ -88891,6 +89312,12 @@ Function assigned to this RC channel
 | +-------+-----------------------------------------------------+ |
 | | 200   | Servos Auto Trim                                    | |
 | +-------+-----------------------------------------------------+ |
+| | 251   | RTL Autoland Commit                                 | |
+| +-------+-----------------------------------------------------+ |
+| | 252   | Mount1 Head Track Enable                            | |
+| +-------+-----------------------------------------------------+ |
+| | 253   | Mount1 Head Track Center Lock                       | |
+| +-------+-----------------------------------------------------+ |
 | | 300   | Scripting1                                          | |
 | +-------+-----------------------------------------------------+ |
 | | 301   | Scripting2                                          | |
@@ -89228,6 +89655,12 @@ Function assigned to this RC channel
 | | 217   | Mount2 Yaw                                          | |
 | +-------+-----------------------------------------------------+ |
 | | 200   | Servos Auto Trim                                    | |
+| +-------+-----------------------------------------------------+ |
+| | 251   | RTL Autoland Commit                                 | |
+| +-------+-----------------------------------------------------+ |
+| | 252   | Mount1 Head Track Enable                            | |
+| +-------+-----------------------------------------------------+ |
+| | 253   | Mount1 Head Track Center Lock                       | |
 | +-------+-----------------------------------------------------+ |
 | | 300   | Scripting1                                          | |
 | +-------+-----------------------------------------------------+ |
@@ -89567,6 +90000,12 @@ Function assigned to this RC channel
 | +-------+-----------------------------------------------------+ |
 | | 200   | Servos Auto Trim                                    | |
 | +-------+-----------------------------------------------------+ |
+| | 251   | RTL Autoland Commit                                 | |
+| +-------+-----------------------------------------------------+ |
+| | 252   | Mount1 Head Track Enable                            | |
+| +-------+-----------------------------------------------------+ |
+| | 253   | Mount1 Head Track Center Lock                       | |
+| +-------+-----------------------------------------------------+ |
 | | 300   | Scripting1                                          | |
 | +-------+-----------------------------------------------------+ |
 | | 301   | Scripting2                                          | |
@@ -89904,6 +90343,12 @@ Function assigned to this RC channel
 | | 217   | Mount2 Yaw                                          | |
 | +-------+-----------------------------------------------------+ |
 | | 200   | Servos Auto Trim                                    | |
+| +-------+-----------------------------------------------------+ |
+| | 251   | RTL Autoland Commit                                 | |
+| +-------+-----------------------------------------------------+ |
+| | 252   | Mount1 Head Track Enable                            | |
+| +-------+-----------------------------------------------------+ |
+| | 253   | Mount1 Head Track Center Lock                       | |
 | +-------+-----------------------------------------------------+ |
 | | 300   | Scripting1                                          | |
 | +-------+-----------------------------------------------------+ |
@@ -90243,6 +90688,12 @@ Function assigned to this RC channel
 | +-------+-----------------------------------------------------+ |
 | | 200   | Servos Auto Trim                                    | |
 | +-------+-----------------------------------------------------+ |
+| | 251   | RTL Autoland Commit                                 | |
+| +-------+-----------------------------------------------------+ |
+| | 252   | Mount1 Head Track Enable                            | |
+| +-------+-----------------------------------------------------+ |
+| | 253   | Mount1 Head Track Center Lock                       | |
+| +-------+-----------------------------------------------------+ |
 | | 300   | Scripting1                                          | |
 | +-------+-----------------------------------------------------+ |
 | | 301   | Scripting2                                          | |
@@ -90580,6 +91031,12 @@ Function assigned to this RC channel
 | | 217   | Mount2 Yaw                                          | |
 | +-------+-----------------------------------------------------+ |
 | | 200   | Servos Auto Trim                                    | |
+| +-------+-----------------------------------------------------+ |
+| | 251   | RTL Autoland Commit                                 | |
+| +-------+-----------------------------------------------------+ |
+| | 252   | Mount1 Head Track Enable                            | |
+| +-------+-----------------------------------------------------+ |
+| | 253   | Mount1 Head Track Center Lock                       | |
 | +-------+-----------------------------------------------------+ |
 | | 300   | Scripting1                                          | |
 | +-------+-----------------------------------------------------+ |
@@ -90919,6 +91376,12 @@ Function assigned to this RC channel
 | +-------+-----------------------------------------------------+ |
 | | 200   | Servos Auto Trim                                    | |
 | +-------+-----------------------------------------------------+ |
+| | 251   | RTL Autoland Commit                                 | |
+| +-------+-----------------------------------------------------+ |
+| | 252   | Mount1 Head Track Enable                            | |
+| +-------+-----------------------------------------------------+ |
+| | 253   | Mount1 Head Track Center Lock                       | |
+| +-------+-----------------------------------------------------+ |
 | | 300   | Scripting1                                          | |
 | +-------+-----------------------------------------------------+ |
 | | 301   | Scripting2                                          | |
@@ -91256,6 +91719,12 @@ Function assigned to this RC channel
 | | 217   | Mount2 Yaw                                          | |
 | +-------+-----------------------------------------------------+ |
 | | 200   | Servos Auto Trim                                    | |
+| +-------+-----------------------------------------------------+ |
+| | 251   | RTL Autoland Commit                                 | |
+| +-------+-----------------------------------------------------+ |
+| | 252   | Mount1 Head Track Enable                            | |
+| +-------+-----------------------------------------------------+ |
+| | 253   | Mount1 Head Track Center Lock                       | |
 | +-------+-----------------------------------------------------+ |
 | | 300   | Scripting1                                          | |
 | +-------+-----------------------------------------------------+ |
@@ -91595,6 +92064,12 @@ Function assigned to this RC channel
 | +-------+-----------------------------------------------------+ |
 | | 200   | Servos Auto Trim                                    | |
 | +-------+-----------------------------------------------------+ |
+| | 251   | RTL Autoland Commit                                 | |
+| +-------+-----------------------------------------------------+ |
+| | 252   | Mount1 Head Track Enable                            | |
+| +-------+-----------------------------------------------------+ |
+| | 253   | Mount1 Head Track Center Lock                       | |
+| +-------+-----------------------------------------------------+ |
 | | 300   | Scripting1                                          | |
 | +-------+-----------------------------------------------------+ |
 | | 301   | Scripting2                                          | |
@@ -91932,6 +92407,12 @@ Function assigned to this RC channel
 | | 217   | Mount2 Yaw                                          | |
 | +-------+-----------------------------------------------------+ |
 | | 200   | Servos Auto Trim                                    | |
+| +-------+-----------------------------------------------------+ |
+| | 251   | RTL Autoland Commit                                 | |
+| +-------+-----------------------------------------------------+ |
+| | 252   | Mount1 Head Track Enable                            | |
+| +-------+-----------------------------------------------------+ |
+| | 253   | Mount1 Head Track Center Lock                       | |
 | +-------+-----------------------------------------------------+ |
 | | 300   | Scripting1                                          | |
 | +-------+-----------------------------------------------------+ |
@@ -92271,6 +92752,12 @@ Function assigned to this RC channel
 | +-------+-----------------------------------------------------+ |
 | | 200   | Servos Auto Trim                                    | |
 | +-------+-----------------------------------------------------+ |
+| | 251   | RTL Autoland Commit                                 | |
+| +-------+-----------------------------------------------------+ |
+| | 252   | Mount1 Head Track Enable                            | |
+| +-------+-----------------------------------------------------+ |
+| | 253   | Mount1 Head Track Center Lock                       | |
+| +-------+-----------------------------------------------------+ |
 | | 300   | Scripting1                                          | |
 | +-------+-----------------------------------------------------+ |
 | | 301   | Scripting2                                          | |
@@ -92608,6 +93095,12 @@ Function assigned to this RC channel
 | | 217   | Mount2 Yaw                                          | |
 | +-------+-----------------------------------------------------+ |
 | | 200   | Servos Auto Trim                                    | |
+| +-------+-----------------------------------------------------+ |
+| | 251   | RTL Autoland Commit                                 | |
+| +-------+-----------------------------------------------------+ |
+| | 252   | Mount1 Head Track Enable                            | |
+| +-------+-----------------------------------------------------+ |
+| | 253   | Mount1 Head Track Center Lock                       | |
 | +-------+-----------------------------------------------------+ |
 | | 300   | Scripting1                                          | |
 | +-------+-----------------------------------------------------+ |
@@ -92947,6 +93440,12 @@ Function assigned to this RC channel
 | +-------+-----------------------------------------------------+ |
 | | 200   | Servos Auto Trim                                    | |
 | +-------+-----------------------------------------------------+ |
+| | 251   | RTL Autoland Commit                                 | |
+| +-------+-----------------------------------------------------+ |
+| | 252   | Mount1 Head Track Enable                            | |
+| +-------+-----------------------------------------------------+ |
+| | 253   | Mount1 Head Track Center Lock                       | |
+| +-------+-----------------------------------------------------+ |
 | | 300   | Scripting1                                          | |
 | +-------+-----------------------------------------------------+ |
 | | 301   | Scripting2                                          | |
@@ -93284,6 +93783,12 @@ Function assigned to this RC channel
 | | 217   | Mount2 Yaw                                          | |
 | +-------+-----------------------------------------------------+ |
 | | 200   | Servos Auto Trim                                    | |
+| +-------+-----------------------------------------------------+ |
+| | 251   | RTL Autoland Commit                                 | |
+| +-------+-----------------------------------------------------+ |
+| | 252   | Mount1 Head Track Enable                            | |
+| +-------+-----------------------------------------------------+ |
+| | 253   | Mount1 Head Track Center Lock                       | |
 | +-------+-----------------------------------------------------+ |
 | | 300   | Scripting1                                          | |
 | +-------+-----------------------------------------------------+ |
@@ -93623,6 +94128,12 @@ Function assigned to this RC channel
 | +-------+-----------------------------------------------------+ |
 | | 200   | Servos Auto Trim                                    | |
 | +-------+-----------------------------------------------------+ |
+| | 251   | RTL Autoland Commit                                 | |
+| +-------+-----------------------------------------------------+ |
+| | 252   | Mount1 Head Track Enable                            | |
+| +-------+-----------------------------------------------------+ |
+| | 253   | Mount1 Head Track Center Lock                       | |
+| +-------+-----------------------------------------------------+ |
 | | 300   | Scripting1                                          | |
 | +-------+-----------------------------------------------------+ |
 | | 301   | Scripting2                                          | |
@@ -93960,6 +94471,12 @@ Function assigned to this RC channel
 | | 217   | Mount2 Yaw                                          | |
 | +-------+-----------------------------------------------------+ |
 | | 200   | Servos Auto Trim                                    | |
+| +-------+-----------------------------------------------------+ |
+| | 251   | RTL Autoland Commit                                 | |
+| +-------+-----------------------------------------------------+ |
+| | 252   | Mount1 Head Track Enable                            | |
+| +-------+-----------------------------------------------------+ |
+| | 253   | Mount1 Head Track Center Lock                       | |
 | +-------+-----------------------------------------------------+ |
 | | 300   | Scripting1                                          | |
 | +-------+-----------------------------------------------------+ |
@@ -123646,22 +124163,22 @@ SIM\_EFI\_TYPE: Type of Electronic Fuel Injection
 Different types of Electronic Fuel Injection \(EFI\) systems
 
 
-+------------------------------------+
-| Values                             |
-+====================================+
-| +-------+------------------------+ |
-| | Value | Meaning                | |
-| +=======+========================+ |
-| | 0     | None                   | |
-| +-------+------------------------+ |
-| | 1     | MegaSquirt EFI system  | |
-| +-------+------------------------+ |
++-----------------------------------+
+| Values                            |
++===================================+
+| +-------+-----------------------+ |
+| | Value | Meaning               | |
+| +=======+=======================+ |
+| | 0     | None                  | |
+| +-------+-----------------------+ |
+| | 1     | MegaSquirt EFI system | |
+| +-------+-----------------------+ |
 | | 2     | LÃ¶weheiser EFI system | |
-| +-------+------------------------+ |
-| | 8     | Hirth engines          | |
-| +-------+------------------------+ |
-|                                    |
-+------------------------------------+
+| +-------+-----------------------+ |
+| | 8     | Hirth engines         | |
+| +-------+-----------------------+ |
+|                                   |
++-----------------------------------+
 
 
 
@@ -133228,6 +133745,24 @@ Degrees of pitch angle demanded during the takeoff run before speed reaches TKOF
 +===========+==============+=========+
 | 0.1       | -5.0 to 10.0 | degrees |
 +-----------+--------------+---------+
+
+
+
+
+.. _TKOFF_CNCL_DLY:
+
+TKOFF\_CNCL\_DLY: Takeoff cancel stick grace period
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+Time after launch during which roll and pitch stick input will not cancel an automatic takeoff\. Protects against a hand launch aborting itself when the throwing motion disturbs the sticks\. Applies to TAKEOFF mode and to a NAV\_TAKEOFF running in AUTO\. The cancel option becomes available once this time has elapsed and is announced over the GCS\. Set to 0 to allow cancelling from the moment of launch\.
+
+
++-----------+-----------+---------+
+| Increment | Range     | Units   |
++===========+===========+=========+
+| 0.1       | 0 to 10.0 | seconds |
++-----------+-----------+---------+
 
 
 

@@ -137,6 +137,105 @@ no_launch:
 }
 
 /*
+  true while the pilot may abort an automatic takeoff with the sticks.
+
+  Two windows, matching iNav's fixed-wing launch behaviour:
+
+    armed, pre-launch     cancel available immediately
+    launch -> +CNCL_DLY   locked, so the throw cannot abort itself
+    +CNCL_DLY -> tgt alt  cancel available
+    target altitude       closed for the rest of the flight
+ */
+bool Plane::in_takeoff_cancel_window(void)
+{
+    if (!arming.is_armed()) {
+        return false;
+    }
+
+    // are we in an automatic takeoff at all?
+    bool in_takeoff;
+    if (control_mode == &mode_auto) {
+        // false unless a NAV_TAKEOFF is the command in progress: set false in
+        // do_takeoff(), back to true at the "Takeoff complete" message in
+        // verify_takeoff() once the target altitude is reached, and forced true
+        // for every other nav command. A VTOL takeoff never clears it, so
+        // quadplane takeoffs are excluded.
+        in_takeoff = !auto_state.takeoff_complete;
+    } else if (control_mode == &mode_takeoff) {
+        // ModeTakeoff::update() drops the stage to NORMAL on reaching TKOFF_ALT
+        // (or on either takeoff timeout), which closes the window.
+        in_takeoff = throttle_suppressed ||
+                     flight_stage == AP_FixedWing::FlightStage::TAKEOFF;
+    } else {
+        return false;
+    }
+    if (!in_takeoff) {
+        return false;
+    }
+
+    if (throttle_suppressed) {
+        // Pre-launch. Cancel is available straight away, matching iNav, where
+        // moving the sticks in NAV_STATE_LAUNCH_WAIT aborts the launch and
+        // leaves the mode. The aircraft has not been thrown yet, so there is
+        // no throw motion to guard against. Keep the launch stamp clear so the
+        // grace period below is timed from the launch, not from arming.
+        takeoff_state.cancel_launch_ms = 0;
+        return true;
+    }
+
+    // Launched. Hold the window shut for TKOFF_CNCL_DLY so that the throwing
+    // motion itself cannot abort a hand launch - the pilot is working the
+    // transmitter one-handed at exactly that point. Equivalent to iNav's
+    // nav_fw_launch_min_time.
+    if (takeoff_state.cancel_launch_ms == 0) {
+        // first loop with the throttle released: this is the launch
+        takeoff_state.cancel_launch_ms = AP_HAL::millis();
+    }
+    return (AP_HAL::millis() - takeoff_state.cancel_launch_ms) >=
+           (uint32_t)(MAX(mode_takeoff.cancel_delay.get(), 0.0f) * 1000);
+}
+
+/*
+  Allow the pilot to abort an automatic takeoff by moving the roll or pitch
+  stick, similar to iNav's "move sticks to cancel auto launch". Returns true
+  if the takeoff was cancelled, in which case the caller must return
+  immediately - the mode has changed underneath it.
+
+  Only active during the takeoff phase. Once the takeoff completes there is
+  no stick takeover, so returning to AUTO later flies the mission normally;
+  STICK_MIXING covers in-mission pilot nudges.
+ */
+bool Plane::takeoff_stick_cancel_check(void)
+{
+    if (!in_takeoff_cancel_window()) {
+        takeoff_state.cancel_prompt_sent = false;
+        return false;
+    }
+
+    if (!takeoff_state.cancel_prompt_sent) {
+        takeoff_state.cancel_prompt_sent = true;
+        // Distinguish the two windows: the pre-launch one opens at arming, the
+        // in-flight one only after TKOFF_CNCL_DLY has elapsed since launch.
+        // Using one message for both reads as though the grace period had
+        // already run at arming.
+        if (throttle_suppressed) {
+            gcs().send_text(MAV_SEVERITY_INFO, "Move sticks to cancel auto launch");
+        } else {
+            gcs().send_text(MAV_SEVERITY_INFO, "Launch cancel armed");
+        }
+    }
+
+    if (fabsf(channel_pitch->norm_input()) > 0.1f ||
+        fabsf(channel_roll->norm_input()) > 0.1f) {
+        gcs().send_text(MAV_SEVERITY_WARNING, "Auto launch cancelled");
+        set_mode(mode_fbwa, ModeReason::RC_COMMAND);
+        return true;
+    }
+
+    return false;
+}
+
+/*
   calculate desired bank angle during takeoff, setting nav_roll_cd
  */
 void Plane::takeoff_calc_roll(void)

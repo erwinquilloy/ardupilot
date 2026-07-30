@@ -286,6 +286,16 @@ void Plane::stabilize_stick_mixing_fbw()
     if (control_mode == &mode_rtl && plane.rtl.manual_alt_control) {
         return;
     }
+    // In the loiter phase of TAKEOFF mode the pitch stick already drives the
+    // loiter altitude via update_fbwb_speed_height() (ArduCustom #226) and the
+    // roll stick already trims the loiter radius via
+    // update_loiter_radius_and_direction() (fork PR #180); mixing them in here
+    // as well would apply both sticks twice. During the climb (flight_stage
+    // TAKEOFF) neither of those runs, so stick mixing still applies there.
+    if (control_mode == &mode_takeoff &&
+        flight_stage != AP_FixedWing::FlightStage::TAKEOFF) {
+        return;
+    }
     // do FBW style stick mixing. We don't treat it linearly
     // however. For inputs up to half the maximum, we use linear
     // addition to the nav_roll and nav_pitch. Above that it goes

@@ -51,6 +51,15 @@ const AP_Param::GroupInfo ModeTakeoff::var_info[] = {
     // @User: Standard
     AP_GROUPINFO("GND_PITCH", 5, ModeTakeoff, ground_pitch, 5),
 
+    // @Param: CNCL_DLY
+    // @DisplayName: Takeoff cancel stick grace period
+    // @Description: Time after launch during which roll and pitch stick input will not cancel an automatic takeoff. Protects against a hand launch aborting itself when the throwing motion disturbs the sticks. Applies to TAKEOFF mode and to a NAV_TAKEOFF running in AUTO. The cancel option becomes available once this time has elapsed and is announced over the GCS. Set to 0 to allow cancelling from the moment of launch.
+    // @Units: s
+    // @Range: 0 10.0
+    // @Increment: 0.1
+    // @User: Standard
+    AP_GROUPINFO("CNCL_DLY", 6, ModeTakeoff, cancel_delay, 1.0),
+
     AP_GROUPEND
 };
 
@@ -74,15 +83,33 @@ bool ModeTakeoff::_enter()
   target_altitude still holds whatever the previous mode left in it, so
   navigate() must not write it back into next_WP_loc.
  */
-void ModeTakeoff::seed_target_altitude()
+void ModeTakeoff::seed_loiter_state()
 {
     plane.setup_terrain_target_alt(plane.next_WP_loc);
     plane.set_target_altitude_location(plane.next_WP_loc);
+
+    // Fork PR #180 port: seed dynamic loiter radius / direction from
+    // WP_LOITER_RAD so update_loiter_radius_and_direction() has a starting
+    // point rather than accumulating onto whatever the previous mode left
+    // behind.  navigate_last_ms=0 disables the dt integration on the first
+    // navigate() tick to avoid a huge dt from the stale timestamp.
+    plane.loiter.radius = fabsf(plane.aparm.loiter_radius);
+    plane.loiter.direction = plane.aparm.loiter_radius < 0 ? -1 : 1;
+    plane.loiter.navigate_last_ms = 0;
+
     target_alt_seeded = true;
 }
 
 void ModeTakeoff::update()
 {
+    // allow the pilot to abort the launch with the sticks, from launch until
+    // TKOFF_ALT is reached. Not active pre-launch, and it stops applying once we
+    // reach the loiter - where the pitch stick instead nudges the loiter
+    // altitude (see update_fbwb_speed_height below).
+    if (plane.takeoff_stick_cancel_check()) {
+        return;
+    }
+
     // don't setup waypoints if we dont have a valid position and home!
     if (!(plane.current_loc.initialised() && AP::ahrs().home_is_set())) {
         plane.calc_nav_roll();
@@ -174,7 +201,7 @@ void ModeTakeoff::update()
         // Seed the target_altitude struct off the loiter WP so the pilot's
         // throttle-stick (FBW-B style, see update_fbwb_speed_height below)
         // can nudge altitude up and down during the takeoff loiter phase.
-        seed_target_altitude();
+        seed_loiter_state();
 
         plane.steer_state.hold_course_cd = wrap_360_cd(direction*100); // Necessary to allow Plane::takeoff_calc_roll() to function.
     }
@@ -211,7 +238,7 @@ void ModeTakeoff::update()
         // takeoff timeouts. Seed off the loiter WP now so the pilot adjustment
         // below starts from the intended altitude rather than a stale one.
         if (!target_alt_seeded) {
-            seed_target_altitude();
+            seed_loiter_state();
         }
 
         // Pilot stick adjustment of loiter altitude (FBW-B style), per
@@ -239,11 +266,20 @@ void ModeTakeoff::navigate()
     // it still holds the previous mode's value, and writing it back would drag
     // the climb target down to a stale altitude (and latch there, since
     // Mode::update_target_altitude() reads next_WP_loc straight back out).
-    if (target_alt_seeded) {
-        plane.next_WP_loc.set_alt_cm(plane.target_altitude.amsl_cm, Location::AltFrame::ABSOLUTE);
+    if (!target_alt_seeded) {
+        // still climbing: the takeoff owns the attitude, so no pilot radius or
+        // direction control yet. Zero means use WP_LOITER_RAD.
+        plane.update_loiter(0);
+        return;
     }
-    // Zero indicates to use WP_LOITER_RAD (manual radius / direction control
-    // not ported yet - depends on fork PR #180).
-    plane.update_loiter(0);
+
+    plane.next_WP_loc.set_alt_cm(plane.target_altitude.amsl_cm, Location::AltFrame::ABSOLUTE);
+
+    // Fork PR #180 port: in the loiter phase the roll stick trims the radius and
+    // the rudder stick sets the turn direction, as in LOITER and RTL. Seeded in
+    // seed_loiter_state() so this starts from WP_LOITER_RAD rather than stale
+    // state from the previous mode.
+    plane.update_loiter_radius_and_direction();
+    plane.update_loiter(fabsf(plane.loiter.radius));
 }
 

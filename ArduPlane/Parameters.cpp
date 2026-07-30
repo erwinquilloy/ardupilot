@@ -124,10 +124,10 @@ const AP_Param::Info Plane::var_info[] = {
 
     // @Param: STICK_MIXING
     // @DisplayName: Stick Mixing
-    // @Description: When enabled, this adds user stick input to the control surfaces in auto modes, allowing the user to have some degree of flight control without changing modes. Default is 0 (Disabled) in this build — pilot stick input is ignored in AUTO/RTL/GUIDED. Set to 1 to use "fly by wire" mixing, which controls the roll and pitch in the same way that the FBWA mode does. Set to 3 to apply yaw only while in quadplane modes, such as during automatic VTOL takeoff/landing.
+    // @Description: When enabled, this adds user stick input to the control surfaces in auto modes, allowing the user to have some degree of flight control without changing modes. Set to 1 to use "fly by wire" mixing, which controls the roll and pitch in the same way that the FBWA mode does. Set to 3 to apply yaw only while in quadplane modes, such as during automatic VTOL takeoff/landing. Set to 0 to ignore pilot stick input in AUTO/RTL/GUIDED entirely.
     // @Values: 0:Disabled,1:FBWMixing,3:VTOL Yaw only
     // @User: Advanced
-    GSCALAR(stick_mixing,           "STICK_MIXING",   uint8_t(StickMixing::NONE)),
+    GSCALAR(stick_mixing,           "STICK_MIXING",   uint8_t(StickMixing::FBW)),
 
     // @Param: TKOFF_THR_MINSPD
     // @DisplayName: Takeoff throttle min speed

@@ -580,7 +580,10 @@ public:
         USE_CRSF_LQ_AS_RSSI     = (1U << 11), // returns CRSF link quality as RSSI value, instead of RSSI
         CRSF_FM_DISARM_STAR     = (1U << 12), // when disarmed, add a star at the end of the flight mode in CRSF telemetry
         ELRS_420KBAUD           = (1U << 13), // use 420kbaud for ELRS protocol
-        AUTO_SWITCH_TO_FBWA_WITH_STICKS = (1U << 20), // plane only: switch from AUTO to FBWA when pitch or roll stick moves > 10% deflection
+        // bit 20 retired: was AUTO_SWITCH_TO_FBWA_WITH_STICKS (plane only,
+        // switch AUTO->FBWA on >10% pitch/roll stick). The takeover is now
+        // unconditional but scoped to the takeoff phase only, so it needs no
+        // option bit. Do not reuse bit 20 - stored params may still have it set.
         PLANE_DISABLE_MAN_BAT_COMP      = (1U << 22), // plane only (fork PR #139): disable throttle battery voltage compensation in MANUAL mode
     };
 
