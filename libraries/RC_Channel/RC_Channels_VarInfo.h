@@ -93,8 +93,8 @@ const AP_Param::GroupInfo RC_Channels::var_info[] = {
     // @DisplayName: RC options
     // @Description: RC input options
     // @User: Advanced
-    // @Bitmask: 0:Ignore RC Receiver, 1:Ignore MAVLink Overrides, 2:Ignore Receiver Failsafe bit but allow other RC failsafes if setup, 3:FPort Pad, 4:Log RC input bytes, 5:Arming check throttle for 0 input, 6:Skip the arming check for neutral Roll/Pitch/Yaw sticks, 7:Allow Switch reverse, 8:Use passthrough for CRSF telemetry, 9:Suppress CRSF mode/rate message for ELRS systems,10:Enable multiple receiver support, 11:Use Link Quality for RSSI with CRSF, 12:Annotate CRSF flight mode with * on disarm, 13: Use 420kbaud for ELRS protocol, 20: Plane only - while in AUTO mode switch to FBWA if the roll or pitch stick moves more than 10%, 22: Plane only - disable throttle battery voltage compensation in MANUAL mode (fork PR #139)
-    AP_GROUPINFO("_OPTIONS", 33, RC_CHANNELS_SUBCLASS, _options, (uint32_t)RC_Channels::Option::ARMING_CHECK_THROTTLE | (uint32_t)RC_Channels::Option::SUPPRESS_CRSF_MESSAGE | (uint32_t)RC_Channels::Option::AUTO_SWITCH_TO_FBWA_WITH_STICKS),
+    // @Bitmask: 0:Ignore RC Receiver, 1:Ignore MAVLink Overrides, 2:Ignore Receiver Failsafe bit but allow other RC failsafes if setup, 3:FPort Pad, 4:Log RC input bytes, 5:Arming check throttle for 0 input, 6:Skip the arming check for neutral Roll/Pitch/Yaw sticks, 7:Allow Switch reverse, 8:Use passthrough for CRSF telemetry, 9:Suppress CRSF mode/rate message for ELRS systems,10:Enable multiple receiver support, 11:Use Link Quality for RSSI with CRSF, 12:Annotate CRSF flight mode with * on disarm, 13: Use 420kbaud for ELRS protocol, 22: Plane only - disable throttle battery voltage compensation in MANUAL mode (fork PR #139)
+    AP_GROUPINFO("_OPTIONS", 33, RC_CHANNELS_SUBCLASS, _options, (uint32_t)RC_Channels::Option::ARMING_CHECK_THROTTLE | (uint32_t)RC_Channels::Option::SUPPRESS_CRSF_MESSAGE),
 
     // _PROTOCOLS copied to AP_Periph/Parameters.cpp
     // @Param: _PROTOCOLS

@@ -60,10 +60,6 @@ public:
     bool in_rc_failsafe() const override;
     bool has_valid_input() const override;
 
-    bool auto_switch_to_fbwa_with_sticks() const {
-        return option_is_enabled(Option::AUTO_SWITCH_TO_FBWA_WITH_STICKS);
-    }
-
     RC_Channel *get_arming_channel(void) const override;
 
     void read_mode_switch() override;
