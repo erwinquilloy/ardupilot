@@ -662,11 +662,23 @@ the plane at the right altitude before flipping to `AUTO` or `RTL`.
 No parameter to enable; behaviour is on whenever TAKEOFF is the active
 mode and `flight_stage` is past the initial climb.
 
-> **Not (yet) ported:** manual radius and rotation-direction control
-> during the same loiter phase. Roll-stick input still rolls the plane
-> against the navigation controller, not the loiter geometry. Needs
-> the [pilot-loiter-control prerequisite](https://github.com/ArduCustom/ardupilot/commit/dd65f3275f)
-> from ArduCustom PR #180 first.
+**Since v1.1 the roll and rudder sticks work here too** — radius and
+turn direction, from the ArduCustom PR #180 port. See
+[pilot control of loiter radius and direction](#pilot-control-of-loiter-radius-and-direction-loiter-rtl-takeoff).
+During the climb itself the pitch and roll sticks instead
+[cancel the launch](#move-sticks-to-cancel-auto-launch); the two phases
+never overlap.
+
+> 🐞 **Fixed in v1.1 — stale climb target on airframes *with* an airspeed
+> sensor.** `ModeTakeoff::navigate()` wrote the pilot-adjustable target
+> altitude back into the loiter waypoint unconditionally, from the moment
+> the mode started — before that value had been seeded off the loiter
+> waypoint. Entering TAKEOFF from FBWB could therefore latch the climb
+> target at ground level, so the plane would level off almost immediately
+> instead of climbing to `TKOFF_ALT`. Aircraft without an airspeed sensor
+> were unaffected, because their climb is pitch-driven rather than
+> TECS-driven. The write-back is now gated on the altitude having been
+> seeded.
 
 ## Pitch trim & tuning knob
 
@@ -1856,15 +1868,15 @@ LAND_WIND_DIST + LAND_WIND_STRICT on:
 
 | Board | Flash | Free after fork features | Status |
 |---|---:|---:|---|
-| KakuteF4-Wing-Buzz | 1 MB | **80.2 KB** | Ships — Kakute F4 Wing + tone buzzer (see below) |
-| speedybeef4v3 | 1 MB | **52.0 KB** | Ships — most F4 headroom |
-| MatekF405-STD | 1 MB | **45.6 KB** | Ships |
-| AtomRCF405NAVI | 1 MB | **44.2 KB** | Ships — AtomRC F405 Navi FPV FC |
-| MatekF405-TE-bdshot | 1 MB | **41.2 KB** | Ships |
-| omnibusf4pro | 1 MB | **40.4 KB** | Ships — Omnibus F4 Pro FPV FC |
-| SpeedyBeeF405WING | 1 MB | **28.7 KB** | Ships |
-| SpeedyBeeF405WING-Buzz | 1 MB | **28.4 KB** | Ships — SpeedyBee F405 WING + tone buzzer (see below) |
-| MatekF405-Wing-bdshot | 1 MB | **26.3 KB** | Ships — tightest of the F4 fleet |
+| KakuteF4-Wing-Buzz | 1 MB | **79.6 KB** | Ships — Kakute F4 Wing + tone buzzer (see below) |
+| speedybeef4v3 | 1 MB | **50.4 KB** | Ships — most F4 headroom |
+| MatekF405-STD | 1 MB | **44.9 KB** | Ships |
+| omnibusf4pro | 1 MB | **39.8 KB** | Ships — Omnibus F4 Pro FPV FC |
+| MatekF405-TE-bdshot | 1 MB | **39.8 KB** | Ships |
+| AtomRCF405NAVI | 1 MB | **30.9 KB** | Ships — AtomRC F405 Navi FPV FC |
+| SpeedyBeeF405WING | 1 MB | **27.1 KB** | Ships |
+| SpeedyBeeF405WING-Buzz | 1 MB | **26.8 KB** | Ships — SpeedyBee F405 WING + tone buzzer (see below) |
+| MatekF405-Wing-bdshot | 1 MB | **24.7 KB** | Ships — tightest of the F4 fleet |
 
 `MatekF405-Wing-bdshot` is now the canary board — first to bump the
 1 MB ceiling in any future upstream rebase or feature add. Worth
