@@ -82,9 +82,9 @@ Built for throwing a wing off your hand safely:
   **pilot loiter radius + direction** control in LOITER/RTL.
 - Extra modes: **Course Hold** (heading hold) and **Auto Trim** as a mode.
 
-→ [Pitch trim & tuning](#pitch-trim--tuning) ·
+→ [Pitch trim & tuning](#pitch-trim--tuning-knob) ·
 [Manual airspeed](#manual-airspeed-control-in-nav-modes) ·
-[AUTO → FBWA takeover](#auto--fbwa-stick-takeover)
+[Cancel auto launch](#move-sticks-to-cancel-auto-launch)
 
 ### 📡 Long-range extras
 
