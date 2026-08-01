@@ -981,7 +981,7 @@ between. That is gone: nudging mid-mission now only ever mixes.
 
 > ℹ️ In TAKEOFF mode the pitch stick has a second job **after** the climb:
 > it nudges the loiter altitude (see
-> [pilot loiter altitude](#pilot-altitude-control-in-takeoff-loiter)). The
+> [pilot loiter altitude](#pilot-altitude-control-during-takeoff-loiter)). The
 > two never overlap — cancel applies during the takeoff phase, altitude
 > nudging only once the plane reaches the loiter.
 
@@ -2046,7 +2046,7 @@ stock 4.6.3 build and then load this firmware:
 | Default change                                                                                  | Effect                                                                       |
 |-------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------|
 | `STICK_MIXING` 1 → 0                                                                            | Pilot stick no longer overrides nav controllers in AUTO/RTL/GUIDED.          |
-| `RC_OPTIONS` default gains bit 20 (`AUTO_SWITCH_TO_FBWA_WITH_STICKS`) — default `1049120` (bits 5+9+20) | **⚠️ Behaviour change with no upstream equivalent.** Moving pitch or roll past 10 % while in AUTO switches to FBWA and *stays* there until you flip the mode switch back — an accidental stick bump silently ends the mission. `param set RC_OPTIONS 544` restores upstream behaviour. See [AUTO → FBWA stick takeover](#auto--fbwa-stick-takeover). May become opt-in (default OFF) in a future release. |
+| `RC_OPTIONS` default is `544` (bits 5+9) | Bit 20 (`AUTO_SWITCH_TO_FBWA_WITH_STICKS`) was **removed in v1.1**. Earlier builds defaulted to `1049120`, where a 10 % stick bump anywhere in AUTO silently ended the mission. The stick takeover now exists only during a takeoff, as an auto-launch cancel, and needs no option bit. A stale bit 20 in saved parameters is ignored. See [move sticks to cancel auto launch](#move-sticks-to-cancel-auto-launch). |
 | `TECS_INTEG_GAIN` 0.3 → 0.4                                                                     | Slightly snappier altitude tracking.                                         |
 | `OSD_OPTIONS` default gains bit 18 (2-decimal vspeed) and bit 21 (1-decimal attitude)           | Cosmetic OSD-only; saved values preserved.                                   |
 | `OSD_EFF_UNIT` default Wh                                                                       | Was mAh in pre-2024 upstream; upstream now also Wh-default.                  |
