@@ -1855,8 +1855,10 @@ to the `MSP2_SET_RADAR_POS` payload, straight after `lq`:
 
 | Offset | Field | Notes |
 |---:|---|---|
-| 0..16 | existing position fields | unchanged, iNav-compatible |
-| 17..20 | `char name[4]` | 3 printable chars + NUL |
+| 0..18 | existing position fields | 19 bytes, unchanged, iNav-compatible |
+| 19..22 | `char name[4]` | 3 printable chars + NUL |
+
+Total payload is 23 bytes with a name, 19 without.
 
 **Compatibility is two-way.** The FC branches on the received payload
 length, so a stock iNav Radar / FormationFlight node still works and simply
