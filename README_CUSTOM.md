@@ -379,8 +379,15 @@ Fork-specific board work covers:
 - **qUark mini wing v4** *(custom target)*
 - **NeutronRC_H7_BT** *(custom target, H743, ported from ArduCustom)*
 - **OMNIBUSF7V2** — quadplane disabled to fit the firmware
+- **TBS_LUCID_PRO** — TBS Lucid **F4** Pro / Freestyle (STM32F405, 1 MB).
+  Light-track target as of v1.2. Upstream ships this hwdef as an FPV quad
+  board; the fork adds the F4 mount re-enable below. Read the fixed-wing
+  caveats under [TBS Lucid F4 Pro as a plane FC](#tbs-lucid-f4-pro-as-a-plane-fc)
+  before wiring one — **six PWM pads total** and a baro part number that
+  needs checking against your unit.
 - **F4 mount support re-enabled** on `speedybeef4v3`, `MatekF405-TE`,
-  `MatekF405-Wing`, `LongBowF405WING`, `SpeedyBeeF405WING`. Upstream's
+  `MatekF405-Wing`, `LongBowF405WING`, `SpeedyBeeF405WING`,
+  `AtomRCF405NAVI` (v1.1), `TBS_LUCID_PRO` (v1.2). Upstream's
   `minimize_common.inc` zeros `HAL_MOUNT_ENABLED` on flash-constrained
   boards, which breaks gimbal users on F4 (MissionPlanner reports
   "Invalid channel option" for `RCx_OPTION = 212/213/214` — the
@@ -1366,6 +1373,71 @@ tab) for your remaining margin.
 > detected hardware rather than the build. Treat this as a lever to reach for
 > **if you see the messages above**, not as a setting every F4 board needs.
 
+## TBS Lucid F4 Pro as a plane FC
+
+`TBS_LUCID_PRO` (TBS Lucid **F4** Pro / Freestyle, STM32F405, 1 MB flash,
+192 KB RAM) joins the **light** fleet in v1.2. The hwdef is upstream's —
+the fork only adds the F4 mount re-enable. Upstream wrote it for an FPV
+**quad**, so a few things need saying before you put it in a wing.
+
+**Six PWM pads, and that is the hard limit.**
+
+| Output | Pad | Timer | Notes |
+|---|---|---|---|
+| 1 | `PB6` | TIM4_CH1 | quad M1 |
+| 2 | `PB7` | TIM4_CH2 | quad M2 — **BIDIR** |
+| 3 | `PC8` | TIM3_CH3 | quad M3 |
+| 4 | `PC9` | TIM3_CH4 | quad M4 — **BIDIR** |
+| 5 | `PA8` | TIM1_CH1 | silkscreen "camera PWM" |
+| 6 | `PB1` | TIM1_CH3N | silkscreen "LED", defaults to NeoPixel |
+
+A conventional wing (throttle, two ailerons, elevator, rudder) needs five,
+so it fits — but only if you accept that output 6 is a servo pad rather
+than an addressable LED strip. The stock `defaults.parm` sets
+`SERVO6_FUNCTION 120` (NeoPixel1); change it to the servo function you
+want. There is no seventh output, so flaps *and* a full five-channel wing
+do not coexist on this board.
+
+> ⚠️ **Twin-motor airframes:** only outputs **2** and **4** are `BIDIR`.
+> A twin wired to the usual outputs 1+2 gets bidirectional DShot telemetry
+> on the right-hand motor only. Wire the twin to **2 and 4** if you want
+> RPM telemetry from both, and set the L/R throttle functions accordingly.
+
+**Baro part number — verify before you fly.** The hwdef declares
+`BARO BMP388 I2C:0:0x76`, while the board README in the same directory
+lists the baro as **SPL06**. Those are different parts sharing an address.
+If your unit carries SPL06 the baro will not probe and you will sit at a
+prearm failure. Check on the bench (see below) before committing to it.
+
+**No compass, no airspeed on board.** `I2C1` is on `PB8/PB9`; hook an
+external mag and/or a digital airspeed sensor there. The hwdef already
+sets `ALLOW_ARM_NO_COMPASS` and probes external I2C compasses.
+
+**RAM, not flash, is your ceiling** — as with every 1 MB F4 in the fleet.
+If you see `EKF3 allocation failed` or terrain allocation errors, apply the
+fix in [the section above](#ekf3-allocation-failed-on-1-mb-f4--allocation-order-and-the-fix):
+`LOG_DISARMED 0` and `TERRAIN_CACHE_SZ 9`.
+
+### Bench checklist before the first flight
+
+Flash, connect on USB, and confirm in this order:
+
+1. **Baro** — `Messages` tab should show a baro detected at boot, and
+   `BARO_TYPE`/`GND_PRESS` should be sane. A `Baro not healthy` prearm is
+   the SPL06/BMP388 mismatch. Report it and we add the second `BARO` line.
+2. **IMU** — the hwdef probes `Invensensev3` (ICM42688, Freestyle) then
+   `Invensense` (MPU6000, Pro) on the same chip select. `INS_ACC_ID` /
+   `INS_GYR_ID` non-zero means one of them answered.
+3. **UARTs** — `SERIAL1` defaults to RCIN, `SERIAL6` to GPS,
+   `SERIAL3` to MSP DisplayPort, `SERIAL4` to SmartAudio,
+   `SERIAL5` to ESC telemetry. Confirm the silkscreen matches before
+   moving anything.
+4. **Outputs** — with props off, use the servo output test to walk
+   outputs 1–6 and confirm the pad you expect moves.
+5. **Mount** — set `RCx_OPTION` to 212/213/214 and check MissionPlanner
+   accepts them (no "Invalid channel option"). That confirms the fork's
+   mount re-enable is in the binary you flashed.
+
 ## Serial port numbering matched to chip UART numbers
 
 On the boards whose stock ArduPilot `SERIAL_ORDER` was scrambled, `SERIALn`
@@ -1830,6 +1902,24 @@ HAL_MSP_RADAR_ENABLED   = AP_RADAR_ENABLED && HAL_MSP_ENABLED
 
 i.e. radar follows MSP. Override in a hwdef with `define AP_RADAR_ENABLED 0`
 to force-strip it on a flash-constrained board.
+
+## Which file in the zip do I flash?
+
+Every release zip carries four build products; two of them are things you
+can actually flash.
+
+| File | Use it when |
+|---|---|
+| `arduplane.apj` | **Normal upgrade.** Load it from MissionPlanner / QGC "Load custom firmware" onto a board that already has a working ArduPilot bootloader. |
+| `arduplane_with_bl.hex` | **The board's bootloader is missing, stale, or rejects the `.apj`.** Flash over **DFU** (board in bootloader mode, e.g. STM32CubeProgrammer or `dfu-util`). This writes the bootloader *and* the firmware, so it works from a bare or mis-flashed chip. |
+| `arduplane`, `arduplane.bin` | ELF and raw binary — debugging and toolchain use, not for GCS flashing. |
+
+> 💡 **If the `.apj` refuses to take, go straight to `_with_bl.hex` over
+> DFU.** This is not a fork quirk — it means the bootloader on the board
+> is not the one the `.apj` path expects. Confirmed on `KakuteH7-Wing`
+> with `full-v1.1`: the `.apj` would not flash, the `_with_bl.hex` worked
+> first try. Boards that shipped with Betaflight, or that have been
+> flashed across firmware families, are the usual candidates.
 
 ## Full release fleet (`full-v1.1`)
 
