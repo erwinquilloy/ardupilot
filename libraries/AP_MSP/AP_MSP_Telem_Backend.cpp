@@ -556,8 +556,20 @@ MSPCommandResult AP_MSP_Telem_Backend::msp_process_sensor_command(uint16_t cmd_m
 #endif
 #if HAL_MSP_RADAR_ENABLED
     case MSP2_SET_RADAR_POS: {
+        // Frame length is not fixed: stock iNav Radar / FormationFlight send the
+        // bare position frame, FormationFlightAPC appends a peer callsign. Accept
+        // either, and reject anything shorter than the mandatory part rather than
+        // casting past the end of the buffer.
+        const uint16_t avail = sbuf_bytes_remaining(src);
+        if (avail < sizeof(MSP::msp_radar_pos_message_t)) {
+            return MSP_RESULT_ERROR;
+        }
         const MSP::msp_radar_pos_message_t *pkt = (const MSP::msp_radar_pos_message_t *)src->ptr;
-        msp_handle_radar(*pkt);
+        const char *name = nullptr;
+        if (avail >= sizeof(MSP::msp_radar_pos_message_t) + MSP_RADAR_NAME_LEN) {
+            name = (const char *)(src->ptr + sizeof(MSP::msp_radar_pos_message_t));
+        }
+        msp_handle_radar(*pkt, name);
     }
     break;
 #endif
@@ -586,14 +598,14 @@ void AP_MSP_Telem_Backend::msp_handle_headtracker(const MSP::msp_headtracker_dat
 }
 #endif
 
-void AP_MSP_Telem_Backend::msp_handle_radar(const MSP::msp_radar_pos_message_t &pkt)
+void AP_MSP_Telem_Backend::msp_handle_radar(const MSP::msp_radar_pos_message_t &pkt, const char *name)
 {
 #if HAL_MSP_RADAR_ENABLED
     AP_Radar *radar = AP::radar();
     if (radar == nullptr) {
         return;
     }
-    radar->handle_msp(pkt);
+    radar->handle_msp(pkt, name);
 #endif
 }
 
