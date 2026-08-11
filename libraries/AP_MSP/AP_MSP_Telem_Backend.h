@@ -187,7 +187,8 @@ protected:
     void msp_handle_compass(const MSP::msp_compass_data_message_t &pkt);
     void msp_handle_baro(const MSP::msp_baro_data_message_t &pkt);
     void msp_handle_airspeed(const MSP::msp_airspeed_data_message_t &pkt);
-    void msp_handle_radar(const MSP::msp_radar_pos_message_t &pkt);
+    // name is nullptr when the sender did not append a peer callsign
+    void msp_handle_radar(const MSP::msp_radar_pos_message_t &pkt, const char *name);
 #if HAL_MSP_HEADTRACKER_ENABLED
     void msp_handle_headtracker(const MSP::msp_headtracker_data_message_t &pkt);
 #endif
