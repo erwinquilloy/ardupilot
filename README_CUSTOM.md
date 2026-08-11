@@ -205,17 +205,9 @@ Fork-specific board work covers:
 - **qUark mini wing v4** *(custom target)*
 - **NeutronRC_H7_BT** *(custom target, H743, ported from ArduCustom)*
 - **OMNIBUSF7V2** — quadplane disabled to fit the firmware
-- **TBS_LUCID_PRO** — ⛔ **not shipped on either release track.** Most TBS
-  Lucid FCs on sale are the **AT32** revision, which cannot run ArduPilot
-  at all. Read
-  [TBS Lucid — check your MCU before you buy or flash](#tbs-lucid--check-your-mcu-before-you-buy-or-flash)
-  before you touch one. The fork carries the F4 mount re-enable on this
-  hwdef for the sake of consistency with the other F4 boards, but the
-  target is untested on hardware and is deliberately absent from the fleet.
 - **F4 mount support re-enabled** on `speedybeef4v3`, `MatekF405-TE`,
   `MatekF405-Wing`, `LongBowF405WING`, `SpeedyBeeF405WING`,
-  `AtomRCF405NAVI` (v1.1), and `TBS_LUCID_PRO` (untested — see the MCU
-  warning above). Upstream's
+  `AtomRCF405NAVI` (v1.1). Upstream's
   `minimize_common.inc` zeros `HAL_MOUNT_ENABLED` on flash-constrained
   boards, which breaks gimbal users on F4 (MissionPlanner reports
   "Invalid channel option" for `RCx_OPTION = 212/213/214` — the
@@ -1200,94 +1192,6 @@ tab) for your remaining margin.
 > **unexplained**: same chip, same 192 KB, same firmware, so it's params or
 > detected hardware rather than the build. Treat this as a lever to reach for
 > **if you see the messages above**, not as a setting every F4 board needs.
-
-## TBS Lucid — check your MCU before you buy or flash
-
-> ⛔ **Most TBS Lucid flight controllers sold today use an Artery AT32F435
-> MCU, and ArduPilot has no AT32 support whatsoever** — no HAL, no MCU
-> scripts, no boards. A Lucid on AT32 **cannot run ArduPilot**, and no
-> hwdef change can make it. It is not a flashing problem and there is no
-> workaround.
-
-**Symptoms if you flash one anyway:** DFU reports success, then the board
-goes dark — no LED, no USB enumeration, nothing in Device Manager. DFU is a
-plain byte-writer, so Artery's bootloader accepts an STM32 image happily;
-the chip then never reaches `main()` because the clock tree, peripheral
-addresses and memory map are all different. **Nothing is damaged** —
-reflash iNav or Betaflight over DFU and the board comes straight back.
-
-**How to tell which chip you have.** In the iNav/Betaflight CLI, run
-`status`:
-
-```
-INAV/TBS_LUCID_FC 9.0.0 ...
-CPU Clock=288MHz, GYRO=ICM42605, ACC=ICM42605, BARO=BMP388
-AT32 system clocks:
-  SYSCLK = 288 MHz
-```
-
-`288 MHz` and an `AT32 system clocks:` block mean **AT32F435 — ArduPilot is
-not an option**. A genuine STM32F405 reports `CPU Clock=168MHz` and an
-`STM32 system clocks:` block. In DFU you can check the same thing from the
-USB vendor ID: ST is `VID_0483`, Artery is `VID_2E3C`.
-
-Confirmed on hardware 2026-08-11: an AT32 Lucid FC bricked identically on
-the fork build *and* on upstream's own `Plane/stable/TBS_LUCID_PRO`, then
-recovered instantly with iNav 9.
-
-**The `TBS_LUCID_PRO` hwdef is for an older STM32F405 revision** of the
-product (4 MB blackbox flash, MPU6000 or ICM42688). Upstream's board README
-and the ArduPilot wiki page both list only that revision and say nothing
-about the AT32 respin, so the target name gives you no warning. If you do
-have a genuine F405 unit, the notes below apply — but it is untested here
-and is not built for either release track.
-
-<details>
-<summary>Fixed-wing notes for the genuine STM32F405 revision</summary>
-
-Upstream wrote the hwdef for an FPV **quad**, so a few things need saying
-before it goes in a wing.
-
-**Six PWM pads, and that is the hard limit.**
-
-| Output | Pad | Timer | Notes |
-|---|---|---|---|
-| 1 | `PB6` | TIM4_CH1 | quad M1 |
-| 2 | `PB7` | TIM4_CH2 | quad M2 — **BIDIR** |
-| 3 | `PC8` | TIM3_CH3 | quad M3 |
-| 4 | `PC9` | TIM3_CH4 | quad M4 — **BIDIR** |
-| 5 | `PA8` | TIM1_CH1 | silkscreen "camera PWM" |
-| 6 | `PB1` | TIM1_CH3N | silkscreen "LED", defaults to NeoPixel |
-
-A conventional wing (throttle, two ailerons, elevator, rudder) needs five,
-so it fits — but only if you accept that output 6 is a servo pad rather
-than an addressable LED strip. The stock `defaults.parm` sets
-`SERVO6_FUNCTION 120` (NeoPixel1); change it to the servo function you
-want. There is no seventh output, so flaps *and* a full five-channel wing
-do not coexist on this board.
-
-> ⚠️ **Twin-motor airframes:** only outputs **2** and **4** are `BIDIR`.
-> A twin wired to the usual outputs 1+2 gets bidirectional DShot telemetry
-> on the right-hand motor only. Wire the twin to **2 and 4** if you want
-> RPM telemetry from both, and set the L/R throttle functions accordingly.
-
-**Baro.** The hwdef declares `BARO BMP388 I2C:0:0x76` while the board
-README in the same directory says SPL06. The hwdef is the one to trust —
-an AT32 Lucid FC reports `BARO=BMP388` under iNav, so BMP388 is what TBS
-fits.
-
-**No compass, no airspeed on board.** `I2C1` is on `PB8/PB9`; hook an
-external mag and/or a digital airspeed sensor there. The hwdef already
-sets `ALLOW_ARM_NO_COMPASS` and probes external I2C compasses.
-
-**Flash is not a concern.** A light build measured **55,748 B free**
-(2026-08-11) — second-most headroom in the light fleet. RAM is the usual
-1 MB F4 ceiling; if you see `EKF3 allocation failed`, apply
-`LOG_DISARMED 0` and `TERRAIN_CACHE_SZ 9` per
-[the section above](#ekf3-allocation-failed-on-1-mb-f4--allocation-order-and-the-fix).
-
-</details>
-
 
 ## Serial port numbering matched to chip UART numbers
 
