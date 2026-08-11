@@ -2173,8 +2173,23 @@ void AP_OSD_Screen::draw_radar(uint8_t x, uint8_t y)
     }
     WITH_SEMAPHORE(ahrs.get_semaphore());
     Location loc;
+    const radar_peer_t peer = ap_radar->get_peer(id);
+
+    // Label is the peer callsign when the sender supplies one (FormationFlightAPC),
+    // otherwise the slot letter as before. Always three columns wide so the
+    // distance and vertical-distance fields do not shift when a name arrives
+    // part-way through a flight.
+    char label[MSP_RADAR_NAME_LEN] = { ' ', ' ', ' ', '\0' };
+    if (peer.name[0] != '\0') {
+        for (uint8_t i = 0; i < MSP_RADAR_NAME_LEN - 1 && peer.name[i] != '\0'; i++) {
+            label[i] = peer.name[i];
+        }
+    } else {
+        label[0] = id + 'A';
+    }
+
     if (ahrs.get_location(loc) && ap_radar->get_peer_healthy(id)) {
-        const Location &peer_loc = ap_radar->get_peer(id).location;
+        const Location &peer_loc = peer.location;
         float distance = loc.get_distance(peer_loc);
         ftype vertical_distance;
         if (!peer_loc.get_alt_distance(loc, vertical_distance)) {
@@ -2186,11 +2201,11 @@ void AP_OSD_Screen::draw_radar(uint8_t x, uint8_t y)
             angle_cd = 0;
         }
         char arrow = get_arrow_font_index(angle_cd);
-        backend->write(x, y, false, "%c%c", id + 'A', arrow);
-        draw_distance(x+2, y, distance, true);
-        draw_vdistance(x+1, y+1, vertical_distance);
+        backend->write(x, y, false, "%s%c", label, arrow);
+        draw_distance(x+4, y, distance, true);
+        draw_vdistance(x+3, y+1, vertical_distance);
     } else {
-        backend->write(x, y, true, "%c", id + 'A');
+        backend->write(x, y, true, "%s", label);
     }
     if (AP_HAL::millis() - last_peer_change > 2000) {
         id = ap_radar->get_next_healthy_peer(id);

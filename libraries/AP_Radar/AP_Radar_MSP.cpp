@@ -48,7 +48,7 @@ void AP_Radar_MSP::update(void)
     update_count = 0;
 }
 
-void AP_Radar_MSP::handle_msp(const MSP::msp_radar_pos_message_t &pkt)
+void AP_Radar_MSP::handle_msp(const MSP::msp_radar_pos_message_t &pkt, const char *name)
 {
     const uint8_t id = pkt.radar_no;
     if (id >= RADAR_MAX_PEERS) {
@@ -61,6 +61,19 @@ void AP_Radar_MSP::handle_msp(const MSP::msp_radar_pos_message_t &pkt)
     peers[id].speed    = pkt.speed;
     peers[id].lq       = pkt.lq;
     peers[id].last_update = AP_HAL::millis();
+    // The callsign is reassembled a character at a time from the radio's
+    // extra_value slots, so a peer that has only just been heard sends an empty
+    // or partial name. Ignore it until the first character is printable, which
+    // keeps the OSD on its slot-letter fallback rather than showing blanks, and
+    // leaves the last good name in place if a peer stops supplying one.
+    if (name != nullptr && name[0] >= 0x20 && name[0] <= 0x7E) {
+        uint8_t i = 0;
+        for (; i < MSP_RADAR_NAME_LEN - 1 && name[i] != '\0'; i++) {
+            const char c = name[i];
+            peers[id].name[i] = (c >= 0x20 && c <= 0x7E) ? c : ' ';
+        }
+        peers[id].name[i] = '\0';
+    }
     update_count++;
 }
 
