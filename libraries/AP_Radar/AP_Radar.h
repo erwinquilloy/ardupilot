@@ -40,6 +40,9 @@ typedef struct radar_peer_t {
     uint16_t speed;
     uint8_t lq;
     uint32_t last_update;
+    // Peer callsign, empty when the sender does not supply one (stock iNav
+    // Radar / FormationFlight). Sanitised to printable ASCII on receipt.
+    char name[MSP_RADAR_NAME_LEN];
 } radar_peer_t;
 
 class Radar_backend;
@@ -70,7 +73,8 @@ public:
     void handle_msg(const mavlink_message_t &msg);
 
 #if HAL_MSP_RADAR_ENABLED
-    void handle_msp(const MSP::msp_radar_pos_message_t &pkt);
+    // name is nullptr when the sender did not append a peer callsign
+    void handle_msp(const MSP::msp_radar_pos_message_t &pkt, const char *name);
 #endif
 
     struct Radar_state {

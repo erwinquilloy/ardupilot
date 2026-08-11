@@ -1903,11 +1903,16 @@ message ID.
 Cycles through up to 6 healthy peers (one every 2 s) and renders:
 
 ```
-A→
- 1.2km ↑15m
+BOB→
+   1.2km ↑15m
 ```
 
-- **A..F** — peer slot letter (the ESP32 assigns slot 0..5; we display 'A'+slot).
+- **callsign** — the peer's 3-character name when the radio supplies one,
+  otherwise the slot letter `A`..`F` as before. See
+  [Peer callsigns on the radar OSD](#peer-callsigns-on-the-radar-osd) — this
+  needs a patched ESP32; with stock firmware you get the letters.
+  The label is always three columns wide so the fields to the right do not
+  shift when a name arrives part-way through a flight.
 - **arrow** — bearing to the peer, body-frame, drawn from the
   existing `get_arrow_font_index()` direction-arrow helper.
 - **distance** — horizontal distance to the peer in the OSD's
@@ -1927,6 +1932,50 @@ HAL_MSP_RADAR_ENABLED   = AP_RADAR_ENABLED && HAL_MSP_ENABLED
 
 i.e. radar follows MSP. Override in a hwdef with `define AP_RADAR_ENABLED 0`
 to force-strip it on a flash-constrained board.
+
+## Peer callsigns on the radar OSD
+
+By default the element labels peers `A`..`F` by slot. It can show a real
+**3-character callsign** instead, but that needs a patched ESP32 —
+the stock protocol never tells the flight controller who a peer is.
+
+**Why a patch is needed.** FormationFlight already knows every peer's name:
+each node broadcasts its own one character per OTA cycle through the
+`air_type0_t` `extra_type`/`extra_value` slots (types 2, 3, 4 carry
+`name[0..2]`), and receivers reassemble it into `peer_t.name`. But
+`MSPManager::sendRadar()` only forwards the position fields, so the name
+stops at the ESP32 and never reaches the FC.
+
+**The wire change.** The ESP32 appends the 4-byte NUL-terminated callsign
+to the `MSP2_SET_RADAR_POS` payload, straight after `lq`:
+
+| Offset | Field | Notes |
+|---:|---|---|
+| 0..16 | existing position fields | unchanged, iNav-compatible |
+| 17..20 | `char name[4]` | 3 printable chars + NUL |
+
+**Compatibility is two-way.** The FC branches on the received payload
+length, so a stock iNav Radar / FormationFlight node still works and simply
+keeps its slot letter. A short or malformed frame is now rejected instead of
+being cast past the end of the buffer, which is what the handler did before.
+
+**Getting names onto the mesh.** Names come from each node's own ESP32:
+
+1. Flash [FormationFlightAPC](https://github.com/erwinquilloy/FormationFlightAPC)
+   on **every** node whose name you want to see.
+2. Set the name in its WebUI. Only the **first 3 characters** are
+   transmitted — `peer_t.name` is `char[NAME_LENGTH + 1]` with
+   `NAME_LENGTH 3` — so pick a 3-letter callsign.
+3. Expect the name to take a few OTA cycles to appear: it arrives one
+   character per cycle, at `ota_nonce % 5`. Until the first character
+   lands the OSD stays on the slot letter, and partial or non-printable
+   bytes are filtered out rather than drawn.
+
+Without the WebUI name set, FormationFlight assigns a random 3-character
+string from the ESP32 chip ID. It does **not** ask an ArduPilot FC for a
+craft name — ArduPilot reuses `MSP_NAME` for the DJI OSD status-text line,
+so the reply is the current warning message rather than a name, and
+FormationFlight skips ArduPilot hosts for exactly that reason.
 
 ## Which file in the zip do I flash?
 
