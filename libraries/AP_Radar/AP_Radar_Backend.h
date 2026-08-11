@@ -34,7 +34,7 @@ public:
     virtual void handle_msg(const mavlink_message_t &msg) {}
 
 #if HAL_MSP_RADAR_ENABLED
-    virtual void handle_msp(const MSP::msp_radar_pos_message_t &pkt) {}
+    virtual void handle_msp(const MSP::msp_radar_pos_message_t &pkt, const char *name) {}
 #endif
 
 protected:

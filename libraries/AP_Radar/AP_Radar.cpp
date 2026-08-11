@@ -91,13 +91,13 @@ void AP_Radar::handle_msg(const mavlink_message_t &msg)
 }
 
 #if HAL_MSP_RADAR_ENABLED
-void AP_Radar::handle_msp(const MSP::msp_radar_pos_message_t &pkt)
+void AP_Radar::handle_msp(const MSP::msp_radar_pos_message_t &pkt, const char *name)
 {
     if (!enabled()) {
         return;
     }
     if (backend != nullptr) {
-        backend->handle_msp(pkt);
+        backend->handle_msp(pkt, name);
     }
 }
 #endif

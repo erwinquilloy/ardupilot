@@ -141,6 +141,15 @@ typedef struct PACKED {
     uint8_t  lq;        // link quality 0..4
 } msp_radar_pos_message_t;
 
+// Optional peer callsign, appended to the frame above by FormationFlightAPC.
+// Stock iNav Radar / FormationFlight senders emit the bare position frame, so
+// the field is only present when the received payload is long enough to hold
+// it — see the length check in AP_MSP_Telem_Backend::msp_process_sensor_command().
+// Three printable characters plus a NUL, matching FormationFlight's own
+// NAME_LENGTH: the name crosses the radio one character per OTA cycle in the
+// air_type0_t extra_type/extra_value slots, so widening it costs air time.
+#define MSP_RADAR_NAME_LEN 4
+
 uint8_t msp_serial_checksum_buf(uint8_t checksum, const uint8_t *data, uint32_t len);
 uint32_t msp_serial_send_frame(msp_port_t *msp, const uint8_t * hdr, uint32_t hdr_len, const uint8_t * data, uint32_t data_len, const uint8_t * crc, uint32_t crc_len);
 uint32_t msp_serial_encode(msp_port_t *msp, msp_packet_t *packet, msp_version_e msp_version, bool is_request=false);
