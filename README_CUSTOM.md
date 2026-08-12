@@ -1645,6 +1645,14 @@ BOB→
   past 25 m).
 - A peer goes "stale" (and the element blanks) after `RADAR_PEER_FRESH_TIME_MS`
   = 3 s without a fresh frame.
+- **A peer without a GPS fix still shows.** Peer selection is by *freshness*
+  (heard in the last 3 s), not by position. A peer transmitting from 0/0
+  because it has no fix yet is displayed with its callsign alone, blinking;
+  the bearing arrow, distance and relative altitude appear once it reports a
+  real position. Upstream selected only peers with a valid position, which
+  made a peer invisible even when its callsign and link quality were known —
+  unhelpful on the bench and during pre-flight, where you want to confirm
+  who is on the mesh before anyone has a fix.
 
 ## Build gating
 
