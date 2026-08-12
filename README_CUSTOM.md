@@ -489,6 +489,13 @@ the plane at the right altitude before flipping to `AUTO` or `RTL`.
 No parameter to enable; behaviour is on whenever TAKEOFF is the active
 mode and `flight_stage` is past the initial climb.
 
+> ⚠️ **Do not assume LOITER behaves the same way.** This always-on
+> behaviour is specific to the TAKEOFF loiter. In LOITER mode the same
+> stick gesture does nothing to the target altitude unless
+> [`FLIGHT_OPTIONS` bit 12](#flight_options-bit-12--fbw-b-style-loiter-altitude-control-upstream)
+> is set — without it the plane climbs while you hold the stick and sinks
+> back the moment you release.
+
 **Since v1.1 the roll and rudder sticks work here too** — radius and
 turn direction, from the ArduCustom PR #180 port. See
 [pilot control of loiter radius and direction](#pilot-control-of-loiter-radius-and-direction-loiter-rtl-takeoff).
@@ -588,6 +595,39 @@ With this bit, pulling the throttle stick below `THR_DZ` in any
 auto-throttle mode *except* TAKEOFF and AUTO triggers the TECS
 gliding path (throttle to 0, target airspeed dropped to
 `AIRSPEED_MIN`). Releasing the throttle restores auto-throttle.
+
+### `FLIGHT_OPTIONS` bit 12 — FBW-B style loiter altitude control *(upstream)*
+
+Not a fork addition, but documented here because the fork's own
+pitch-stick altitude features sit either side of it and the asymmetry
+catches people out.
+
+In **LOITER**, pitch-stick altitude control is **off by default** and
+needs two things:
+
+| Param | Value | Why |
+|---|---|---|
+| `FLIGHT_OPTIONS` | add **4096** (bit 12) | "Enable FBWB style loiter altitude control" |
+| `STICK_MIXING` | non-zero, not `VTOL_YAW` | `ModeLoiter::update()` gates on `stick_mixing_enabled()` |
+
+> ⚠️ **Without bit 12 the pitch stick still moves the plane — and that is
+> the trap.** It falls through to ordinary stick mixing, which adds a
+> temporary offset to `nav_pitch_cd`. The aircraft climbs while you hold
+> the stick, then TECS returns it to the original loiter altitude the
+> moment you let go. It looks like altitude control that "forgets" the new
+> altitude, when in fact no altitude command was ever issued.
+
+With the bit set, `update_fbwb_speed_height()` owns the pitch stick and
+calls `set_target_altitude_current()` when the stick returns to centre,
+so the new altitude is latched and held. `FBWB_CLIMB_RATE` (default
+2.0 m/s) sets how fast the stick moves the target, and the result is
+clamped by any altitude fence and by `CRUISE_ALT_FLOOR`.
+
+**Contrast with the fork's own two:** [RTL](#flight_options-bit-24--rtl_manual_alt_control)
+needs bit 24, while the
+[TAKEOFF loiter](#pilot-altitude-control-during-takeoff-loiter) needs no
+parameter at all. Three modes, three different enable conditions — LOITER
+is the only one relying on an upstream option.
 
 ### `FLIGHT_OPTIONS` bit 24 — `RTL_MANUAL_ALT_CONTROL`
 With this bit, RTL hands altitude control to the pilot's pitch stick
