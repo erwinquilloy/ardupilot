@@ -1621,6 +1621,23 @@ If the FC is already running MSP DisplayPort for goggle OSD on one
 UART, the radar can share that same UART — MSP demultiplexes by
 message ID.
 
+> ⚠️ **ArduPilot's MSP identity depends on the backend, and it is not
+> always `ARDU`.** Worth knowing before writing anything that branches on
+> `MSP_FC_VARIANT`:
+>
+> | `SERIALn_PROTOCOL` | Backend | Reports |
+> |---|---|---|
+> | `32` | `SerialProtocol_MSP` | `ARDU` |
+> | `33` | `SerialProtocol_DJI_FPV` | **`BTFL`** — hard-coded |
+> | `42` | `SerialProtocol_MSP_DisplayPort` | `BTFL` if the Betaflight-fonts `MSP_OPTIONS` bit is set, else `ARDU` |
+>
+> Both `33` and `42` impersonate Betaflight so DJI and Walksnail goggles
+> accept the link. This bit the peer-callsign work: an ESP32 asking "who
+> are you?" over a protocol-33 port is told `BTFL`, so logic that tests
+> for ArduPilot fails on the exact setup it was written for. Prefer
+> testing for the flight controller you want to **exclude** rather than
+> the one you want to include.
+
 ## OSD element
 
 Cycles through up to 6 healthy peers (one every 2 s) and renders:
