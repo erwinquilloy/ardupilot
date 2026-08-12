@@ -82,6 +82,8 @@ public:
     };
 
     radar_peer_t get_peer(uint8_t id);
+    // fresh = heard recently. healthy = fresh AND has a usable position.
+    bool get_peer_fresh(uint8_t id);
     bool get_peer_healthy(uint8_t id);
     uint8_t get_next_healthy_peer(uint8_t current_id);
 
