@@ -1884,6 +1884,10 @@ being cast past the end of the buffer, which is what the handler did before.
    character per cycle, at `ota_nonce % 5`. Until the first character
    lands the OSD stays on the slot letter, and partial or non-printable
    bytes are filtered out rather than drawn.
+4. **Case does not matter** — callsigns are folded to upper case on
+   receipt. The MAX7456 character map holds symbols, not lowercase
+   letters, at those code points, so a lowercase name would otherwise
+   draw as arrows. Type `Dol` or `DOL` in the WebUI; both show `DOL`.
 
 Without the WebUI name set, FormationFlight assigns a random 3-character
 string from the ESP32 chip ID. It does **not** ask an ArduPilot FC for a
