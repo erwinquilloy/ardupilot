@@ -69,8 +69,17 @@ void AP_Radar_MSP::handle_msp(const MSP::msp_radar_pos_message_t &pkt, const cha
     if (name != nullptr && name[0] >= 0x20 && name[0] <= 0x7E) {
         uint8_t i = 0;
         for (; i < MSP_RADAR_NAME_LEN - 1 && name[i] != '\0'; i++) {
-            const char c = name[i];
-            peers[id].name[i] = (c >= 0x20 && c <= 0x7E) ? c : ' ';
+            char c = name[i];
+            if (c < 0x20 || c > 0x7E) {
+                c = ' ';
+            } else if (c >= 'a' && c <= 'z') {
+                // Fold to upper case: the MAX7456 character map carries
+                // symbols, not lowercase letters, at these code points, so a
+                // lowercase callsign draws as arrows. Upstream folds the MSP
+                // status-text line for the same reason.
+                c -= 'a' - 'A';
+            }
+            peers[id].name[i] = c;
         }
         peers[id].name[i] = '\0';
     }
