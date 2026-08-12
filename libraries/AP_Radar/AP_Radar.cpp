@@ -113,17 +113,30 @@ radar_peer_t AP_Radar::get_peer(uint8_t id)
     return _state.peers[id];
 }
 
+bool AP_Radar::get_peer_fresh(uint8_t id)
+{
+    // Subtract in this direction: last_update > millis() - FRESH_TIME underflows
+    // for the first few seconds after boot and reports every slot as fresh.
+    return _state.peers[id].last_update != 0 &&
+           (AP_HAL::millis() - _state.peers[id].last_update) < RADAR_PEER_FRESH_TIME_MS;
+}
+
 bool AP_Radar::get_peer_healthy(uint8_t id)
 {
-    return _state.peers[id].last_update > (AP_HAL::millis() - RADAR_PEER_FRESH_TIME_MS) &&
-           !_state.peers[id].location.is_zero();
+    return get_peer_fresh(id) && !_state.peers[id].location.is_zero();
 }
 
 uint8_t AP_Radar::get_next_healthy_peer(uint8_t current_id)
 {
+    // Select on freshness, not health. A peer that is transmitting but has no
+    // GPS fix yet reports 0/0, which fails the health check — selecting only
+    // healthy peers made such a peer invisible even though we know its
+    // callsign and link quality. The draw path still gates the bearing arrow
+    // and distance on get_peer_healthy(), so a position-less peer shows its
+    // name alone until a fix arrives.
     for (uint8_t i = 1; i < RADAR_MAX_PEERS; i++) {
         uint8_t next_peer = (current_id + i) % RADAR_MAX_PEERS;
-        if (get_peer_healthy(next_peer)) {
+        if (get_peer_fresh(next_peer)) {
             return next_peer;
         }
     }
