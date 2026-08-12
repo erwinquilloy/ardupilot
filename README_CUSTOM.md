@@ -1031,6 +1031,27 @@ established in the loiter circle:
   direction, so pushing "outward" always grows the radius regardless
   of which way the plane is orbiting. Radius is clamped to `[20, 1000]` m.
 
+Together with the two altitude/speed features documented elsewhere, all
+four sticks are live in LOITER:
+
+| Stick | Effect in LOITER | Needs |
+|---|---|---|
+| Pitch | target altitude, latched when the stick centres | [`FLIGHT_OPTIONS` bit 12](#flight_options-bit-12--fbw-b-style-loiter-altitude-control-upstream) **and** a non-zero `STICK_MIXING` |
+| Roll | loiter radius, clamped `[20, 1000]` m | — |
+| Rudder | loiter direction, beyond 50 % deflection | — |
+| Throttle | [target airspeed](#manual-airspeed-control-in-nav-modes) across `AIRSPEED_MIN`…`AIRSPEED_MAX` | — |
+
+So the whole orbit — height, size, direction and speed — can be reshaped
+without leaving the mode.
+
+> ⚠️ **Roll input is integrated, not proportional.** The radius keeps
+> growing or shrinking for as long as the stick is held, and stays where
+> you left it when you centre — it does not spring back to
+> `WP_LOITER_RAD`. Rudder is a snap: past 50 % it flips direction once
+> rather than integrating. Pitch behaves differently again — it holds the
+> altitude the aircraft is actually at when the stick centres, not the
+> altitude the demand had reached.
+
 **In TAKEOFF mode (mode 13)**, the same control applies once the climb
 finishes and the plane settles into its loiter — see
 [cancel auto launch](#move-sticks-to-cancel-auto-launch) for why the sticks
