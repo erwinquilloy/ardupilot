@@ -584,6 +584,7 @@ public:
         // switch AUTO->FBWA on >10% pitch/roll stick). The takeover is now
         // unconditional but scoped to the takeoff phase only, so it needs no
         // option bit. Do not reuse bit 20 - stored params may still have it set.
+        PLANE_SWITCH_TO_MANUAL_AFTER_DISARMING = (1U << 21), // plane only (fork): revert to MANUAL on disarm, and re-read the mode switch on arming
         PLANE_DISABLE_MAN_BAT_COMP      = (1U << 22), // plane only (fork PR #139): disable throttle battery voltage compensation in MANUAL mode
     };
 

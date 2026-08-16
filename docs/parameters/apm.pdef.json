@@ -40703,6 +40703,7 @@
         "12": "Annotate CRSF flight mode with * on disarm",
         "13": "Use 420kbaud for ELRS protocol",
         "2": "Ignore Receiver Failsafe bit but allow other RC failsafes if setup",
+        "21": "Plane only - revert to MANUAL after disarming and re-read the mode switch when arming (fork)",
         "22": "Plane only - disable throttle battery voltage compensation in MANUAL mode (fork PR #139)",
         "3": "FPort Pad",
         "4": "Log RC input bytes",

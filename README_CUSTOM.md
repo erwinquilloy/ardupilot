@@ -668,7 +668,8 @@ mode and `flight_stage` is past the initial climb.
 > stick gesture does nothing to the target altitude unless
 > [`FLIGHT_OPTIONS` bit 12](#flight_options-bit-12--fbw-b-style-loiter-altitude-control-upstream)
 > is set — without it the plane climbs while you hold the stick and sinks
-> back the moment you release.
+> back the moment you release. Bit 12 is a fork default from v1.2 on, but
+> upgrades keep whatever `FLIGHT_OPTIONS` you already had saved.
 
 **Since v1.1 the roll and rudder sticks work here too** — radius and
 turn direction, from the ArduCustom PR #180 port. See
@@ -776,13 +777,21 @@ Not a fork addition, but documented here because the fork's own
 pitch-stick altitude features sit either side of it and the asymmetry
 catches people out.
 
-In **LOITER**, pitch-stick altitude control is **off by default** and
-needs two things:
+In **LOITER**, pitch-stick altitude control needs two things:
 
 | Param | Value | Why |
 |---|---|---|
-| `FLIGHT_OPTIONS` | add **4096** (bit 12) | "Enable FBWB style loiter altitude control" |
-| `STICK_MIXING` | non-zero, not `VTOL_YAW` | `ModeLoiter::update()` gates on `stick_mixing_enabled()` |
+| `FLIGHT_OPTIONS` | **4096** (bit 12) — **default in this fork since v1.2** | "Enable FBWB style loiter altitude control" |
+| `STICK_MIXING` | non-zero, not `VTOL_YAW` — this fork defaults to `FBW` | `ModeLoiter::update()` gates on `stick_mixing_enabled()` |
+
+Upstream defaults `FLIGHT_OPTIONS` to `0`, so on stock ArduPlane both of
+these are off. This fork ships both on, so LOITER altitude control works out
+of the box.
+
+> ⚠️ **Upgrading from v1.1 or earlier?** Changing a default only affects
+> fresh parameter storage. Your saved `FLIGHT_OPTIONS` carries over
+> untouched, so you still need to add 4096 by hand — same as the
+> `STICK_MIXING` change in v1.1.
 
 > ⚠️ **Without bit 12 the pitch stick still moves the plane — and that is
 > the trap.** It falls through to ordinary stick mixing, which adds a
@@ -1036,7 +1045,7 @@ four sticks are live in LOITER:
 
 | Stick | Effect in LOITER | Needs |
 |---|---|---|
-| Pitch | target altitude, latched when the stick centres | [`FLIGHT_OPTIONS` bit 12](#flight_options-bit-12--fbw-b-style-loiter-altitude-control-upstream) **and** a non-zero `STICK_MIXING` |
+| Pitch | target altitude, latched when the stick centres | [`FLIGHT_OPTIONS` bit 12](#flight_options-bit-12--fbw-b-style-loiter-altitude-control-upstream) **and** a non-zero `STICK_MIXING` — both fork defaults since v1.2 |
 | Roll | loiter radius, clamped `[20, 1000]` m | — |
 | Rudder | loiter direction, beyond 50 % deflection | — |
 | Throttle | [target airspeed](#manual-airspeed-control-in-nav-modes) across `AIRSPEED_MIN`…`AIRSPEED_MAX` | — |
@@ -1256,6 +1265,31 @@ Fork PR #33 (which extended comp into those modes on the 2022 fork) is
 *not* re-ported because upstream's `Mode::use_battery_compensation()`
 virtual already provides the same partitioning that PR #33 was aiming
 at -- the work is upstream.
+
+## Revert to MANUAL after disarming
+
+A feature of the original 2022 fork, restored in v1.2. Off by default —
+enable it with **`RC_OPTIONS` bit 21** (add `2097152`).
+
+With the bit set, two things happen:
+
+- **On disarm**, the aircraft switches to MANUAL immediately, so it is
+  never left sitting on the ground in AUTO / RTL / a stale auto-throttle
+  mode. If you are already in MANUAL, nothing happens. The mode change is
+  logged with `ModeReason` 57 (`DISARMED`).
+- **On arming**, the flight mode switch is re-read, so the mode you take
+  off in is the one the physical switch selects. Without this half, arming
+  after a revert would leave you flying MANUAL while the switch still reads
+  e.g. FBWA, until you happened to toggle it.
+
+The re-read on arming only applies when `ARMING_MODE_SW` is `0` (Disabled).
+If you use `ARMING_MODE_SW` to jump straight to TKOFF or AUTO on arming,
+that takes precedence and the switch is not re-read — the two features
+would otherwise fight over the mode 3 s after arming.
+
+> **Note:** the disarm revert is immediate, unlike the 3 s delay on the
+> `ARMING_MODE_SW` path. That delay exists so a single aux-switch arm can
+> start a takeoff; there is no disarm equivalent.
 
 ## Smarter RC relays
 
@@ -2014,12 +2048,25 @@ full build; flash those from the light release instead.)
 | MatekF765-Wing | F7 / 2 MB | Ships — Matek F765-WING (most flash headroom in the fleet, 521 KB free) |
 | MatekH743-bdshot | H7 / 2 MB | Ships — Matek H743-WING (bidirectional DShot) |
 | KakuteH7-Wing | H7 / 2 MB | Ships — Holybro Kakute H743 Wing |
+| TBS_LUCID_H7_OEM | H7 / 2 MB | **New in v1.2** — TBS Lucid H7 OEM (FCAPv1 H743, D2FCAP schematic) |
 
-All three keep hundreds of KB free with the full backend set (exact figures
-in the release notes). From v1.1 these three F7/H7 targets are **full-only**
+All four fit the full backend set with headroom to spare, though not equally:
+`MatekF765-Wing` has the most (521 KB free) and `TBS_LUCID_H7_OEM` the least
+(~85 KB — its hwdef reserves more flash than the other H7s, leaving ~1664 KB
+usable of the 2 MB part). Exact figures are in the release notes. From v1.1
+these F7/H7 targets are **full-only**
 — they were previously also built for the light release, which made sense
 while light was the more complete track, but a 2 MB board has no reason to
 run a backend-stripped build.
+
+> **`TBS_LUCID_H7_OEM` is not the AT32 "Lucid Pro".** This is the real
+> STM32H743 OEM variant of the Lucid H7, ported from upstream ArduPilot
+> (board ID 5255). It differs from the base `TBS_LUCID_H7` in that the
+> on-board MAX7456 analog OSD is depopulated — analog OSD is generated by
+> an STM32G431 co-processor fed MSP DisplayPort over `SERIAL5`, so
+> `OSD_TYPE` defaults to 5 (MSP DisplayPort) rather than 1 (MAX7456). The
+> freed SPI2 pins become UART5. See
+> [the upstream board README](libraries/AP_HAL_ChibiOS/hwdef/TBS_LUCID_H7_OEM/README.md).
 
 ## Light release fleet (`light-v1.1`) — 9 boards (all 1 MB F4)
 
@@ -2402,7 +2449,7 @@ stock 4.6.3 build and then load this firmware:
 
 | Default change                                                                                  | Effect                                                                       |
 |-------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------|
-| `STICK_MIXING` 1 → 0                                                                            | Pilot stick no longer overrides nav controllers in AUTO/RTL/GUIDED.          |
+| `FLIGHT_OPTIONS` 0 → **4096** (bit 12)                                                          | **New in v1.2.** LOITER pitch-stick altitude control is on out of the box. See [`FLIGHT_OPTIONS` bit 12](#flight_options-bit-12--fbw-b-style-loiter-altitude-control-upstream). Upgrades keep their saved value. |
 | `RC_OPTIONS` default is `544` (bits 5+9) | Bit 20 (`AUTO_SWITCH_TO_FBWA_WITH_STICKS`) was **removed in v1.1**. Earlier builds defaulted to `1049120`, where a 10 % stick bump anywhere in AUTO silently ended the mission. The stick takeover now exists only during a takeoff, as an auto-launch cancel, and needs no option bit. A stale bit 20 in saved parameters is ignored. See [move sticks to cancel auto launch](#move-sticks-to-cancel-auto-launch). |
 | `TECS_INTEG_GAIN` 0.3 → 0.4                                                                     | Slightly snappier altitude tracking.                                         |
 | `OSD_OPTIONS` default gains bit 18 (2-decimal vspeed) and bit 21 (1-decimal attitude)           | Cosmetic OSD-only; saved values preserved.                                   |
@@ -2517,7 +2564,7 @@ bits are set.
 
 Inspired by Stavros' [ArduPilot bitmask calculator](https://notes.stavros.io/ardupilot/bitmask-calculator/);
 this version uses **this fork's parameter set** so the fork-added bits
-on `FLIGHT_OPTIONS` (21 / 22 / 23 / 24), `RC_OPTIONS` bit 22, the
+on `FLIGHT_OPTIONS` (21 / 22 / 23 / 24), `RC_OPTIONS` bits 21 / 22, the
 `OSD_OPTIONS` bits, etc. are visible without leaving the page.
 
 ### Want it offline / want to host it yourself?
