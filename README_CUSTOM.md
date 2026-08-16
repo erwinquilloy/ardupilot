@@ -2059,18 +2059,28 @@ backend plus the fork additions, scoped to boards with the flash headroom
 to carry all of it — H7 / F7 / 2 MB targets. (1 MB F4 boards overflow the
 full build; flash those from the light release instead.)
 
-| Board | MCU / Flash | Status |
-|---|---|---|
-| MatekF765-Wing | F7 / 2 MB | Ships — Matek F765-WING (most flash headroom in the fleet, 521 KB free) |
-| MatekH743-bdshot | H7 / 2 MB | Ships — Matek H743-WING (bidirectional DShot) |
-| KakuteH7-Wing | H7 / 2 MB | Ships — Holybro Kakute H743 Wing |
-| TBS_LUCID_H7_OEM | H7 / 2 MB | **New in v1.2** — TBS Lucid H7 OEM (FCAPv1 H743, D2FCAP schematic) |
+Measured at **v1.2**:
 
-All four fit the full backend set with headroom to spare, though not equally:
-`MatekF765-Wing` has the most (521 KB free) and `TBS_LUCID_H7_OEM` the least
-(~85 KB — its hwdef reserves more flash than the other H7s, leaving ~1664 KB
-usable of the 2 MB part). Exact figures are in the release notes. From v1.1
-these F7/H7 targets are **full-only**
+| Board | MCU / Flash | Free after fork features | Status |
+|---|---|---:|---|
+| MatekF765-Wing | F7 / 2 MB | **519.1 KB** | Ships — Matek F765-WING (most flash headroom in the fleet) |
+| KakuteH7-Wing | H7 / 2 MB | **103.1 KB** | Ships — Holybro Kakute H743 Wing |
+| MatekH743-bdshot | H7 / 2 MB | **98.7 KB** | Ships — Matek H743-WING (bidirectional DShot) |
+| TBS_LUCID_H7_OEM | H7 / 2 MB | **85.2 KB** | **New in v1.2** — TBS Lucid H7 OEM (FCAPv1 H743, D2FCAP schematic); tightest of the full fleet |
+
+All four fit the full backend set with headroom to spare, though not equally.
+`MatekF765-Wing` has five times the room of any H7, because the three H7 hwdefs
+reserve more flash — `TBS_LUCID_H7_OEM` leaves only ~1664 KB usable of its 2 MB
+part.
+
+**`TBS_LUCID_H7_OEM` is the full track's canary**, the way
+`MatekF405-Wing-bdshot` is light's — it is the first board here that a future
+upstream rebase or feature add will push against. Note it is ~13 KB tighter than
+the other two H7s partly by choice: this fork adds the MPU6000 probe upstream's
+4.6.3 parent hwdef lacks, which costs ~7.8 KB but is what lets an
+MPU6000-populated board boot at all.
+
+From v1.1 these F7/H7 targets are **full-only**
 — they were previously also built for the light release, which made sense
 while light was the more complete track, but a 2 MB board has no reason to
 run a backend-stripped build.
@@ -2086,20 +2096,24 @@ run a backend-stripped build.
 
 ## Light release fleet (`light-v1.2`) — 9 boards (all 1 MB F4)
 
-Measured against the **light variant** at v1.1 with radar +
+Measured against the **light variant** at **v1.2** with radar +
 LAND_WIND_DIST + LAND_WIND_STRICT on:
 
-| Board | Flash | Free after fork features | Status |
-|---|---:|---:|---|
-| KakuteF4-Wing-Buzz | 1 MB | **79.6 KB** | Ships — Kakute F4 Wing + tone buzzer (see below) |
-| speedybeef4v3 | 1 MB | **50.4 KB** | Ships — most F4 headroom |
-| MatekF405-STD | 1 MB | **44.9 KB** | Ships |
-| omnibusf4pro | 1 MB | **39.8 KB** | Ships — Omnibus F4 Pro FPV FC |
-| MatekF405-TE-bdshot | 1 MB | **39.8 KB** | Ships |
-| AtomRCF405NAVI | 1 MB | **30.9 KB** | Ships — AtomRC F405 Navi FPV FC |
-| SpeedyBeeF405WING | 1 MB | **27.1 KB** | Ships |
-| SpeedyBeeF405WING-Buzz | 1 MB | **26.8 KB** | Ships — SpeedyBee F405 WING + tone buzzer (see below) |
-| MatekF405-Wing-bdshot | 1 MB | **24.7 KB** | Ships — tightest of the F4 fleet |
+| Board | Flash | Free after fork features | vs v1.1 | Status |
+|---|---:|---:|---:|---|
+| KakuteF4-Wing-Buzz | 1 MB | **79.3 KB** | −0.3 | Ships — Kakute F4 Wing + tone buzzer (see below) |
+| speedybeef4v3 | 1 MB | **50.2 KB** | −0.2 | Ships — most F4 headroom |
+| MatekF405-STD | 1 MB | **44.6 KB** | −0.3 | Ships |
+| omnibusf4pro | 1 MB | **39.5 KB** | −0.3 | Ships — Omnibus F4 Pro FPV FC |
+| MatekF405-TE-bdshot | 1 MB | **39.0 KB** | −0.8 | Ships |
+| AtomRCF405NAVI | 1 MB | **30.5 KB** | −0.4 | Ships — AtomRC F405 Navi FPV FC |
+| SpeedyBeeF405WING | 1 MB | **26.9 KB** | −0.2 | Ships |
+| SpeedyBeeF405WING-Buzz | 1 MB | **26.6 KB** | −0.2 | Ships — SpeedyBee F405 WING + tone buzzer (see below) |
+| MatekF405-Wing-bdshot | 1 MB | **24.4 KB** | −0.3 | Ships — tightest of the F4 fleet |
+
+The whole v1.2 feature set costs **0.2–0.8 KB** per board, so the ranking is
+unchanged and no board moved materially. (`omnibusf4pro` and
+`MatekF405-TE-bdshot` were tied at 39.8 KB in v1.1 and have now separated.)
 
 `MatekF405-Wing-bdshot` is now the canary board — first to bump the
 1 MB ceiling in any future upstream rebase or feature add. Worth
@@ -2119,7 +2133,8 @@ routing them through the DShot ESCs. Cost is one servo output (S11 /
 channel 11); outputs 1-10 and 12 (WS2812 LED) are unchanged. Board ID
 is inherited (1106) so the `.apj` flashes over the stock SpeedyBee
 bootloader as a normal update. Flash footprint is essentially identical
-to stock `SpeedyBeeF405WING` (~29 KB free on light). Shipped as an extra
+to stock `SpeedyBeeF405WING` (26.6 KB vs 26.9 KB free on light at v1.2 —
+a 0.3 KB difference). Shipped as an extra
 asset on the light release alongside the other boards above.
 
 A sibling variant, **`KakuteF4-Wing-Buzz`**, applies the same idea to the
@@ -2260,6 +2275,16 @@ notes and wiring photos live in the board's `Readme.md`.
   so there is no longer a choice to get wrong.
 - No board was added, and no F4 board changed status. Light goes 11 → 9
   purely by removing the two unconstrained targets.
+
+**v1.2 fleet change vs v1.1:**
+- **Added to full:** `TBS_LUCID_H7_OEM` (H7 / 2 MB) — ported from upstream
+  ArduPilot, board ID 5255. Full goes **3 → 4 boards**; light is unchanged at
+  9. It lands as the tightest board on the full track (**85.2 KB free**),
+  so it takes over as that track's canary.
+- No board was removed and no board changed track. The F7/H7-vs-1 MB-F4 split
+  from v1.1 still holds, and no board appears on both.
+- Feature cost across the whole release is **0.2–0.8 KB per board**, so every
+  existing board's headroom is essentially where v1.1 left it.
 
 If a 1 MB F4 board overflows, the cheapest first trim is
 `define HAL_SOARING_ENABLED 0` in that board's hwdef (Plane soaring
