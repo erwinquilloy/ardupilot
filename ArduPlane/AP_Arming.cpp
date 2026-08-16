@@ -380,6 +380,12 @@ bool AP_Arming_Plane::disarm(const AP_Arming::Method method, bool do_disarm_chec
         if (plane.is_flying()) {
             if (method == AP_Arming::Method::AUXSWITCH) {
                 set_throttle_cut(true);
+                // The cut supersedes any mode switch still scheduled by the
+                // arm 3 s earlier. Without this, cutting the throttle during
+                // a bad launch lets ARMING_MODE_SW drag us into TKOFF/AUTO --
+                // or, with RC_OPTIONS bit 21, re-read the mode switch -- right
+                // back out of the FBWA the cut just selected.
+                plane.armed_tstamp_ms = 0;
                 // Fork PR #221: latch emergency_landing on for the duration
                 // of the cut. Forces the failsafe path into FBWA (rather
                 // than RTL into terrain) if RC FS hits before the plane

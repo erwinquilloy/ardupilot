@@ -1291,6 +1291,14 @@ would otherwise fight over the mode 3 s after arming.
 > `ARMING_MODE_SW` path. That delay exists so a single aux-switch arm can
 > start a takeoff; there is no disarm equivalent.
 
+**This does not fight the in-flight throttle cut.** Flipping the arm switch
+while flying does not disarm — it cuts the throttle and bumps you to FBWA
+(see [arm-switch safety](#arm-switch-safety--in-flight-disarm-cuts-throttle-doesnt-disarm)).
+That path
+never reaches the real disarm, so no MANUAL revert happens and the FBWA bump
+stands. Likewise, re-arming out of a throttle cut restores the pre-cut mode
+rather than re-reading the switch.
+
 ## Smarter RC relays
 
 The relay aux functions (`RCx_OPTION = RELAY1..6`) now treat your
