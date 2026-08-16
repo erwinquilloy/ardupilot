@@ -1083,6 +1083,31 @@ Fork PR #33 (which extended comp into those modes on the 2022 fork) is
 virtual already provides the same partitioning that PR #33 was aiming
 at -- the work is upstream.
 
+## Revert to MANUAL after disarming
+
+A feature of the original 2022 fork, restored in v1.2. Off by default —
+enable it with **`RC_OPTIONS` bit 21** (add `2097152`).
+
+With the bit set, two things happen:
+
+- **On disarm**, the aircraft switches to MANUAL immediately, so it is
+  never left sitting on the ground in AUTO / RTL / a stale auto-throttle
+  mode. If you are already in MANUAL, nothing happens. The mode change is
+  logged with `ModeReason` 57 (`DISARMED`).
+- **On arming**, the flight mode switch is re-read, so the mode you take
+  off in is the one the physical switch selects. Without this half, arming
+  after a revert would leave you flying MANUAL while the switch still reads
+  e.g. FBWA, until you happened to toggle it.
+
+The re-read on arming only applies when `ARMING_MODE_SW` is `0` (Disabled).
+If you use `ARMING_MODE_SW` to jump straight to TKOFF or AUTO on arming,
+that takes precedence and the switch is not re-read — the two features
+would otherwise fight over the mode 3 s after arming.
+
+> **Note:** the disarm revert is immediate, unlike the 3 s delay on the
+> `ARMING_MODE_SW` path. That delay exists so a single aux-switch arm can
+> start a takeoff; there is no disarm equivalent.
+
 ## Smarter RC relays
 
 The relay aux functions (`RCx_OPTION = RELAY1..6`) now treat your
@@ -2320,7 +2345,7 @@ bits are set.
 
 Inspired by Stavros' [ArduPilot bitmask calculator](https://notes.stavros.io/ardupilot/bitmask-calculator/);
 this version uses **this fork's parameter set** so the fork-added bits
-on `FLIGHT_OPTIONS` (21 / 22 / 23 / 24), `RC_OPTIONS` bit 22, the
+on `FLIGHT_OPTIONS` (21 / 22 / 23 / 24), `RC_OPTIONS` bits 21 / 22, the
 `OSD_OPTIONS` bits, etc. are visible without leaving the page.
 
 ### Want it offline / want to host it yourself?

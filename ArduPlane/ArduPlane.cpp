@@ -533,9 +533,30 @@ void Plane::update_control_mode(void)
             break;
         case ARMING_MODE_SWITCH_DISABLED:
         default:
+            // PLANE_SWITCH_TO_MANUAL_AFTER_DISARMING (RC_OPTIONS bit 21) is a
+            // pair: the disarm half below reverts to MANUAL, and this half
+            // re-reads the mode switch on arming. Without it, arming after a
+            // revert leaves us flying MANUAL while the switch still reads e.g.
+            // FBWA, until the pilot happens to toggle it.
+            if (rc().option_is_enabled(RC_Channels::Option::PLANE_SWITCH_TO_MANUAL_AFTER_DISARMING)) {
+                rc().reset_mode_switch();
+            }
             break;
         }
         armed_tstamp_ms = 0;
+    }
+
+    // PLANE_SWITCH_TO_MANUAL_AFTER_DISARMING (RC_OPTIONS bit 21): on the first
+    // tick after disarming, revert to MANUAL so the aircraft is never left
+    // sitting on the ground in an auto-throttle mode. Unlike the arming path
+    // above there is no delay -- the 3 s there exists only so a single
+    // aux-switch arm can start a takeoff, which has no disarm equivalent.
+    if (disarmed_tstamp_ms) {
+        if (rc().option_is_enabled(RC_Channels::Option::PLANE_SWITCH_TO_MANUAL_AFTER_DISARMING) &&
+            control_mode != &mode_manual) {
+            set_mode(mode_manual, ModeReason::DISARMED);
+        }
+        disarmed_tstamp_ms = 0;
     }
 
     // ALLOW_GLIDING_IN_AUTO_THR_MODES (FlightOptions bit 23): in auto-throttle

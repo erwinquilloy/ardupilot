@@ -24557,9 +24557,10 @@
           <bit code="11">Use Link Quality for RSSI with CRSF</bit>
           <bit code="12">Annotate CRSF flight mode with * on disarm</bit>
           <bit code="13">Use 420kbaud for ELRS protocol</bit>
+          <bit code="21">Plane only - revert to MANUAL after disarming and re-read the mode switch when arming (fork)</bit>
           <bit code="22">Plane only - disable throttle battery voltage compensation in MANUAL mode (fork PR #139)</bit>
         </bitmask>
-        <field name="Bitmask">0:Ignore RC Receiver, 1:Ignore MAVLink Overrides, 2:Ignore Receiver Failsafe bit but allow other RC failsafes if setup, 3:FPort Pad, 4:Log RC input bytes, 5:Arming check throttle for 0 input, 6:Skip the arming check for neutral Roll/Pitch/Yaw sticks, 7:Allow Switch reverse, 8:Use passthrough for CRSF telemetry, 9:Suppress CRSF mode/rate message for ELRS systems,10:Enable multiple receiver support, 11:Use Link Quality for RSSI with CRSF, 12:Annotate CRSF flight mode with * on disarm, 13: Use 420kbaud for ELRS protocol, 22: Plane only - disable throttle battery voltage compensation in MANUAL mode (fork PR #139)</field>
+        <field name="Bitmask">0:Ignore RC Receiver, 1:Ignore MAVLink Overrides, 2:Ignore Receiver Failsafe bit but allow other RC failsafes if setup, 3:FPort Pad, 4:Log RC input bytes, 5:Arming check throttle for 0 input, 6:Skip the arming check for neutral Roll/Pitch/Yaw sticks, 7:Allow Switch reverse, 8:Use passthrough for CRSF telemetry, 9:Suppress CRSF mode/rate message for ELRS systems,10:Enable multiple receiver support, 11:Use Link Quality for RSSI with CRSF, 12:Annotate CRSF flight mode with * on disarm, 13: Use 420kbaud for ELRS protocol, 21: Plane only - revert to MANUAL after disarming and re-read the mode switch when arming (fork), 22: Plane only - disable throttle battery voltage compensation in MANUAL mode (fork PR #139)</field>
       </param>
       <param humanName="RC protocols enabled" name="RC_PROTOCOLS" documentation="Bitmask of enabled RC protocols. Allows narrowing the protocol detection to only specific types of RC receivers which can avoid issues with incorrect detection. Set to 1 to enable all protocols." user="Advanced">
         <bitmask>
