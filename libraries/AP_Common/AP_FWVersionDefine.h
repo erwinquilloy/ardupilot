@@ -30,12 +30,12 @@
 // autotest scripts) keep working.
 //
 // Resulting strings (paired with git hash, added below):
-//   master_custom_4.6.3:        "ArduPlane V4.6.3 ArduCustom v0.3-beta (abc1234)"
-//   master_custom_4.6.3_light:  "ArduPlane V4.6.3 ArduCustom v0.3-beta Light (abc1234)"
+//   master_custom_4.6.3:        "ArduPlane V4.6.3 ArduCustom v1.2 (abc1234)"
+//   master_custom_4.6.3_light:  "ArduPlane V4.6.3 ArduCustom v1.2 Light (abc1234)"
 //
 // Sets ORIGINAL_FWSTR to the bare THISFIRMWARE so anything that
 // specifically wants the upstream "ArduPlane V4.6.3" can still get it.
-#define FORK_VERSION "v1.1"
+#define FORK_VERSION "v1.2"
 
 /*
   allow vendors to set AP_CUSTOM_FIRMWARE_STRING in hwdef.dat
