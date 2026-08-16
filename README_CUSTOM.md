@@ -1277,15 +1277,23 @@ With the bit set, two things happen:
   never left sitting on the ground in AUTO / RTL / a stale auto-throttle
   mode. If you are already in MANUAL, nothing happens. The mode change is
   logged with `ModeReason` 57 (`DISARMED`).
-- **On arming**, the flight mode switch is re-read, so the mode you take
-  off in is the one the physical switch selects. Without this half, arming
-  after a revert would leave you flying MANUAL while the switch still reads
-  e.g. FBWA, until you happened to toggle it.
+- **On arming**, the flight mode switch is re-read — but **only if you are
+  still in the MANUAL that the disarm put you in**. Without this half,
+  arming after a revert would leave you flying MANUAL while the switch
+  still reads e.g. FBWA, until you happened to toggle it.
 
-The re-read on arming only applies when `ARMING_MODE_SW` is `0` (Disabled).
-If you use `ARMING_MODE_SW` to jump straight to TKOFF or AUTO on arming,
-that takes precedence and the switch is not re-read — the two features
-would otherwise fight over the mode 3 s after arming.
+⚠️ That second condition matters. The re-read only ever undoes the fork's
+own revert: it fires when the current mode is MANUAL **and** was set with
+`ModeReason` 57 (`DISARMED`). Arm in a mode you chose yourself — a GCS or
+mission-initiated TAKEOFF or AUTO, or any mode you selected after the
+revert — and the switch is **not** re-read. An earlier build re-read
+unconditionally, which dumped an AUTO takeoff into the mode switch position
+three seconds into the climb; caught in SITL before release.
+
+The re-read on arming also only applies when `ARMING_MODE_SW` is `0`
+(Disabled). If you use `ARMING_MODE_SW` to jump straight to TKOFF or AUTO on
+arming, that takes precedence and the switch is not re-read — the two
+features would otherwise fight over the mode 3 s after arming.
 
 > **Note:** the disarm revert is immediate, unlike the 3 s delay on the
 > `ARMING_MODE_SW` path. That delay exists so a single aux-switch arm can

@@ -538,7 +538,17 @@ void Plane::update_control_mode(void)
             // re-reads the mode switch on arming. Without it, arming after a
             // revert leaves us flying MANUAL while the switch still reads e.g.
             // FBWA, until the pilot happens to toggle it.
-            if (rc().option_is_enabled(RC_Channels::Option::PLANE_SWITCH_TO_MANUAL_AFTER_DISARMING)) {
+            //
+            // Only ever undo OUR OWN revert. Re-reading unconditionally
+            // overrides whatever mode the pilot actually armed in: a GCS- or
+            // mission-initiated TAKEOFF/AUTO launch gets dumped into the mode
+            // switch position 3 s into the climb, which in SITL put the
+            // aircraft into MANUAL mid-takeoff and dropped it out of the sky.
+            // So require that we are in MANUAL *because* the disarm half put
+            // us there.
+            if (rc().option_is_enabled(RC_Channels::Option::PLANE_SWITCH_TO_MANUAL_AFTER_DISARMING) &&
+                control_mode == &mode_manual &&
+                control_mode_reason == ModeReason::DISARMED) {
                 rc().reset_mode_switch();
             }
             break;
