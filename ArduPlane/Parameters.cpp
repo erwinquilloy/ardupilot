@@ -1206,6 +1206,11 @@ const AP_Param::GroupInfo ParametersG2::var_info[] = {
 
     // 12 was AP_Gripper
 
+    // Fork: FLIGHT_OPTIONS defaults bit 12 (ENABLE_LOITER_ALT_CONTROL) on, so
+    // the pitch stick drives altitude in LOITER out of the box. Pairs with
+    // STICK_MIXING, which upstream already defaults to FBW. Keep this comment
+    // *above* the doc block -- a bare comment inside it silently drops the
+    // whole parameter from apm.pdef.
     // @Param: FLIGHT_OPTIONS
     // @DisplayName: Flight mode options
     // @Description: Flight mode specific options
@@ -1229,7 +1234,7 @@ const AP_Param::GroupInfo ParametersG2::var_info[] = {
     // @Bitmask: 23: In auto-throttle modes other than TAKEOFF/AUTO glide (throttle=0 with target airspeed AIRSPEED_MIN) when throttle stick is below THR_DZ (fork)
     // @Bitmask: 24: In RTL outside of RC failsafe let the pilot drive altitude with the pitch stick via FBWB control (fork PR #155; relocated from bit 20)
     // @User: Advanced
-    AP_GROUPINFO("FLIGHT_OPTIONS", 13, ParametersG2, flight_options, 0),
+    AP_GROUPINFO("FLIGHT_OPTIONS", 13, ParametersG2, flight_options, ENABLE_LOITER_ALT_CONTROL),
 
     // 14 was AP_Scripting
 

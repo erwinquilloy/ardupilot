@@ -494,7 +494,8 @@ mode and `flight_stage` is past the initial climb.
 > stick gesture does nothing to the target altitude unless
 > [`FLIGHT_OPTIONS` bit 12](#flight_options-bit-12--fbw-b-style-loiter-altitude-control-upstream)
 > is set — without it the plane climbs while you hold the stick and sinks
-> back the moment you release.
+> back the moment you release. Bit 12 is a fork default from v1.2 on, but
+> upgrades keep whatever `FLIGHT_OPTIONS` you already had saved.
 
 **Since v1.1 the roll and rudder sticks work here too** — radius and
 turn direction, from the ArduCustom PR #180 port. See
@@ -602,13 +603,21 @@ Not a fork addition, but documented here because the fork's own
 pitch-stick altitude features sit either side of it and the asymmetry
 catches people out.
 
-In **LOITER**, pitch-stick altitude control is **off by default** and
-needs two things:
+In **LOITER**, pitch-stick altitude control needs two things:
 
 | Param | Value | Why |
 |---|---|---|
-| `FLIGHT_OPTIONS` | add **4096** (bit 12) | "Enable FBWB style loiter altitude control" |
-| `STICK_MIXING` | non-zero, not `VTOL_YAW` | `ModeLoiter::update()` gates on `stick_mixing_enabled()` |
+| `FLIGHT_OPTIONS` | **4096** (bit 12) — **default in this fork since v1.2** | "Enable FBWB style loiter altitude control" |
+| `STICK_MIXING` | non-zero, not `VTOL_YAW` — this fork defaults to `FBW` | `ModeLoiter::update()` gates on `stick_mixing_enabled()` |
+
+Upstream defaults `FLIGHT_OPTIONS` to `0`, so on stock ArduPlane both of
+these are off. This fork ships both on, so LOITER altitude control works out
+of the box.
+
+> ⚠️ **Upgrading from v1.1 or earlier?** Changing a default only affects
+> fresh parameter storage. Your saved `FLIGHT_OPTIONS` carries over
+> untouched, so you still need to add 4096 by hand — same as the
+> `STICK_MIXING` change in v1.1.
 
 > ⚠️ **Without bit 12 the pitch stick still moves the plane — and that is
 > the trap.** It falls through to ordinary stick mixing, which adds a
@@ -862,7 +871,7 @@ four sticks are live in LOITER:
 
 | Stick | Effect in LOITER | Needs |
 |---|---|---|
-| Pitch | target altitude, latched when the stick centres | [`FLIGHT_OPTIONS` bit 12](#flight_options-bit-12--fbw-b-style-loiter-altitude-control-upstream) **and** a non-zero `STICK_MIXING` |
+| Pitch | target altitude, latched when the stick centres | [`FLIGHT_OPTIONS` bit 12](#flight_options-bit-12--fbw-b-style-loiter-altitude-control-upstream) **and** a non-zero `STICK_MIXING` — both fork defaults since v1.2 |
 | Roll | loiter radius, clamped `[20, 1000]` m | — |
 | Rudder | loiter direction, beyond 50 % deflection | — |
 | Throttle | [target airspeed](#manual-airspeed-control-in-nav-modes) across `AIRSPEED_MIN`…`AIRSPEED_MAX` | — |
@@ -2230,7 +2239,7 @@ stock 4.6.3 build and then load this firmware:
 
 | Default change                                                                                  | Effect                                                                       |
 |-------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------|
-| `STICK_MIXING` 1 → 0                                                                            | Pilot stick no longer overrides nav controllers in AUTO/RTL/GUIDED.          |
+| `FLIGHT_OPTIONS` 0 → **4096** (bit 12)                                                          | **New in v1.2.** LOITER pitch-stick altitude control is on out of the box. See [`FLIGHT_OPTIONS` bit 12](#flight_options-bit-12--fbw-b-style-loiter-altitude-control-upstream). Upgrades keep their saved value. |
 | `RC_OPTIONS` default is `544` (bits 5+9) | Bit 20 (`AUTO_SWITCH_TO_FBWA_WITH_STICKS`) was **removed in v1.1**. Earlier builds defaulted to `1049120`, where a 10 % stick bump anywhere in AUTO silently ended the mission. The stick takeover now exists only during a takeoff, as an auto-launch cancel, and needs no option bit. A stale bit 20 in saved parameters is ignored. See [move sticks to cancel auto launch](#move-sticks-to-cancel-auto-launch). |
 | `TECS_INTEG_GAIN` 0.3 → 0.4                                                                     | Slightly snappier altitude tracking.                                         |
 | `OSD_OPTIONS` default gains bit 18 (2-decimal vspeed) and bit 21 (1-decimal attitude)           | Cosmetic OSD-only; saved values preserved.                                   |
