@@ -213,7 +213,14 @@ void RC_Channels::reset_mode_switch()
     if (c == nullptr) {
         return;
     }
-    c->reset_mode_switch();
+    // Fork: clear the debounce state here and re-read through the *virtual*
+    // container path, so a vehicle override is honoured. c->reset_mode_switch()
+    // calls the non-virtual RC_Channel::read_mode_switch(), which is always the
+    // 6-position reader -- with ArduPlane's FLTMODE_EXT 12-position scan that
+    // maps the pulsewidth through the wrong table and dispatches the wrong mode.
+    c->switch_state.current_position = -1;
+    c->switch_state.debounce_position = -1;
+    read_mode_switch();
 }
 
 void RC_Channels::read_mode_switch()
