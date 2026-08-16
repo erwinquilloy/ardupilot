@@ -5,7 +5,7 @@
 > binary, fits comfortably on H7 / F7 / large-flash F4 targets.
 > **⬇ Download:** grab the newest `full-v*` build from the
 > [**Releases** page](https://github.com/erwinquilloy/ardupilot/releases)
-> (every version, newest first — the current release is `full-v1.1`).
+> (every version, newest first — the current release is `full-v1.2`).
 > **Light variant** (1 MB F4, fewer GPS / RC / battery / rangefinder backends): see the
 > [light variant `README_CUSTOM.md`](https://github.com/erwinquilloy/ardupilot/blob/master_custom_4.6.3_light/README_CUSTOM.md),
 > or the `light-v*` builds on the same
@@ -1860,14 +1860,14 @@ can actually flash.
 > first try. Boards that shipped with Betaflight, or that have been
 > flashed across firmware families, are the usual candidates.
 
-## Full release fleet (`full-v1.1`)
+## Full release fleet (`full-v1.2`)
 
-The fork ships two parallel per-board release tracks — `full-v1.1`
-(this branch) and `light-v1.1` (the light branch). Both carry the
+The fork ships two parallel per-board release tracks — `full-v1.2`
+(this branch) and `light-v1.2` (the light branch). Both carry the
 **identical fork feature set**; they differ only in which hardware
 backends are compiled in. A board's version string tells you which you
 flashed: the light build appends ` Light`
-(`... ArduCustom v1.1 Light (…)`), the full build has no suffix.
+(`... ArduCustom v1.2 Light (…)`), the full build has no suffix.
 
 As of v1.1 the two tracks no longer overlap: **full is the F7 / H7 track,
 light is the 1 MB F4 track.** A given board appears on exactly one of them,
@@ -1903,7 +1903,7 @@ run a backend-stripped build.
 > freed SPI2 pins become UART5. See
 > [the upstream board README](libraries/AP_HAL_ChibiOS/hwdef/TBS_LUCID_H7_OEM/README.md).
 
-## Light release fleet (`light-v1.1`) — 9 boards (all 1 MB F4)
+## Light release fleet (`light-v1.2`) — 9 boards (all 1 MB F4)
 
 Measured against the **light variant** at v1.1 with radar +
 LAND_WIND_DIST + LAND_WIND_STRICT on:
