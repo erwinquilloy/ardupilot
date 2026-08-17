@@ -1946,7 +1946,7 @@ LAND_WIND_DIST + LAND_WIND_STRICT on:
 | AtomRCF405NAVI | 1 MB | **30.5 KB** | −0.4 | Ships — AtomRC F405 Navi FPV FC |
 | SpeedyBeeF405WING | 1 MB | **26.9 KB** | −0.2 | Ships |
 | SpeedyBeeF405WING-Buzz | 1 MB | **26.6 KB** | −0.2 | Ships — SpeedyBee F405 WING + tone buzzer (see below) |
-| MatekF405-Wing-bdshot | 1 MB | **24.4 KB** | −0.3 | Ships — tightest of the F4 fleet |
+| MatekF405-Wing-bdshot | 1 MB | **24.5 KB** | −0.2 | Ships — tightest of the F4 fleet |
 
 The whole v1.2 feature set costs **0.2–0.8 KB** per board, so the ranking is
 unchanged and no board moved materially. (`omnibusf4pro` and
