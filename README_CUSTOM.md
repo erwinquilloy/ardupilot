@@ -75,9 +75,9 @@ Built for throwing a wing off your hand safely:
 - **Knob-tunable pitch trim** (`PTCH_TRIM_DEG`, plus `Q_TRIM_PITCH` on
   VTOL) and **three switchable tuning sets** (`TUNE_PARAM`/`PARAM2`/`PARAM3`)
   — retune live without a laptop.
-- **AUTO → FBWA stick takeover**: nudge the sticks mid-mission to grab
-  manual control instantly — it switches the mode to FBWA and stays
-  there; flip the mode switch back to resume the mission.
+- **Move sticks to cancel auto launch**: nudge pitch or roll during an
+  automatic takeoff and the plane drops to FBWA so you can abort a bad
+  launch — iNav-style, active only while the takeoff is running.
 - **Throttle stick sets target airspeed** in RTL/LOITER/CIRCLE/AUTO, plus
   **pilot loiter radius + direction** control in LOITER/RTL.
 - Extra modes: **Course Hold** (heading hold) and **Auto Trim** as a mode.
