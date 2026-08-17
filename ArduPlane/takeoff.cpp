@@ -196,6 +196,13 @@ bool Plane::in_takeoff_cancel_window(void)
 }
 
 /*
+  How long another message may hold the OSD's single message slot before the
+  cancel prompt takes it back, and hence also the repeat interval of the prompt
+  itself while nothing else is talking.
+ */
+#define TAKEOFF_CANCEL_PROMPT_MS 2000
+
+/*
   Allow the pilot to abort an automatic takeoff by moving the roll or pitch
   stick, similar to iNav's "move sticks to cancel auto launch". Returns true
   if the takeoff was cancelled, in which case the caller must return
@@ -212,17 +219,32 @@ bool Plane::takeoff_stick_cancel_check(void)
         return false;
     }
 
+    /*
+      The OSD holds one message at a time - AP_OSD_Screen::draw_message reads a
+      single AP_Notify buffer and shows whatever landed there last for
+      OSD_MSG_TIME - so any other statustext sent during the takeoff hides this
+      prompt for the rest of the climb. In AUTO that is guaranteed: "Holding
+      course" is sent once, seconds after the throw, and would then own the
+      screen for the whole sequence.
+
+      So repeat the prompt while airborne, keeping the cancel option visible
+      until the window shuts - at the loiter in TAKEOFF mode, at "Takeoff
+      complete" in AUTO. Pacing it off AP_Notify's own update stamp rather than
+      our last send means whoever wrote to the screen last gets a full interval
+      before we take it back, so the other takeoff messages stay readable
+      instead of being cut off after an arbitrary fraction of the interval.
+
+      Pre-launch we announce once only: repeating there would bury the
+      TKOFF_IDL_DELAY idle-throttle cue while the pilot is waiting to throw. The
+      prompt reappearing at launch + TKOFF_CNCL_DLY is what marks the grace
+      period as over, so both windows can share one wording.
+     */
     if (!takeoff_state.cancel_prompt_sent) {
         takeoff_state.cancel_prompt_sent = true;
-        // Distinguish the two windows: the pre-launch one opens at arming, the
-        // in-flight one only after TKOFF_CNCL_DLY has elapsed since launch.
-        // Using one message for both reads as though the grace period had
-        // already run at arming.
-        if (throttle_suppressed) {
-            gcs().send_text(MAV_SEVERITY_INFO, "Move sticks to cancel auto launch");
-        } else {
-            gcs().send_text(MAV_SEVERITY_INFO, "Launch cancel armed");
-        }
+        gcs().send_text(MAV_SEVERITY_INFO, "Move sticks to cancel auto launch");
+    } else if (!throttle_suppressed &&
+               AP_HAL::millis() - notify.get_text_updated_millis() >= TAKEOFF_CANCEL_PROMPT_MS) {
+        gcs().send_text(MAV_SEVERITY_INFO, "Move sticks to cancel auto launch");
     }
 
     if (fabsf(channel_pitch->norm_input()) > 0.1f ||

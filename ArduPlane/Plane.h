@@ -484,7 +484,8 @@ private:
         uint32_t throttle_max_timer_ms;
         uint32_t level_off_start_time_ms;
         // set once the "move sticks to cancel" prompt has been sent for this
-        // takeoff, so it is announced once rather than at the loop rate
+        // cancel window, so the first announcement is immediate and any repeat
+        // is paced by takeoff_stick_cancel_check() rather than the loop rate
         bool cancel_prompt_sent;
         // millis() at which the aircraft launched, used only to time
         // TKOFF_CNCL_DLY. Deliberately not start_time_ms: that belongs to the

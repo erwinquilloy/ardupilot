@@ -1175,19 +1175,37 @@ Two GCS announcements make it visible:
 
 | When | Message |
 |---|---|
-| Grace period elapsed, window opens | `Move sticks to cancel auto launch` |
+| Window open — once before launch, then every 2 s while airborne | `Move sticks to cancel auto launch` |
 | Sticks moved, takeover fires | `Auto launch cancelled` |
 
 The first message is your cue that cancelling is now possible — it is sent
-when the window actually opens, not at the moment of launch.
+when the window actually opens, not at the moment of launch. It therefore
+goes quiet for `TKOFF_CNCL_DLY` after launch detection and reappearing is
+what tells you the grace period is over.
+
+**Why it repeats.** The OSD holds one message at a time and displays it for
+`OSD_MSG_TIME` (default 10 s), so *any* later statustext hides this prompt
+for the rest of the climb. In AUTO that is guaranteed: `Holding course …`
+is sent once, a couple of seconds after the throw, and would otherwise own
+the screen for the entire takeoff. Repeating the prompt keeps the cancel
+option on screen for as long as it is actually available. The repeat is
+timed from whenever the message slot last changed, not from our own last
+send, so any other takeoff message gets a full 2 s of screen time before
+the prompt takes it back — you still get to read `Holding course …`, it
+just no longer costs you the rest of the climb.
+
+The repeat runs **only once airborne**. Before launch the prompt is sent
+once, so it cannot bury the `TKOFF idle THR timer started` cue while you
+are standing there waiting to throw.
 
 ### What it deliberately does *not* do
 
-- **No stick takeover before launch, during the throw, or after the climb.**
-  The window opens `TKOFF_CNCL_DLY` after launch detection and closes at the
+- **No stick takeover during the throw, or after the climb.** The window
+  shuts for `TKOFF_CNCL_DLY` after launch detection and closes for good at the
   target altitude (`Takeoff complete` in AUTO). Switching back to AUTO later
   in the flight gives you a normal mission with no takeover — a stick bump at
-  altitude can no longer end your mission.
+  altitude can no longer end your mission. Before launch the window *is*
+  open, as described above.
 - **No option bit.** There is no `RC_OPTIONS` bit for this. Because it is
   scoped to the takeoff phase it is always available, with nothing to
   configure.
