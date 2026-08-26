@@ -66,6 +66,8 @@ Built for throwing a wing off your hand safely:
 - **Arm-switch safety**: an in-flight disarm **cuts throttle and drops to
   FBWA** rather than killing the servos and dropping the plane out of the
   sky. **`ARMING_MODE_SW`** auto-switches to TAKEOFF/AUTO after arming.
+- **End the climb in FBWA** (`FLIGHT_OPTIONS` bit 21) instead of loitering
+  out at `TKOFF_DIST` — manual control the moment the plane is up.
 - **`FLTMODE_EXT`** gives a full **12 flight-mode positions** on one channel.
 
 → [Arming & takeoff](#arming--takeoff) · [Flight modes](#flight-modes)
