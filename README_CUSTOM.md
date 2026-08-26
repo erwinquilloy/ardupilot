@@ -97,6 +97,8 @@ Built for throwing a wing off your hand safely:
 - **Arm-switch safety**: an in-flight disarm **cuts throttle and drops to
   FBWA** rather than killing the servos and dropping the plane out of the
   sky. **`ARMING_MODE_SW`** auto-switches to TAKEOFF/AUTO after arming.
+- **End the climb in FBWA** (`FLIGHT_OPTIONS` bit 21) instead of loitering
+  out at `TKOFF_DIST` — manual control the moment the plane is up.
 - **`FLTMODE_EXT`** gives a full **12 flight-mode positions** on one channel.
 
 → [Arming & takeoff](#arming--takeoff) · [Flight modes](#flight-modes)
@@ -487,7 +489,11 @@ pull back to climb, push forward to descend — so the pilot can settle
 the plane at the right altitude before flipping to `AUTO` or `RTL`.
 
 No parameter to enable; behaviour is on whenever TAKEOFF is the active
-mode and `flight_stage` is past the initial climb.
+mode and `flight_stage` is past the initial climb — and whenever the
+loiter phase runs at all. Set
+[`FLIGHT_OPTIONS` bit 21](#flight_options-bit-21--end-takeoff-in-fbwa-instead-of-loitering)
+to skip that phase entirely and drop into FBWA at the end of the climb
+instead.
 
 > ⚠️ **Do not assume LOITER behaves the same way.** This always-on
 > behaviour is specific to the TAKEOFF loiter. In LOITER mode the same
@@ -514,6 +520,36 @@ never overlap.
 > were unaffected, because their climb is pitch-driven rather than
 > TECS-driven. The write-back is now gated on the altitude having been
 > seeded.
+
+### `FLIGHT_OPTIONS` bit 21 — end TAKEOFF in FBWA instead of loitering
+
+**New in v1.2.** With this bit set, reaching the end of the `TAKEOFF`
+climb hands the plane straight to you in **FBWA** instead of entering the
+loiter circle. The mode changes, so everything above stops applying:
+there is no loiter at `TKOFF_DIST`, no pitch-stick altitude nudging, no
+radius or direction control — you are simply flying the aircraft, with a
+`"Takeoff complete - FBWA"` message on the GCS and OSD.
+
+The climb itself is unchanged. `TKOFF_ALT`, `TKOFF_LVL_ALT`,
+`TKOFF_LVL_PITCH` and the launch-cancel window all behave exactly as they
+do with the bit clear; only the end of the sequence differs.
+
+| `FLIGHT_OPTIONS` bit 21 | At the end of the climb |
+|---|---|
+| clear (**default**) | loiter at `TKOFF_ALT` / `TKOFF_DIST`, still in TAKEOFF mode |
+| set (**2097152**) | switch to FBWA |
+
+Useful if you hand launch into a small field and want manual control the
+moment the plane is up, rather than watching it circle out to
+`TKOFF_DIST` before you can take over. The alternative — cancelling the
+launch with the sticks — drops to FBWA *during* the climb and abandons
+it; this option lets the climb finish first.
+
+> ⚠️ **The switch is suppressed under RC failsafe.** FBWA is a
+> pilot-flown mode, so if the link is down at the end of the climb (or a
+> long failsafe is pending), the plane keeps the legacy loiter and lets
+> the failsafe action decide. You only get FBWA when there is a
+> transmitter to fly it with.
 
 ## Pitch trim & tuning knob
 
