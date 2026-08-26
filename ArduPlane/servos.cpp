@@ -51,7 +51,21 @@ void Plane::throttle_slew_limit()
     if (in_pre_takeoff_suppressed) {
         // Pre-launch idle throttle: snap to zero instantly when the stick
         // is at zero, otherwise climb at TKOFF_IDL_SRATE towards TKOFF_THR_IDLE.
-        slewrate = is_zero(get_throttle_input(false)) ? 0 : MAX<int8_t>(0, g2.takeoff_idle_thr_slewrate);
+        if (is_zero(get_throttle_input(false))) {
+            // Seed the slew limiter while the output is still zero.
+            // SRV_Channels::set_slew_rate() only *creates* its per-function entry
+            // when handed a positive rate, and seeds last_scaled_output from
+            // output_scaled at that moment. set_throttle() has already run this
+            // loop, so an entry first created on the tick the stick goes up would
+            // be seeded at TKOFF_THR_IDLE and skip the ramp entirely -- the idle
+            // throttle would step straight to TKOFF_THR_IDLE on the first raise
+            // after boot, and only ramp on subsequent ones.
+            SRV_Channels::set_slew_rate(func, 1, 100, G_Dt);
+            // ...then disable it below, so stick-down stays an instant snap.
+            slewrate = 0;
+        } else {
+            slewrate = MAX<int8_t>(0, g2.takeoff_idle_thr_slewrate);
+        }
     } else {
         if (control_mode == &mode_auto) {
             if (auto_state.takeoff_complete == false && g.takeoff_throttle_slewrate != 0) {
