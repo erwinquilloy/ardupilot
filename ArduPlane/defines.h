@@ -173,6 +173,8 @@ enum FlightOptions {
     COURSE_HOLD_HEADING_CONTROL_WITH_YAW_STICK = (1<<20),
     // bit 21 was RTL_FAILSAFE_LAND_AFTER_2MIN -- replaced in fork PR #182 by the
     // FS_ELAND_DELAY param (value -1 = disabled, 0+ = seconds before triggering).
+    // Reclaimed here: the slot is fork-owned, and upstream is only at bit 16.
+    TKOFF_END_IN_FBWA = (1<<21),
     RTL_CLIMB_FIRST_ONLY_IN_FS = (1<<22),
     ALLOW_GLIDING_IN_AUTO_THR_MODES = (1<<23),
     // fork PR #155: bit 20 in shellixyz/2022, but bit 20 was claimed upstream by

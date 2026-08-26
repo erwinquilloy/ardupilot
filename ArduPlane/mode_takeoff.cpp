@@ -233,6 +233,25 @@ void ModeTakeoff::update()
             have_autoenabled_fences = true;
         }
 #endif
+        /*
+          FLIGHT_OPTIONS bit 21: end the takeoff by handing the aircraft to the
+          pilot in FBWA instead of loitering above TKOFF_ALT/TKOFF_DIST. The
+          climb itself is unchanged - this only replaces what happens once the
+          takeoff stage completes, so the loiter phase below never runs.
+
+          Held off while a long failsafe is pending (handled at the bottom of
+          this branch, and it picks the mode itself) or while the RC link is
+          down: FBWA is pilot-flown, so with no transmitter the legacy loiter is
+          the safer place to be. Default off - bit clear keeps the loiter.
+         */
+        if (plane.flight_option_enabled(FlightOptions::TKOFF_END_IN_FBWA) &&
+            !plane.long_failsafe_pending &&
+            !plane.failsafe.rc_failsafe) {
+            gcs().send_text(MAV_SEVERITY_INFO, "Takeoff complete - FBWA");
+            plane.set_mode(plane.mode_fbwa, ModeReason::TAKEOFF_COMPLETE);
+            return;
+        }
+
         // We can reach the loiter phase without the seeding above having run,
         // e.g. entering TAKEOFF already above TKOFF_ALT, or via one of the
         // takeoff timeouts. Seed off the loiter WP now so the pilot adjustment
