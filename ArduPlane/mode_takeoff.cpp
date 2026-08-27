@@ -234,20 +234,35 @@ void ModeTakeoff::update()
 #endif
         /*
           FLIGHT_OPTIONS bit 21: end the takeoff by handing the aircraft to the
-          pilot in FBWA instead of loitering above TKOFF_ALT/TKOFF_DIST. The
+          pilot in FBWB instead of loitering above TKOFF_ALT/TKOFF_DIST. The
           climb itself is unchanged - this only replaces what happens once the
           takeoff stage completes, so the loiter phase below never runs.
 
+          FBWB rather than FBWA: ModeFBWB::_enter() latches
+          the current altitude as the target, so sticks-centred is straight and
+          level at the top of the climb. In FBWA sticks-centred is only
+          wings-level at zero pitch demand, and the throttle goes to whatever
+          the stick happens to be sitting at - a pilot who is slow to get their
+          thumbs on after a hand launch would be climbing or sinking. The
+          handover is the moment the pilot is least ready, so make doing nothing
+          the safe option.
+
+          The prompt is sent immediately before the mode change so it is the
+          last statustext written - the fence auto-enable just above sends one
+          too, and the OSD only keeps the newest. It then holds the screen for
+          OSD_MSG_TIME.
+
           Held off while a long failsafe is pending (handled at the bottom of
           this branch, and it picks the mode itself) or while the RC link is
-          down: FBWA is pilot-flown, so with no transmitter the legacy loiter is
-          the safer place to be. Default off - bit clear keeps the loiter.
+          down: FBWB is still pilot-flown, so with no transmitter the legacy
+          loiter is the safer place to be. Default off - bit clear keeps the
+          loiter.
          */
-        if (plane.flight_option_enabled(FlightOptions::TKOFF_END_IN_FBWA) &&
+        if (plane.flight_option_enabled(FlightOptions::TKOFF_END_IN_FBWB) &&
             !plane.long_failsafe_pending &&
             !plane.failsafe.rc_failsafe) {
-            gcs().send_text(MAV_SEVERITY_INFO, "Takeoff complete - FBWA");
-            plane.set_mode(plane.mode_fbwa, ModeReason::TAKEOFF_COMPLETE);
+            gcs().send_text(MAV_SEVERITY_INFO, "Switching to FBWB");
+            plane.set_mode(plane.mode_fbwb, ModeReason::TAKEOFF_COMPLETE);
             return;
         }
 
