@@ -163,6 +163,7 @@ enum FlightOptions {
     IMMEDIATE_CLIMB_IN_AUTO = (1<<14),
     FLAP_ACTUAL_SPEED = (1<<15),
     ENABLE_FULL_AERO_LF_ROLL_LIMITS = (1<<16),
+    VTOL_TRANS_END_IN_FBWB = (1<<17),
     MODE_AUTO_MANUAL_AIRSPEED_CONTROL = (1<<19),    // pilot throttle stick maps to target airspeed in AUTO when set
     COURSE_HOLD_HEADING_CONTROL_WITH_YAW_STICK = (1<<20),
     // bit 21 was RTL_FAILSAFE_LAND_AFTER_2MIN -- replaced in fork PR #182 by the
