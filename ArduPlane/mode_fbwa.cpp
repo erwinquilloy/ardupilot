@@ -16,7 +16,7 @@ bool ModeFBWA::_enter()
 
 #if HAL_QUADPLANE_ENABLED
 /*
-  FLIGHT_OPTIONS bit 17: when a VTOL->fixed-wing transition completes while
+  FLIGHT_OPTIONS bit 18: when a VTOL->fixed-wing transition completes while
   the pilot is flying FBWA, hand the aircraft over in FBWB instead of leaving
   it in FBWA.
 

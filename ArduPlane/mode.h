@@ -656,7 +656,7 @@ protected:
 private:
 
 #if HAL_QUADPLANE_ENABLED
-    // FLIGHT_OPTIONS bit 17: hand over to FBWB when a VTOL->fixed-wing
+    // FLIGHT_OPTIONS bit 18: hand over to FBWB when a VTOL->fixed-wing
     // transition finishes. Seeded in _enter() so a transition that was
     // already complete before FBWA was selected is not read as an edge.
     void check_transition_handover();
