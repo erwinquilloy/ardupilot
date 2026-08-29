@@ -1860,17 +1860,27 @@ void AP_OSD_Screen::draw_link_quality(uint8_t x, uint8_t y)
 #if AP_BATTERY_ENABLED
 void AP_OSD_Screen::draw_current(uint8_t instance, uint8_t x, uint8_t y)
 {
-    float amps;
+    if (instance >= AP_OSD::OSD_NUM_CURRENT_PANELS) {
+        return;
+    }
+    // each panel keeps its own filter state. Sharing one accumulator across
+    // instances makes CURRENT and CURRENT2 low-pass each other, so a battery
+    // drawing no current still shows a fraction of the other battery's draw.
+    float &filtered_amps = osd->_filtered_current_a[instance];
+
+    float amps = 0.0f;
     if (!AP::battery().current_amps(amps, instance)) {
-        osd->_stats.avg_current_a = 0;
+        // no current sensor on this instance: current_amps() leaves amps
+        // untouched, so it must not be fed into the filter.
+        filtered_amps = 0.0f;
     }
     //filter current and display with autoranging for low values
-    osd->_stats.avg_current_a= osd->_stats.avg_current_a + (amps - osd->_stats.avg_current_a) * 0.33;
-    if (osd->_stats.avg_current_a < 10.0) {
-        backend->write(x, y, false, "%2.2f%c", osd->_stats.avg_current_a, SYMBOL(SYM_AMP));
+    filtered_amps = filtered_amps + (amps - filtered_amps) * 0.33;
+    if (filtered_amps < 10.0) {
+        backend->write(x, y, false, "%2.2f%c", filtered_amps, SYMBOL(SYM_AMP));
     }
     else {
-        backend->write(x, y, false, "%2.1f%c", osd->_stats.avg_current_a, SYMBOL(SYM_AMP));
+        backend->write(x, y, false, "%2.1f%c", filtered_amps, SYMBOL(SYM_AMP));
     }
 }
 
