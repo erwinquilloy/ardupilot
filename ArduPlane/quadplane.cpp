@@ -4116,6 +4116,11 @@ bool QuadPlane::in_frwd_transition(void) const
     return available() && transition->active_frwd();
 }
 
+bool QuadPlane::transition_complete(void) const
+{
+    return !available() || transition->complete();
+}
+
 /*
   calculate current stopping distance for a quadplane in fixed wing flight
  */

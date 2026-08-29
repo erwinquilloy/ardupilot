@@ -76,4 +76,5 @@ enum class ModeReason : uint8_t {
   ARMING_MODE_SW = 56,    // fork: auto-switch to TKOFF/AUTO after arming
   DISARMED = 57,          // fork: reverting to MANUAL after disarming
   TAKEOFF_COMPLETE = 58,  // fork: FLIGHT_OPTIONS bit 21 leaving TAKEOFF for FBWB
+  VTOL_TRANSITION_COMPLETE = 59,  // fork: FLIGHT_OPTIONS bit 17 leaving FBWA for FBWB
 };

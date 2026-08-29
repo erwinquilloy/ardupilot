@@ -114,6 +114,11 @@ public:
 
     bool in_frwd_transition(void) const;
 
+    // true once a forward transition has finished, or if none is running.
+    // Public so the fixed-wing modes can watch for the completion edge
+    // without being friends of QuadPlane.
+    bool transition_complete(void) const;
+
     bool handle_do_vtol_transition(enum MAV_VTOL_STATE state) const;
 
     bool do_vtol_takeoff(const AP_Mission::Mission_Command& cmd);

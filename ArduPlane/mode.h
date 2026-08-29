@@ -649,6 +649,20 @@ public:
     bool allows_autoland_direction_capture() const override { return true; }
 #endif
 
+protected:
+
+    bool _enter() override;
+
+private:
+
+#if HAL_QUADPLANE_ENABLED
+    // FLIGHT_OPTIONS bit 17: hand over to FBWB when a VTOL->fixed-wing
+    // transition finishes. Seeded in _enter() so a transition that was
+    // already complete before FBWA was selected is not read as an edge.
+    void check_transition_handover();
+    bool transition_was_complete = true;
+#endif
+
 };
 
 class ModeFBWB : public Mode
