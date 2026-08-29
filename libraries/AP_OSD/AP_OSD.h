@@ -854,6 +854,15 @@ private:
     float _stats_last_consumed_wh;
     bool _stats_have_been_flying_for_a_while;
     uint32_t _stats_first_seen_flying_ms;
+
+    // display-only low-pass state for the CURRENT/CURRENT2 panels, one slot
+    // per battery instance drawn. This must NOT share storage with
+    // _stats.avg_current_a: that field is the flight-stats running mean of
+    // battery 0, and a single shared accumulator also makes the two panels
+    // filter each other's readings (each panel would show a blend of both
+    // batteries).
+    static const uint8_t OSD_NUM_CURRENT_PANELS = 2;
+    float _filtered_current_a[OSD_NUM_CURRENT_PANELS] {};
 #endif
     AP_OSD_Backend *_backends[OSD_MAX_INSTANCES];
     uint8_t _backend_count;
