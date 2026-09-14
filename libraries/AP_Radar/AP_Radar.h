@@ -29,7 +29,16 @@
 #include <AP_Common/Location.h>
 #include <AP_Param/AP_Param.h>
 
-#define RADAR_MAX_PEERS 6
+// Slots are indexed by the radar_no field straight off the wire, and that
+// field is 1-based: FormationFlight's pick_id() hands out node IDs 1..6 (shown
+// as A..F on its display and web UI) and sends radar_no = id, reserving 0 for
+// "no ID yet". Sizing the array to the node count dropped the highest node --
+// a mesh that had cycled through IDs could legitimately contain ID 6, and its
+// frames were rejected by the id >= RADAR_MAX_PEERS guard, so that aircraft
+// was invisible on the OSD while the ESP32 listed it happily. Slot 0 stays
+// allocated but unused, which also gives a hypothetical 0-based sender
+// somewhere to land.
+#define RADAR_MAX_PEERS 7
 #define RADAR_PEER_FRESH_TIME_MS 3000
 
 typedef struct radar_peer_t {

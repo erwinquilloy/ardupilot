@@ -2200,7 +2200,10 @@ void AP_OSD_Screen::draw_radar(uint8_t x, uint8_t y)
             label[i] = peer.name[i];
         }
     } else {
-        label[0] = id + 'A';
+        // Slot letters match what the sender shows: radar_no is 1-based, so
+        // node ID 1 is the "A" on the ESP32's display, not "B". 0 means the
+        // sender has not been assigned an ID, which it also draws as "X".
+        label[0] = (id == 0) ? 'X' : ('A' + id - 1);
     }
 
     if (ahrs.get_location(loc) && ap_radar->get_peer_healthy(id)) {

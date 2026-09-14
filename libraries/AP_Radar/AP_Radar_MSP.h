@@ -20,7 +20,7 @@ public:
 
 private:
     radar_peer_t peers[RADAR_MAX_PEERS] {};
-    uint8_t update_count;
+    uint8_t update_count {};
 };
 
 #endif // HAL_MSP_RADAR_ENABLED
