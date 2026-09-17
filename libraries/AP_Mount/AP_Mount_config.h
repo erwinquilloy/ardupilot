@@ -62,12 +62,18 @@
 #define HAL_MOUNT_XFROBOT_ENABLED AP_MOUNT_BACKEND_DEFAULT_ENABLED && HAL_PROGRAM_SIZE_LIMIT_KB > 1024
 #endif
 
+// Custom: POI lock switch (RCx_OPTION 186) on every board with a mount,
+// including 1 MB F4 -- upstream gates it on > 1024 KB. Without the terrain
+// variant below it aims at the point where the gimbal's line of sight meets
+// home altitude.
 #ifndef AP_MOUNT_POI_LOCK_ENABLED
-#define AP_MOUNT_POI_LOCK_ENABLED HAL_MOUNT_ENABLED && HAL_PROGRAM_SIZE_LIMIT_KB > 1024
+#define AP_MOUNT_POI_LOCK_ENABLED HAL_MOUNT_ENABLED
 #endif
 
+// Custom: terrain-intersecting POI kept off on 1 MB boards. It starts an
+// 8 KB-stack thread per mount backend, and heap is the F405 runtime limit.
 #ifndef AP_MOUNT_POI_TO_LATLONALT_ENABLED
-#define AP_MOUNT_POI_TO_LATLONALT_ENABLED HAL_MOUNT_ENABLED && AP_TERRAIN_AVAILABLE && (HAL_PROGRAM_SIZE_LIMIT_KB > 1024 || AP_MOUNT_POI_LOCK_ENABLED)
+#define AP_MOUNT_POI_TO_LATLONALT_ENABLED HAL_MOUNT_ENABLED && AP_TERRAIN_AVAILABLE && HAL_PROGRAM_SIZE_LIMIT_KB > 1024
 #endif
 
 #ifndef HAL_MOUNT_TOPOTEK_ENABLED

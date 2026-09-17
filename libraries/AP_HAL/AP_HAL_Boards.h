@@ -158,6 +158,15 @@
 #error HAL_PROGRAM_SIZE_LIMIT_KB must be defined
 #endif
 
+// Custom light variant: boards with 1 MB of flash get the backend-stripped
+// "light" configuration (RC protocol, GPS, airspeed, rangefinder, battery
+// monitor and compass strips, no CAN, no ICE) and a " Light" version suffix.
+// Larger boards and SITL get the full configuration. Both release tracks
+// build from this one branch.
+#ifndef AP_CUSTOM_LIGHT
+#define AP_CUSTOM_LIGHT (HAL_PROGRAM_SIZE_LIMIT_KB <= 1024)
+#endif
+
 #ifndef HAL_OS_SOCKETS
 #define HAL_OS_SOCKETS 0
 #endif
@@ -253,7 +262,24 @@
 #endif
 
 #ifndef HAL_ENABLE_DRONECAN_DRIVERS
+#if AP_CUSTOM_LIGHT
+// Light variant: strict 2022 definition has no CAN. Disable the whole
+// DroneCAN driver layer so AP_DroneCAN itself compiles out (not just
+// individual subscribers, which would cause undefined-reference link
+// errors when AP_DroneCAN::init still tries to wire them up).
+#define HAL_ENABLE_DRONECAN_DRIVERS 0
+#else
 #define HAL_ENABLE_DRONECAN_DRIVERS HAL_CANMANAGER_ENABLED
+#endif
+#endif
+
+#if AP_CUSTOM_LIGHT && !defined(HAL_PICCOLO_CAN_ENABLE)
+// Light variant: no CAN means no PiccoloCAN ESC driver either. The
+// default in AP_PiccoloCAN_Device.h tracks HAL_NUM_CAN_IFACES which
+// is set per-board in hwdef.dat, so any hwdef that defines CAN buses
+// would otherwise pull PiccoloCAN's ~30 KB of generated protocol code
+// into the binary.
+#define HAL_PICCOLO_CAN_ENABLE 0
 #endif
 
 #ifndef AP_TEST_DRONECAN_DRIVERS

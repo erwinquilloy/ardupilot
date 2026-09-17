@@ -21,6 +21,7 @@
 #endif
 
 #include <AP_Common/AP_FWVersion.h>
+#include <AP_HAL/AP_HAL_Boards.h>
 #include <AP_Vehicle/AP_Vehicle_Type.h>
 
 // Fork branding + release version. Bump FORK_VERSION on each release
@@ -44,7 +45,13 @@
 #define ACTIVE_FWSTR AP_CUSTOM_FIRMWARE_STRING
 #define ORIGINAL_FWSTR THISFIRMWARE
 #else
+#if AP_CUSTOM_LIGHT
+// Light variant: extra " Light" suffix so users can tell the light
+// .apj apart from the full one in mavlink AUTOPILOT_VERSION + filename.
+#define ACTIVE_FWSTR THISFIRMWARE " Custom " FORK_VERSION " Light"
+#else
 #define ACTIVE_FWSTR THISFIRMWARE " Custom " FORK_VERSION
+#endif
 #define ORIGINAL_FWSTR THISFIRMWARE
 #endif
 

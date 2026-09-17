@@ -1,0 +1,5 @@
+# Bootloader for the custom Holybro Kakute F4 Wing tone-buzzer variant.
+# The bootloader is identical to the stock KakuteF4-Wing (same board ID,
+# same flash layout and pins) - the tone-buzzer change only affects the
+# application firmware, not the bootloader - so we just reuse it.
+include ../KakuteF4-Wing/hwdef-bl.dat

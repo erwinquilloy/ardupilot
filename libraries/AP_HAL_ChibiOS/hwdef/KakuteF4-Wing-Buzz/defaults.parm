@@ -1,0 +1,4 @@
+# The "LED" pad (PA1 / output 7) is the ToneAlarm buzzer on this variant,
+# not a WS2812 LED-strip output. Disable the stock NeoPixel default that the
+# base KakuteF4-Wing sets (SERVO7_FUNCTION 120).
+SERVO7_FUNCTION 0

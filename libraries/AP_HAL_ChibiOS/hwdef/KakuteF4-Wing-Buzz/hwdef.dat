@@ -1,0 +1,31 @@
+# hw definition for a custom Holybro Kakute F4 Wing variant that adds a
+# hardware ToneAlarm (tone) buzzer on the addressable-LED ("LED") pad.
+#
+# The stock Kakute F4 Wing defines no buzzer at all, so ArduPilot tunes
+# (arming, GPS lock, auto-takeoff/launch cues, failsafe) otherwise only
+# beep through the DShot ESCs. This variant repurposes the WS2812 "LED"
+# strip pad - PA1, the board's default servo output 7 / NeoPixel - as a
+# hardware tone buzzer.
+#
+# PA1 is remapped from TIM5_CH2 to TIM2_CH2 and marked ALARM. That defines
+# HAL_PWM_ALARM, so AP_ToneAlarm plays pitched tunes on a passive buzzer
+# wired to the LED pad. TIM2 is unused elsewhere on this board (PWM outputs
+# use TIM1/3/5/8, the system timer is TIM9), so no motor PWM group is
+# affected.
+#
+# Cost: the addressable LED-strip output on the "LED" pad is given up for
+# the buzzer. The onboard PC5 status LED is unaffected, and no M1-M6
+# motor/servo output is lost.
+#
+# Board ID is inherited (Holybro-KakuteF4-Wing) so this flashes over the
+# stock bootloader like a normal firmware update. Wire a *passive* buzzer
+# to the LED pad (signal -> transistor -> buzzer, powered from 5V/GND);
+# see Readme.md.
+
+include ../KakuteF4-Wing/hwdef.dat
+
+# repurpose the WS2812 "LED" pad (PA1) as a tone buzzer on a free timer.
+# TIM2 is unused elsewhere on this board, so the PWM groups (TIM1/3/5/8)
+# and the system timer (TIM9) are unaffected.
+undef PA1
+PA1 TIM2_CH2 TIM2 GPIO(56) ALARM

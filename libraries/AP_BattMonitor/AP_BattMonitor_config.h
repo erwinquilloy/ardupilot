@@ -16,11 +16,26 @@
 #endif
 
 #ifndef AP_BATTERY_BACKEND_DEFAULT_ENABLED
+#if AP_CUSTOM_LIGHT
+// Light variant: flip the global battmon-backend default to OFF. Then
+// below we re-enable only Analog and ESC telemetry — the dominant battery
+// monitoring topologies on FPV/wing builds. DroneCAN (UAVCAN), SMBus, the
+// Fuel/INA/Sum/generator backends all stay off. Mirrors mf0o's
+// master_custom_light approach to flash savings.
+#define AP_BATTERY_BACKEND_DEFAULT_ENABLED 0
+#else
 #define AP_BATTERY_BACKEND_DEFAULT_ENABLED AP_BATTERY_ENABLED
+#endif
 #endif
 
 #ifndef AP_BATTERY_ANALOG_ENABLED
+#if AP_CUSTOM_LIGHT
+// Light variant: keep analog battery monitoring (most common topology
+// for FPV/wing builds).
+#define AP_BATTERY_ANALOG_ENABLED AP_BATTERY_ENABLED
+#else
 #define AP_BATTERY_ANALOG_ENABLED AP_BATTERY_BACKEND_DEFAULT_ENABLED
+#endif
 #endif
 
 #ifndef AP_BATTERY_BEBOP_ENABLED
@@ -32,7 +47,14 @@
 #endif
 
 #ifndef AP_BATTERY_ESC_ENABLED
+#if AP_CUSTOM_LIGHT
+// Light variant: keep ESC telemetry as a battery source (common on
+// CAN-attached / KISS / BLHeli_32 stacks; cheap to keep since
+// HAL_WITH_ESC_TELEM is already gated per-board).
+#define AP_BATTERY_ESC_ENABLED AP_BATTERY_ENABLED && HAL_WITH_ESC_TELEM
+#else
 #define AP_BATTERY_ESC_ENABLED AP_BATTERY_BACKEND_DEFAULT_ENABLED && HAL_WITH_ESC_TELEM
+#endif
 #endif
 
 #ifndef AP_BATTERY_ESC_TELEM_OUTBOUND_ENABLED
@@ -48,7 +70,12 @@
 #endif
 
 #ifndef AP_BATTERY_UAVCAN_BATTERYINFO_ENABLED
+#if AP_CUSTOM_LIGHT
+// Light variant: CAN disabled in strict 2022 definition.
+#define AP_BATTERY_UAVCAN_BATTERYINFO_ENABLED 0
+#else
 #define AP_BATTERY_UAVCAN_BATTERYINFO_ENABLED AP_BATTERY_BACKEND_DEFAULT_ENABLED && HAL_ENABLE_DRONECAN_DRIVERS
+#endif
 #endif
 
 #ifndef AP_BATTERY_FUELFLOW_ENABLED
