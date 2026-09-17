@@ -1335,6 +1335,10 @@ uint8_t GCS_MAVLINK_Plane::send_available_mode(uint8_t index) const
 #if MODE_AUTOLAND_ENABLED
         &plane.mode_autoland,
 #endif
+        // fork modes, so GCSs that build their mode list from
+        // AVAILABLE_MODES show them by name
+        &plane.mode_course_hold,
+        &plane.mode_auto_trim,
     };
 
     const uint8_t fw_mode_count = ARRAY_SIZE(fw_modes);
