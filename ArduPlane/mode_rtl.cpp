@@ -272,7 +272,7 @@ void ModeRTL::navigate()
                     {
                         WITH_SEMAPHORE(ahrs.get_semaphore());
                         wind_v = ahrs.wind_estimate();
-                        yaw_rad = ahrs.get_yaw();
+                        yaw_rad = ahrs.get_yaw_rad();
                     }
                     const float wind_speed_mps = wind_v.length();
                     float wind_angle = 0;

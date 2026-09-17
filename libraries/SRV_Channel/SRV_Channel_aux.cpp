@@ -815,7 +815,7 @@ void SRV_Channels::set_output_to_trim(SRV_Channel::Function function)
   control direction (e.g. "elevator up") regardless of servo wiring.
   Result is clamped to the channel's servo_min / servo_max.
  */
-void SRV_Channels::shift_output_pwm(SRV_Channel::Aux_servo_function_t function, int16_t pwm_shift)
+void SRV_Channels::shift_output_pwm(SRV_Channel::Function function, int16_t pwm_shift)
 {
     if (!SRV_Channel::valid_function(function)) {
         return;

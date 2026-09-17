@@ -429,7 +429,7 @@ public:
     // Fork PR #146 / #147: shift the calculated PWM of every channel
     // assigned to `function` by `pwm_shift` microseconds (negated for
     // reversed channels), clamped to the channel's servo_min / servo_max.
-    static void shift_output_pwm(SRV_Channel::Aux_servo_function_t function, int16_t pwm_shift);
+    static void shift_output_pwm(SRV_Channel::Function function, int16_t pwm_shift);
 
     // get normalised output (-1 to 1 with 0 at mid point of servo_min/servo_max)
     // Value is taken from pwm value.  Returns zero on error.

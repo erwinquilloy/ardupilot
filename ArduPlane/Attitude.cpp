@@ -659,7 +659,7 @@ int16_t Plane::calc_nav_yaw_ground(void)
     {
         WITH_SEMAPHORE(ahrs.get_semaphore());
         gv = ahrs.groundspeed_vector();
-        yaw_rad = ahrs.get_yaw();
+        yaw_rad = ahrs.get_yaw_rad();
     }
     bool reversing = reversed_throttle;
     const float gspd = gv.length();

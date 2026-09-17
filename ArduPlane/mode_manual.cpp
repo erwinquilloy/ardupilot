@@ -1,6 +1,6 @@
 #include "mode.h"
 #include "Plane.h"
-#include "RC_Channel.h"
+#include "RC_Channel_Plane.h"
 
 void ModeManual::update()
 {

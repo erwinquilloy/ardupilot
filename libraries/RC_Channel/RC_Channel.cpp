@@ -1029,7 +1029,7 @@ bool RC_Channel::read_aux()
         const bool switch_reversed = reversed && rc().option_is_enabled(RC_Channels::Option::ALLOW_SWITCH_REV);
         const bool in_range = in >= radio_min && in <= radio_max;
         const bool high = switch_reversed ? !in_range : in_range;
-        run_aux_function(_option, high ? AuxSwitchPos::HIGH : AuxSwitchPos::LOW, AuxFuncTriggerSource::RC);
+        run_aux_function(_option, high ? AuxSwitchPos::HIGH : AuxSwitchPos::LOW, AuxFuncTrigger::Source::RC, ch_in);
         return true;
 #endif
     }
