@@ -249,6 +249,14 @@ void AP_Mount_Backend::handle_msp_headtracker(int16_t pan, int16_t tilt, int16_t
         return;
     }
 
+    // a POI lock (RCx_OPTION 186) holds the gimbal on its point: don't pull it
+    // back to MAVLINK_TARGETING. Re-baseline the pan unwrap so tracking resumes
+    // cleanly from wherever the head is when the POI switch leaves HIGH.
+    if (poi_lock_tracking()) {
+        _ht_pan_valid = false;
+        return;
+    }
+
     // Pan (yaw) is an absolute value that wraps at +/-2048 (like a heading). Unwrap it
     // into a continuous value so that turning past the extreme keeps the gimbal pinned
     // at its yaw limit (via the clamp in set_angle_target) instead of flipping to the
@@ -302,10 +310,21 @@ void AP_Mount_Backend::set_headtracking_enabled(bool enable)
     if (enable) {
         // give the stream a grace period before the stream-loss timeout can trip
         _ht_last_frame_ms = AP_HAL::millis();
-    } else if (!_ht_center_lock) {
+    } else if (!_ht_center_lock && !poi_lock_tracking()) {
         // returning control to the pilot: restore the configured default mode
+        // (unless a POI lock is holding the gimbal, which keeps it)
         set_mode((MAV_MOUNT_MODE)_params.default_mode.get());
     }
+}
+
+// fork: true while the POI lock switch is holding the gimbal on its point
+bool AP_Mount_Backend::poi_lock_tracking() const
+{
+#if AP_MOUNT_POI_LOCK_ENABLED
+    return _poi_lock_engaged && _mode == MAV_MOUNT_MODE_GPS_POINT;
+#else
+    return false;
+#endif
 }
 
 // lock the gimbal to neutral (forward), overriding head tracking (RCx_OPTION toggle)
@@ -340,8 +359,11 @@ void AP_Mount_Backend::update_headtracker()
         _ht_stream_lost = false;  // only relevant while head tracking is enabled
         return;
     }
-    // detect a stale stream (manual center-lock takes precedence but doesn't block detection)
-    if (!_ht_stream_lost && (AP_HAL::millis() - _ht_last_frame_ms > AP_MOUNT_HT_STREAM_TIMEOUT_MS)) {
+    // detect a stale stream (manual center-lock takes precedence but doesn't block detection).
+    // Not while a POI lock is tracking: stream loss would otherwise yank the gimbal to
+    // neutral and drop the earth-frame locks the POI tracking relies on.
+    if (!_ht_stream_lost && !poi_lock_tracking() &&
+        (AP_HAL::millis() - _ht_last_frame_ms > AP_MOUNT_HT_STREAM_TIMEOUT_MS)) {
         _ht_stream_lost = true;
         if (!_ht_center_lock) {
             // engage the center + FPV lock (manual center-lock already holds NEUTRAL)
@@ -369,6 +391,7 @@ void AP_Mount_Backend::set_roi_target(const Location &target_loc)
 // set poi_lock - switch to GPS Targeting mode using current gimbal view's GPS point or save poi location as target
 void AP_Mount_Backend::set_poi_lock()
 {
+    _poi_lock_engaged = true;  // fork: head tracking yields while the POI is tracked
     saved_mount_mode = get_mode(); //save current mount mode for the suspend_poi_lock
     if (!roi_is_set()) {
         mnt_target.poi_start_ms = AP_HAL::millis();
@@ -384,6 +407,7 @@ void AP_Mount_Backend::set_poi_lock()
 // clear poi_lock - clear POI location and revert to default mode
 void AP_Mount_Backend::clear_poi_lock()
 {
+        _poi_lock_engaged = false;  // fork: hand the gimbal back to head tracking
         GCS_SEND_TEXT(MAV_SEVERITY_INFO, "POI: Cleared");
         clear_roi_target();
 }
@@ -391,6 +415,7 @@ void AP_Mount_Backend::clear_poi_lock()
 // suspend_poi_lock - revert to saved targeting mode, if it exists and POI target exists, otherwise do nothing
 void AP_Mount_Backend::suspend_poi_lock()
 {
+    _poi_lock_engaged = false;  // fork: hand the gimbal back to head tracking
     if (roi_is_set() && saved_mount_mode != MAV_MOUNT_MODE_ENUM_END) {
         set_mode(saved_mount_mode);    // set back to mode before GPS_POINT if its been set by switch going HIGH
         GCS_SEND_TEXT(MAV_SEVERITY_INFO, "POI: Revert mode,target saved");;
