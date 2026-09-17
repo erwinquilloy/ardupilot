@@ -2590,6 +2590,9 @@ v2.0, and a board that was wiped first has nothing to convert.
 | QuadPlane position, pilot-speed and landing speeds (cm/s) | same parameters in m/s, some renamed (`Q_PILOT_SPD_UP`, `Q_WP_SPD`, …) | |
 | `Q_P_JERK_NE` / `Q_P_JERK_D` | `Q_P_NE_JERK` / `Q_P_D_JERK` | value kept |
 | `EK3_MAX_FLOW` | `EK3_FLOW_MAX` | |
+| `RNGFNDn_MIN_CM` / `RNGFNDn_MAX_CM` / `RNGFNDn_GNDCLEAR` (cm) | `RNGFNDn_MIN` / `RNGFNDn_MAX` / `RNGFNDn_GNDCLR` (metres) | e.g. TFmini `RNGFND1_MAX_CM 1200` becomes `RNGFND1_MAX 12` |
+| `CAM_RC_*` (RunCam) | `CAM2_RC_*` | RunCam control is now camera 2 (`CAM2_TYPE 8`), set up automatically when a RunCam serial port or `CAM_RC_TYPE` was configured |
+| `GLIDE_SLOPE_MIN` / `GLIDE_SLOPE_THR` | `ALT_SLOPE_MIN` / `ALT_SLOPE_MAXHGT` | renamed only; value kept |
 | fork: `LAND_WIND_STRICT`, `VEHICLE_UID`, `TKOFF_THR_IDLE` | same names | storage moved because 4.7 reused the old slots; values carried over |
 
 **Needs a manual change:**
