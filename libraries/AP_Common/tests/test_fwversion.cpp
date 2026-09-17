@@ -24,7 +24,7 @@ TEST(AP_FWVersion, FWVersion)
     EXPECT_EQ(AP::fwversion().patch, FW_PATCH);
     EXPECT_EQ(AP::fwversion().fw_type, FW_TYPE);
     EXPECT_EQ(AP::fwversion().os_sw_version, 0u);
-    // The fork appends " ArduCustom <ver> [Light]" to the upstream
+    // The fork appends " Custom <ver> [Light]" to the upstream
     // THISFIRMWARE prefix, so fw_string / fw_short_string start with (but no
     // longer equal) THISFIRMWARE; fw_string_original keeps the bare upstream
     // string verbatim.
