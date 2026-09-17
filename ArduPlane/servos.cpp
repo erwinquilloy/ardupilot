@@ -60,7 +60,9 @@ void Plane::throttle_slew_limit()
             // be seeded at TKOFF_THR_IDLE and skip the ramp entirely -- the idle
             // throttle would step straight to TKOFF_THR_IDLE on the first raise
             // after boot, and only ramp on subsequent ones.
-            SRV_Channels::set_slew_rate(func, 1, 100, G_Dt);
+            SRV_Channels::set_slew_rate(SRV_Channel::k_throttle,      1, 100, G_Dt);
+            SRV_Channels::set_slew_rate(SRV_Channel::k_throttleLeft,  1, 100, G_Dt);
+            SRV_Channels::set_slew_rate(SRV_Channel::k_throttleRight, 1, 100, G_Dt);
             // ...then disable it below, so stick-down stays an instant snap.
             slewrate = 0;
         } else {
@@ -1188,7 +1190,7 @@ void Plane::landing_neutral_control_surface_servos(void)
   and split the k_aileron output into k_aileron_left / k_aileron_right
   with the differential throw applied per side.
  */
-void Plane::channel_function_apply_diff(SRV_Channel::Aux_servo_function_t func, float diff) const
+void Plane::channel_function_apply_diff(SRV_Channel::Function func, float diff) const
 {
     const float input = SRV_Channels::get_output_scaled(func);
     SRV_Channels::set_output_scaled(func, apply_throws_diff(input, diff));

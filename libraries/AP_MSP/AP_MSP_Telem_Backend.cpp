@@ -973,8 +973,8 @@ MSPCommandResult AP_MSP_Telem_Backend::msp_process_out_attitude(sbuf_t *dst)
 #else
         // AP_Periph builds: AP::vehicle() isn't compiled in. Fall back to
         // raw AHRS attitude — AP_Periph doesn't have OSD/trim overrides anyway.
-        roll = ahrs.get_roll();
-        pitch = ahrs.get_pitch();
+        roll = ahrs.get_roll_rad();
+        pitch = ahrs.get_pitch_rad();
 #endif
         yaw_cd = ahrs.yaw_sensor;
     }

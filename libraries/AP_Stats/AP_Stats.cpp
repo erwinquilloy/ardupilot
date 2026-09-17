@@ -310,7 +310,7 @@ void AP_Stats::update_flying_distances_and_speeds(uint32_t flying_update_delta, 
             home_loc = ahrs.get_home();
         }
         ahrs.get_relative_position_D_home(relative_altitude_m);
-        have_airspeed_estimate = ahrs.airspeed_estimate(air_speed_mps);
+        have_airspeed_estimate = ahrs.airspeed_EAS(air_speed_mps);
 
         wind_speed_vector = ahrs.wind_estimate();
     }
@@ -362,7 +362,7 @@ void AP_Stats::update_flying_travel(uint32_t flying_update_delta, uint32_t old_f
         AP_AHRS &ahrs = AP::ahrs();
         WITH_SEMAPHORE(ahrs.get_semaphore());
         ground_speed_vector = ahrs.groundspeed_vector();
-        have_airspeed_estimate = ahrs.airspeed_estimate(air_speed_mps);
+        have_airspeed_estimate = ahrs.airspeed_EAS(air_speed_mps);
     }
 
     float ground_speed_mps = ground_speed_vector.length();

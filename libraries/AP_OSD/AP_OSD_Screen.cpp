@@ -2012,7 +2012,7 @@ void AP_OSD_Screen::draw_speed(uint8_t x, uint8_t y, float magnitude)
 // draw an arrow at the given angle, then print the given magnitude immediately after
 void AP_OSD_Screen::draw_speed_with_arrow(uint8_t x, uint8_t y, float angle_rad, float magnitude)
 {
-    const int32_t angle_cd = angle_rad * DEGX100;
+    const int32_t angle_cd = rad_to_cd(angle_rad);
     const char arrow = get_arrow_font_index(angle_cd);
     backend->write(x, y, false, "%c", arrow);
     draw_speed(x+1, y, magnitude);
@@ -2055,7 +2055,7 @@ void AP_OSD_Screen::draw_horizon(uint8_t x, uint8_t y)
         roll = -roll;
     }
 
-    const float ah_pitch_max = ToRad(osd->ah_pitch_max);
+    const float ah_pitch_max = radians(osd->ah_pitch_max);
     // 9 lines but remove a little bit so that half of the line doesn't disappear for very small roll angles
     const float ah_pitch_rad_to_char = 8.8f / (2 * ah_pitch_max);
 
@@ -2205,7 +2205,7 @@ void AP_OSD_Screen::draw_radar(uint8_t x, uint8_t y)
         const Location &peer_loc = peer.location;
         float distance = loc.get_distance(peer_loc);
         ftype vertical_distance;
-        if (!peer_loc.get_alt_distance(loc, vertical_distance)) {
+        if (!peer_loc.get_height_above(loc, vertical_distance)) {
             vertical_distance = 0.0f;
         }
         int32_t angle_cd = wrap_360_cd(loc.get_bearing_to(peer_loc) - ahrs.yaw_sensor);
@@ -2693,7 +2693,7 @@ void AP_OSD_Screen::draw_roll_angle(uint8_t x, uint8_t y)
         WITH_SEMAPHORE(ahrs.get_semaphore());
         AP::vehicle()->get_osd_roll_pitch_rad(roll, pitch);
     }
-    roll = ToDeg(roll);
+    roll = degrees(roll);
     const bool one_decimal = osd->options & AP_OSD::OPTION_ONE_DECIMAL_ATTITUDE;
     const float level_symbol_max_angle = one_decimal ? 0.049f : 0.45f;
     const float roll_abs = fabsf(roll);
@@ -2741,7 +2741,7 @@ void AP_OSD_Screen::draw_pitch_angle(uint8_t x, uint8_t y)
         WITH_SEMAPHORE(ahrs.get_semaphore());
         AP::vehicle()->get_osd_roll_pitch_rad(roll, pitch);
     }
-    draw_pitch(x, y, ToDeg(pitch));
+    draw_pitch(x, y, degrees(pitch));
 }
 
 void AP_OSD_Screen::draw_aoa(uint8_t x, uint8_t y)
@@ -3151,7 +3151,7 @@ void AP_OSD_Screen::draw_eff_air(uint8_t x, uint8_t y)
     {
         AP_AHRS &ahrs = AP::ahrs();
         WITH_SEMAPHORE(ahrs.get_semaphore());
-        have_airspeed = ahrs.airspeed_estimate(airspeed_mps);
+        have_airspeed = ahrs.airspeed_EAS(airspeed_mps);
     }
     const float speed = have_airspeed ? u_scale(SPEED, airspeed_mps) : 0;
 
