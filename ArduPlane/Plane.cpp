@@ -26,6 +26,8 @@
 #include "version.h"
 #undef FORCE_VERSION_H_INCLUDE
 
+#include <GCS_MAVLink/GCS_FTP.h>
+
 const AP_HAL::HAL& hal = AP_HAL::get_HAL();
 
 #define SCHED_TASK(func, rate_hz, max_time_micros, priority) SCHED_TASK_CLASS(Plane, &plane, func, rate_hz, max_time_micros, priority)
@@ -361,6 +363,16 @@ extern AP_IOMCU iomcu;
 
 void Plane::one_second_loop()
 {
+#if AP_MAVLINK_FTP_ENABLED
+    // Start MAVFTP early on low-RAM MCUs, before the heap fragments,
+    // instead of on the first FTP request. Bounded so a board that can
+    // never start it doesn't retry (and warn) every second forever.
+    static uint8_t ftp_preinit_tries = 10;
+    if (ftp_preinit_tries > 0) {
+        ftp_preinit_tries = GCS_FTP::preinit() ? 0 : ftp_preinit_tries - 1;
+    }
+#endif
+
     // make it possible to change control channel ordering at runtime
     set_control_channels();
 
