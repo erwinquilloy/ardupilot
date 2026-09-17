@@ -364,14 +364,14 @@ public:
         k_param_autotune_options,
         k_param_takeoff_throttle_min,
         k_param_takeoff_options,
-        k_param_takeoff_throttle_idle,
+        k_param_radar,  // fork: 4.6.3 slot kept so saved RADAR_* survive the upgrade; upstream 4.7 puts takeoff_throttle_idle here
 
         k_param_pullup = 270,
         k_param_quicktune,
-        k_param_mode_autoland,
-        k_param__gcs,
-        k_param_radar,  // fork: was the slot after k_param_takeoff_options on 4.6.3, which upstream 4.7 gave to TKOFF_THR_IDLE
-        k_param_rtl_autoland_commit_delay,  // fork RTL_AUTOLAND_DLY (key 272 on 4.6.3, upstream 4.7 gave 272 to mode_autoland): RC-failsafe grace before the gated autoland commit
+        k_param_rtl_autoland_commit_delay,  // fork RTL_AUTOLAND_DLY: 4.6.3 slot (272) kept; upstream 4.7 puts mode_autoland here
+        k_param__gcs,                       // 273, same as upstream
+        k_param_takeoff_throttle_idle,      // fork: moved here, radar keeps its 4.6.3 slot above
+        k_param_mode_autoland,              // fork: moved here from 272; compiled out (MODE_AUTOLAND_ENABLED 0)
 
     };
 
@@ -559,7 +559,6 @@ public:
 
     // Pre-launch idle throttle: when armed in an auto-takeoff state, hold
     // a small throttle the moment the pilot raises the stick.
-    AP_Float takeoff_idle_thr;
     AP_Int8  takeoff_idle_thr_slewrate;
     AP_Int8  takeoff_idle_thr_delay;
 

@@ -787,10 +787,10 @@ void Plane::set_throttle(void)
             // throttle is suppressed (above) to zero in final flare in auto mode, but we allow instead thr_min if user prefers, eg turbines:
             SRV_Channels::set_output_scaled(SRV_Channel::k_throttle, aparm.throttle_min.get());
 
-        } else if (in_pre_takeoff && !is_zero(g2.takeoff_idle_thr) && !is_zero(get_throttle_input(false))) {
+        } else if (in_pre_takeoff && aparm.takeoff_throttle_idle > 0 && !is_zero(get_throttle_input(false))) {
             // Pre-launch idle throttle: hold TKOFF_THR_IDLE while the stick is raised,
             // climbing to it at TKOFF_IDL_SRATE (slew rate applied via throttle_slew_limit()).
-            float idle_throttle = g2.takeoff_idle_thr.get();
+            float idle_throttle = aparm.takeoff_throttle_idle.get();
             bool delay_active = false;
 
             // ArduCustom #185: optional delay between first stick-up and idle ramp.
@@ -816,7 +816,7 @@ void Plane::set_throttle(void)
             // Takeoff cue: WAITING_FOR_IDLE_THROTTLE while ramping up (or
             // waiting on TKOFF_IDL_DELAY), WAITING_FOR_LAUNCH once at idle.
             const float current_throttle = SRV_Channels::get_slew_limited_output_scaled(SRV_Channel::k_throttle);
-            AP_Notify::takeoff_status = (delay_active || current_throttle < g2.takeoff_idle_thr)
+            AP_Notify::takeoff_status = (delay_active || current_throttle < aparm.takeoff_throttle_idle.get())
                                             ? AP_Notify::TKOFS_WAITING_FOR_IDLE_THROTTLE
                                             : AP_Notify::TKOFS_WAITING_FOR_LAUNCH;
 
@@ -829,7 +829,7 @@ void Plane::set_throttle(void)
             // Takeoff cue: if we're in a pre-takeoff state with stick at zero,
             // tell the pilot to raise it. Otherwise leave status at TKOFS_IDLE.
             if (in_pre_takeoff) {
-                AP_Notify::takeoff_status = is_zero(g2.takeoff_idle_thr)
+                AP_Notify::takeoff_status = (aparm.takeoff_throttle_idle <= 0)
                                                 ? AP_Notify::TKOFS_WAITING_FOR_LAUNCH
                                                 : AP_Notify::TKOFS_WAITING_TO_RAISE_THROTTLE;
             }
