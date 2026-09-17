@@ -3437,7 +3437,7 @@ void AP_OSD_Screen::draw_rngf(uint8_t x, uint8_t y)
             attitude_angle = ahrs.get_rotation_body_to_ned().c.z;
         }
         const float distance = (rangefinder->distance_orient(ROTATION_PITCH_270)
-                                - rangefinder->ground_clearance_cm_orient(ROTATION_PITCH_270) * 0.01f) * attitude_angle;
+                                - rangefinder->ground_clearance_orient(ROTATION_PITCH_270)) * attitude_angle;
         const float distance_abs = fabsf(distance);
 
         uint8_t spaces;
