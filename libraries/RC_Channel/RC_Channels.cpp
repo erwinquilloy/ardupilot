@@ -390,7 +390,7 @@ void RC_Channels::rudder_arm_disarm_check()
     const auto control_in = channel->get_control_in();
     const auto abs_control_in = abs(control_in);
 
-    if (abs_control_in == 0) {
+    if (is_zero(abs_control_in)) {
         have_seen_neutral_rudder = true;
     }
 
@@ -405,7 +405,7 @@ void RC_Channels::rudder_arm_disarm_check()
         // only permit arming if the vehicle isn't being commanded to
         // move via RC input
         const auto &c = rc().get_throttle_channel();
-        if (c.get_control_in() != 0) {
+        if (!is_zero(c.get_control_in())) {
             rudder_arm_timer = 0;
             return;
         }
