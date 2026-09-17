@@ -10,15 +10,36 @@
 #endif
 
 #ifndef AP_RCPROTOCOL_BACKEND_DEFAULT_ENABLED
+#if AP_CUSTOM_LIGHT
+// Light variant: flip the global RC-protocol backend default to OFF, then
+// re-enable CRSF + SBUS + FPORT + FPORT2 + IBUS below — the dominant
+// receivers for ELRS / TBS Crossfire / FrSky / FlySky hardware. DroneCAN
+// and the rest (DSM, PPMSUM, SRXL/SRXL2, ST24, SUMD, GHST) stay off.
+// Mirrors mf0o's "Disable useless RCIN protocols" commit; note we
+// additionally keep FPORT2 (mf0o's 2022 strip dropped it).
+#define AP_RCPROTOCOL_BACKEND_DEFAULT_ENABLED 0
+#else
 #define AP_RCPROTOCOL_BACKEND_DEFAULT_ENABLED AP_RCPROTOCOL_ENABLED
+#endif
 #endif
 
 #ifndef AP_RCPROTOCOL_CRSF_ENABLED
+#if AP_CUSTOM_LIGHT
+// Light variant: keep CRSF (covers ELRS + TBS Crossfire — by far the most
+// common modern receivers).
+#define AP_RCPROTOCOL_CRSF_ENABLED AP_RCPROTOCOL_ENABLED
+#else
 #define AP_RCPROTOCOL_CRSF_ENABLED AP_RCPROTOCOL_BACKEND_DEFAULT_ENABLED
+#endif
 #endif
 
 #ifndef AP_RCPROTOCOL_DRONECAN_ENABLED
+#if AP_CUSTOM_LIGHT
+// Light variant: CAN disabled in strict 2022 definition.
+#define AP_RCPROTOCOL_DRONECAN_ENABLED 0
+#else
 #define AP_RCPROTOCOL_DRONECAN_ENABLED AP_RCPROTOCOL_BACKEND_DEFAULT_ENABLED && HAL_ENABLE_DRONECAN_DRIVERS
+#endif
 #endif
 
 #ifndef AP_RCPROTOCOL_DSM_ENABLED
@@ -30,14 +51,32 @@
 #endif
 
 #ifndef AP_RCPROTOCOL_FPORT_ENABLED
+#if AP_CUSTOM_LIGHT
+// Light variant: keep FPORT (one of the four allowed RC protocols
+// in the strict 2022 definition: SBUS, CRSF, IBUS, FPORT).
+#define AP_RCPROTOCOL_FPORT_ENABLED AP_RCPROTOCOL_ENABLED
+#else
 #define AP_RCPROTOCOL_FPORT_ENABLED AP_RCPROTOCOL_BACKEND_DEFAULT_ENABLED
 #endif
+#endif
 #ifndef AP_RCPROTOCOL_FPORT2_ENABLED
+#if AP_CUSTOM_LIGHT
+// Light variant: keep FPORT2 as a sibling of FPORT, gated on the
+// FrSky SPort telem path that the protocol layers on top of.
+#define AP_RCPROTOCOL_FPORT2_ENABLED AP_RCPROTOCOL_ENABLED && AP_FRSKY_SPORT_TELEM_ENABLED
+#else
 #define AP_RCPROTOCOL_FPORT2_ENABLED AP_RCPROTOCOL_BACKEND_DEFAULT_ENABLED && AP_FRSKY_SPORT_TELEM_ENABLED
+#endif
 #endif
 
 #ifndef AP_RCPROTOCOL_IBUS_ENABLED
+#if AP_CUSTOM_LIGHT
+// Light variant: keep IBUS (FlySky receivers; allowed by the strict
+// 2022 list).
+#define AP_RCPROTOCOL_IBUS_ENABLED AP_RCPROTOCOL_ENABLED
+#else
 #define AP_RCPROTOCOL_IBUS_ENABLED AP_RCPROTOCOL_BACKEND_DEFAULT_ENABLED
+#endif
 #endif
 
 #ifndef AP_RCPROTOCOL_IOMCU_ENABLED
@@ -57,7 +96,12 @@
 #endif
 
 #ifndef AP_RCPROTOCOL_SBUS_ENABLED
+#if AP_CUSTOM_LIGHT
+// Light variant: keep SBUS (FrSky / Futaba / older Crossfire mode).
+#define AP_RCPROTOCOL_SBUS_ENABLED AP_RCPROTOCOL_ENABLED
+#else
 #define AP_RCPROTOCOL_SBUS_ENABLED AP_RCPROTOCOL_BACKEND_DEFAULT_ENABLED
+#endif
 #endif
 
 #ifndef AP_RCPROTOCOL_SRXL_ENABLED
@@ -93,9 +137,24 @@
 #endif
 
 #ifndef AP_RCPROTOCOL_UDP_ENABLED
+#if AP_CUSTOM_LIGHT
+// Light variant: the UDP/FDM backends are the SITL RC-input path. They must
+// stay enabled on SITL even though real-hardware RX protocols are stripped
+// (BACKEND_DEFAULT_ENABLED = 0), otherwise a SITL build has no RC at all and
+// autotest hangs at "PreArm: Waiting for RC". They are SITL-only, so this
+// costs zero flash on the F4/H7 targets the light variant actually ships.
+#define AP_RCPROTOCOL_UDP_ENABLED (CONFIG_HAL_BOARD == HAL_BOARD_SITL)
+#else
 #define AP_RCPROTOCOL_UDP_ENABLED AP_RCPROTOCOL_BACKEND_DEFAULT_ENABLED && (CONFIG_HAL_BOARD == HAL_BOARD_SITL)
+#endif
 #endif
 
 #ifndef AP_RCPROTOCOL_FDM_ENABLED
+#if AP_CUSTOM_LIGHT
+// Light variant: SITL-only RC-input backend — see AP_RCPROTOCOL_UDP_ENABLED
+// above. Kept on for SITL so autotest has RC; zero flash cost on real boards.
+#define AP_RCPROTOCOL_FDM_ENABLED (CONFIG_HAL_BOARD == HAL_BOARD_SITL)
+#else
 #define AP_RCPROTOCOL_FDM_ENABLED AP_RCPROTOCOL_BACKEND_DEFAULT_ENABLED && (CONFIG_HAL_BOARD == HAL_BOARD_SITL)
+#endif
 #endif

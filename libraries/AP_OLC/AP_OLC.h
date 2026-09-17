@@ -20,7 +20,10 @@
 #include <AP_HAL/AP_HAL_Boards.h>
 
 #ifndef HAL_PLUSCODE_ENABLE
-#define HAL_PLUSCODE_ENABLE HAL_PROGRAM_SIZE_LIMIT_KB > 1024
+// Plus code (OLC) OSD element, forced on for every board including the 1 MB
+// F4s (~2-3 KB flash). Upstream only builds it for boards with more than
+// 1 MB of flash.
+#define HAL_PLUSCODE_ENABLE 1
 #endif
 
 
