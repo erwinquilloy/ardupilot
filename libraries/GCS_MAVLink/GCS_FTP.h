@@ -19,6 +19,9 @@ public:
     static void handle_file_transfer_protocol(const mavlink_message_t &msg, mavlink_channel_t chan);
     static uint32_t get_last_send_ms(mavlink_channel_t chan);
 
+    // fork: start MAVFTP before the first request arrives, see GCS_FTP.cpp
+    static bool preinit(void);
+
 private:
     enum class FTP_OP : uint8_t {
         None = MAV_FTP_OPCODE_NONE,

@@ -56,6 +56,29 @@ bool GCS_FTP::init(void)
 }
 
 /*
+  fork (ArduCustom b7ecb389a6): allocate MAVFTP and start its worker thread
+  from the vehicle's 1 Hz loop instead of on the first FTP request. On
+  low-RAM MCUs the request can arrive after the heap has fragmented, and the
+  2560 byte thread stack then fails to allocate. Returns true once there is
+  nothing left to do, including when MAVFTP is disabled.
+ */
+bool GCS_FTP::preinit(void)
+{
+#if !defined(HAL_BUILD_AP_PERIPH)
+    if (AP_BoardConfig::ftp_disabled()) {
+        return true;
+    }
+#endif
+    if (ftp == nullptr) {
+        ftp = NEW_NOTHROW GCS_FTP;
+        if (ftp == nullptr) {
+            return false;
+        }
+    }
+    return ftp->init();
+}
+
+/*
   handle a FILE_TRANSFER_PROTOCOL message
  */
 void GCS_FTP::handle_file_transfer_protocol(const mavlink_message_t &msg, mavlink_channel_t chan)
