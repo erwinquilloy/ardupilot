@@ -1,10 +1,11 @@
-# Parameter documentation — `master_custom_4.6.3` fork
+# Parameter documentation — `master_custom_4.7.1` fork (v2.0)
 
-Machine-generated parameter metadata for **this fork** of ArduPlane.
-Regenerated from source via:
+Machine-generated parameter metadata for **this fork** of ArduPlane
+(v2.0, ArduPlane 4.7.1 base). One set covers both the full and the light
+release tracks. Regenerated from source via:
 
 ```bash
-python Tools/autotest/param_metadata/param_parse.py --vehicle ArduPlane
+python3 Tools/autotest/param_metadata/param_parse.py --vehicle ArduPlane --format all
 ```
 
 The files in this directory cover **every parameter** that the firmware
@@ -38,22 +39,20 @@ A standalone calculator that loads `apm.pdef.json` and lets you tick bits
 to compute integer values (or paste a value to see which bits are set)
 lives at [`docs/bitmask_calculator.html`](../bitmask_calculator.html).
 It's a single self-contained HTML file — no server, no analytics, runs
-in your browser. Defaults to fetching the JSON from the light branch's
-raw URL; can also load from the full branch, a custom URL, or a local
-file.
+in your browser. Defaults to fetching the JSON for v2.0 from this
+branch's raw URL; can also load the v1.1 (4.6.3-base) set, a custom URL,
+or a local file.
 
 ## Stable URLs for tooling
 
 For a bitmask calculator or similar app, fetch the JSON directly:
 
 ```
-https://raw.githubusercontent.com/erwinquilloy/ardupilot/master_custom_4.6.3/docs/parameters/apm.pdef.json
-https://raw.githubusercontent.com/erwinquilloy/ardupilot/master_custom_4.6.3_light/docs/parameters/apm.pdef.json
+https://raw.githubusercontent.com/erwinquilloy/ardupilot/master_custom_4.7.1/docs/parameters/apm.pdef.json
 ```
 
-Both URLs serve identical content — parameter table definitions are
-the same on the full and light branches. Pick whichever matches the
-firmware variant your users flash.
+This covers v2.0 firmware on both release tracks. Firmware up to v1.1
+(ArduPlane 4.6.3 base) is described by the copy on `master_custom_4.6.3`.
 
 ## Bitmask params worth knowing
 
