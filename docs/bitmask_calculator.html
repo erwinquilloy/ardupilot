@@ -198,7 +198,7 @@
 <p class="sub">
   <strong>Just open the link in a browser</strong> &mdash; the calculator
   loads instantly from
-  <a href="https://raw.githack.com/erwinquilloy/ardupilot/master_custom_4.6.3_light/docs/bitmask_calculator.html" target="_blank" rel="noopener">raw.githack.com</a>,
+  <a href="https://raw.githack.com/erwinquilloy/ardupilot/master_custom_4.7.1/docs/bitmask_calculator.html" target="_blank" rel="noopener">raw.githack.com</a>,
   no download or GitHub account needed.
 </p>
 
@@ -234,10 +234,10 @@
       plain text and won't render. Use a "raw to rendered" CDN like
       <a href="https://raw.githack.com" target="_blank" rel="noopener">raw.githack.com</a>:
     </p>
-    <pre><code>https://raw.githack.com/erwinquilloy/ardupilot/master_custom_4.6.3_light/docs/bitmask_calculator.html</code></pre>
+    <pre><code>https://raw.githack.com/erwinquilloy/ardupilot/master_custom_4.7.1/docs/bitmask_calculator.html</code></pre>
     <p>
       Bookmark that URL and it always serves the latest version from
-      the light branch.
+      the branch.
     </p>
 
     <p><strong>Then, to compute a value:</strong></p>
@@ -255,13 +255,13 @@
       <li>The bit checkboxes will reflect which bits are set.</li>
     </ol>
 
-    <p><strong>Switching branches:</strong></p>
+    <p><strong>Which source to pick:</strong></p>
     <p>
-      Use the <em>Source</em> dropdown to pick the light or full
-      branch's <code>apm.pdef.json</code>. Content is byte-identical
-      between the two on this fork — the strip is only of hardware
-      backends at compile time, not of parameter definitions — so
-      either works for the calculator.
+      The default source matches <strong>v2.0</strong> firmware (ArduPlane
+      4.7.1 base), for both the full and the light release tracks — they
+      share one parameter set. If you still fly <strong>v1.1 or
+      earlier</strong> (ArduPlane 4.6.3 base), pick the v1.1 source: a few
+      bits and parameters differ between the two.
     </p>
   </div>
 </details>
@@ -270,8 +270,8 @@
   <div class="row">
     <label for="source">Source:</label>
     <select id="source">
-      <option value="https://raw.githubusercontent.com/erwinquilloy/ardupilot/master_custom_4.6.3_light/docs/parameters/apm.pdef.json">Light branch — raw.githubusercontent.com</option>
-      <option value="https://raw.githubusercontent.com/erwinquilloy/ardupilot/master_custom_4.6.3/docs/parameters/apm.pdef.json">Full branch — raw.githubusercontent.com</option>
+      <option value="https://raw.githubusercontent.com/erwinquilloy/ardupilot/master_custom_4.7.1/docs/parameters/apm.pdef.json">v2.0 (master_custom_4.7.1) — raw.githubusercontent.com</option>
+      <option value="https://raw.githubusercontent.com/erwinquilloy/ardupilot/master_custom_4.6.3/docs/parameters/apm.pdef.json">v1.1 and earlier (master_custom_4.6.3) — raw.githubusercontent.com</option>
       <option value="./parameters/apm.pdef.json">Local (./parameters/apm.pdef.json)</option>
       <option value="custom">Custom URL…</option>
       <option value="file">Upload file…</option>
@@ -304,7 +304,7 @@
   </p>
   <p>
     Source / report issues:
-    <a href="https://github.com/erwinquilloy/ardupilot/blob/master_custom_4.6.3_light/docs/bitmask_calculator.html" target="_blank" rel="noopener">docs/bitmask_calculator.html</a>
+    <a href="https://github.com/erwinquilloy/ardupilot/blob/master_custom_4.7.1/docs/bitmask_calculator.html" target="_blank" rel="noopener">docs/bitmask_calculator.html</a>
   </p>
 </footer>
 
