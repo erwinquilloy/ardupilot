@@ -158,7 +158,7 @@ const AP_Param::Info Plane::var_info[] = {
 
     // @Param: TKOFF_THR_IDLE
     // @DisplayName: Takeoff idle throttle
-    // @Description: The idle throttle to hold after arming and before a takeoff. Applicable in TAKEOFF and AUTO modes.
+    // @Description: Throttle to hold before launch when the throttle stick is raised, while in an auto-takeoff state of AUTO (NAV_TAKEOFF) or TAKEOFF mode. Useful for keeping an ICE engine running at idle before launch or for spinning an electric motor at a low RPM ready to launch. It ramps up at TKOFF_IDL_SRATE after an optional TKOFF_IDL_DELAY. When 0 (default) this feature is disabled and the throttle stays at 0 until takeoff is triggered.
     // @Units: %
     // @Range: 0 100
     // @Increment: 1
@@ -1469,7 +1469,7 @@ const AP_Param::GroupInfo ParametersG2::var_info[] = {
     // @Description: Chooses what happens when LAND_WIND_DIST eliminates every DO_LAND_START candidate. Purpose: let the pilot decide whether the distance cap is a soft preference or a hard boundary. 0 (default, soft fallback): fall through to upstream nearest-across-all so the plane still attempts a landing even if the only survivor is far outside the cap -- preserves the failsafe safety-net at the cost of occasionally flying farther than the cap suggests. 1 (hard fence): refuse the autoland when nothing survives the cap; RTL stays in RTL and the plane keeps loitering at HOME/rally requiring pilot intervention. LAND_WIND_DIST becomes a true hard boundary for autoland. WARNING: under strict mode a battery failsafe with no in-cap landing will not attempt to land -- the plane loiters until the battery dies. Only enable strict if you understand this trade-off. Ignored when LAND_WIND_DIST = 0 (no cap) or LAND_WIND_BIAS = 0 (whole feature off).
     // @Values: 0:Soft fallback (attempt landing anyway),1:Hard fence (loiter instead of landing)
     // @User: Standard
-    AP_GROUPINFO("LAND_WIND_STRICT", 37, ParametersG2, rtl_land_wind_bias_strict, 0),
+    AP_GROUPINFO("LAND_WIND_STRICT", 41, ParametersG2, rtl_land_wind_bias_strict, 0),  // fork: was 37 on 4.6.3, upstream 4.7 took 37 for FWD_BAT_THR_CUT
 
     // @Param: FLTMODE_EXT
     // @DisplayName: Enable 12-position FLTMODE_CH
@@ -1552,14 +1552,8 @@ const AP_Param::GroupInfo ParametersG2::var_info[] = {
     // @User: Standard
     AP_GROUPINFO("TKOFF_IDL_DELAY", 45, ParametersG2, takeoff_idle_thr_delay, 0),
 
-    // @Param: TKOFF_THR_IDLE
-    // @DisplayName: Idle throttle for takeoff
-    // @Description: Throttle to hold before launch when the throttle stick is raised, while in an auto-takeoff state of AUTO (NAV_TAKEOFF) or TAKEOFF mode. Useful for keeping an ICE engine running at idle before launch or for spinning an electric motor at a low RPM ready to launch. When 0 (default) this feature is disabled and the throttle stays at 0 until takeoff is triggered.
-    // @Units: %
-    // @Range: 0 100
-    // @Increment: 1
-    // @User: Advanced
-    AP_GROUPINFO("TKOFF_THR_IDLE", 47, ParametersG2, takeoff_idle_thr, 0),
+    // 47 was the fork's own TKOFF_THR_IDLE on 4.6.3. Upstream 4.7 added TKOFF_THR_IDLE
+    // as a top-level param, which the fork now uses; do not reuse 47.
 
     AP_GROUPEND
 };
@@ -1846,4 +1840,21 @@ void Plane::load_parameters(void)
         AP_Param::convert_old_parameters(&gcs_conversion_info[0], ARRAY_SIZE(gcs_conversion_info));
     }
 #endif  // HAL_GCS_ENABLED
+
+    // fork: move values saved by the 4.6.3-based fork out of storage slots
+    // that upstream 4.7 gave to its own parameters. Each old slot now holds
+    // an upstream parameter of a different type, so the old values can't be
+    // mistaken for the new ones.
+    // PARAMETER_CONVERSION - Added: fork v2.0 (Plane-4.7.1 base)
+    {
+        static const AP_Param::ConversionInfo fork_conversion_info[] {
+            // fork's own TKOFF_THR_IDLE (float); the fork now uses upstream's
+            { Parameters::k_param_g2,     47, AP_PARAM_FLOAT, "TKOFF_THR_IDLE" },
+            // G2 37 is upstream's FWD_BAT_THR_CUT (float)
+            { Parameters::k_param_g2,     37, AP_PARAM_INT8,  "LAND_WIND_STRICT" },
+            // AP_Vehicle 32 is upstream's RPM group
+            { Parameters::k_param_vehicle, 32, AP_PARAM_INT32, "VEHICLE_UID" },
+        };
+        AP_Param::convert_old_parameters(&fork_conversion_info[0], ARRAY_SIZE(fork_conversion_info));
+    }
 }
