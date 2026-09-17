@@ -419,6 +419,13 @@ protected:
     // center-lock switch or by head tracker stream loss (goggles lock button / link loss)
     bool center_locked() const { return _ht_center_lock || _ht_stream_lost; }
 
+#if AP_MOUNT_POI_LOCK_ENABLED
+    bool _poi_lock_engaged = false; // fork: POI lock switch is HIGH; cleared when it leaves HIGH
+#endif
+    // fork: true while the POI lock switch is holding the gimbal on its point.
+    // Head tracking yields to it and resumes when the POI switch leaves HIGH.
+    bool poi_lock_tracking() const;
+
     // structure for MAVLink Targeting angle and rate targets
     struct {
         MountTargetType target_type;// MAVLink targeting mode's current target type (e.g. angle or rate)
