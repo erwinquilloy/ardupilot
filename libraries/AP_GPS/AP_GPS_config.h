@@ -13,7 +13,14 @@
    than 1 then redundant sensors may be available
  */
 #ifndef GPS_MAX_RECEIVERS
+#if AP_CUSTOM_LIGHT
+// Light variant: strict 2022 definition allows only 1 GPS. Forcing to 1
+// here removes the redundant-GPS plumbing (blended virtual instance,
+// 2nd receiver state, etc.) for further flash savings.
+#define GPS_MAX_RECEIVERS 1
+#else
 #define GPS_MAX_RECEIVERS 2 // maximum number of physical GPS sensors allowed - does not include virtual GPS created by blending receiver data
+#endif
 #endif
 
 #if !defined(GPS_MAX_INSTANCES)
@@ -30,7 +37,15 @@
 #endif
 
 #ifndef AP_GPS_BACKEND_DEFAULT_ENABLED
+#if AP_CUSTOM_LIGHT
+// Light variant: flip the global GPS-backend default to OFF. The strict
+// 2022 definition is UBLOX-only, so UBLOX is the sole backend re-enabled
+// below (see AP_GPS_UBLOX_ENABLED); DroneCAN, MSP, MAV, NMEA and the rest
+// stay off. Mirrors mf0o's minimize_common.inc pattern.
+#define AP_GPS_BACKEND_DEFAULT_ENABLED 0
+#else
 #define AP_GPS_BACKEND_DEFAULT_ENABLED AP_GPS_ENABLED
+#endif
 #endif
 
 #if !defined(AP_GPS_BLENDED_ENABLED) && defined(GPS_MAX_INSTANCES)
@@ -46,7 +61,12 @@
 #endif
 
 #ifndef AP_GPS_DRONECAN_ENABLED
+#if AP_CUSTOM_LIGHT
+// Light variant: CAN is disabled in the 2022 strict definition (user-provided).
+#define AP_GPS_DRONECAN_ENABLED 0
+#else
 #define AP_GPS_DRONECAN_ENABLED AP_GPS_BACKEND_DEFAULT_ENABLED && HAL_ENABLE_DRONECAN_DRIVERS
+#endif
 #endif
 
 #ifndef AP_GPS_ERB_ENABLED
@@ -58,15 +78,30 @@
 #endif
 
 #ifndef AP_GPS_MAV_ENABLED
+#if AP_CUSTOM_LIGHT
+  // Light variant: strict 2022 definition is UBLOX-only.
+  #define AP_GPS_MAV_ENABLED 0
+#else
   #define AP_GPS_MAV_ENABLED AP_GPS_BACKEND_DEFAULT_ENABLED && HAL_GCS_ENABLED
+#endif
 #endif
 
 #ifndef HAL_MSP_GPS_ENABLED
+#if AP_CUSTOM_LIGHT
+// Light variant: strict 2022 definition is UBLOX-only.
+#define HAL_MSP_GPS_ENABLED 0
+#else
 #define HAL_MSP_GPS_ENABLED AP_GPS_BACKEND_DEFAULT_ENABLED && HAL_MSP_SENSORS_ENABLED
+#endif
 #endif
 
 #ifndef AP_GPS_NMEA_ENABLED
+#if AP_CUSTOM_LIGHT
+  // Light variant: strict 2022 definition is UBLOX-only.
+  #define AP_GPS_NMEA_ENABLED 0
+#else
   #define AP_GPS_NMEA_ENABLED AP_GPS_BACKEND_DEFAULT_ENABLED
+#endif
 #endif
 
 #ifndef AP_GPS_NMEA_UNICORE_ENABLED
@@ -94,7 +129,13 @@
 #endif
 
 #ifndef AP_GPS_UBLOX_ENABLED
+#if AP_CUSTOM_LIGHT
+  // Light variant: keep UBLOX serial GPS unconditionally; it's the most
+  // common GPS module for the fork's target boards.
+  #define AP_GPS_UBLOX_ENABLED AP_GPS_ENABLED
+#else
   #define AP_GPS_UBLOX_ENABLED AP_GPS_BACKEND_DEFAULT_ENABLED
+#endif
 #endif
 
 #ifndef AP_GPS_UBLOX_CFGV2_ENABLED

@@ -692,7 +692,9 @@ public:
         OPTION_TWO_DECIMALS_VERTICAL_SPEED = 1U<<18,
         OPTION_RIGHT_JUSTIFY_TUNED_PN = 1U<<19,  // fork #124
         OPTION_ONE_DECIMAL_ATTITUDE = 1U<<21,
-        OPTION_SHORTEN_PLUSCODE = 1U<<23,
+#if HAL_PLUSCODE_ENABLE
+        OPTION_SHORTEN_PLUSCODE = 1U<<23,   // fork: dropped with plus code
+#endif
     };
 
     enum {
