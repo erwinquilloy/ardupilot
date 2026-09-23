@@ -2140,7 +2140,7 @@ full build has no suffix.
 Since v1.1 the two tracks don't overlap — a given board appears on exactly one
 of them, so there is no choice to get wrong.
 
-### Full track — 4 boards (F7 / H7, 2 MB)
+### Full track — 5 boards (F7 / H7, 2 MB)
 
 Measured at **v2.0**:
 
@@ -2149,7 +2149,8 @@ Measured at **v2.0**:
 | MatekF765-Wing | F7 / 2 MB | **558.7 KB** | +39.3 | Ships — Matek F765-WING (most flash headroom in the fleet) |
 | KakuteH7-Wing | H7 / 2 MB | **147.8 KB** | +44.3 | Ships — Holybro Kakute H743 Wing |
 | TBS_LUCID_H7_OEM | H7 / 2 MB | **132.3 KB** | new | **New in v2.0** — TBS Lucid H7 OEM |
-| MatekH743-bdshot | H7 / 2 MB | **130.2 KB** | +31.2 | Ships — Matek H743-WING (bidirectional DShot); tightest of the full fleet |
+| MatekH743-bdshot | H7 / 2 MB | **130.2 KB** | +31.2 | Ships — Matek H743-WING (bidirectional DShot) |
+| XFLY-H743-bdshot | H7 / 2 MB | **118.6 KB** | new | **New in v2.0** — XFly VTOL kit FC (bidirectional DShot); tightest of the full fleet |
 
 Every board gained 31–44 KB over v1.1, mostly from ArduPlane 4.7's smaller EKF3
 and from backends 4.7 no longer builds for 2 MB boards (External AHRS,
@@ -2169,6 +2170,19 @@ feature add will push against.
 > freed SPI2 pins become UART5. Both IMU populations (dual ICM42688 or dual
 > MPU6000) are probed. See
 > [the board README](libraries/AP_HAL_ChibiOS/hwdef/TBS_LUCID_H7_OEM/README.md).
+
+> **`XFLY-H743-bdshot`: the serial port numbers differ from the XFly
+> wiring board labels.** This is the FC in the XFly VTOL kits (board ID
+> 8888, the manufacturer's own, so stock bootloaders accept the `.apj`). Like
+> `MatekH743-bdshot` and `TBS_LUCID_H7_OEM` it numbers serial ports
+> `SERIALn` = chip UART `n` (`MatekF765-Wing` and `KakuteH7-Wing` keep
+> upstream's order), but the kit's wiring board labels its ports by the stock firmware's
+> numbering. The receiver port "RCIN URT5" is `SERIAL2`, "GPS1 URT3" is
+> `SERIAL1`, and so on, and a stock parameter file puts things on the wrong
+> ports. The full label → `SERIALn` table is in
+> [the board README](libraries/AP_HAL_ChibiOS/hwdef/XFLY-H743-bdshot/README.md).
+> Bidirectional DShot covers outputs 1–8. Only the `-bdshot` target ships;
+> the plain `XFLY-H743` builds but is not released.
 
 ### Light track — 9 boards (all 1 MB F4)
 
@@ -2336,8 +2350,9 @@ notes and wiring photos live in the board's `Readme.md`.
 **v2.0 fleet change vs v1.1:**
 - **Rebased onto ArduPlane 4.7.1** (from 4.6.3). Both tracks are now built from
   one branch and one commit; the light configuration is picked by flash size.
-- **Added to full:** `TBS_LUCID_H7_OEM` (H7 / 2 MB, board ID 5255). Full goes
-  **3 → 4 boards**; light is unchanged at 9.
+- **Added to full:** `TBS_LUCID_H7_OEM` (H7 / 2 MB, board ID 5255) and
+  `XFLY-H743-bdshot` (H7 / 2 MB, board ID 8888, the XFly VTOL kit FC). Full
+  goes **3 → 5 boards**; light is unchanged at 9.
 - No board was removed and no board changed track.
 - Full boards gained 31–44 KB of free flash; light boards moved by −3.8 to
   +3.0 KB.

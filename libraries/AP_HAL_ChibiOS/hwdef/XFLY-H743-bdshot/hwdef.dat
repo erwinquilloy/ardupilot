@@ -1,0 +1,36 @@
+# Bi-directional DShot variant of XFLY-H743.
+#
+# BIDIR is tagged on one channel of each motor timer group; the whole group
+# then runs bidirectional, so ESC RPM telemetry comes back over the signal
+# wire with no separate telemetry line. Board ID is inherited from the parent,
+# so this flashes over the same bootloader as the plain target.
+#
+# Outputs 9-16 are left alone: 9/10 are NODMA on TIM12 and cannot do bidir,
+# and 11-16 (TIM8/TIM2) stay conventional to keep DMA free for SPI and the
+# serial ports.
+
+include ../XFLY-H743/hwdef.dat
+
+# undefine the outputs we re-declare below
+undef PE9 PE11 PE13 PE14 PB7 PB6 PB5 PB4
+
+# Motors 1-4 (TIM1). Bidir telemetry capture can only share a DMA stream
+# within a channel pair (CH1/CH2, CH3/CH4), so a 4-channel timer needs BIDIR
+# on one channel of each pair - with CH1 alone, putting S3 or S4 in
+# SERVO_BLH_BDMASK makes the whole group fall back to plain DShot.
+PE9   TIM1_CH1 TIM1 PWM(1)  GPIO(73) BIDIR
+PE11  TIM1_CH2 TIM1 PWM(2)  GPIO(75)
+PE13  TIM1_CH3 TIM1 PWM(3)  GPIO(77) BIDIR
+PE14  TIM1_CH4 TIM1 PWM(4)  GPIO(78)
+
+# Outputs 5-6 (TIM4)
+PB7   TIM4_CH2 TIM4 PWM(5)  GPIO(23) BIDIR
+PB6   TIM4_CH1 TIM4 PWM(6)  GPIO(22)
+
+# Outputs 7-8 (TIM3)
+PB5   TIM3_CH2 TIM3 PWM(7)  GPIO(21) BIDIR
+PB4   TIM3_CH1 TIM3 PWM(8)  GPIO(20)
+
+# bidir dshot needs its own DMA streams; sharing them with the IMU/OSD SPI
+# buses corrupts the return pulses
+DMA_NOSHARE SPI1* SPI4* TIM1* TIM4* TIM3*
