@@ -13,6 +13,9 @@ extern const AP_HAL::HAL& hal;
 #define GRF_I2C_PRODUCT_NAME_PAYLOAD_LEN 16
 #define GRF_I2C_U32_PAYLOAD_LEN          4
 #define GRF_I2C_DISTANCE_PAYLOAD_LEN     8
+#define SF000_I2C_DISTANCE_PAYLOAD_LEN   4
+#define SF000_LOST_SIGNAL_CM             -1000
+#define SF000_OUT_OF_RANGE_ADD_M         1.0f
 #define GRF_I2C_MAX_WRITE_PAYLOAD_LEN    16
 #define GRF_I2C_HANDSHAKE_ATTEMPTS       4
 #define GRF_I2C_HANDSHAKE_RETRY_MS       30
@@ -66,13 +69,19 @@ bool AP_RangeFinder_LightWare_GRF_I2C::init()
     dev.set_retries(2);
 
     // Ask the sensor for its product name. The reply starts with "GRF" if
-    // we've found a GRF-family rangefinder. Retry a few times in case the
-    // sensor is still waking up.
+    // we've found a GRF-family rangefinder, or "SF000" for an SF000/B.
+    // Retry a few times in case the sensor is still waking up; the SF000
+    // never answers the first command after power-up, it uses that one to
+    // pick between its serial and I2C interfaces.
     uint8_t name[GRF_I2C_PRODUCT_NAME_PAYLOAD_LEN];
     bool detected = false;
     for (uint8_t attempt = 0; attempt < GRF_I2C_HANDSHAKE_ATTEMPTS && !detected; attempt++) {
-        if (!read_payload(MessageID::PRODUCT_NAME, name, sizeof(name)) ||
-            !matches_product_name(name, sizeof(name))) {
+        if (!read_payload(MessageID::PRODUCT_NAME, name, sizeof(name))) {
+            hal.scheduler->delay(GRF_I2C_HANDSHAKE_RETRY_MS);
+            continue;
+        }
+        _sf000 = strncmp((const char *)name, "SF000", 5) == 0;
+        if (!_sf000 && !matches_product_name(name, sizeof(name))) {
             hal.scheduler->delay(GRF_I2C_HANDSHAKE_RETRY_MS);
             continue;
         }
@@ -85,7 +94,10 @@ bool AP_RangeFinder_LightWare_GRF_I2C::init()
     GCS_SEND_TEXT(MAV_SEVERITY_INFO, "LightWare %s detected (I2C)", (const char*)name);
 
     // Configuration happens inside the timer so we don't hold up boot.
-    _config_step = ConfigStep::WRITE_UPDATE_RATE;
+    // The SF000 keeps its (persisted) update rate in a different register
+    // with an indexed 48-388 Hz encoding, so leave it at whatever the
+    // sensor has; its 48 Hz default already matches our poll rate.
+    _config_step = _sf000 ? ConfigStep::WRITE_DISTANCE_OUTPUT : ConfigStep::WRITE_UPDATE_RATE;
     _config_retry = 0;
 
     dev.register_periodic_callback(1000000UL / GRF_I2C_POLL_HZ,
@@ -161,18 +173,48 @@ void AP_RangeFinder_LightWare_GRF_I2C::timer()
     }
 
     uint8_t rx[GRF_I2C_DISTANCE_PAYLOAD_LEN];
-    if (!read_payload(MessageID::DISTANCE_DATA_CM, rx, sizeof(rx))) {
+    const uint16_t rx_len = _sf000 ? SF000_I2C_DISTANCE_PAYLOAD_LEN : GRF_I2C_DISTANCE_PAYLOAD_LEN;
+    if (!read_payload(MessageID::DISTANCE_DATA_CM, rx, rx_len)) {
         return;
     }
 
     float dist_m;
-    if (!parse_distance_cm_payload(rx, sizeof(rx), dist_m)) {
+    if (_sf000) {
+        if (!parse_sf000_payload(rx, dist_m)) {
+            return;
+        }
+    } else if (!parse_distance_cm_payload(rx, rx_len, dist_m)) {
         return;
     }
 
     WITH_SEMAPHORE(_sem);
     _accum.sum_m += dist_m;
     _accum.count++;
+}
+
+// The distance-output bitmask asks for one distance and its matching
+// strength, which the SF000 packs as two little-endian int16s in bit
+// order: distance (cm) first, then strength (%).
+bool AP_RangeFinder_LightWare_GRF_I2C::parse_sf000_payload(const uint8_t *payload, float &distance_m) const
+{
+    const int16_t distance_cm = (int16_t)le16toh_ptr(&payload[0]);
+    const int16_t strength_pct = (int16_t)le16toh_ptr(&payload[2]);
+
+    // Lost signal (nothing within range): report just past max so the
+    // frontend flags OutOfRangeHigh instead of timing out to NoData.
+    if (distance_cm <= SF000_LOST_SIGNAL_CM) {
+        distance_m = max_distance() + SF000_OUT_OF_RANGE_ADD_M;
+        return true;
+    }
+    if (distance_cm <= 0) {
+        return false;
+    }
+    if (minimum_return_strength > 0 && strength_pct < minimum_return_strength) {
+        return false;
+    }
+
+    distance_m = distance_cm * 0.01f;
+    return true;
 }
 
 void AP_RangeFinder_LightWare_GRF_I2C::update()

@@ -17,7 +17,7 @@ const AP_Param::GroupInfo AP_RangeFinder_LightWare_GRF_Common::var_info[] = {
 
     // @Param: ST
     // @DisplayName: LightWare GRF Minimum Return Strength
-    // @Description: Minimum acceptable return signal strength in dB. Returns weaker than this will be ignored. Set to 0 to disable filtering.
+    // @Description: Minimum acceptable return signal strength. Returns weaker than this will be ignored. Units are dB on the GRF-250/500 and percent on the SF000/B (I2C). Set to 0 to disable filtering.
     // @Range: 0 255
     // @User: Advanced
     // @RebootRequired: True
@@ -25,7 +25,7 @@ const AP_Param::GroupInfo AP_RangeFinder_LightWare_GRF_Common::var_info[] = {
 
     // @Param: RATE
     // @DisplayName: LightWare GRF Update Rate
-    // @Description: The update rate of the sensor in Hz.
+    // @Description: The update rate of the sensor in Hz. Ignored by the SF000/B over I2C, which keeps its own update rate (48 Hz default, set in LightWare Studio).
     // @Range: 1 50
     // @User: Advanced
     // @RebootRequired: True

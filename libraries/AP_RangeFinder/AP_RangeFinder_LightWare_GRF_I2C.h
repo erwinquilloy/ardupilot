@@ -55,6 +55,14 @@ private:
     // Apply one step of the configuration.
     void run_config_step();
 
+    // Pull a distance out of an SF000 reading (int16 cm + int16 strength %).
+    bool parse_sf000_payload(const uint8_t *payload, float &distance_m) const;
+
+    // SF000/B microLiDAR: same register protocol and 0x66 address as the
+    // GRF, but it names itself "SF000", packs distance as int16 cm, and
+    // keeps its update rate in a different register.
+    bool _sf000;
+
     // Distance readings collected by timer() between update() calls; update()
     // averages them, publishes to state.distance_m, and resets the counters.
     struct {
