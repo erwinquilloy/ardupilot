@@ -1535,21 +1535,48 @@ mismatch that confused users (e.g. an ELRS receiver wired to the `RX2/TX2`
 pads showing up on `SERIAL6`).
 
 Affected boards: `MatekF405-TE(-bdshot)`, `MatekF405-STD`, `omnibusf4pro`,
-`MatekH743(-bdshot)`. `omnibusf4pro` has no USART2 / UART5, so `SERIAL2` /
-`SERIAL5` are `EMPTY` placeholders that keep `USART3=SERIAL3` and
-`USART6=SERIAL6` aligned. `KakuteH7-Wing` is intentionally left on upstream
-numbering (it was never remapped in v11.3, and its connectors are labelled
-functionally rather than by chip UART number).
+`MatekH743(-bdshot)` since v0.3-beta, and **`MatekF765-Wing` and
+`KakuteH7-Wing` since v2.0**. Every board in both release fleets now follows
+the rule; `XFLY-H743-bdshot` and `TBS_LUCID_H7_OEM` joined already numbered
+this way. Where a UART is missing, its number is an `EMPTY` placeholder so
+the rest stay aligned: `SERIAL2`/`SERIAL5` on `omnibusf4pro`, `SERIAL4` on
+`KakuteH7-Wing` (no UART4).
 
-Like v11.3 this is a `SERIAL_ORDER`-only change (no protocol defaults added),
-so default protocols fall on the stock per-index defaults (S1/S2 MAVLink,
-S3/S4 GPS) — set `SERIALx_PROTOCOL` to match your wiring.
+The v0.3-beta boards changed `SERIAL_ORDER` only, so their default protocols
+fall on the stock per-index defaults (S1/S2 MAVLink, S3/S4 GPS); set
+`SERIALx_PROTOCOL` to match your wiring. The two v2.0 boards also **re-pin
+each pad's default role to its new number**, so a board left on defaults
+keeps GPS on its GPS1 pad and MAVLink on TELEM1:
+
+| Board | Pad (role) | Upstream | ArduCustom v2.0 |
+|---|---|---|---|
+| `MatekF765-Wing` | TX7/RX7 (TELEM1, RTS/CTS) | SERIAL1 | **SERIAL7** |
+| | TX1/RX1 (TELEM2) | SERIAL2 | **SERIAL1** |
+| | TX2/RX2 (GPS1) | SERIAL3 | **SERIAL2** |
+| | TX3/RX3 (GPS2) | SERIAL4 | **SERIAL3** |
+| | TX8/RX8 | SERIAL5 | **SERIAL8** |
+| | TX4/RX4 | SERIAL6 | **SERIAL4** |
+| | TX6/RX6 (RC input) | SERIAL7 | **SERIAL6** |
+| | RX5 (ESC telemetry) | SERIAL8 | **SERIAL5** |
+| `KakuteH7-Wing` | T7/R7 (TELEM1, RTS/CTS) | SERIAL1 | **SERIAL7** |
+| | T2/R2 (TELEM2) | SERIAL2 | SERIAL2 |
+| | T1/R1 (GPS) | SERIAL3 | **SERIAL1** |
+| | T3/R3 (GPS2) | SERIAL4 | **SERIAL3** |
+| | T5/R5, T6/R6 (RC input) | SERIAL5, SERIAL6 | SERIAL5, SERIAL6 |
+| | T8/R8 | SERIAL7 | **SERIAL8** |
+| | second USB (OTG2) | SERIAL8 | **SERIAL9** |
+
+The TELEM1 flow-control setting moves with its port: `BRD_SER1_RTSCTS`
+becomes `BRD_SER7_RTSCTS` on both boards.
 
 > ⚠️ **Upgrade note:** moving from stock-upstream serial numbering (any prior
-> v0.2-beta build) on the four affected boards means saved `SERIALx_PROTOCOL`
-> / `_BAUD` / `_OPTIONS` values now point at different physical UARTs.
+> v0.2-beta build on the four v0.3-beta boards, or v1.1 and earlier on
+> `MatekF765-Wing` / `KakuteH7-Wing`) means saved `SERIALx_PROTOCOL` /
+> `_BAUD` / `_OPTIONS` values now point at different physical UARTs.
 > Re-check your serial config after flashing — GPS, telemetry and RC
-> (CRSF/ELRS) may need reassigning to the new `SERIALn`.
+> (CRSF/ELRS) may need reassigning to the new `SERIALn`. On the two v2.0
+> boards, ports you never changed follow their pads automatically; only
+> values you set yourself need moving.
 
 ## `is_flying` heuristic — fixed thresholds
 
@@ -2175,8 +2202,8 @@ feature add will push against.
 > wiring board labels.** This is the FC in the XFly VTOL kits (board ID
 > 8888, the manufacturer's own, so stock bootloaders accept the `.apj`). Like
 > `MatekH743-bdshot` and `TBS_LUCID_H7_OEM` it numbers serial ports
-> `SERIALn` = chip UART `n` (`MatekF765-Wing` and `KakuteH7-Wing` keep
-> upstream's order), but the kit's wiring board labels its ports by the stock firmware's
+> `SERIALn` = chip UART `n`, as every fleet board now does, but the kit's
+> wiring board labels its ports by the stock firmware's
 > numbering. The receiver port "RCIN URT5" is `SERIAL2`, "GPS1 URT3" is
 > `SERIAL1`, and so on, and a stock parameter file puts things on the wrong
 > ports. The full label → `SERIALn` table is in
@@ -2656,6 +2683,11 @@ v2.0, and a board that was wiped first has nothing to convert.
   [TECS / throttle](#tecs--throttle)).
 - **`TKOFF_THR_IDLE` is whole percent** (see
   [`TKOFF_THR_IDLE`](#tkoff_thr_idle--pre-launch-idle-throttle)).
+- **`MatekF765-Wing` and `KakuteH7-Wing`: serial ports renumbered** so
+  `SERIALn` matches the `TXn/RXn` pad. Any `SERIALn_*` or `BRD_SER1_RTSCTS`
+  value you set yourself must be moved to the port's new number; ports left
+  on defaults follow automatically. See
+  [Serial port numbering](#serial-port-numbering-matched-to-chip-uart-numbers).
 
 **Also changed by ArduPlane 4.7:** `ATC_INPUT_TC` / `Q_A_INPUT_TC` defaults are
 lower; `LOG_MAV_RATEMAX` defaults to 10; `HWSTATUS`, `MOUNT_CONFIGURE` /

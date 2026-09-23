@@ -35,14 +35,21 @@ The KakuteH7-Wing is a flight controller produced by [Holybro](http://www.holybr
 The UARTs are marked Rn and Tn in the above pinouts. The Rn pin is the
 receive pin for UARTn. The Tn pin is the transmit pin for UARTn.
 
+ArduCustom numbers the serial ports so that SERIALn is UARTn, matching the
+Tn/Rn pad labels. Upstream ArduPilot numbers this board differently (its
+SERIAL1 is UART7, SERIAL3 is UART1, and so on), so parameter files and
+guides written for stock ArduPilot use other SERIAL numbers.
+
 - SERIAL0 -> USB
-- SERIAL1 -> UART7 (TELEM1) with CTS/RTS DMA Enabled
+- SERIAL1 -> UART1 (GPS) DMA Enabled
 - SERIAL2 -> UART2 (Telem2) DMA Enabled
-- SERIAL3 -> UART1 (GPS) DMA Enabled
-- SERIAL4 -> USART3 (GPS2)
+- SERIAL3 -> USART3 (GPS2)
+- SERIAL4 -> not present (the board has no UART4)
 - SERIAL5 -> UART5 (User) DMA Enabled
 - SERIAL6 -> USART6 (RX normally RCIN, BRD_ALT_CONFIG =1 for normal UART RX)
-- SERIAL7 -> UART8 (User) DMA Enabled
+- SERIAL7 -> UART7 (TELEM1) with CTS/RTS DMA Enabled
+- SERIAL8 -> UART8 (User) DMA Enabled
+- SERIAL9 -> second USB interface (OTG2)
 
 ## RC Input
 
