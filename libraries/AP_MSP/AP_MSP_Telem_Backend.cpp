@@ -1142,25 +1142,35 @@ MSPCommandResult AP_MSP_Telem_Backend::msp_process_out_rtc(sbuf_t *dst)
 #if AP_RC_CHANNEL_ENABLED
 MSPCommandResult AP_MSP_Telem_Backend::msp_process_out_rc(sbuf_t *dst)
 {
-    float roll = rc().get_roll_channel().norm_input_dz();
-    float pitch = -rc().get_pitch_channel().norm_input_dz();
-    float yaw = rc().get_yaw_channel().norm_input_dz();
-    float throttle = rc().get_throttle_channel().norm_input_dz();
+    // Fork: upstream reports only the first four channels here, so anything
+    // rendering AUX positions from MSP (goggles overlays, OSD panels) sees
+    // nothing - see ArduPilot issue #28276. Report every channel the receiver
+    // actually delivers instead; the peer takes the count from the payload
+    // length, exactly as it does on Betaflight.
+    uint16_t chans[NUM_RC_CHANNELS];
+    rc().get_radio_in(chans, ARRAY_SIZE(chans));
 
-    const struct PACKED {
-        uint16_t a;
-        uint16_t e;
-        uint16_t r;
-        uint16_t t;
-    } rc {
-        // send only 4 channels, MSP order is AERT
-        a : uint16_t(roll*500+1500),       // A
-        e : uint16_t(pitch*500+1500),      // E
-        r : uint16_t(yaw*500+1500),        // R
-        t : uint16_t(throttle*1000+1000)    // T
-    };
+    // AUX channels are reported as received. norm_input_dz() would fold in the
+    // channel trim and deadzone, so a switch sitting at its physical midpoint
+    // would not read 1500us.
+    uint8_t count = rc().get_valid_channel_count();
+    count = constrain_int16(count, 4, NUM_RC_CHANNELS);
 
-    sbuf_write_data(dst, &rc, sizeof(rc));
+    // The first four slots are MSP's AERT. ArduPilot's native order is roll,
+    // pitch, throttle, yaw, so throttle and yaw swap places here, and pitch is
+    // inverted to match the MSP sense. Keep deriving them the way this function
+    // always has, so existing consumers see no change.
+    const float roll = rc().get_roll_channel().norm_input_dz();
+    const float pitch = -rc().get_pitch_channel().norm_input_dz();
+    const float yaw = rc().get_yaw_channel().norm_input_dz();
+    const float throttle = rc().get_throttle_channel().norm_input_dz();
+
+    chans[0] = uint16_t(roll*500+1500);        // A
+    chans[1] = uint16_t(pitch*500+1500);       // E
+    chans[2] = uint16_t(yaw*500+1500);         // R
+    chans[3] = uint16_t(throttle*1000+1000);   // T
+
+    sbuf_write_data(dst, chans, count * sizeof(chans[0]));
     return MSP_RESULT_ACK;
 }
 #endif  // AP_RC_CHANNEL_ENABLED
