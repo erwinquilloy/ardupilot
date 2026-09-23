@@ -2532,6 +2532,32 @@ Boards that explicitly re-enable EKF2 in their hwdef (e.g. upstream's
 
 ---
 
+# Sensors
+
+## LightWare SF000/B rangefinder over I2C
+
+The SF000/B microLiDAR speaks the same register protocol and uses the same
+default address (0x66) as LightWare's GRF-250/500, but upstream's
+`RNGFNDx_TYPE = 48` driver only accepts sensors that name themselves `GRF`,
+so an SF000 on I2C was never detected. Type 48 now recognises it too and
+reads its 16-bit cm distance format.
+
+| Param | Value |
+|---|---|
+| `RNGFND1_TYPE` | 48 (LightWare-GRF-SF000-I2C) |
+| `RNGFND1_ADDR` | 102 (0x66) |
+| `RNGFND1_MIN` / `RNGFND1_MAX` | 0.2 / 48 |
+| `RNGFND1_GRF_RET` | 1 (first return, filtered); default 0 is first return, raw |
+| `RNGFND1_GRF_ST` | minimum signal strength in **percent** on the SF000 (dB on the GRF); 0 = off |
+
+- `RNGFND1_GRF_RATE` is ignored on the SF000; its update rate is set in
+  LightWare Studio (48 Hz default, polled at 50 Hz).
+- No target in range reports just past `RNGFND1_MAX` (status OutOfRangeHigh)
+  rather than dropping to NoData.
+- Wiring: the sensor's pins 2 and 4 must be joined as SDA. Its Startup mode
+  must be "Wait for interface" or "I2C mode".
+- Boot shows `LightWare SF000 detected (I2C)` when it is found.
+
 # Telemetry
 
 ## CRSF
