@@ -2547,6 +2547,12 @@ Boards that explicitly re-enable EKF2 in their hwdef (e.g. upstream's
   the artificial horizon
 - MSP wind reported in km/h (was m/s)
 - Optional Link Quality output instead of raw RSSI
+- **`MSP_RC` reports every RC channel** the receiver delivers (up to 16),
+  not just the first four. Goggles and other MSP peers that display or act
+  on AUX channels (switch positions, camera zoom) now see them, as they do
+  on Betaflight; upstream issue #28276. The first four slots keep MSP's AERT
+  order and their existing scaling. AUX channels are sent as received, with
+  no trim or deadzone applied.
 
 ## FrSky SPort passthrough
 
