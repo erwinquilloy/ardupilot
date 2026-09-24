@@ -74,10 +74,10 @@ public:
         return int32_t(_pitch_dem * 5729.5781f);
     }
 
-    // Rate of change of velocity along X body axis in m/s^2
-    float get_VXdot(void) {
-        return _vel_dot;
-    }
+    // Rate of change of velocity along X body axis in m/s^2. Returns 0 when
+    // TECS is not being updated (it only runs in auto-throttle modes), so a
+    // caller never reads a value left over from the last time it ran.
+    float get_VXdot(void) const;
 
     // return current target airspeed
     float get_target_airspeed(void) const {

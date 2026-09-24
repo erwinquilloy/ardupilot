@@ -394,19 +394,37 @@ void AP_TECS::update_50hz(void)
     _update_speed(DT);
 }
 
+float AP_TECS::get_VXdot(void) const
+{
+    // update_50hz() only runs in auto-throttle modes. Hand out 0 rather than
+    // the last _vel_dot once it has stopped (five missed 50 Hz updates):
+    // otherwise a launch cancelled mid-acceleration leaves that acceleration
+    // behind, and the next TAKEOFF/AUTO entry "detects" a launch on the ground.
+    if (_update_50hz_last_usec == 0 ||
+        AP_HAL::micros64() - _update_50hz_last_usec > 100000U) {
+        return 0;
+    }
+    return _vel_dot;
+}
+
 void AP_TECS::_update_speed(float DT)
 {
     // Update and average speed rate of change
 
+    // Get DCM
+    const Matrix3f &rotMat = _ahrs.get_rotation_body_to_ned();
+    // Calculate speed rate of change
+    const float temp = rotMat.c.x * GRAVITY_MSS + AP::ins().get_accel().x;
+
     // calculate a low pass filtered _vel_dot
     if (_flags.reset) {
+        // restart from a fresh sample: keeping the old _vel_dot here would
+        // carry a value from whenever TECS last ran (possibly minutes ago,
+        // mid-launch) into the auto-takeoff acceleration check
         _vdot_filter.reset();
+        _vel_dot = _vdot_filter.apply(temp);
         _vel_dot_lpf = _vel_dot;
     } else {
-        // Get DCM
-        const Matrix3f &rotMat = _ahrs.get_rotation_body_to_ned();
-        // Calculate speed rate of change
-        float temp = rotMat.c.x * GRAVITY_MSS + AP::ins().get_accel().x;
         // take 5 point moving average
         _vel_dot = _vdot_filter.apply(temp);
         const float alpha = DT / (DT + timeConstant());
