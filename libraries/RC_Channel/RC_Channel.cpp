@@ -248,6 +248,7 @@ const AP_Param::GroupInfo RC_Channel::var_info[] = {
     // @Values{Copter, Plane}: 180:Test autotuned gains after tune is complete
     // @Values{Plane}: 181: QuickTune
     // @Values{Copter}: 182: AHRS AutoTrim
+    // @Values{Plane}: 182: VTOL AutoTrim
     // @Values{Plane}: 184: System ID Chirp
     // @Values{Copter, Rover, Plane, Blimp, Sub}:  185:Mount Roll/Pitch Lock
     // @Values{Copter, Rover, Plane, Blimp, Sub}:  186:Mount POI Lock
