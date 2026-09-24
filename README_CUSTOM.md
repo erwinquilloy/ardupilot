@@ -357,6 +357,13 @@ FLTMODE_n slot, plus the RTL Autoland Commit gate and VTOL AutoTrim:
   This is *flight-mode entry*, distinct from `RCx_OPTION = 107`
   (`FW_AUTOTUNE`), which toggles the autotune loop without changing
   flight mode.
+  > ⚠️ **Stay in autotune until each axis reports `Finished`.** Leaving
+  > earlier (either option) puts the old gains back for any axis that has
+  > not found both its D and its P limit — upstream behaviour, but easy to
+  > miss. Progress shows as `RollD: x` → `RollP: x` → `Roll: Finished`, and
+  > the same for pitch. Fly sharp, full-stick inputs on **both** axes, held
+  > about 1 s and reversed, for several minutes; a tune flown mostly on roll
+  > leaves pitch unfinished and discarded.
 - **`RCx_OPTION = 200` — Servos Auto Trim.** Starts the servo
   auto-trim accumulator on switch HIGH (with a clean prepare so it
   doesn't resume from a previous run) and stops it on LOW. Stays in
@@ -456,6 +463,11 @@ mission with no second mode-switch action.
 - `ARMING_MODE_SW = 0` — disabled (default)
 - `ARMING_MODE_SW = 1` — switch to TAKEOFF after arming
 - `ARMING_MODE_SW = 2` — switch to AUTO after arming
+
+> ⚠️ **v1.1 / v1.2 builds: reboot after a cancelled launch.** On those builds,
+> re-arming after a launch was cancelled mid-throw could make this automatic
+> TAKEOFF entry fire the launch on the ground. Fixed in v2.0; see
+> [Re-arming after a cancelled launch](#re-arming-after-a-cancelled-launch-fixed-in-v20).
 
 ### `TKOFF_THR_IDLE` — pre-launch idle throttle
 Hold a small throttle the moment the pilot raises the stick while the
@@ -1252,6 +1264,29 @@ are standing there waiting to throw.
 > `RC_OPTIONS` still has bit 20 set it is simply ignored; you can clear it
 > for tidiness but nothing depends on it. For mid-mission pilot nudges
 > use `STICK_MIXING`, which is what it is for and now defaults to `1`.
+
+### Re-arming after a cancelled launch (fixed in v2.0)
+
+Before v2.0, cancelling a launch **while the plane was still accelerating**
+could arm a trap for the next one. The launch check reads its forward
+acceleration from TECS, and TECS only runs in auto-throttle modes, so in FBWA
+after the cancel it stopped updating with that acceleration still stored. The
+next time TAKEOFF was entered — by `ARMING_MODE_SW` after re-arming, or by the
+mode switch — the check read the old value, "detected" a launch with the
+aircraft on the ground or in your hand (`Armed AUTO, xaccel = …` /
+`Triggered AUTO. GPS speed = 0.0`), and ran the motor to `TKOFF_THR_MAX` with
+the throttle stick still low.
+
+v2.0 only uses a live reading: TECS reports no acceleration when it has not
+been running, and restarts from a fresh sample. The same code is in upstream
+ArduPlane (leaving TAKEOFF mid-launch with the mode switch reaches it too);
+the stick-cancel and `ARMING_MODE_SW` just made it routine here.
+
+- **On v1.1 or v1.2:** after any cancelled or aborted launch, **reboot the
+  flight controller before re-arming**.
+- **Hand-launch tip:** keep `TKOFF_THR_MINACC` around **15** m/s², the usual
+  hand-launch value. A low threshold leaves little margin between a real throw
+  and a jolt while you are holding the aircraft.
 
 ### How this interacts with `STICK_MIXING`
 
