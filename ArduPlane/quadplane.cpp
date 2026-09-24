@@ -572,6 +572,15 @@ const AP_Param::GroupInfo QuadPlane::var_info2[] = {
     // @Bitmask: 1: Disable thrust loss detection in transtions and fixed wing modes. Thrust loss detection will only run in VTOL modes.
     AP_GROUPINFO("THRST_LOSS_OPT", 42, QuadPlane, thrust_loss.options, 0),
 
+    // @Param: TRIM_ROLL
+    // @DisplayName: Quadplane AHRS trim roll
+    // @Description: Hover-only roll trim: the roll angle the VTOL attitude controller holds as level, relative to calibrated AHRS level. Positive values make the vehicle roll right in VTOL flight. Forward flight is not affected. Set by the VTOL AutoTrim switch (RCx_OPTION 182) or by hand. Not applied on tailsitters.
+    // @Units: deg
+    // @Range: -10 +10
+    // @Increment: 0.1
+    // @User: Advanced
+    AP_GROUPINFO("TRIM_ROLL", 63, QuadPlane, ahrs_trim_roll, 0),
+
     AP_GROUPEND
 };
 
@@ -1735,9 +1744,15 @@ void QuadPlane::update(void)
     // keep motors interlock state upto date with E-stop
     motors->set_interlock(!SRV_Channels::get_emergency_stop() && !throttle_emergency_stop);
 
+    vtol_auto_trim_update();
+
     if ((ahrs_view != NULL) && !is_equal(_last_ahrs_trim_pitch, ahrs_trim_pitch.get())) {
         _last_ahrs_trim_pitch = ahrs_trim_pitch.get();
         ahrs_view->set_pitch_trim(_last_ahrs_trim_pitch);
+    }
+    if ((ahrs_view != NULL) && !is_equal(_last_ahrs_trim_roll, ahrs_trim_roll.get())) {
+        _last_ahrs_trim_roll = ahrs_trim_roll.get();
+        ahrs_view->set_roll_trim(_last_ahrs_trim_roll);
     }
 
 #if AP_ADVANCEDFAILSAFE_ENABLED
@@ -4994,6 +5009,99 @@ void QuadPlane::thrust_loss_check(bool reset)
         motors->set_thrust_boost(true);
         // the motors library disables this when it is no longer needed to achieve the commanded output
     }
+}
+
+
+/*
+  fork: VTOL auto-trim (RCx_OPTION 182, "VTOL AutoTrim").
+
+  Hover in QHOVER with the switch high and hold the aircraft still. Every 100 ms the hover trims move 1/20th of the way toward
+  the attitude being held, the same rate Copter's AHRS AutoTrim uses, so the
+  sticks needed to stop drift bleed into Q_TRIM_ROLL /
+  Q_TRIM_PITCH. Switch low saves them. Only the VTOL AHRS view is trimmed,
+  so forward-flight level (AHRS_TRIM_X/Y) is untouched.
+ */
+bool QuadPlane::vtol_auto_trim_allowed() const
+{
+    if (!available() || tailsitter.enabled()) {
+        return false;
+    }
+    // QHOVER only: the pilot holds position by hand, so the held attitude
+    // is the trim error. QLOITER's lean also fights wind, and forward
+    // flight or transitions must never touch the hover trims.
+    return plane.control_mode == &plane.mode_qhover;
+}
+
+void QuadPlane::vtol_auto_trim_switch(RC_Channel::AuxSwitchPos ch_flag)
+{
+    switch (ch_flag) {
+    case RC_Channel::AuxSwitchPos::HIGH:
+        if (vtol_auto_trim.running) {
+            break;
+        }
+        if (!vtol_auto_trim_allowed()) {
+            GCS_SEND_TEXT(MAV_SEVERITY_INFO, "VTOL AutoTrim: QHOVER only");
+            break;
+        }
+        vtol_auto_trim.start_roll_deg = ahrs_trim_roll.get();
+        vtol_auto_trim.start_pitch_deg = ahrs_trim_pitch.get();
+        vtol_auto_trim.last_ms = AP_HAL::millis();
+        vtol_auto_trim.running = true;
+        AP_Notify::flags.save_trim = true;
+        GCS_SEND_TEXT(MAV_SEVERITY_INFO, "VTOL AutoTrim running");
+        break;
+    case RC_Channel::AuxSwitchPos::MIDDLE:
+        break;
+    case RC_Channel::AuxSwitchPos::LOW:
+        if (!vtol_auto_trim.running) {
+            break;
+        }
+        vtol_auto_trim.running = false;
+        AP_Notify::flags.save_trim = false;
+        ahrs_trim_roll.save();
+        ahrs_trim_pitch.save();
+        GCS_SEND_TEXT(MAV_SEVERITY_INFO, "VTOL AutoTrim saved: roll %.1f pitch %.1f",
+                      (double)ahrs_trim_roll.get(), (double)ahrs_trim_pitch.get());
+        break;
+    }
+}
+
+// stop without saving, putting back the trims the run started from
+void QuadPlane::vtol_auto_trim_cancel(const char *reason)
+{
+    vtol_auto_trim.running = false;
+    AP_Notify::flags.save_trim = false;
+    ahrs_trim_roll.set(vtol_auto_trim.start_roll_deg);
+    ahrs_trim_pitch.set(vtol_auto_trim.start_pitch_deg);
+    GCS_SEND_TEXT(MAV_SEVERITY_WARNING, "VTOL AutoTrim cancelled: %s", reason);
+}
+
+void QuadPlane::vtol_auto_trim_update()
+{
+    if (!vtol_auto_trim.running) {
+        return;
+    }
+    if (!vtol_auto_trim_allowed()) {
+        vtol_auto_trim_cancel("mode");
+        return;
+    }
+    if (!hal.util->get_soft_armed() || !is_flying_vtol() ||
+        motors->get_spool_state() != AP_Motors::SpoolState::THROTTLE_UNLIMITED) {
+        vtol_auto_trim_cancel("not flying");
+        return;
+    }
+    const uint32_t now = AP_HAL::millis();
+    if (now - vtol_auto_trim.last_ms < 100) {
+        return;
+    }
+    vtol_auto_trim.last_ms = now;
+
+    // the attitude target is in the VTOL view frame, i.e. relative to the
+    // current hover trim, so adding a fraction of it walks the trim toward
+    // the attitude that holds the aircraft still
+    const Vector3f &target_rad = attitude_control->get_att_target_euler_rad();
+    ahrs_trim_roll.set(constrain_float(ahrs_trim_roll.get() + degrees(target_rad.x) / 20.0f, -10.0f, 10.0f));
+    ahrs_trim_pitch.set(constrain_float(ahrs_trim_pitch.get() + degrees(target_rad.y) / 20.0f, -10.0f, 10.0f));
 }
 
 #endif  // HAL_QUADPLANE_ENABLED

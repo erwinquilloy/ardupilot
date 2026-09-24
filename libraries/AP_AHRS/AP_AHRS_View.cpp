@@ -40,10 +40,9 @@ AP_AHRS_View::AP_AHRS_View(AP_AHRS &_ahrs, enum Rotation _rotation, float pitch_
     }
 
     _pitch_trim_deg = pitch_trim_deg;
+    _roll_trim_deg = 0;
     // Add pitch trim
-    rot_view.from_euler(0, radians(wrap_360(y_angle + pitch_trim_deg)), 0);
-    rot_view_T = rot_view;
-    rot_view_T.transpose();
+    update_view_rotation();
 
     // setup initial state
     update();
@@ -52,10 +51,22 @@ AP_AHRS_View::AP_AHRS_View(AP_AHRS &_ahrs, enum Rotation _rotation, float pitch_
 // apply pitch trim
 void AP_AHRS_View::set_pitch_trim(float trim_deg) {
     _pitch_trim_deg = trim_deg; 
-    rot_view.from_euler(0, radians(wrap_360(y_angle + _pitch_trim_deg)), 0);
+    update_view_rotation();
+};
+
+// fork: apply roll trim. Ignored on rotated (tailsitter) views, where the
+// view's roll axis is not the airframe's.
+void AP_AHRS_View::set_roll_trim(float trim_deg) {
+    _roll_trim_deg = is_zero(y_angle) ? trim_deg : 0;
+    update_view_rotation();
+}
+
+void AP_AHRS_View::update_view_rotation()
+{
+    rot_view.from_euler(radians(_roll_trim_deg), radians(wrap_360(y_angle + _pitch_trim_deg)), 0);
     rot_view_T = rot_view;
     rot_view_T.transpose();
-};
+}
 
 // update state
 void AP_AHRS_View::update()
@@ -63,7 +74,7 @@ void AP_AHRS_View::update()
     rot_body_to_ned = ahrs.get_rotation_body_to_ned();
     gyro = ahrs.get_gyro();
 
-    if (!is_zero(y_angle + _pitch_trim_deg)) {
+    if (!is_zero(y_angle + _pitch_trim_deg) || !is_zero(_roll_trim_deg)) {
         rot_body_to_ned = rot_body_to_ned * rot_view_T;
         gyro = rot_view * gyro;
     }

@@ -59,6 +59,10 @@ public:
     // apply pitch trim
     void set_pitch_trim(float trim_deg);
 
+    // fork: apply roll trim (deg). Only used on views with no base
+    // rotation (not tailsitters), where view roll is the airframe's roll.
+    void set_roll_trim(float trim_deg);
+
     // roll/pitch/yaw euler angles, all in radians
     float get_roll_rad() const { return roll; }
     float get_pitch_rad() const { return pitch; }
@@ -197,6 +201,9 @@ public:
     // get pitch trim (deg)
     float get_pitch_trim() const { return _pitch_trim_deg; }
 
+    // get roll trim (deg)
+    float get_roll_trim() const { return _roll_trim_deg; }
+
     // Rotate vector from AHRS reference frame to AHRS view refences frame
     void rotate(Vector3f &vec) const;
 
@@ -222,4 +229,8 @@ private:
 
     float y_angle;
     float _pitch_trim_deg;
+    float _roll_trim_deg;
+
+    // rebuild rot_view / rot_view_T from y_angle and the trims
+    void update_view_rotation();
 };

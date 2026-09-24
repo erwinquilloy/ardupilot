@@ -193,6 +193,10 @@ void RC_Channel_Plane::init_aux_function(const RC_Channel::AUX_FUNC ch_option,
 #if AP_PLANE_SYSTEMID_ENABLED
     case AUX_FUNC::SYSTEMID:
 #endif
+#if HAL_QUADPLANE_ENABLED
+    // Fork: VTOL AutoTrim only starts on a switch change, never at boot.
+    case AUX_FUNC::AHRS_AUTO_TRIM:
+#endif
         break;
     case AUX_FUNC::SOARING:
 #if HAL_QUADPLANE_ENABLED
@@ -422,6 +426,14 @@ bool RC_Channel_Plane::do_aux_function(const AuxFuncTrigger &trigger)
             gcs().send_text(MAV_SEVERITY_INFO, "Servos auto trim stopped");
         }
         break;
+
+#if HAL_QUADPLANE_ENABLED
+    // Fork: VTOL AutoTrim -- learns the hover-only Q_TRIM_ROLL / Q_TRIM_PITCH
+    // in QHOVER; see QuadPlane::vtol_auto_trim_update()
+    case AUX_FUNC::AHRS_AUTO_TRIM:
+        plane.quadplane.vtol_auto_trim_switch(ch_flag);
+        break;
+#endif
 
 #if HAL_QUADPLANE_ENABLED
     case AUX_FUNC::ARMDISARM_AIRMODE:
