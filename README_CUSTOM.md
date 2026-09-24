@@ -347,9 +347,9 @@ adjustments. Exiting the mode stops the loop.
   GCSs that read `AVAILABLE_MODES` show it by name (**AUTO TRIM**).
 
 ### RC aux switch entries (Plane)
-Plane's `RCx_OPTION` enum gains three entries — two so the pilot can
+Plane's `RCx_OPTION` enum gains four entries — two so the pilot can
 put autotrim and autotune on momentary aux switches without burning a
-FLTMODE_n slot, plus the RTL Autoland Commit gate:
+FLTMODE_n slot, plus the RTL Autoland Commit gate and VTOL AutoTrim:
 
 - **`RCx_OPTION = 17` — AUTOTUNE Mode.** Switches into Plane's
   AUTOTUNE flight mode (mode 8) on switch HIGH. Upstream had this
@@ -366,6 +366,10 @@ FLTMODE_n slot, plus the RTL Autoland Commit gate:
   so saved `RCx_OPTION = 200` params from mf0o-based builds keep
   working. (The legacy 2022 fork used slot 162 for the same option;
   re-save the param if you're migrating from the old fork.)
+- **`RCx_OPTION = 182` — VTOL AutoTrim** (new in v2.0). Learns the
+  hover-only `Q_TRIM_ROLL` / `Q_TRIM_PITCH` in QHOVER; Copter's option number
+  for the same idea. See
+  [VTOL AutoTrim](#vtol-autotrim--learn-the-hover-level-in-qhover-rcx_option--182).
 - **`RCx_OPTION = 251` — RTL Autoland Commit.** Gates the RTL → landing
   jump when `RTL_AUTOLAND = 1`: the plane holds at the home loiter until
   you flip this switch HIGH, then commits to `DO_LAND_START`. See
@@ -2437,6 +2441,49 @@ being knob-tunable for fixed-wing.
 > Same multiplicative-knob caveat as `PTCH_TRIM_DEG` — a `0` seed means
 > the knob has no effect. Set a small non-zero value first (e.g. `0.5`
 > or `-0.5`), then re-centre with the selector switch.
+
+## VTOL AutoTrim — learn the hover level in QHOVER (`RCx_OPTION = 182`)
+
+**New in v2.0.** If the aircraft slides one way in QHOVER with the sticks
+centred, the VTOL side's idea of "level" is off: a board mounted slightly
+tilted, a motor mount or boom not quite square, a surface catching prop wash.
+VTOL AutoTrim learns the correction in flight and stores it in the
+**hover-only** trims, so fixed-wing flight is unaffected.
+
+- **Setup:** `RCx_OPTION = 182` on a two-position switch. This is the
+  option number Copter uses for its AHRS AutoTrim; on Plane it is labelled
+  **VTOL AutoTrim**.
+- **Use:** hover in **QHOVER** at a safe height in calm air, flip the switch
+  HIGH (`VTOL AutoTrim running`), and hold the aircraft still over one spot
+  with the sticks. Every 100 ms the roll and pitch you are holding move a
+  little into the trim, so the stick correction you need shrinks toward
+  centre over a few seconds. When the sticks sit centred and it no longer
+  drifts, flip LOW to save (`VTOL AutoTrim saved: roll x pitch y`).
+- **What it writes:** `Q_TRIM_ROLL` (new) and `Q_TRIM_PITCH`, both ±10°.
+  These rotate only the attitude reference the VTOL controller uses.
+  `AHRS_TRIM_X/Y`, which the wing flies by, are never changed.
+- **QHOVER only.** Selecting it in any other mode, including QLOITER (whose
+  lean also fights wind) and every fixed-wing mode, does nothing
+  (`VTOL AutoTrim: QHOVER only`).
+- **Cancel = undo.** Leaving QHOVER, disarming or landing mid-run cancels it
+  and restores the trims it started from (`VTOL AutoTrim cancelled`). A
+  switch that is already HIGH when you enter QHOVER does not start a run;
+  flip it LOW and HIGH again.
+- **Stick deadzone:** only corrections beyond the stick deadzone
+  (`RC1_DZ` / `RC2_DZ`, 30 µs by default) reach the trim. A very gentle
+  drift needs a deliberate correction to be learned.
+- **Not on tailsitters**, whose hover frame is pitched 90°; `Q_TRIM_ROLL` is
+  ignored there.
+- Don't run it while the tuning knob drives `Q_TRIM_PITCH`
+  (`TUNE_PARAM = 92`); the two would fight over the value.
+
+`Q_TRIM_ROLL` can also be set by hand: positive rolls the aircraft right in
+VTOL flight, matching `Q_TRIM_PITCH`'s positive = nose up.
+
+Validated in SITL with a deliberately tilted hover: a 2.86° roll / 2.01°
+pitch error was learned as −2.91° / −2.04°, and a −4.01° / −2.86° error as
++3.90° / +2.84°; hands-off drift fell from 2.41 to 0.21 m/s and from 9.19 to
+0.52 m/s. Costs about 0.7 KB of flash.
 
 ## `Q_M_FRTB_RATIO` — Tri-frame front/rear thrust balance
 

@@ -336,6 +336,23 @@ private:
     AP_Float ahrs_trim_pitch;
     float _last_ahrs_trim_pitch;
 
+    // fork: hover-only roll trim, degrees (Q_TRIM_ROLL)
+    AP_Float ahrs_trim_roll;
+    float _last_ahrs_trim_roll;
+
+    // fork: in-flight VTOL auto-trim (RCx_OPTION 182). Nudges Q_TRIM_ROLL /
+    // Q_TRIM_PITCH toward the attitude the pilot holds to stop hover drift.
+    struct {
+        bool running;
+        uint32_t last_ms;
+        float start_roll_deg;
+        float start_pitch_deg;
+    } vtol_auto_trim;
+    void vtol_auto_trim_switch(RC_Channel::AuxSwitchPos ch_flag);
+    void vtol_auto_trim_update();
+    void vtol_auto_trim_cancel(const char *reason);
+    bool vtol_auto_trim_allowed() const;
+
     // fw landing approach radius
     AP_Float fw_land_approach_radius_m;
 
