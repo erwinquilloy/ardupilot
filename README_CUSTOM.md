@@ -215,8 +215,8 @@ ArduPlane V<x.y.z> Custom <FORK_VERSION>[ Light] (<git-hash>)
 For example:
 
 ```
-ArduPlane V4.7.1 Custom v2.0 (9ab7f9a)        # 2 MB board (full track)
-ArduPlane V4.7.1 Custom v2.0 Light (9ab7f9a)  # 1 MB board (light track)
+ArduPlane V4.7.1 Custom v2.0 (c06cfd5)        # 2 MB board (full track)
+ArduPlane V4.7.1 Custom v2.0 Light (c06cfd5)  # 1 MB board (light track)
 ```
 
 The upstream `ArduPlane V4.7.1` prefix is kept so GCS tools that parse
@@ -2178,7 +2178,7 @@ Measured at **v2.0**:
 | Board | MCU / Flash | Free after fork features | vs v1.1 | Status |
 |---|---|---:|---:|---|
 | MatekF765-Wing | F7 / 2 MB | **557.7 KB** | +38.3 | Ships — Matek F765-WING (most flash headroom in the fleet) |
-| KakuteH7-Wing | H7 / 2 MB | **146.9 KB** | +43.4 | Ships — Holybro Kakute H743 Wing |
+| KakuteH7-Wing | H7 / 2 MB | **146.8 KB** | +43.3 | Ships — Holybro Kakute H743 Wing |
 | TBS_LUCID_H7_OEM | H7 / 2 MB | **131.4 KB** | new | **New in v2.0** — TBS Lucid H7 OEM |
 | MatekH743-bdshot | H7 / 2 MB | **129.4 KB** | +30.4 | Ships — Matek H743-WING (bidirectional DShot) |
 | XFLY-H743-bdshot | H7 / 2 MB | **117.9 KB** | new | **New in v2.0** — XFly VTOL kit FC (bidirectional DShot); tightest of the full fleet |
@@ -2225,7 +2225,7 @@ Measured at **v2.0** with radar, `LAND_WIND_DIST` and `LAND_WIND_STRICT` on:
 | speedybeef4v3 | 1 MB | **50.5 KB** | +0.1 | Ships — most F4 headroom with gimbal support |
 | MatekF405-STD | 1 MB | **47.2 KB** | +2.3 | Ships |
 | omnibusf4pro | 1 MB | **42.1 KB** | +2.3 | Ships — Omnibus F4 Pro FPV FC |
-| MatekF405-TE-bdshot | 1 MB | **35.4 KB** | −4.4 | Ships — RunCam camera control now compiled in |
+| MatekF405-TE-bdshot | 1 MB | **35.3 KB** | −4.5 | Ships — RunCam camera control now compiled in |
 | AtomRCF405NAVI | 1 MB | **32.2 KB** | +1.3 | Ships — AtomRC F405 Navi FPV FC |
 | SpeedyBeeF405WING | 1 MB | **27.0 KB** | −0.1 | Ships |
 | SpeedyBeeF405WING-Buzz | 1 MB | **26.7 KB** | −0.1 | Ships — SpeedyBee F405 WING + tone buzzer (see below) |
@@ -2386,7 +2386,7 @@ notes and wiring photos live in the board's `Readme.md`.
   goes **3 → 5 boards**; light is unchanged at 9.
 - No board was removed and no board changed track.
 - Returning full boards gained 30–43 KB of free flash; light boards moved by
-  −4.4 to +2.3 KB.
+  −4.5 to +2.3 KB.
 
 If a 1 MB F4 board overflows, the cheapest first trim is
 `define HAL_SOARING_ENABLED 0` in that board's hwdef (Plane soaring
