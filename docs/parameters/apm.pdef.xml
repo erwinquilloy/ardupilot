@@ -11062,6 +11062,7 @@
           <value code="98">TRAINING Mode</value>
           <value code="180">Test autotuned gains after tune is complete</value>
           <value code="96">Trigger re-reading of mode switch</value>
+          <value code="182">VTOL AutoTrim</value>
           <value code="209">VTOL Forward Throttle</value>
           <value code="94">VTX Power</value>
           <value code="160">Weathervane Enable</value>
@@ -11188,6 +11189,7 @@
           <value code="98">TRAINING Mode</value>
           <value code="180">Test autotuned gains after tune is complete</value>
           <value code="96">Trigger re-reading of mode switch</value>
+          <value code="182">VTOL AutoTrim</value>
           <value code="209">VTOL Forward Throttle</value>
           <value code="94">VTX Power</value>
           <value code="160">Weathervane Enable</value>
@@ -11314,6 +11316,7 @@
           <value code="98">TRAINING Mode</value>
           <value code="180">Test autotuned gains after tune is complete</value>
           <value code="96">Trigger re-reading of mode switch</value>
+          <value code="182">VTOL AutoTrim</value>
           <value code="209">VTOL Forward Throttle</value>
           <value code="94">VTX Power</value>
           <value code="160">Weathervane Enable</value>
@@ -11440,6 +11443,7 @@
           <value code="98">TRAINING Mode</value>
           <value code="180">Test autotuned gains after tune is complete</value>
           <value code="96">Trigger re-reading of mode switch</value>
+          <value code="182">VTOL AutoTrim</value>
           <value code="209">VTOL Forward Throttle</value>
           <value code="94">VTX Power</value>
           <value code="160">Weathervane Enable</value>
@@ -28226,6 +28230,12 @@
         </bitmask>
         <field name="Bitmask">0: Disable thrust loss detection., 1: Disable thrust loss detection in transtions and fixed wing modes. Thrust loss detection will only run in VTOL modes.</field>
       </param>
+      <param humanName="Quadplane AHRS trim roll" name="Q_TRIM_ROLL" documentation="Hover-only roll trim: the roll angle the VTOL attitude controller holds as level, relative to calibrated AHRS level. Positive values make the vehicle roll right in VTOL flight. Forward flight is not affected. Set by the VTOL AutoTrim switch (RCx_OPTION 182) or by hand. Not applied on tailsitters." user="Advanced">
+        <field name="Units">deg</field>
+        <field name="UnitText">degrees</field>
+        <field name="Range">-10 +10</field>
+        <field name="Increment">0.1</field>
+      </param>
     </parameters>
     <parameters name="Q_AUTOTUNE_">
       <param humanName="Autotune axis bitmask" name="Q_AUTOTUNE_AXES" documentation="1-byte bitmap of axes to autotune" user="Standard">
@@ -29467,6 +29477,7 @@
           <value code="98">TRAINING Mode</value>
           <value code="180">Test autotuned gains after tune is complete</value>
           <value code="96">Trigger re-reading of mode switch</value>
+          <value code="182">VTOL AutoTrim</value>
           <value code="209">VTOL Forward Throttle</value>
           <value code="94">VTX Power</value>
           <value code="160">Weathervane Enable</value>
@@ -29624,6 +29635,7 @@
           <value code="98">TRAINING Mode</value>
           <value code="180">Test autotuned gains after tune is complete</value>
           <value code="96">Trigger re-reading of mode switch</value>
+          <value code="182">VTOL AutoTrim</value>
           <value code="209">VTOL Forward Throttle</value>
           <value code="94">VTX Power</value>
           <value code="160">Weathervane Enable</value>
@@ -29781,6 +29793,7 @@
           <value code="98">TRAINING Mode</value>
           <value code="180">Test autotuned gains after tune is complete</value>
           <value code="96">Trigger re-reading of mode switch</value>
+          <value code="182">VTOL AutoTrim</value>
           <value code="209">VTOL Forward Throttle</value>
           <value code="94">VTX Power</value>
           <value code="160">Weathervane Enable</value>
@@ -29938,6 +29951,7 @@
           <value code="98">TRAINING Mode</value>
           <value code="180">Test autotuned gains after tune is complete</value>
           <value code="96">Trigger re-reading of mode switch</value>
+          <value code="182">VTOL AutoTrim</value>
           <value code="209">VTOL Forward Throttle</value>
           <value code="94">VTX Power</value>
           <value code="160">Weathervane Enable</value>
@@ -30095,6 +30109,7 @@
           <value code="98">TRAINING Mode</value>
           <value code="180">Test autotuned gains after tune is complete</value>
           <value code="96">Trigger re-reading of mode switch</value>
+          <value code="182">VTOL AutoTrim</value>
           <value code="209">VTOL Forward Throttle</value>
           <value code="94">VTX Power</value>
           <value code="160">Weathervane Enable</value>
@@ -30252,6 +30267,7 @@
           <value code="98">TRAINING Mode</value>
           <value code="180">Test autotuned gains after tune is complete</value>
           <value code="96">Trigger re-reading of mode switch</value>
+          <value code="182">VTOL AutoTrim</value>
           <value code="209">VTOL Forward Throttle</value>
           <value code="94">VTX Power</value>
           <value code="160">Weathervane Enable</value>
@@ -30409,6 +30425,7 @@
           <value code="98">TRAINING Mode</value>
           <value code="180">Test autotuned gains after tune is complete</value>
           <value code="96">Trigger re-reading of mode switch</value>
+          <value code="182">VTOL AutoTrim</value>
           <value code="209">VTOL Forward Throttle</value>
           <value code="94">VTX Power</value>
           <value code="160">Weathervane Enable</value>
@@ -30566,6 +30583,7 @@
           <value code="98">TRAINING Mode</value>
           <value code="180">Test autotuned gains after tune is complete</value>
           <value code="96">Trigger re-reading of mode switch</value>
+          <value code="182">VTOL AutoTrim</value>
           <value code="209">VTOL Forward Throttle</value>
           <value code="94">VTX Power</value>
           <value code="160">Weathervane Enable</value>
@@ -30723,6 +30741,7 @@
           <value code="98">TRAINING Mode</value>
           <value code="180">Test autotuned gains after tune is complete</value>
           <value code="96">Trigger re-reading of mode switch</value>
+          <value code="182">VTOL AutoTrim</value>
           <value code="209">VTOL Forward Throttle</value>
           <value code="94">VTX Power</value>
           <value code="160">Weathervane Enable</value>
@@ -30880,6 +30899,7 @@
           <value code="98">TRAINING Mode</value>
           <value code="180">Test autotuned gains after tune is complete</value>
           <value code="96">Trigger re-reading of mode switch</value>
+          <value code="182">VTOL AutoTrim</value>
           <value code="209">VTOL Forward Throttle</value>
           <value code="94">VTX Power</value>
           <value code="160">Weathervane Enable</value>
@@ -31037,6 +31057,7 @@
           <value code="98">TRAINING Mode</value>
           <value code="180">Test autotuned gains after tune is complete</value>
           <value code="96">Trigger re-reading of mode switch</value>
+          <value code="182">VTOL AutoTrim</value>
           <value code="209">VTOL Forward Throttle</value>
           <value code="94">VTX Power</value>
           <value code="160">Weathervane Enable</value>
@@ -31194,6 +31215,7 @@
           <value code="98">TRAINING Mode</value>
           <value code="180">Test autotuned gains after tune is complete</value>
           <value code="96">Trigger re-reading of mode switch</value>
+          <value code="182">VTOL AutoTrim</value>
           <value code="209">VTOL Forward Throttle</value>
           <value code="94">VTX Power</value>
           <value code="160">Weathervane Enable</value>
@@ -31351,6 +31373,7 @@
           <value code="98">TRAINING Mode</value>
           <value code="180">Test autotuned gains after tune is complete</value>
           <value code="96">Trigger re-reading of mode switch</value>
+          <value code="182">VTOL AutoTrim</value>
           <value code="209">VTOL Forward Throttle</value>
           <value code="94">VTX Power</value>
           <value code="160">Weathervane Enable</value>
@@ -31508,6 +31531,7 @@
           <value code="98">TRAINING Mode</value>
           <value code="180">Test autotuned gains after tune is complete</value>
           <value code="96">Trigger re-reading of mode switch</value>
+          <value code="182">VTOL AutoTrim</value>
           <value code="209">VTOL Forward Throttle</value>
           <value code="94">VTX Power</value>
           <value code="160">Weathervane Enable</value>
@@ -31665,6 +31689,7 @@
           <value code="98">TRAINING Mode</value>
           <value code="180">Test autotuned gains after tune is complete</value>
           <value code="96">Trigger re-reading of mode switch</value>
+          <value code="182">VTOL AutoTrim</value>
           <value code="209">VTOL Forward Throttle</value>
           <value code="94">VTX Power</value>
           <value code="160">Weathervane Enable</value>
@@ -31822,6 +31847,7 @@
           <value code="98">TRAINING Mode</value>
           <value code="180">Test autotuned gains after tune is complete</value>
           <value code="96">Trigger re-reading of mode switch</value>
+          <value code="182">VTOL AutoTrim</value>
           <value code="209">VTOL Forward Throttle</value>
           <value code="94">VTX Power</value>
           <value code="160">Weathervane Enable</value>
@@ -33004,7 +33030,7 @@
           <value code="3">LidarLite-I2C</value>
           <value code="15">LidarLiteV3-I2C</value>
           <value code="45">LightWare-GRF</value>
-          <value code="48">LightWare-GRF-I2C</value>
+          <value code="48">LightWare-GRF-SF000-I2C</value>
           <value code="7">LightWareI2C</value>
           <value code="8">LightWareSerial</value>
           <value code="36">Lua_Scripting</value>
@@ -33183,11 +33209,11 @@
         </values>
         <field name="RebootRequired">True</field>
       </param>
-      <param humanName="LightWare GRF Minimum Return Strength" name="RNGFND1_GRF_ST" documentation="Minimum acceptable return signal strength in dB. Returns weaker than this will be ignored. Set to 0 to disable filtering." user="Advanced">
+      <param humanName="LightWare GRF Minimum Return Strength" name="RNGFND1_GRF_ST" documentation="Minimum acceptable return signal strength. Returns weaker than this will be ignored. Units are dB on the GRF-250/500 and percent on the SF000/B (I2C). Set to 0 to disable filtering." user="Advanced">
         <field name="Range">0 255</field>
         <field name="RebootRequired">True</field>
       </param>
-      <param humanName="LightWare GRF Update Rate" name="RNGFND1_GRF_RATE" documentation="The update rate of the sensor in Hz." user="Advanced">
+      <param humanName="LightWare GRF Update Rate" name="RNGFND1_GRF_RATE" documentation="The update rate of the sensor in Hz. Ignored by the SF000/B over I2C, which keeps its own update rate (48 Hz default, set in LightWare Studio)." user="Advanced">
         <field name="Range">1 50</field>
         <field name="RebootRequired">True</field>
       </param>
@@ -33202,11 +33228,11 @@
         </values>
         <field name="RebootRequired">True</field>
       </param>
-      <param humanName="LightWare GRF Minimum Return Strength" name="RNGFND1_GRF_ST" documentation="Minimum acceptable return signal strength in dB. Returns weaker than this will be ignored. Set to 0 to disable filtering." user="Advanced">
+      <param humanName="LightWare GRF Minimum Return Strength" name="RNGFND1_GRF_ST" documentation="Minimum acceptable return signal strength. Returns weaker than this will be ignored. Units are dB on the GRF-250/500 and percent on the SF000/B (I2C). Set to 0 to disable filtering." user="Advanced">
         <field name="Range">0 255</field>
         <field name="RebootRequired">True</field>
       </param>
-      <param humanName="LightWare GRF Update Rate" name="RNGFND1_GRF_RATE" documentation="The update rate of the sensor in Hz." user="Advanced">
+      <param humanName="LightWare GRF Update Rate" name="RNGFND1_GRF_RATE" documentation="The update rate of the sensor in Hz. Ignored by the SF000/B over I2C, which keeps its own update rate (48 Hz default, set in LightWare Studio)." user="Advanced">
         <field name="Range">1 50</field>
         <field name="RebootRequired">True</field>
       </param>
@@ -33239,7 +33265,7 @@
           <value code="3">LidarLite-I2C</value>
           <value code="15">LidarLiteV3-I2C</value>
           <value code="45">LightWare-GRF</value>
-          <value code="48">LightWare-GRF-I2C</value>
+          <value code="48">LightWare-GRF-SF000-I2C</value>
           <value code="7">LightWareI2C</value>
           <value code="8">LightWareSerial</value>
           <value code="36">Lua_Scripting</value>
@@ -33418,11 +33444,11 @@
         </values>
         <field name="RebootRequired">True</field>
       </param>
-      <param humanName="LightWare GRF Minimum Return Strength" name="RNGFND2_GRF_ST" documentation="Minimum acceptable return signal strength in dB. Returns weaker than this will be ignored. Set to 0 to disable filtering." user="Advanced">
+      <param humanName="LightWare GRF Minimum Return Strength" name="RNGFND2_GRF_ST" documentation="Minimum acceptable return signal strength. Returns weaker than this will be ignored. Units are dB on the GRF-250/500 and percent on the SF000/B (I2C). Set to 0 to disable filtering." user="Advanced">
         <field name="Range">0 255</field>
         <field name="RebootRequired">True</field>
       </param>
-      <param humanName="LightWare GRF Update Rate" name="RNGFND2_GRF_RATE" documentation="The update rate of the sensor in Hz." user="Advanced">
+      <param humanName="LightWare GRF Update Rate" name="RNGFND2_GRF_RATE" documentation="The update rate of the sensor in Hz. Ignored by the SF000/B over I2C, which keeps its own update rate (48 Hz default, set in LightWare Studio)." user="Advanced">
         <field name="Range">1 50</field>
         <field name="RebootRequired">True</field>
       </param>
@@ -33437,11 +33463,11 @@
         </values>
         <field name="RebootRequired">True</field>
       </param>
-      <param humanName="LightWare GRF Minimum Return Strength" name="RNGFND2_GRF_ST" documentation="Minimum acceptable return signal strength in dB. Returns weaker than this will be ignored. Set to 0 to disable filtering." user="Advanced">
+      <param humanName="LightWare GRF Minimum Return Strength" name="RNGFND2_GRF_ST" documentation="Minimum acceptable return signal strength. Returns weaker than this will be ignored. Units are dB on the GRF-250/500 and percent on the SF000/B (I2C). Set to 0 to disable filtering." user="Advanced">
         <field name="Range">0 255</field>
         <field name="RebootRequired">True</field>
       </param>
-      <param humanName="LightWare GRF Update Rate" name="RNGFND2_GRF_RATE" documentation="The update rate of the sensor in Hz." user="Advanced">
+      <param humanName="LightWare GRF Update Rate" name="RNGFND2_GRF_RATE" documentation="The update rate of the sensor in Hz. Ignored by the SF000/B over I2C, which keeps its own update rate (48 Hz default, set in LightWare Studio)." user="Advanced">
         <field name="Range">1 50</field>
         <field name="RebootRequired">True</field>
       </param>
@@ -33474,7 +33500,7 @@
           <value code="3">LidarLite-I2C</value>
           <value code="15">LidarLiteV3-I2C</value>
           <value code="45">LightWare-GRF</value>
-          <value code="48">LightWare-GRF-I2C</value>
+          <value code="48">LightWare-GRF-SF000-I2C</value>
           <value code="7">LightWareI2C</value>
           <value code="8">LightWareSerial</value>
           <value code="36">Lua_Scripting</value>
@@ -33653,11 +33679,11 @@
         </values>
         <field name="RebootRequired">True</field>
       </param>
-      <param humanName="LightWare GRF Minimum Return Strength" name="RNGFND3_GRF_ST" documentation="Minimum acceptable return signal strength in dB. Returns weaker than this will be ignored. Set to 0 to disable filtering." user="Advanced">
+      <param humanName="LightWare GRF Minimum Return Strength" name="RNGFND3_GRF_ST" documentation="Minimum acceptable return signal strength. Returns weaker than this will be ignored. Units are dB on the GRF-250/500 and percent on the SF000/B (I2C). Set to 0 to disable filtering." user="Advanced">
         <field name="Range">0 255</field>
         <field name="RebootRequired">True</field>
       </param>
-      <param humanName="LightWare GRF Update Rate" name="RNGFND3_GRF_RATE" documentation="The update rate of the sensor in Hz." user="Advanced">
+      <param humanName="LightWare GRF Update Rate" name="RNGFND3_GRF_RATE" documentation="The update rate of the sensor in Hz. Ignored by the SF000/B over I2C, which keeps its own update rate (48 Hz default, set in LightWare Studio)." user="Advanced">
         <field name="Range">1 50</field>
         <field name="RebootRequired">True</field>
       </param>
@@ -33672,11 +33698,11 @@
         </values>
         <field name="RebootRequired">True</field>
       </param>
-      <param humanName="LightWare GRF Minimum Return Strength" name="RNGFND3_GRF_ST" documentation="Minimum acceptable return signal strength in dB. Returns weaker than this will be ignored. Set to 0 to disable filtering." user="Advanced">
+      <param humanName="LightWare GRF Minimum Return Strength" name="RNGFND3_GRF_ST" documentation="Minimum acceptable return signal strength. Returns weaker than this will be ignored. Units are dB on the GRF-250/500 and percent on the SF000/B (I2C). Set to 0 to disable filtering." user="Advanced">
         <field name="Range">0 255</field>
         <field name="RebootRequired">True</field>
       </param>
-      <param humanName="LightWare GRF Update Rate" name="RNGFND3_GRF_RATE" documentation="The update rate of the sensor in Hz." user="Advanced">
+      <param humanName="LightWare GRF Update Rate" name="RNGFND3_GRF_RATE" documentation="The update rate of the sensor in Hz. Ignored by the SF000/B over I2C, which keeps its own update rate (48 Hz default, set in LightWare Studio)." user="Advanced">
         <field name="Range">1 50</field>
         <field name="RebootRequired">True</field>
       </param>
@@ -33709,7 +33735,7 @@
           <value code="3">LidarLite-I2C</value>
           <value code="15">LidarLiteV3-I2C</value>
           <value code="45">LightWare-GRF</value>
-          <value code="48">LightWare-GRF-I2C</value>
+          <value code="48">LightWare-GRF-SF000-I2C</value>
           <value code="7">LightWareI2C</value>
           <value code="8">LightWareSerial</value>
           <value code="36">Lua_Scripting</value>
@@ -33888,11 +33914,11 @@
         </values>
         <field name="RebootRequired">True</field>
       </param>
-      <param humanName="LightWare GRF Minimum Return Strength" name="RNGFND4_GRF_ST" documentation="Minimum acceptable return signal strength in dB. Returns weaker than this will be ignored. Set to 0 to disable filtering." user="Advanced">
+      <param humanName="LightWare GRF Minimum Return Strength" name="RNGFND4_GRF_ST" documentation="Minimum acceptable return signal strength. Returns weaker than this will be ignored. Units are dB on the GRF-250/500 and percent on the SF000/B (I2C). Set to 0 to disable filtering." user="Advanced">
         <field name="Range">0 255</field>
         <field name="RebootRequired">True</field>
       </param>
-      <param humanName="LightWare GRF Update Rate" name="RNGFND4_GRF_RATE" documentation="The update rate of the sensor in Hz." user="Advanced">
+      <param humanName="LightWare GRF Update Rate" name="RNGFND4_GRF_RATE" documentation="The update rate of the sensor in Hz. Ignored by the SF000/B over I2C, which keeps its own update rate (48 Hz default, set in LightWare Studio)." user="Advanced">
         <field name="Range">1 50</field>
         <field name="RebootRequired">True</field>
       </param>
@@ -33907,11 +33933,11 @@
         </values>
         <field name="RebootRequired">True</field>
       </param>
-      <param humanName="LightWare GRF Minimum Return Strength" name="RNGFND4_GRF_ST" documentation="Minimum acceptable return signal strength in dB. Returns weaker than this will be ignored. Set to 0 to disable filtering." user="Advanced">
+      <param humanName="LightWare GRF Minimum Return Strength" name="RNGFND4_GRF_ST" documentation="Minimum acceptable return signal strength. Returns weaker than this will be ignored. Units are dB on the GRF-250/500 and percent on the SF000/B (I2C). Set to 0 to disable filtering." user="Advanced">
         <field name="Range">0 255</field>
         <field name="RebootRequired">True</field>
       </param>
-      <param humanName="LightWare GRF Update Rate" name="RNGFND4_GRF_RATE" documentation="The update rate of the sensor in Hz." user="Advanced">
+      <param humanName="LightWare GRF Update Rate" name="RNGFND4_GRF_RATE" documentation="The update rate of the sensor in Hz. Ignored by the SF000/B over I2C, which keeps its own update rate (48 Hz default, set in LightWare Studio)." user="Advanced">
         <field name="Range">1 50</field>
         <field name="RebootRequired">True</field>
       </param>
@@ -33944,7 +33970,7 @@
           <value code="3">LidarLite-I2C</value>
           <value code="15">LidarLiteV3-I2C</value>
           <value code="45">LightWare-GRF</value>
-          <value code="48">LightWare-GRF-I2C</value>
+          <value code="48">LightWare-GRF-SF000-I2C</value>
           <value code="7">LightWareI2C</value>
           <value code="8">LightWareSerial</value>
           <value code="36">Lua_Scripting</value>
@@ -34123,11 +34149,11 @@
         </values>
         <field name="RebootRequired">True</field>
       </param>
-      <param humanName="LightWare GRF Minimum Return Strength" name="RNGFND5_GRF_ST" documentation="Minimum acceptable return signal strength in dB. Returns weaker than this will be ignored. Set to 0 to disable filtering." user="Advanced">
+      <param humanName="LightWare GRF Minimum Return Strength" name="RNGFND5_GRF_ST" documentation="Minimum acceptable return signal strength. Returns weaker than this will be ignored. Units are dB on the GRF-250/500 and percent on the SF000/B (I2C). Set to 0 to disable filtering." user="Advanced">
         <field name="Range">0 255</field>
         <field name="RebootRequired">True</field>
       </param>
-      <param humanName="LightWare GRF Update Rate" name="RNGFND5_GRF_RATE" documentation="The update rate of the sensor in Hz." user="Advanced">
+      <param humanName="LightWare GRF Update Rate" name="RNGFND5_GRF_RATE" documentation="The update rate of the sensor in Hz. Ignored by the SF000/B over I2C, which keeps its own update rate (48 Hz default, set in LightWare Studio)." user="Advanced">
         <field name="Range">1 50</field>
         <field name="RebootRequired">True</field>
       </param>
@@ -34142,11 +34168,11 @@
         </values>
         <field name="RebootRequired">True</field>
       </param>
-      <param humanName="LightWare GRF Minimum Return Strength" name="RNGFND5_GRF_ST" documentation="Minimum acceptable return signal strength in dB. Returns weaker than this will be ignored. Set to 0 to disable filtering." user="Advanced">
+      <param humanName="LightWare GRF Minimum Return Strength" name="RNGFND5_GRF_ST" documentation="Minimum acceptable return signal strength. Returns weaker than this will be ignored. Units are dB on the GRF-250/500 and percent on the SF000/B (I2C). Set to 0 to disable filtering." user="Advanced">
         <field name="Range">0 255</field>
         <field name="RebootRequired">True</field>
       </param>
-      <param humanName="LightWare GRF Update Rate" name="RNGFND5_GRF_RATE" documentation="The update rate of the sensor in Hz." user="Advanced">
+      <param humanName="LightWare GRF Update Rate" name="RNGFND5_GRF_RATE" documentation="The update rate of the sensor in Hz. Ignored by the SF000/B over I2C, which keeps its own update rate (48 Hz default, set in LightWare Studio)." user="Advanced">
         <field name="Range">1 50</field>
         <field name="RebootRequired">True</field>
       </param>
@@ -34179,7 +34205,7 @@
           <value code="3">LidarLite-I2C</value>
           <value code="15">LidarLiteV3-I2C</value>
           <value code="45">LightWare-GRF</value>
-          <value code="48">LightWare-GRF-I2C</value>
+          <value code="48">LightWare-GRF-SF000-I2C</value>
           <value code="7">LightWareI2C</value>
           <value code="8">LightWareSerial</value>
           <value code="36">Lua_Scripting</value>
@@ -34358,11 +34384,11 @@
         </values>
         <field name="RebootRequired">True</field>
       </param>
-      <param humanName="LightWare GRF Minimum Return Strength" name="RNGFND6_GRF_ST" documentation="Minimum acceptable return signal strength in dB. Returns weaker than this will be ignored. Set to 0 to disable filtering." user="Advanced">
+      <param humanName="LightWare GRF Minimum Return Strength" name="RNGFND6_GRF_ST" documentation="Minimum acceptable return signal strength. Returns weaker than this will be ignored. Units are dB on the GRF-250/500 and percent on the SF000/B (I2C). Set to 0 to disable filtering." user="Advanced">
         <field name="Range">0 255</field>
         <field name="RebootRequired">True</field>
       </param>
-      <param humanName="LightWare GRF Update Rate" name="RNGFND6_GRF_RATE" documentation="The update rate of the sensor in Hz." user="Advanced">
+      <param humanName="LightWare GRF Update Rate" name="RNGFND6_GRF_RATE" documentation="The update rate of the sensor in Hz. Ignored by the SF000/B over I2C, which keeps its own update rate (48 Hz default, set in LightWare Studio)." user="Advanced">
         <field name="Range">1 50</field>
         <field name="RebootRequired">True</field>
       </param>
@@ -34377,11 +34403,11 @@
         </values>
         <field name="RebootRequired">True</field>
       </param>
-      <param humanName="LightWare GRF Minimum Return Strength" name="RNGFND6_GRF_ST" documentation="Minimum acceptable return signal strength in dB. Returns weaker than this will be ignored. Set to 0 to disable filtering." user="Advanced">
+      <param humanName="LightWare GRF Minimum Return Strength" name="RNGFND6_GRF_ST" documentation="Minimum acceptable return signal strength. Returns weaker than this will be ignored. Units are dB on the GRF-250/500 and percent on the SF000/B (I2C). Set to 0 to disable filtering." user="Advanced">
         <field name="Range">0 255</field>
         <field name="RebootRequired">True</field>
       </param>
-      <param humanName="LightWare GRF Update Rate" name="RNGFND6_GRF_RATE" documentation="The update rate of the sensor in Hz." user="Advanced">
+      <param humanName="LightWare GRF Update Rate" name="RNGFND6_GRF_RATE" documentation="The update rate of the sensor in Hz. Ignored by the SF000/B over I2C, which keeps its own update rate (48 Hz default, set in LightWare Studio)." user="Advanced">
         <field name="Range">1 50</field>
         <field name="RebootRequired">True</field>
       </param>
@@ -34414,7 +34440,7 @@
           <value code="3">LidarLite-I2C</value>
           <value code="15">LidarLiteV3-I2C</value>
           <value code="45">LightWare-GRF</value>
-          <value code="48">LightWare-GRF-I2C</value>
+          <value code="48">LightWare-GRF-SF000-I2C</value>
           <value code="7">LightWareI2C</value>
           <value code="8">LightWareSerial</value>
           <value code="36">Lua_Scripting</value>
@@ -34593,11 +34619,11 @@
         </values>
         <field name="RebootRequired">True</field>
       </param>
-      <param humanName="LightWare GRF Minimum Return Strength" name="RNGFND7_GRF_ST" documentation="Minimum acceptable return signal strength in dB. Returns weaker than this will be ignored. Set to 0 to disable filtering." user="Advanced">
+      <param humanName="LightWare GRF Minimum Return Strength" name="RNGFND7_GRF_ST" documentation="Minimum acceptable return signal strength. Returns weaker than this will be ignored. Units are dB on the GRF-250/500 and percent on the SF000/B (I2C). Set to 0 to disable filtering." user="Advanced">
         <field name="Range">0 255</field>
         <field name="RebootRequired">True</field>
       </param>
-      <param humanName="LightWare GRF Update Rate" name="RNGFND7_GRF_RATE" documentation="The update rate of the sensor in Hz." user="Advanced">
+      <param humanName="LightWare GRF Update Rate" name="RNGFND7_GRF_RATE" documentation="The update rate of the sensor in Hz. Ignored by the SF000/B over I2C, which keeps its own update rate (48 Hz default, set in LightWare Studio)." user="Advanced">
         <field name="Range">1 50</field>
         <field name="RebootRequired">True</field>
       </param>
@@ -34612,11 +34638,11 @@
         </values>
         <field name="RebootRequired">True</field>
       </param>
-      <param humanName="LightWare GRF Minimum Return Strength" name="RNGFND7_GRF_ST" documentation="Minimum acceptable return signal strength in dB. Returns weaker than this will be ignored. Set to 0 to disable filtering." user="Advanced">
+      <param humanName="LightWare GRF Minimum Return Strength" name="RNGFND7_GRF_ST" documentation="Minimum acceptable return signal strength. Returns weaker than this will be ignored. Units are dB on the GRF-250/500 and percent on the SF000/B (I2C). Set to 0 to disable filtering." user="Advanced">
         <field name="Range">0 255</field>
         <field name="RebootRequired">True</field>
       </param>
-      <param humanName="LightWare GRF Update Rate" name="RNGFND7_GRF_RATE" documentation="The update rate of the sensor in Hz." user="Advanced">
+      <param humanName="LightWare GRF Update Rate" name="RNGFND7_GRF_RATE" documentation="The update rate of the sensor in Hz. Ignored by the SF000/B over I2C, which keeps its own update rate (48 Hz default, set in LightWare Studio)." user="Advanced">
         <field name="Range">1 50</field>
         <field name="RebootRequired">True</field>
       </param>
@@ -34649,7 +34675,7 @@
           <value code="3">LidarLite-I2C</value>
           <value code="15">LidarLiteV3-I2C</value>
           <value code="45">LightWare-GRF</value>
-          <value code="48">LightWare-GRF-I2C</value>
+          <value code="48">LightWare-GRF-SF000-I2C</value>
           <value code="7">LightWareI2C</value>
           <value code="8">LightWareSerial</value>
           <value code="36">Lua_Scripting</value>
@@ -34828,11 +34854,11 @@
         </values>
         <field name="RebootRequired">True</field>
       </param>
-      <param humanName="LightWare GRF Minimum Return Strength" name="RNGFND8_GRF_ST" documentation="Minimum acceptable return signal strength in dB. Returns weaker than this will be ignored. Set to 0 to disable filtering." user="Advanced">
+      <param humanName="LightWare GRF Minimum Return Strength" name="RNGFND8_GRF_ST" documentation="Minimum acceptable return signal strength. Returns weaker than this will be ignored. Units are dB on the GRF-250/500 and percent on the SF000/B (I2C). Set to 0 to disable filtering." user="Advanced">
         <field name="Range">0 255</field>
         <field name="RebootRequired">True</field>
       </param>
-      <param humanName="LightWare GRF Update Rate" name="RNGFND8_GRF_RATE" documentation="The update rate of the sensor in Hz." user="Advanced">
+      <param humanName="LightWare GRF Update Rate" name="RNGFND8_GRF_RATE" documentation="The update rate of the sensor in Hz. Ignored by the SF000/B over I2C, which keeps its own update rate (48 Hz default, set in LightWare Studio)." user="Advanced">
         <field name="Range">1 50</field>
         <field name="RebootRequired">True</field>
       </param>
@@ -34847,11 +34873,11 @@
         </values>
         <field name="RebootRequired">True</field>
       </param>
-      <param humanName="LightWare GRF Minimum Return Strength" name="RNGFND8_GRF_ST" documentation="Minimum acceptable return signal strength in dB. Returns weaker than this will be ignored. Set to 0 to disable filtering." user="Advanced">
+      <param humanName="LightWare GRF Minimum Return Strength" name="RNGFND8_GRF_ST" documentation="Minimum acceptable return signal strength. Returns weaker than this will be ignored. Units are dB on the GRF-250/500 and percent on the SF000/B (I2C). Set to 0 to disable filtering." user="Advanced">
         <field name="Range">0 255</field>
         <field name="RebootRequired">True</field>
       </param>
-      <param humanName="LightWare GRF Update Rate" name="RNGFND8_GRF_RATE" documentation="The update rate of the sensor in Hz." user="Advanced">
+      <param humanName="LightWare GRF Update Rate" name="RNGFND8_GRF_RATE" documentation="The update rate of the sensor in Hz. Ignored by the SF000/B over I2C, which keeps its own update rate (48 Hz default, set in LightWare Studio)." user="Advanced">
         <field name="Range">1 50</field>
         <field name="RebootRequired">True</field>
       </param>
@@ -34884,7 +34910,7 @@
           <value code="3">LidarLite-I2C</value>
           <value code="15">LidarLiteV3-I2C</value>
           <value code="45">LightWare-GRF</value>
-          <value code="48">LightWare-GRF-I2C</value>
+          <value code="48">LightWare-GRF-SF000-I2C</value>
           <value code="7">LightWareI2C</value>
           <value code="8">LightWareSerial</value>
           <value code="36">Lua_Scripting</value>
@@ -35063,11 +35089,11 @@
         </values>
         <field name="RebootRequired">True</field>
       </param>
-      <param humanName="LightWare GRF Minimum Return Strength" name="RNGFND9_GRF_ST" documentation="Minimum acceptable return signal strength in dB. Returns weaker than this will be ignored. Set to 0 to disable filtering." user="Advanced">
+      <param humanName="LightWare GRF Minimum Return Strength" name="RNGFND9_GRF_ST" documentation="Minimum acceptable return signal strength. Returns weaker than this will be ignored. Units are dB on the GRF-250/500 and percent on the SF000/B (I2C). Set to 0 to disable filtering." user="Advanced">
         <field name="Range">0 255</field>
         <field name="RebootRequired">True</field>
       </param>
-      <param humanName="LightWare GRF Update Rate" name="RNGFND9_GRF_RATE" documentation="The update rate of the sensor in Hz." user="Advanced">
+      <param humanName="LightWare GRF Update Rate" name="RNGFND9_GRF_RATE" documentation="The update rate of the sensor in Hz. Ignored by the SF000/B over I2C, which keeps its own update rate (48 Hz default, set in LightWare Studio)." user="Advanced">
         <field name="Range">1 50</field>
         <field name="RebootRequired">True</field>
       </param>
@@ -35082,11 +35108,11 @@
         </values>
         <field name="RebootRequired">True</field>
       </param>
-      <param humanName="LightWare GRF Minimum Return Strength" name="RNGFND9_GRF_ST" documentation="Minimum acceptable return signal strength in dB. Returns weaker than this will be ignored. Set to 0 to disable filtering." user="Advanced">
+      <param humanName="LightWare GRF Minimum Return Strength" name="RNGFND9_GRF_ST" documentation="Minimum acceptable return signal strength. Returns weaker than this will be ignored. Units are dB on the GRF-250/500 and percent on the SF000/B (I2C). Set to 0 to disable filtering." user="Advanced">
         <field name="Range">0 255</field>
         <field name="RebootRequired">True</field>
       </param>
-      <param humanName="LightWare GRF Update Rate" name="RNGFND9_GRF_RATE" documentation="The update rate of the sensor in Hz." user="Advanced">
+      <param humanName="LightWare GRF Update Rate" name="RNGFND9_GRF_RATE" documentation="The update rate of the sensor in Hz. Ignored by the SF000/B over I2C, which keeps its own update rate (48 Hz default, set in LightWare Studio)." user="Advanced">
         <field name="Range">1 50</field>
         <field name="RebootRequired">True</field>
       </param>
@@ -35119,7 +35145,7 @@
           <value code="3">LidarLite-I2C</value>
           <value code="15">LidarLiteV3-I2C</value>
           <value code="45">LightWare-GRF</value>
-          <value code="48">LightWare-GRF-I2C</value>
+          <value code="48">LightWare-GRF-SF000-I2C</value>
           <value code="7">LightWareI2C</value>
           <value code="8">LightWareSerial</value>
           <value code="36">Lua_Scripting</value>
@@ -35298,11 +35324,11 @@
         </values>
         <field name="RebootRequired">True</field>
       </param>
-      <param humanName="LightWare GRF Minimum Return Strength" name="RNGFNDA_GRF_ST" documentation="Minimum acceptable return signal strength in dB. Returns weaker than this will be ignored. Set to 0 to disable filtering." user="Advanced">
+      <param humanName="LightWare GRF Minimum Return Strength" name="RNGFNDA_GRF_ST" documentation="Minimum acceptable return signal strength. Returns weaker than this will be ignored. Units are dB on the GRF-250/500 and percent on the SF000/B (I2C). Set to 0 to disable filtering." user="Advanced">
         <field name="Range">0 255</field>
         <field name="RebootRequired">True</field>
       </param>
-      <param humanName="LightWare GRF Update Rate" name="RNGFNDA_GRF_RATE" documentation="The update rate of the sensor in Hz." user="Advanced">
+      <param humanName="LightWare GRF Update Rate" name="RNGFNDA_GRF_RATE" documentation="The update rate of the sensor in Hz. Ignored by the SF000/B over I2C, which keeps its own update rate (48 Hz default, set in LightWare Studio)." user="Advanced">
         <field name="Range">1 50</field>
         <field name="RebootRequired">True</field>
       </param>
@@ -35317,11 +35343,11 @@
         </values>
         <field name="RebootRequired">True</field>
       </param>
-      <param humanName="LightWare GRF Minimum Return Strength" name="RNGFNDA_GRF_ST" documentation="Minimum acceptable return signal strength in dB. Returns weaker than this will be ignored. Set to 0 to disable filtering." user="Advanced">
+      <param humanName="LightWare GRF Minimum Return Strength" name="RNGFNDA_GRF_ST" documentation="Minimum acceptable return signal strength. Returns weaker than this will be ignored. Units are dB on the GRF-250/500 and percent on the SF000/B (I2C). Set to 0 to disable filtering." user="Advanced">
         <field name="Range">0 255</field>
         <field name="RebootRequired">True</field>
       </param>
-      <param humanName="LightWare GRF Update Rate" name="RNGFNDA_GRF_RATE" documentation="The update rate of the sensor in Hz." user="Advanced">
+      <param humanName="LightWare GRF Update Rate" name="RNGFNDA_GRF_RATE" documentation="The update rate of the sensor in Hz. Ignored by the SF000/B over I2C, which keeps its own update rate (48 Hz default, set in LightWare Studio)." user="Advanced">
         <field name="Range">1 50</field>
         <field name="RebootRequired">True</field>
       </param>

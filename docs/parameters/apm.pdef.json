@@ -13657,6 +13657,7 @@
         "179": "ICEngine start / stop",
         "180": "Test autotuned gains after tune is complete",
         "181": "QuickTune",
+        "182": "VTOL AutoTrim",
         "184": "System ID Chirp",
         "185": "Mount Roll/Pitch Lock",
         "186": "Mount POI Lock",
@@ -13786,6 +13787,7 @@
         "179": "ICEngine start / stop",
         "180": "Test autotuned gains after tune is complete",
         "181": "QuickTune",
+        "182": "VTOL AutoTrim",
         "184": "System ID Chirp",
         "185": "Mount Roll/Pitch Lock",
         "186": "Mount POI Lock",
@@ -13915,6 +13917,7 @@
         "179": "ICEngine start / stop",
         "180": "Test autotuned gains after tune is complete",
         "181": "QuickTune",
+        "182": "VTOL AutoTrim",
         "184": "System ID Chirp",
         "185": "Mount Roll/Pitch Lock",
         "186": "Mount POI Lock",
@@ -14044,6 +14047,7 @@
         "179": "ICEngine start / stop",
         "180": "Test autotuned gains after tune is complete",
         "181": "QuickTune",
+        "182": "VTOL AutoTrim",
         "184": "System ID Chirp",
         "185": "Mount Roll/Pitch Lock",
         "186": "Mount POI Lock",
@@ -45392,6 +45396,17 @@
       "Units": "deg",
       "User": "Advanced"
     },
+    "Q_TRIM_ROLL": {
+      "Description": "Hover-only roll trim: the roll angle the VTOL attitude controller holds as level, relative to calibrated AHRS level. Positive values make the vehicle roll right in VTOL flight. Forward flight is not affected. Set by the VTOL AutoTrim switch (RCx_OPTION 182) or by hand. Not applied on tailsitters.",
+      "DisplayName": "Quadplane AHRS trim roll",
+      "Increment": "0.1",
+      "Range": {
+        "high": "+10",
+        "low": "-10"
+      },
+      "Units": "deg",
+      "User": "Advanced"
+    },
     "Q_VFWD_ALT": {
       "Description": "Controls altitude to disable forward velocity assist when below this relative altitude. This is useful to keep the forward velocity propeller from hitting the ground. Rangefinder height data is incorporated when available.",
       "DisplayName": "Forward velocity alt cutoff",
@@ -47530,6 +47545,7 @@
         "179": "ICEngine start / stop",
         "180": "Test autotuned gains after tune is complete",
         "181": "QuickTune",
+        "182": "VTOL AutoTrim",
         "184": "System ID Chirp",
         "185": "Mount Roll/Pitch Lock",
         "186": "Mount POI Lock",
@@ -47713,6 +47729,7 @@
         "179": "ICEngine start / stop",
         "180": "Test autotuned gains after tune is complete",
         "181": "QuickTune",
+        "182": "VTOL AutoTrim",
         "184": "System ID Chirp",
         "185": "Mount Roll/Pitch Lock",
         "186": "Mount POI Lock",
@@ -47896,6 +47913,7 @@
         "179": "ICEngine start / stop",
         "180": "Test autotuned gains after tune is complete",
         "181": "QuickTune",
+        "182": "VTOL AutoTrim",
         "184": "System ID Chirp",
         "185": "Mount Roll/Pitch Lock",
         "186": "Mount POI Lock",
@@ -48079,6 +48097,7 @@
         "179": "ICEngine start / stop",
         "180": "Test autotuned gains after tune is complete",
         "181": "QuickTune",
+        "182": "VTOL AutoTrim",
         "184": "System ID Chirp",
         "185": "Mount Roll/Pitch Lock",
         "186": "Mount POI Lock",
@@ -48262,6 +48281,7 @@
         "179": "ICEngine start / stop",
         "180": "Test autotuned gains after tune is complete",
         "181": "QuickTune",
+        "182": "VTOL AutoTrim",
         "184": "System ID Chirp",
         "185": "Mount Roll/Pitch Lock",
         "186": "Mount POI Lock",
@@ -48445,6 +48465,7 @@
         "179": "ICEngine start / stop",
         "180": "Test autotuned gains after tune is complete",
         "181": "QuickTune",
+        "182": "VTOL AutoTrim",
         "184": "System ID Chirp",
         "185": "Mount Roll/Pitch Lock",
         "186": "Mount POI Lock",
@@ -48628,6 +48649,7 @@
         "179": "ICEngine start / stop",
         "180": "Test autotuned gains after tune is complete",
         "181": "QuickTune",
+        "182": "VTOL AutoTrim",
         "184": "System ID Chirp",
         "185": "Mount Roll/Pitch Lock",
         "186": "Mount POI Lock",
@@ -48811,6 +48833,7 @@
         "179": "ICEngine start / stop",
         "180": "Test autotuned gains after tune is complete",
         "181": "QuickTune",
+        "182": "VTOL AutoTrim",
         "184": "System ID Chirp",
         "185": "Mount Roll/Pitch Lock",
         "186": "Mount POI Lock",
@@ -48994,6 +49017,7 @@
         "179": "ICEngine start / stop",
         "180": "Test autotuned gains after tune is complete",
         "181": "QuickTune",
+        "182": "VTOL AutoTrim",
         "184": "System ID Chirp",
         "185": "Mount Roll/Pitch Lock",
         "186": "Mount POI Lock",
@@ -49177,6 +49201,7 @@
         "179": "ICEngine start / stop",
         "180": "Test autotuned gains after tune is complete",
         "181": "QuickTune",
+        "182": "VTOL AutoTrim",
         "184": "System ID Chirp",
         "185": "Mount Roll/Pitch Lock",
         "186": "Mount POI Lock",
@@ -49360,6 +49385,7 @@
         "179": "ICEngine start / stop",
         "180": "Test autotuned gains after tune is complete",
         "181": "QuickTune",
+        "182": "VTOL AutoTrim",
         "184": "System ID Chirp",
         "185": "Mount Roll/Pitch Lock",
         "186": "Mount POI Lock",
@@ -49543,6 +49569,7 @@
         "179": "ICEngine start / stop",
         "180": "Test autotuned gains after tune is complete",
         "181": "QuickTune",
+        "182": "VTOL AutoTrim",
         "184": "System ID Chirp",
         "185": "Mount Roll/Pitch Lock",
         "186": "Mount POI Lock",
@@ -49726,6 +49753,7 @@
         "179": "ICEngine start / stop",
         "180": "Test autotuned gains after tune is complete",
         "181": "QuickTune",
+        "182": "VTOL AutoTrim",
         "184": "System ID Chirp",
         "185": "Mount Roll/Pitch Lock",
         "186": "Mount POI Lock",
@@ -49909,6 +49937,7 @@
         "179": "ICEngine start / stop",
         "180": "Test autotuned gains after tune is complete",
         "181": "QuickTune",
+        "182": "VTOL AutoTrim",
         "184": "System ID Chirp",
         "185": "Mount Roll/Pitch Lock",
         "186": "Mount POI Lock",
@@ -50092,6 +50121,7 @@
         "179": "ICEngine start / stop",
         "180": "Test autotuned gains after tune is complete",
         "181": "QuickTune",
+        "182": "VTOL AutoTrim",
         "184": "System ID Chirp",
         "185": "Mount Roll/Pitch Lock",
         "186": "Mount POI Lock",
@@ -50275,6 +50305,7 @@
         "179": "ICEngine start / stop",
         "180": "Test autotuned gains after tune is complete",
         "181": "QuickTune",
+        "182": "VTOL AutoTrim",
         "184": "System ID Chirp",
         "185": "Mount Roll/Pitch Lock",
         "186": "Mount POI Lock",
@@ -52099,7 +52130,7 @@
         "45": "LightWare-GRF",
         "46": "BenewakeTFS20L",
         "47": "DTS6012M",
-        "48": "LightWare-GRF-I2C",
+        "48": "LightWare-GRF-SF000-I2C",
         "5": "PWM",
         "6": "BBB-PRU",
         "7": "LightWareI2C",
@@ -52164,7 +52195,7 @@
   },
   "RNGFND1_GRF_": {
     "RNGFND1_GRF_RATE": {
-      "Description": "The update rate of the sensor in Hz.",
+      "Description": "The update rate of the sensor in Hz. Ignored by the SF000/B over I2C, which keeps its own update rate (48 Hz default, set in LightWare Studio).",
       "DisplayName": "LightWare GRF Update Rate",
       "Range": {
         "high": "50",
@@ -52186,7 +52217,7 @@
       }
     },
     "RNGFND1_GRF_ST": {
-      "Description": "Minimum acceptable return signal strength in dB. Returns weaker than this will be ignored. Set to 0 to disable filtering.",
+      "Description": "Minimum acceptable return signal strength. Returns weaker than this will be ignored. Units are dB on the GRF-250/500 and percent on the SF000/B (I2C). Set to 0 to disable filtering.",
       "DisplayName": "LightWare GRF Minimum Return Strength",
       "Range": {
         "high": "255",
@@ -52438,7 +52469,7 @@
         "45": "LightWare-GRF",
         "46": "BenewakeTFS20L",
         "47": "DTS6012M",
-        "48": "LightWare-GRF-I2C",
+        "48": "LightWare-GRF-SF000-I2C",
         "5": "PWM",
         "6": "BBB-PRU",
         "7": "LightWareI2C",
@@ -52503,7 +52534,7 @@
   },
   "RNGFND2_GRF_": {
     "RNGFND2_GRF_RATE": {
-      "Description": "The update rate of the sensor in Hz.",
+      "Description": "The update rate of the sensor in Hz. Ignored by the SF000/B over I2C, which keeps its own update rate (48 Hz default, set in LightWare Studio).",
       "DisplayName": "LightWare GRF Update Rate",
       "Range": {
         "high": "50",
@@ -52525,7 +52556,7 @@
       }
     },
     "RNGFND2_GRF_ST": {
-      "Description": "Minimum acceptable return signal strength in dB. Returns weaker than this will be ignored. Set to 0 to disable filtering.",
+      "Description": "Minimum acceptable return signal strength. Returns weaker than this will be ignored. Units are dB on the GRF-250/500 and percent on the SF000/B (I2C). Set to 0 to disable filtering.",
       "DisplayName": "LightWare GRF Minimum Return Strength",
       "Range": {
         "high": "255",
@@ -52777,7 +52808,7 @@
         "45": "LightWare-GRF",
         "46": "BenewakeTFS20L",
         "47": "DTS6012M",
-        "48": "LightWare-GRF-I2C",
+        "48": "LightWare-GRF-SF000-I2C",
         "5": "PWM",
         "6": "BBB-PRU",
         "7": "LightWareI2C",
@@ -52842,7 +52873,7 @@
   },
   "RNGFND3_GRF_": {
     "RNGFND3_GRF_RATE": {
-      "Description": "The update rate of the sensor in Hz.",
+      "Description": "The update rate of the sensor in Hz. Ignored by the SF000/B over I2C, which keeps its own update rate (48 Hz default, set in LightWare Studio).",
       "DisplayName": "LightWare GRF Update Rate",
       "Range": {
         "high": "50",
@@ -52864,7 +52895,7 @@
       }
     },
     "RNGFND3_GRF_ST": {
-      "Description": "Minimum acceptable return signal strength in dB. Returns weaker than this will be ignored. Set to 0 to disable filtering.",
+      "Description": "Minimum acceptable return signal strength. Returns weaker than this will be ignored. Units are dB on the GRF-250/500 and percent on the SF000/B (I2C). Set to 0 to disable filtering.",
       "DisplayName": "LightWare GRF Minimum Return Strength",
       "Range": {
         "high": "255",
@@ -53116,7 +53147,7 @@
         "45": "LightWare-GRF",
         "46": "BenewakeTFS20L",
         "47": "DTS6012M",
-        "48": "LightWare-GRF-I2C",
+        "48": "LightWare-GRF-SF000-I2C",
         "5": "PWM",
         "6": "BBB-PRU",
         "7": "LightWareI2C",
@@ -53181,7 +53212,7 @@
   },
   "RNGFND4_GRF_": {
     "RNGFND4_GRF_RATE": {
-      "Description": "The update rate of the sensor in Hz.",
+      "Description": "The update rate of the sensor in Hz. Ignored by the SF000/B over I2C, which keeps its own update rate (48 Hz default, set in LightWare Studio).",
       "DisplayName": "LightWare GRF Update Rate",
       "Range": {
         "high": "50",
@@ -53203,7 +53234,7 @@
       }
     },
     "RNGFND4_GRF_ST": {
-      "Description": "Minimum acceptable return signal strength in dB. Returns weaker than this will be ignored. Set to 0 to disable filtering.",
+      "Description": "Minimum acceptable return signal strength. Returns weaker than this will be ignored. Units are dB on the GRF-250/500 and percent on the SF000/B (I2C). Set to 0 to disable filtering.",
       "DisplayName": "LightWare GRF Minimum Return Strength",
       "Range": {
         "high": "255",
@@ -53455,7 +53486,7 @@
         "45": "LightWare-GRF",
         "46": "BenewakeTFS20L",
         "47": "DTS6012M",
-        "48": "LightWare-GRF-I2C",
+        "48": "LightWare-GRF-SF000-I2C",
         "5": "PWM",
         "6": "BBB-PRU",
         "7": "LightWareI2C",
@@ -53520,7 +53551,7 @@
   },
   "RNGFND5_GRF_": {
     "RNGFND5_GRF_RATE": {
-      "Description": "The update rate of the sensor in Hz.",
+      "Description": "The update rate of the sensor in Hz. Ignored by the SF000/B over I2C, which keeps its own update rate (48 Hz default, set in LightWare Studio).",
       "DisplayName": "LightWare GRF Update Rate",
       "Range": {
         "high": "50",
@@ -53542,7 +53573,7 @@
       }
     },
     "RNGFND5_GRF_ST": {
-      "Description": "Minimum acceptable return signal strength in dB. Returns weaker than this will be ignored. Set to 0 to disable filtering.",
+      "Description": "Minimum acceptable return signal strength. Returns weaker than this will be ignored. Units are dB on the GRF-250/500 and percent on the SF000/B (I2C). Set to 0 to disable filtering.",
       "DisplayName": "LightWare GRF Minimum Return Strength",
       "Range": {
         "high": "255",
@@ -53794,7 +53825,7 @@
         "45": "LightWare-GRF",
         "46": "BenewakeTFS20L",
         "47": "DTS6012M",
-        "48": "LightWare-GRF-I2C",
+        "48": "LightWare-GRF-SF000-I2C",
         "5": "PWM",
         "6": "BBB-PRU",
         "7": "LightWareI2C",
@@ -53859,7 +53890,7 @@
   },
   "RNGFND6_GRF_": {
     "RNGFND6_GRF_RATE": {
-      "Description": "The update rate of the sensor in Hz.",
+      "Description": "The update rate of the sensor in Hz. Ignored by the SF000/B over I2C, which keeps its own update rate (48 Hz default, set in LightWare Studio).",
       "DisplayName": "LightWare GRF Update Rate",
       "Range": {
         "high": "50",
@@ -53881,7 +53912,7 @@
       }
     },
     "RNGFND6_GRF_ST": {
-      "Description": "Minimum acceptable return signal strength in dB. Returns weaker than this will be ignored. Set to 0 to disable filtering.",
+      "Description": "Minimum acceptable return signal strength. Returns weaker than this will be ignored. Units are dB on the GRF-250/500 and percent on the SF000/B (I2C). Set to 0 to disable filtering.",
       "DisplayName": "LightWare GRF Minimum Return Strength",
       "Range": {
         "high": "255",
@@ -54133,7 +54164,7 @@
         "45": "LightWare-GRF",
         "46": "BenewakeTFS20L",
         "47": "DTS6012M",
-        "48": "LightWare-GRF-I2C",
+        "48": "LightWare-GRF-SF000-I2C",
         "5": "PWM",
         "6": "BBB-PRU",
         "7": "LightWareI2C",
@@ -54198,7 +54229,7 @@
   },
   "RNGFND7_GRF_": {
     "RNGFND7_GRF_RATE": {
-      "Description": "The update rate of the sensor in Hz.",
+      "Description": "The update rate of the sensor in Hz. Ignored by the SF000/B over I2C, which keeps its own update rate (48 Hz default, set in LightWare Studio).",
       "DisplayName": "LightWare GRF Update Rate",
       "Range": {
         "high": "50",
@@ -54220,7 +54251,7 @@
       }
     },
     "RNGFND7_GRF_ST": {
-      "Description": "Minimum acceptable return signal strength in dB. Returns weaker than this will be ignored. Set to 0 to disable filtering.",
+      "Description": "Minimum acceptable return signal strength. Returns weaker than this will be ignored. Units are dB on the GRF-250/500 and percent on the SF000/B (I2C). Set to 0 to disable filtering.",
       "DisplayName": "LightWare GRF Minimum Return Strength",
       "Range": {
         "high": "255",
@@ -54472,7 +54503,7 @@
         "45": "LightWare-GRF",
         "46": "BenewakeTFS20L",
         "47": "DTS6012M",
-        "48": "LightWare-GRF-I2C",
+        "48": "LightWare-GRF-SF000-I2C",
         "5": "PWM",
         "6": "BBB-PRU",
         "7": "LightWareI2C",
@@ -54537,7 +54568,7 @@
   },
   "RNGFND8_GRF_": {
     "RNGFND8_GRF_RATE": {
-      "Description": "The update rate of the sensor in Hz.",
+      "Description": "The update rate of the sensor in Hz. Ignored by the SF000/B over I2C, which keeps its own update rate (48 Hz default, set in LightWare Studio).",
       "DisplayName": "LightWare GRF Update Rate",
       "Range": {
         "high": "50",
@@ -54559,7 +54590,7 @@
       }
     },
     "RNGFND8_GRF_ST": {
-      "Description": "Minimum acceptable return signal strength in dB. Returns weaker than this will be ignored. Set to 0 to disable filtering.",
+      "Description": "Minimum acceptable return signal strength. Returns weaker than this will be ignored. Units are dB on the GRF-250/500 and percent on the SF000/B (I2C). Set to 0 to disable filtering.",
       "DisplayName": "LightWare GRF Minimum Return Strength",
       "Range": {
         "high": "255",
@@ -54811,7 +54842,7 @@
         "45": "LightWare-GRF",
         "46": "BenewakeTFS20L",
         "47": "DTS6012M",
-        "48": "LightWare-GRF-I2C",
+        "48": "LightWare-GRF-SF000-I2C",
         "5": "PWM",
         "6": "BBB-PRU",
         "7": "LightWareI2C",
@@ -54876,7 +54907,7 @@
   },
   "RNGFND9_GRF_": {
     "RNGFND9_GRF_RATE": {
-      "Description": "The update rate of the sensor in Hz.",
+      "Description": "The update rate of the sensor in Hz. Ignored by the SF000/B over I2C, which keeps its own update rate (48 Hz default, set in LightWare Studio).",
       "DisplayName": "LightWare GRF Update Rate",
       "Range": {
         "high": "50",
@@ -54898,7 +54929,7 @@
       }
     },
     "RNGFND9_GRF_ST": {
-      "Description": "Minimum acceptable return signal strength in dB. Returns weaker than this will be ignored. Set to 0 to disable filtering.",
+      "Description": "Minimum acceptable return signal strength. Returns weaker than this will be ignored. Units are dB on the GRF-250/500 and percent on the SF000/B (I2C). Set to 0 to disable filtering.",
       "DisplayName": "LightWare GRF Minimum Return Strength",
       "Range": {
         "high": "255",
@@ -55150,7 +55181,7 @@
         "45": "LightWare-GRF",
         "46": "BenewakeTFS20L",
         "47": "DTS6012M",
-        "48": "LightWare-GRF-I2C",
+        "48": "LightWare-GRF-SF000-I2C",
         "5": "PWM",
         "6": "BBB-PRU",
         "7": "LightWareI2C",
@@ -55215,7 +55246,7 @@
   },
   "RNGFNDA_GRF_": {
     "RNGFNDA_GRF_RATE": {
-      "Description": "The update rate of the sensor in Hz.",
+      "Description": "The update rate of the sensor in Hz. Ignored by the SF000/B over I2C, which keeps its own update rate (48 Hz default, set in LightWare Studio).",
       "DisplayName": "LightWare GRF Update Rate",
       "Range": {
         "high": "50",
@@ -55237,7 +55268,7 @@
       }
     },
     "RNGFNDA_GRF_ST": {
-      "Description": "Minimum acceptable return signal strength in dB. Returns weaker than this will be ignored. Set to 0 to disable filtering.",
+      "Description": "Minimum acceptable return signal strength. Returns weaker than this will be ignored. Units are dB on the GRF-250/500 and percent on the SF000/B (I2C). Set to 0 to disable filtering.",
       "DisplayName": "LightWare GRF Minimum Return Strength",
       "Range": {
         "high": "255",
