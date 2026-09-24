@@ -17479,6 +17479,7 @@ DO NOT EDIT
 <tr><td>179</td><td>ICEngine start / stop</td></tr>
 <tr><td>180</td><td>Test autotuned gains after tune is complete</td></tr>
 <tr><td>181</td><td>QuickTune</td></tr>
+<tr><td>182</td><td>VTOL AutoTrim</td></tr>
 <tr><td>184</td><td>System ID Chirp</td></tr>
 <tr><td>185</td><td>Mount Roll/Pitch Lock</td></tr>
 <tr><td>186</td><td>Mount POI Lock</td></tr>
@@ -17610,6 +17611,7 @@ DO NOT EDIT
 <tr><td>179</td><td>ICEngine start / stop</td></tr>
 <tr><td>180</td><td>Test autotuned gains after tune is complete</td></tr>
 <tr><td>181</td><td>QuickTune</td></tr>
+<tr><td>182</td><td>VTOL AutoTrim</td></tr>
 <tr><td>184</td><td>System ID Chirp</td></tr>
 <tr><td>185</td><td>Mount Roll/Pitch Lock</td></tr>
 <tr><td>186</td><td>Mount POI Lock</td></tr>
@@ -17741,6 +17743,7 @@ DO NOT EDIT
 <tr><td>179</td><td>ICEngine start / stop</td></tr>
 <tr><td>180</td><td>Test autotuned gains after tune is complete</td></tr>
 <tr><td>181</td><td>QuickTune</td></tr>
+<tr><td>182</td><td>VTOL AutoTrim</td></tr>
 <tr><td>184</td><td>System ID Chirp</td></tr>
 <tr><td>185</td><td>Mount Roll/Pitch Lock</td></tr>
 <tr><td>186</td><td>Mount POI Lock</td></tr>
@@ -17872,6 +17875,7 @@ DO NOT EDIT
 <tr><td>179</td><td>ICEngine start / stop</td></tr>
 <tr><td>180</td><td>Test autotuned gains after tune is complete</td></tr>
 <tr><td>181</td><td>QuickTune</td></tr>
+<tr><td>182</td><td>VTOL AutoTrim</td></tr>
 <tr><td>184</td><td>System ID Chirp</td></tr>
 <tr><td>185</td><td>Mount Roll/Pitch Lock</td></tr>
 <tr><td>186</td><td>Mount POI Lock</td></tr>
@@ -47910,6 +47914,16 @@ DO NOT EDIT
 </ul>
 
 
+<h2>Quadplane AHRS trim roll (Q_TRIM_ROLL)</h2><em>Note: This parameter is for advanced users</em><br>
+
+<p>Hover-only roll trim: the roll angle the VTOL attitude controller holds as level, relative to calibrated AHRS level. Positive values make the vehicle roll right in VTOL flight. Forward flight is not affected. Set by the VTOL AutoTrim switch (RCx_OPTION 182) or by hand. Not applied on tailsitters.</p>
+<ul>
+<li>Units: degrees</li>
+<li>Range: -10 +10</li>
+<li>Increment: 0.1</li>
+</ul>
+
+
 <h1>Q_AUTOTUNE_ Parameters</h1>
 
 
@@ -49921,6 +49935,7 @@ DO NOT EDIT
 <tr><td>179</td><td>ICEngine start / stop</td></tr>
 <tr><td>180</td><td>Test autotuned gains after tune is complete</td></tr>
 <tr><td>181</td><td>QuickTune</td></tr>
+<tr><td>182</td><td>VTOL AutoTrim</td></tr>
 <tr><td>184</td><td>System ID Chirp</td></tr>
 <tr><td>185</td><td>Mount Roll/Pitch Lock</td></tr>
 <tr><td>186</td><td>Mount POI Lock</td></tr>
@@ -50105,6 +50120,7 @@ DO NOT EDIT
 <tr><td>179</td><td>ICEngine start / stop</td></tr>
 <tr><td>180</td><td>Test autotuned gains after tune is complete</td></tr>
 <tr><td>181</td><td>QuickTune</td></tr>
+<tr><td>182</td><td>VTOL AutoTrim</td></tr>
 <tr><td>184</td><td>System ID Chirp</td></tr>
 <tr><td>185</td><td>Mount Roll/Pitch Lock</td></tr>
 <tr><td>186</td><td>Mount POI Lock</td></tr>
@@ -50289,6 +50305,7 @@ DO NOT EDIT
 <tr><td>179</td><td>ICEngine start / stop</td></tr>
 <tr><td>180</td><td>Test autotuned gains after tune is complete</td></tr>
 <tr><td>181</td><td>QuickTune</td></tr>
+<tr><td>182</td><td>VTOL AutoTrim</td></tr>
 <tr><td>184</td><td>System ID Chirp</td></tr>
 <tr><td>185</td><td>Mount Roll/Pitch Lock</td></tr>
 <tr><td>186</td><td>Mount POI Lock</td></tr>
@@ -50473,6 +50490,7 @@ DO NOT EDIT
 <tr><td>179</td><td>ICEngine start / stop</td></tr>
 <tr><td>180</td><td>Test autotuned gains after tune is complete</td></tr>
 <tr><td>181</td><td>QuickTune</td></tr>
+<tr><td>182</td><td>VTOL AutoTrim</td></tr>
 <tr><td>184</td><td>System ID Chirp</td></tr>
 <tr><td>185</td><td>Mount Roll/Pitch Lock</td></tr>
 <tr><td>186</td><td>Mount POI Lock</td></tr>
@@ -50657,6 +50675,7 @@ DO NOT EDIT
 <tr><td>179</td><td>ICEngine start / stop</td></tr>
 <tr><td>180</td><td>Test autotuned gains after tune is complete</td></tr>
 <tr><td>181</td><td>QuickTune</td></tr>
+<tr><td>182</td><td>VTOL AutoTrim</td></tr>
 <tr><td>184</td><td>System ID Chirp</td></tr>
 <tr><td>185</td><td>Mount Roll/Pitch Lock</td></tr>
 <tr><td>186</td><td>Mount POI Lock</td></tr>
@@ -50841,6 +50860,7 @@ DO NOT EDIT
 <tr><td>179</td><td>ICEngine start / stop</td></tr>
 <tr><td>180</td><td>Test autotuned gains after tune is complete</td></tr>
 <tr><td>181</td><td>QuickTune</td></tr>
+<tr><td>182</td><td>VTOL AutoTrim</td></tr>
 <tr><td>184</td><td>System ID Chirp</td></tr>
 <tr><td>185</td><td>Mount Roll/Pitch Lock</td></tr>
 <tr><td>186</td><td>Mount POI Lock</td></tr>
@@ -51025,6 +51045,7 @@ DO NOT EDIT
 <tr><td>179</td><td>ICEngine start / stop</td></tr>
 <tr><td>180</td><td>Test autotuned gains after tune is complete</td></tr>
 <tr><td>181</td><td>QuickTune</td></tr>
+<tr><td>182</td><td>VTOL AutoTrim</td></tr>
 <tr><td>184</td><td>System ID Chirp</td></tr>
 <tr><td>185</td><td>Mount Roll/Pitch Lock</td></tr>
 <tr><td>186</td><td>Mount POI Lock</td></tr>
@@ -51209,6 +51230,7 @@ DO NOT EDIT
 <tr><td>179</td><td>ICEngine start / stop</td></tr>
 <tr><td>180</td><td>Test autotuned gains after tune is complete</td></tr>
 <tr><td>181</td><td>QuickTune</td></tr>
+<tr><td>182</td><td>VTOL AutoTrim</td></tr>
 <tr><td>184</td><td>System ID Chirp</td></tr>
 <tr><td>185</td><td>Mount Roll/Pitch Lock</td></tr>
 <tr><td>186</td><td>Mount POI Lock</td></tr>
@@ -51393,6 +51415,7 @@ DO NOT EDIT
 <tr><td>179</td><td>ICEngine start / stop</td></tr>
 <tr><td>180</td><td>Test autotuned gains after tune is complete</td></tr>
 <tr><td>181</td><td>QuickTune</td></tr>
+<tr><td>182</td><td>VTOL AutoTrim</td></tr>
 <tr><td>184</td><td>System ID Chirp</td></tr>
 <tr><td>185</td><td>Mount Roll/Pitch Lock</td></tr>
 <tr><td>186</td><td>Mount POI Lock</td></tr>
@@ -51577,6 +51600,7 @@ DO NOT EDIT
 <tr><td>179</td><td>ICEngine start / stop</td></tr>
 <tr><td>180</td><td>Test autotuned gains after tune is complete</td></tr>
 <tr><td>181</td><td>QuickTune</td></tr>
+<tr><td>182</td><td>VTOL AutoTrim</td></tr>
 <tr><td>184</td><td>System ID Chirp</td></tr>
 <tr><td>185</td><td>Mount Roll/Pitch Lock</td></tr>
 <tr><td>186</td><td>Mount POI Lock</td></tr>
@@ -51761,6 +51785,7 @@ DO NOT EDIT
 <tr><td>179</td><td>ICEngine start / stop</td></tr>
 <tr><td>180</td><td>Test autotuned gains after tune is complete</td></tr>
 <tr><td>181</td><td>QuickTune</td></tr>
+<tr><td>182</td><td>VTOL AutoTrim</td></tr>
 <tr><td>184</td><td>System ID Chirp</td></tr>
 <tr><td>185</td><td>Mount Roll/Pitch Lock</td></tr>
 <tr><td>186</td><td>Mount POI Lock</td></tr>
@@ -51945,6 +51970,7 @@ DO NOT EDIT
 <tr><td>179</td><td>ICEngine start / stop</td></tr>
 <tr><td>180</td><td>Test autotuned gains after tune is complete</td></tr>
 <tr><td>181</td><td>QuickTune</td></tr>
+<tr><td>182</td><td>VTOL AutoTrim</td></tr>
 <tr><td>184</td><td>System ID Chirp</td></tr>
 <tr><td>185</td><td>Mount Roll/Pitch Lock</td></tr>
 <tr><td>186</td><td>Mount POI Lock</td></tr>
@@ -52129,6 +52155,7 @@ DO NOT EDIT
 <tr><td>179</td><td>ICEngine start / stop</td></tr>
 <tr><td>180</td><td>Test autotuned gains after tune is complete</td></tr>
 <tr><td>181</td><td>QuickTune</td></tr>
+<tr><td>182</td><td>VTOL AutoTrim</td></tr>
 <tr><td>184</td><td>System ID Chirp</td></tr>
 <tr><td>185</td><td>Mount Roll/Pitch Lock</td></tr>
 <tr><td>186</td><td>Mount POI Lock</td></tr>
@@ -52313,6 +52340,7 @@ DO NOT EDIT
 <tr><td>179</td><td>ICEngine start / stop</td></tr>
 <tr><td>180</td><td>Test autotuned gains after tune is complete</td></tr>
 <tr><td>181</td><td>QuickTune</td></tr>
+<tr><td>182</td><td>VTOL AutoTrim</td></tr>
 <tr><td>184</td><td>System ID Chirp</td></tr>
 <tr><td>185</td><td>Mount Roll/Pitch Lock</td></tr>
 <tr><td>186</td><td>Mount POI Lock</td></tr>
@@ -52497,6 +52525,7 @@ DO NOT EDIT
 <tr><td>179</td><td>ICEngine start / stop</td></tr>
 <tr><td>180</td><td>Test autotuned gains after tune is complete</td></tr>
 <tr><td>181</td><td>QuickTune</td></tr>
+<tr><td>182</td><td>VTOL AutoTrim</td></tr>
 <tr><td>184</td><td>System ID Chirp</td></tr>
 <tr><td>185</td><td>Mount Roll/Pitch Lock</td></tr>
 <tr><td>186</td><td>Mount POI Lock</td></tr>
@@ -52681,6 +52710,7 @@ DO NOT EDIT
 <tr><td>179</td><td>ICEngine start / stop</td></tr>
 <tr><td>180</td><td>Test autotuned gains after tune is complete</td></tr>
 <tr><td>181</td><td>QuickTune</td></tr>
+<tr><td>182</td><td>VTOL AutoTrim</td></tr>
 <tr><td>184</td><td>System ID Chirp</td></tr>
 <tr><td>185</td><td>Mount Roll/Pitch Lock</td></tr>
 <tr><td>186</td><td>Mount POI Lock</td></tr>
@@ -54350,7 +54380,7 @@ DO NOT EDIT
 <tr><td>45</td><td>LightWare-GRF</td></tr>
 <tr><td>46</td><td>BenewakeTFS20L</td></tr>
 <tr><td>47</td><td>DTS6012M</td></tr>
-<tr><td>48</td><td>LightWare-GRF-I2C</td></tr>
+<tr><td>48</td><td>LightWare-GRF-SF000-I2C</td></tr>
 <tr><td>100</td><td>SITL</td></tr>
 </table>
 </ul>
@@ -54623,7 +54653,7 @@ DO NOT EDIT
 
 <h2>LightWare GRF Minimum Return Strength (RNGFND1_GRF_ST)</h2><em>Note: This parameter is for advanced users</em><br>
 
-<p>Minimum acceptable return signal strength in dB. Returns weaker than this will be ignored. Set to 0 to disable filtering.</p>
+<p>Minimum acceptable return signal strength. Returns weaker than this will be ignored. Units are dB on the GRF-250/500 and percent on the SF000/B (I2C). Set to 0 to disable filtering.</p>
 <ul>
 <li>Range: 0 255</li>
 <li>RebootRequired: True</li>
@@ -54632,7 +54662,7 @@ DO NOT EDIT
 
 <h2>LightWare GRF Update Rate (RNGFND1_GRF_RATE)</h2><em>Note: This parameter is for advanced users</em><br>
 
-<p>The update rate of the sensor in Hz.</p>
+<p>The update rate of the sensor in Hz. Ignored by the SF000/B over I2C, which keeps its own update rate (48 Hz default, set in LightWare Studio).</p>
 <ul>
 <li>Range: 1 50</li>
 <li>RebootRequired: True</li>
@@ -54658,7 +54688,7 @@ DO NOT EDIT
 
 <h2>LightWare GRF Minimum Return Strength (RNGFND1_GRF_ST)</h2><em>Note: This parameter is for advanced users</em><br>
 
-<p>Minimum acceptable return signal strength in dB. Returns weaker than this will be ignored. Set to 0 to disable filtering.</p>
+<p>Minimum acceptable return signal strength. Returns weaker than this will be ignored. Units are dB on the GRF-250/500 and percent on the SF000/B (I2C). Set to 0 to disable filtering.</p>
 <ul>
 <li>Range: 0 255</li>
 <li>RebootRequired: True</li>
@@ -54667,7 +54697,7 @@ DO NOT EDIT
 
 <h2>LightWare GRF Update Rate (RNGFND1_GRF_RATE)</h2><em>Note: This parameter is for advanced users</em><br>
 
-<p>The update rate of the sensor in Hz.</p>
+<p>The update rate of the sensor in Hz. Ignored by the SF000/B over I2C, which keeps its own update rate (48 Hz default, set in LightWare Studio).</p>
 <ul>
 <li>Range: 1 50</li>
 <li>RebootRequired: True</li>
@@ -54729,7 +54759,7 @@ DO NOT EDIT
 <tr><td>45</td><td>LightWare-GRF</td></tr>
 <tr><td>46</td><td>BenewakeTFS20L</td></tr>
 <tr><td>47</td><td>DTS6012M</td></tr>
-<tr><td>48</td><td>LightWare-GRF-I2C</td></tr>
+<tr><td>48</td><td>LightWare-GRF-SF000-I2C</td></tr>
 <tr><td>100</td><td>SITL</td></tr>
 </table>
 </ul>
@@ -55002,7 +55032,7 @@ DO NOT EDIT
 
 <h2>LightWare GRF Minimum Return Strength (RNGFND2_GRF_ST)</h2><em>Note: This parameter is for advanced users</em><br>
 
-<p>Minimum acceptable return signal strength in dB. Returns weaker than this will be ignored. Set to 0 to disable filtering.</p>
+<p>Minimum acceptable return signal strength. Returns weaker than this will be ignored. Units are dB on the GRF-250/500 and percent on the SF000/B (I2C). Set to 0 to disable filtering.</p>
 <ul>
 <li>Range: 0 255</li>
 <li>RebootRequired: True</li>
@@ -55011,7 +55041,7 @@ DO NOT EDIT
 
 <h2>LightWare GRF Update Rate (RNGFND2_GRF_RATE)</h2><em>Note: This parameter is for advanced users</em><br>
 
-<p>The update rate of the sensor in Hz.</p>
+<p>The update rate of the sensor in Hz. Ignored by the SF000/B over I2C, which keeps its own update rate (48 Hz default, set in LightWare Studio).</p>
 <ul>
 <li>Range: 1 50</li>
 <li>RebootRequired: True</li>
@@ -55037,7 +55067,7 @@ DO NOT EDIT
 
 <h2>LightWare GRF Minimum Return Strength (RNGFND2_GRF_ST)</h2><em>Note: This parameter is for advanced users</em><br>
 
-<p>Minimum acceptable return signal strength in dB. Returns weaker than this will be ignored. Set to 0 to disable filtering.</p>
+<p>Minimum acceptable return signal strength. Returns weaker than this will be ignored. Units are dB on the GRF-250/500 and percent on the SF000/B (I2C). Set to 0 to disable filtering.</p>
 <ul>
 <li>Range: 0 255</li>
 <li>RebootRequired: True</li>
@@ -55046,7 +55076,7 @@ DO NOT EDIT
 
 <h2>LightWare GRF Update Rate (RNGFND2_GRF_RATE)</h2><em>Note: This parameter is for advanced users</em><br>
 
-<p>The update rate of the sensor in Hz.</p>
+<p>The update rate of the sensor in Hz. Ignored by the SF000/B over I2C, which keeps its own update rate (48 Hz default, set in LightWare Studio).</p>
 <ul>
 <li>Range: 1 50</li>
 <li>RebootRequired: True</li>
@@ -55108,7 +55138,7 @@ DO NOT EDIT
 <tr><td>45</td><td>LightWare-GRF</td></tr>
 <tr><td>46</td><td>BenewakeTFS20L</td></tr>
 <tr><td>47</td><td>DTS6012M</td></tr>
-<tr><td>48</td><td>LightWare-GRF-I2C</td></tr>
+<tr><td>48</td><td>LightWare-GRF-SF000-I2C</td></tr>
 <tr><td>100</td><td>SITL</td></tr>
 </table>
 </ul>
@@ -55381,7 +55411,7 @@ DO NOT EDIT
 
 <h2>LightWare GRF Minimum Return Strength (RNGFND3_GRF_ST)</h2><em>Note: This parameter is for advanced users</em><br>
 
-<p>Minimum acceptable return signal strength in dB. Returns weaker than this will be ignored. Set to 0 to disable filtering.</p>
+<p>Minimum acceptable return signal strength. Returns weaker than this will be ignored. Units are dB on the GRF-250/500 and percent on the SF000/B (I2C). Set to 0 to disable filtering.</p>
 <ul>
 <li>Range: 0 255</li>
 <li>RebootRequired: True</li>
@@ -55390,7 +55420,7 @@ DO NOT EDIT
 
 <h2>LightWare GRF Update Rate (RNGFND3_GRF_RATE)</h2><em>Note: This parameter is for advanced users</em><br>
 
-<p>The update rate of the sensor in Hz.</p>
+<p>The update rate of the sensor in Hz. Ignored by the SF000/B over I2C, which keeps its own update rate (48 Hz default, set in LightWare Studio).</p>
 <ul>
 <li>Range: 1 50</li>
 <li>RebootRequired: True</li>
@@ -55416,7 +55446,7 @@ DO NOT EDIT
 
 <h2>LightWare GRF Minimum Return Strength (RNGFND3_GRF_ST)</h2><em>Note: This parameter is for advanced users</em><br>
 
-<p>Minimum acceptable return signal strength in dB. Returns weaker than this will be ignored. Set to 0 to disable filtering.</p>
+<p>Minimum acceptable return signal strength. Returns weaker than this will be ignored. Units are dB on the GRF-250/500 and percent on the SF000/B (I2C). Set to 0 to disable filtering.</p>
 <ul>
 <li>Range: 0 255</li>
 <li>RebootRequired: True</li>
@@ -55425,7 +55455,7 @@ DO NOT EDIT
 
 <h2>LightWare GRF Update Rate (RNGFND3_GRF_RATE)</h2><em>Note: This parameter is for advanced users</em><br>
 
-<p>The update rate of the sensor in Hz.</p>
+<p>The update rate of the sensor in Hz. Ignored by the SF000/B over I2C, which keeps its own update rate (48 Hz default, set in LightWare Studio).</p>
 <ul>
 <li>Range: 1 50</li>
 <li>RebootRequired: True</li>
@@ -55487,7 +55517,7 @@ DO NOT EDIT
 <tr><td>45</td><td>LightWare-GRF</td></tr>
 <tr><td>46</td><td>BenewakeTFS20L</td></tr>
 <tr><td>47</td><td>DTS6012M</td></tr>
-<tr><td>48</td><td>LightWare-GRF-I2C</td></tr>
+<tr><td>48</td><td>LightWare-GRF-SF000-I2C</td></tr>
 <tr><td>100</td><td>SITL</td></tr>
 </table>
 </ul>
@@ -55760,7 +55790,7 @@ DO NOT EDIT
 
 <h2>LightWare GRF Minimum Return Strength (RNGFND4_GRF_ST)</h2><em>Note: This parameter is for advanced users</em><br>
 
-<p>Minimum acceptable return signal strength in dB. Returns weaker than this will be ignored. Set to 0 to disable filtering.</p>
+<p>Minimum acceptable return signal strength. Returns weaker than this will be ignored. Units are dB on the GRF-250/500 and percent on the SF000/B (I2C). Set to 0 to disable filtering.</p>
 <ul>
 <li>Range: 0 255</li>
 <li>RebootRequired: True</li>
@@ -55769,7 +55799,7 @@ DO NOT EDIT
 
 <h2>LightWare GRF Update Rate (RNGFND4_GRF_RATE)</h2><em>Note: This parameter is for advanced users</em><br>
 
-<p>The update rate of the sensor in Hz.</p>
+<p>The update rate of the sensor in Hz. Ignored by the SF000/B over I2C, which keeps its own update rate (48 Hz default, set in LightWare Studio).</p>
 <ul>
 <li>Range: 1 50</li>
 <li>RebootRequired: True</li>
@@ -55795,7 +55825,7 @@ DO NOT EDIT
 
 <h2>LightWare GRF Minimum Return Strength (RNGFND4_GRF_ST)</h2><em>Note: This parameter is for advanced users</em><br>
 
-<p>Minimum acceptable return signal strength in dB. Returns weaker than this will be ignored. Set to 0 to disable filtering.</p>
+<p>Minimum acceptable return signal strength. Returns weaker than this will be ignored. Units are dB on the GRF-250/500 and percent on the SF000/B (I2C). Set to 0 to disable filtering.</p>
 <ul>
 <li>Range: 0 255</li>
 <li>RebootRequired: True</li>
@@ -55804,7 +55834,7 @@ DO NOT EDIT
 
 <h2>LightWare GRF Update Rate (RNGFND4_GRF_RATE)</h2><em>Note: This parameter is for advanced users</em><br>
 
-<p>The update rate of the sensor in Hz.</p>
+<p>The update rate of the sensor in Hz. Ignored by the SF000/B over I2C, which keeps its own update rate (48 Hz default, set in LightWare Studio).</p>
 <ul>
 <li>Range: 1 50</li>
 <li>RebootRequired: True</li>
@@ -55866,7 +55896,7 @@ DO NOT EDIT
 <tr><td>45</td><td>LightWare-GRF</td></tr>
 <tr><td>46</td><td>BenewakeTFS20L</td></tr>
 <tr><td>47</td><td>DTS6012M</td></tr>
-<tr><td>48</td><td>LightWare-GRF-I2C</td></tr>
+<tr><td>48</td><td>LightWare-GRF-SF000-I2C</td></tr>
 <tr><td>100</td><td>SITL</td></tr>
 </table>
 </ul>
@@ -56139,7 +56169,7 @@ DO NOT EDIT
 
 <h2>LightWare GRF Minimum Return Strength (RNGFND5_GRF_ST)</h2><em>Note: This parameter is for advanced users</em><br>
 
-<p>Minimum acceptable return signal strength in dB. Returns weaker than this will be ignored. Set to 0 to disable filtering.</p>
+<p>Minimum acceptable return signal strength. Returns weaker than this will be ignored. Units are dB on the GRF-250/500 and percent on the SF000/B (I2C). Set to 0 to disable filtering.</p>
 <ul>
 <li>Range: 0 255</li>
 <li>RebootRequired: True</li>
@@ -56148,7 +56178,7 @@ DO NOT EDIT
 
 <h2>LightWare GRF Update Rate (RNGFND5_GRF_RATE)</h2><em>Note: This parameter is for advanced users</em><br>
 
-<p>The update rate of the sensor in Hz.</p>
+<p>The update rate of the sensor in Hz. Ignored by the SF000/B over I2C, which keeps its own update rate (48 Hz default, set in LightWare Studio).</p>
 <ul>
 <li>Range: 1 50</li>
 <li>RebootRequired: True</li>
@@ -56174,7 +56204,7 @@ DO NOT EDIT
 
 <h2>LightWare GRF Minimum Return Strength (RNGFND5_GRF_ST)</h2><em>Note: This parameter is for advanced users</em><br>
 
-<p>Minimum acceptable return signal strength in dB. Returns weaker than this will be ignored. Set to 0 to disable filtering.</p>
+<p>Minimum acceptable return signal strength. Returns weaker than this will be ignored. Units are dB on the GRF-250/500 and percent on the SF000/B (I2C). Set to 0 to disable filtering.</p>
 <ul>
 <li>Range: 0 255</li>
 <li>RebootRequired: True</li>
@@ -56183,7 +56213,7 @@ DO NOT EDIT
 
 <h2>LightWare GRF Update Rate (RNGFND5_GRF_RATE)</h2><em>Note: This parameter is for advanced users</em><br>
 
-<p>The update rate of the sensor in Hz.</p>
+<p>The update rate of the sensor in Hz. Ignored by the SF000/B over I2C, which keeps its own update rate (48 Hz default, set in LightWare Studio).</p>
 <ul>
 <li>Range: 1 50</li>
 <li>RebootRequired: True</li>
@@ -56245,7 +56275,7 @@ DO NOT EDIT
 <tr><td>45</td><td>LightWare-GRF</td></tr>
 <tr><td>46</td><td>BenewakeTFS20L</td></tr>
 <tr><td>47</td><td>DTS6012M</td></tr>
-<tr><td>48</td><td>LightWare-GRF-I2C</td></tr>
+<tr><td>48</td><td>LightWare-GRF-SF000-I2C</td></tr>
 <tr><td>100</td><td>SITL</td></tr>
 </table>
 </ul>
@@ -56518,7 +56548,7 @@ DO NOT EDIT
 
 <h2>LightWare GRF Minimum Return Strength (RNGFND6_GRF_ST)</h2><em>Note: This parameter is for advanced users</em><br>
 
-<p>Minimum acceptable return signal strength in dB. Returns weaker than this will be ignored. Set to 0 to disable filtering.</p>
+<p>Minimum acceptable return signal strength. Returns weaker than this will be ignored. Units are dB on the GRF-250/500 and percent on the SF000/B (I2C). Set to 0 to disable filtering.</p>
 <ul>
 <li>Range: 0 255</li>
 <li>RebootRequired: True</li>
@@ -56527,7 +56557,7 @@ DO NOT EDIT
 
 <h2>LightWare GRF Update Rate (RNGFND6_GRF_RATE)</h2><em>Note: This parameter is for advanced users</em><br>
 
-<p>The update rate of the sensor in Hz.</p>
+<p>The update rate of the sensor in Hz. Ignored by the SF000/B over I2C, which keeps its own update rate (48 Hz default, set in LightWare Studio).</p>
 <ul>
 <li>Range: 1 50</li>
 <li>RebootRequired: True</li>
@@ -56553,7 +56583,7 @@ DO NOT EDIT
 
 <h2>LightWare GRF Minimum Return Strength (RNGFND6_GRF_ST)</h2><em>Note: This parameter is for advanced users</em><br>
 
-<p>Minimum acceptable return signal strength in dB. Returns weaker than this will be ignored. Set to 0 to disable filtering.</p>
+<p>Minimum acceptable return signal strength. Returns weaker than this will be ignored. Units are dB on the GRF-250/500 and percent on the SF000/B (I2C). Set to 0 to disable filtering.</p>
 <ul>
 <li>Range: 0 255</li>
 <li>RebootRequired: True</li>
@@ -56562,7 +56592,7 @@ DO NOT EDIT
 
 <h2>LightWare GRF Update Rate (RNGFND6_GRF_RATE)</h2><em>Note: This parameter is for advanced users</em><br>
 
-<p>The update rate of the sensor in Hz.</p>
+<p>The update rate of the sensor in Hz. Ignored by the SF000/B over I2C, which keeps its own update rate (48 Hz default, set in LightWare Studio).</p>
 <ul>
 <li>Range: 1 50</li>
 <li>RebootRequired: True</li>
@@ -56624,7 +56654,7 @@ DO NOT EDIT
 <tr><td>45</td><td>LightWare-GRF</td></tr>
 <tr><td>46</td><td>BenewakeTFS20L</td></tr>
 <tr><td>47</td><td>DTS6012M</td></tr>
-<tr><td>48</td><td>LightWare-GRF-I2C</td></tr>
+<tr><td>48</td><td>LightWare-GRF-SF000-I2C</td></tr>
 <tr><td>100</td><td>SITL</td></tr>
 </table>
 </ul>
@@ -56897,7 +56927,7 @@ DO NOT EDIT
 
 <h2>LightWare GRF Minimum Return Strength (RNGFND7_GRF_ST)</h2><em>Note: This parameter is for advanced users</em><br>
 
-<p>Minimum acceptable return signal strength in dB. Returns weaker than this will be ignored. Set to 0 to disable filtering.</p>
+<p>Minimum acceptable return signal strength. Returns weaker than this will be ignored. Units are dB on the GRF-250/500 and percent on the SF000/B (I2C). Set to 0 to disable filtering.</p>
 <ul>
 <li>Range: 0 255</li>
 <li>RebootRequired: True</li>
@@ -56906,7 +56936,7 @@ DO NOT EDIT
 
 <h2>LightWare GRF Update Rate (RNGFND7_GRF_RATE)</h2><em>Note: This parameter is for advanced users</em><br>
 
-<p>The update rate of the sensor in Hz.</p>
+<p>The update rate of the sensor in Hz. Ignored by the SF000/B over I2C, which keeps its own update rate (48 Hz default, set in LightWare Studio).</p>
 <ul>
 <li>Range: 1 50</li>
 <li>RebootRequired: True</li>
@@ -56932,7 +56962,7 @@ DO NOT EDIT
 
 <h2>LightWare GRF Minimum Return Strength (RNGFND7_GRF_ST)</h2><em>Note: This parameter is for advanced users</em><br>
 
-<p>Minimum acceptable return signal strength in dB. Returns weaker than this will be ignored. Set to 0 to disable filtering.</p>
+<p>Minimum acceptable return signal strength. Returns weaker than this will be ignored. Units are dB on the GRF-250/500 and percent on the SF000/B (I2C). Set to 0 to disable filtering.</p>
 <ul>
 <li>Range: 0 255</li>
 <li>RebootRequired: True</li>
@@ -56941,7 +56971,7 @@ DO NOT EDIT
 
 <h2>LightWare GRF Update Rate (RNGFND7_GRF_RATE)</h2><em>Note: This parameter is for advanced users</em><br>
 
-<p>The update rate of the sensor in Hz.</p>
+<p>The update rate of the sensor in Hz. Ignored by the SF000/B over I2C, which keeps its own update rate (48 Hz default, set in LightWare Studio).</p>
 <ul>
 <li>Range: 1 50</li>
 <li>RebootRequired: True</li>
@@ -57003,7 +57033,7 @@ DO NOT EDIT
 <tr><td>45</td><td>LightWare-GRF</td></tr>
 <tr><td>46</td><td>BenewakeTFS20L</td></tr>
 <tr><td>47</td><td>DTS6012M</td></tr>
-<tr><td>48</td><td>LightWare-GRF-I2C</td></tr>
+<tr><td>48</td><td>LightWare-GRF-SF000-I2C</td></tr>
 <tr><td>100</td><td>SITL</td></tr>
 </table>
 </ul>
@@ -57276,7 +57306,7 @@ DO NOT EDIT
 
 <h2>LightWare GRF Minimum Return Strength (RNGFND8_GRF_ST)</h2><em>Note: This parameter is for advanced users</em><br>
 
-<p>Minimum acceptable return signal strength in dB. Returns weaker than this will be ignored. Set to 0 to disable filtering.</p>
+<p>Minimum acceptable return signal strength. Returns weaker than this will be ignored. Units are dB on the GRF-250/500 and percent on the SF000/B (I2C). Set to 0 to disable filtering.</p>
 <ul>
 <li>Range: 0 255</li>
 <li>RebootRequired: True</li>
@@ -57285,7 +57315,7 @@ DO NOT EDIT
 
 <h2>LightWare GRF Update Rate (RNGFND8_GRF_RATE)</h2><em>Note: This parameter is for advanced users</em><br>
 
-<p>The update rate of the sensor in Hz.</p>
+<p>The update rate of the sensor in Hz. Ignored by the SF000/B over I2C, which keeps its own update rate (48 Hz default, set in LightWare Studio).</p>
 <ul>
 <li>Range: 1 50</li>
 <li>RebootRequired: True</li>
@@ -57311,7 +57341,7 @@ DO NOT EDIT
 
 <h2>LightWare GRF Minimum Return Strength (RNGFND8_GRF_ST)</h2><em>Note: This parameter is for advanced users</em><br>
 
-<p>Minimum acceptable return signal strength in dB. Returns weaker than this will be ignored. Set to 0 to disable filtering.</p>
+<p>Minimum acceptable return signal strength. Returns weaker than this will be ignored. Units are dB on the GRF-250/500 and percent on the SF000/B (I2C). Set to 0 to disable filtering.</p>
 <ul>
 <li>Range: 0 255</li>
 <li>RebootRequired: True</li>
@@ -57320,7 +57350,7 @@ DO NOT EDIT
 
 <h2>LightWare GRF Update Rate (RNGFND8_GRF_RATE)</h2><em>Note: This parameter is for advanced users</em><br>
 
-<p>The update rate of the sensor in Hz.</p>
+<p>The update rate of the sensor in Hz. Ignored by the SF000/B over I2C, which keeps its own update rate (48 Hz default, set in LightWare Studio).</p>
 <ul>
 <li>Range: 1 50</li>
 <li>RebootRequired: True</li>
@@ -57382,7 +57412,7 @@ DO NOT EDIT
 <tr><td>45</td><td>LightWare-GRF</td></tr>
 <tr><td>46</td><td>BenewakeTFS20L</td></tr>
 <tr><td>47</td><td>DTS6012M</td></tr>
-<tr><td>48</td><td>LightWare-GRF-I2C</td></tr>
+<tr><td>48</td><td>LightWare-GRF-SF000-I2C</td></tr>
 <tr><td>100</td><td>SITL</td></tr>
 </table>
 </ul>
@@ -57655,7 +57685,7 @@ DO NOT EDIT
 
 <h2>LightWare GRF Minimum Return Strength (RNGFND9_GRF_ST)</h2><em>Note: This parameter is for advanced users</em><br>
 
-<p>Minimum acceptable return signal strength in dB. Returns weaker than this will be ignored. Set to 0 to disable filtering.</p>
+<p>Minimum acceptable return signal strength. Returns weaker than this will be ignored. Units are dB on the GRF-250/500 and percent on the SF000/B (I2C). Set to 0 to disable filtering.</p>
 <ul>
 <li>Range: 0 255</li>
 <li>RebootRequired: True</li>
@@ -57664,7 +57694,7 @@ DO NOT EDIT
 
 <h2>LightWare GRF Update Rate (RNGFND9_GRF_RATE)</h2><em>Note: This parameter is for advanced users</em><br>
 
-<p>The update rate of the sensor in Hz.</p>
+<p>The update rate of the sensor in Hz. Ignored by the SF000/B over I2C, which keeps its own update rate (48 Hz default, set in LightWare Studio).</p>
 <ul>
 <li>Range: 1 50</li>
 <li>RebootRequired: True</li>
@@ -57690,7 +57720,7 @@ DO NOT EDIT
 
 <h2>LightWare GRF Minimum Return Strength (RNGFND9_GRF_ST)</h2><em>Note: This parameter is for advanced users</em><br>
 
-<p>Minimum acceptable return signal strength in dB. Returns weaker than this will be ignored. Set to 0 to disable filtering.</p>
+<p>Minimum acceptable return signal strength. Returns weaker than this will be ignored. Units are dB on the GRF-250/500 and percent on the SF000/B (I2C). Set to 0 to disable filtering.</p>
 <ul>
 <li>Range: 0 255</li>
 <li>RebootRequired: True</li>
@@ -57699,7 +57729,7 @@ DO NOT EDIT
 
 <h2>LightWare GRF Update Rate (RNGFND9_GRF_RATE)</h2><em>Note: This parameter is for advanced users</em><br>
 
-<p>The update rate of the sensor in Hz.</p>
+<p>The update rate of the sensor in Hz. Ignored by the SF000/B over I2C, which keeps its own update rate (48 Hz default, set in LightWare Studio).</p>
 <ul>
 <li>Range: 1 50</li>
 <li>RebootRequired: True</li>
@@ -57761,7 +57791,7 @@ DO NOT EDIT
 <tr><td>45</td><td>LightWare-GRF</td></tr>
 <tr><td>46</td><td>BenewakeTFS20L</td></tr>
 <tr><td>47</td><td>DTS6012M</td></tr>
-<tr><td>48</td><td>LightWare-GRF-I2C</td></tr>
+<tr><td>48</td><td>LightWare-GRF-SF000-I2C</td></tr>
 <tr><td>100</td><td>SITL</td></tr>
 </table>
 </ul>
@@ -58034,7 +58064,7 @@ DO NOT EDIT
 
 <h2>LightWare GRF Minimum Return Strength (RNGFNDA_GRF_ST)</h2><em>Note: This parameter is for advanced users</em><br>
 
-<p>Minimum acceptable return signal strength in dB. Returns weaker than this will be ignored. Set to 0 to disable filtering.</p>
+<p>Minimum acceptable return signal strength. Returns weaker than this will be ignored. Units are dB on the GRF-250/500 and percent on the SF000/B (I2C). Set to 0 to disable filtering.</p>
 <ul>
 <li>Range: 0 255</li>
 <li>RebootRequired: True</li>
@@ -58043,7 +58073,7 @@ DO NOT EDIT
 
 <h2>LightWare GRF Update Rate (RNGFNDA_GRF_RATE)</h2><em>Note: This parameter is for advanced users</em><br>
 
-<p>The update rate of the sensor in Hz.</p>
+<p>The update rate of the sensor in Hz. Ignored by the SF000/B over I2C, which keeps its own update rate (48 Hz default, set in LightWare Studio).</p>
 <ul>
 <li>Range: 1 50</li>
 <li>RebootRequired: True</li>
@@ -58069,7 +58099,7 @@ DO NOT EDIT
 
 <h2>LightWare GRF Minimum Return Strength (RNGFNDA_GRF_ST)</h2><em>Note: This parameter is for advanced users</em><br>
 
-<p>Minimum acceptable return signal strength in dB. Returns weaker than this will be ignored. Set to 0 to disable filtering.</p>
+<p>Minimum acceptable return signal strength. Returns weaker than this will be ignored. Units are dB on the GRF-250/500 and percent on the SF000/B (I2C). Set to 0 to disable filtering.</p>
 <ul>
 <li>Range: 0 255</li>
 <li>RebootRequired: True</li>
@@ -58078,7 +58108,7 @@ DO NOT EDIT
 
 <h2>LightWare GRF Update Rate (RNGFNDA_GRF_RATE)</h2><em>Note: This parameter is for advanced users</em><br>
 
-<p>The update rate of the sensor in Hz.</p>
+<p>The update rate of the sensor in Hz. Ignored by the SF000/B over I2C, which keeps its own update rate (48 Hz default, set in LightWare Studio).</p>
 <ul>
 <li>Range: 1 50</li>
 <li>RebootRequired: True</li>

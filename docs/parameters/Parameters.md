@@ -16776,6 +16776,7 @@ Auxiliary RC Options function executed on pin change
 |179|ICEngine start / stop|
 |180|Test autotuned gains after tune is complete|
 |181|QuickTune|
+|182|VTOL AutoTrim|
 |184|System ID Chirp|
 |185|Mount Roll/Pitch Lock|
 |186|Mount POI Lock|
@@ -16905,6 +16906,7 @@ Auxiliary RC Options function executed on pin change
 |179|ICEngine start / stop|
 |180|Test autotuned gains after tune is complete|
 |181|QuickTune|
+|182|VTOL AutoTrim|
 |184|System ID Chirp|
 |185|Mount Roll/Pitch Lock|
 |186|Mount POI Lock|
@@ -17034,6 +17036,7 @@ Auxiliary RC Options function executed on pin change
 |179|ICEngine start / stop|
 |180|Test autotuned gains after tune is complete|
 |181|QuickTune|
+|182|VTOL AutoTrim|
 |184|System ID Chirp|
 |185|Mount Roll/Pitch Lock|
 |186|Mount POI Lock|
@@ -17163,6 +17166,7 @@ Auxiliary RC Options function executed on pin change
 |179|ICEngine start / stop|
 |180|Test autotuned gains after tune is complete|
 |181|QuickTune|
+|182|VTOL AutoTrim|
 |184|System ID Chirp|
 |185|Mount Roll/Pitch Lock|
 |186|Mount POI Lock|
@@ -45145,6 +45149,18 @@ Configuration for thrust loss detection detection, this results in "Potential VT
 
 - Bitmask: 0: Disable thrust loss detection., 1: Disable thrust loss detection in transtions and fixed wing modes. Thrust loss detection will only run in VTOL modes.
 
+## Q_TRIM_ROLL: Quadplane AHRS trim roll
+
+*Note: This parameter is for advanced users*
+
+Hover-only roll trim: the roll angle the VTOL attitude controller holds as level, relative to calibrated AHRS level. Positive values make the vehicle roll right in VTOL flight. Forward flight is not affected. Set by the VTOL AutoTrim switch (RCx_OPTION 182) or by hand. Not applied on tailsitters.
+
+- Units: deg
+
+- Range: -10 +10
+
+- Increment: 0.1
+
 # QAUTOTUNE Parameters
 
 ## Q_AUTOTUNE_AXES: Autotune axis bitmask
@@ -47160,6 +47176,7 @@ Function assigned to this RC channel
 |179|ICEngine start / stop|
 |180|Test autotuned gains after tune is complete|
 |181|QuickTune|
+|182|VTOL AutoTrim|
 |184|System ID Chirp|
 |185|Mount Roll/Pitch Lock|
 |186|Mount POI Lock|
@@ -48704,7 +48721,7 @@ Type of connected rangefinder
 |45|LightWare-GRF|
 |46|BenewakeTFS20L|
 |47|DTS6012M|
-|48|LightWare-GRF-I2C|
+|48|LightWare-GRF-SF000-I2C|
 |100|SITL|
 
 ## RNGFND1_PIN: Rangefinder pin
@@ -48968,7 +48985,7 @@ Selects which single return to use.
 
 *Note: This parameter is for advanced users*
 
-Minimum acceptable return signal strength in dB. Returns weaker than this will be ignored. Set to 0 to disable filtering.
+Minimum acceptable return signal strength. Returns weaker than this will be ignored. Units are dB on the GRF-250/500 and percent on the SF000/B (I2C). Set to 0 to disable filtering.
 
 - Range: 0 255
 
@@ -48978,7 +48995,7 @@ Minimum acceptable return signal strength in dB. Returns weaker than this will b
 
 *Note: This parameter is for advanced users*
 
-The update rate of the sensor in Hz.
+The update rate of the sensor in Hz. Ignored by the SF000/B over I2C, which keeps its own update rate (48 Hz default, set in LightWare Studio).
 
 - Range: 1 50
 
@@ -49003,7 +49020,7 @@ Selects which single return to use.
 
 *Note: This parameter is for advanced users*
 
-Minimum acceptable return signal strength in dB. Returns weaker than this will be ignored. Set to 0 to disable filtering.
+Minimum acceptable return signal strength. Returns weaker than this will be ignored. Units are dB on the GRF-250/500 and percent on the SF000/B (I2C). Set to 0 to disable filtering.
 
 - Range: 0 255
 
@@ -49013,7 +49030,7 @@ Minimum acceptable return signal strength in dB. Returns weaker than this will b
 
 *Note: This parameter is for advanced users*
 
-The update rate of the sensor in Hz.
+The update rate of the sensor in Hz. Ignored by the SF000/B over I2C, which keeps its own update rate (48 Hz default, set in LightWare Studio).
 
 - Range: 1 50
 
@@ -49074,7 +49091,7 @@ Type of connected rangefinder
 |45|LightWare-GRF|
 |46|BenewakeTFS20L|
 |47|DTS6012M|
-|48|LightWare-GRF-I2C|
+|48|LightWare-GRF-SF000-I2C|
 |100|SITL|
 
 ## RNGFND2_PIN: Rangefinder pin
@@ -49338,7 +49355,7 @@ Selects which single return to use.
 
 *Note: This parameter is for advanced users*
 
-Minimum acceptable return signal strength in dB. Returns weaker than this will be ignored. Set to 0 to disable filtering.
+Minimum acceptable return signal strength. Returns weaker than this will be ignored. Units are dB on the GRF-250/500 and percent on the SF000/B (I2C). Set to 0 to disable filtering.
 
 - Range: 0 255
 
@@ -49348,7 +49365,7 @@ Minimum acceptable return signal strength in dB. Returns weaker than this will b
 
 *Note: This parameter is for advanced users*
 
-The update rate of the sensor in Hz.
+The update rate of the sensor in Hz. Ignored by the SF000/B over I2C, which keeps its own update rate (48 Hz default, set in LightWare Studio).
 
 - Range: 1 50
 
@@ -49373,7 +49390,7 @@ Selects which single return to use.
 
 *Note: This parameter is for advanced users*
 
-Minimum acceptable return signal strength in dB. Returns weaker than this will be ignored. Set to 0 to disable filtering.
+Minimum acceptable return signal strength. Returns weaker than this will be ignored. Units are dB on the GRF-250/500 and percent on the SF000/B (I2C). Set to 0 to disable filtering.
 
 - Range: 0 255
 
@@ -49383,7 +49400,7 @@ Minimum acceptable return signal strength in dB. Returns weaker than this will b
 
 *Note: This parameter is for advanced users*
 
-The update rate of the sensor in Hz.
+The update rate of the sensor in Hz. Ignored by the SF000/B over I2C, which keeps its own update rate (48 Hz default, set in LightWare Studio).
 
 - Range: 1 50
 
@@ -49444,7 +49461,7 @@ Type of connected rangefinder
 |45|LightWare-GRF|
 |46|BenewakeTFS20L|
 |47|DTS6012M|
-|48|LightWare-GRF-I2C|
+|48|LightWare-GRF-SF000-I2C|
 |100|SITL|
 
 ## RNGFND3_PIN: Rangefinder pin
@@ -49708,7 +49725,7 @@ Selects which single return to use.
 
 *Note: This parameter is for advanced users*
 
-Minimum acceptable return signal strength in dB. Returns weaker than this will be ignored. Set to 0 to disable filtering.
+Minimum acceptable return signal strength. Returns weaker than this will be ignored. Units are dB on the GRF-250/500 and percent on the SF000/B (I2C). Set to 0 to disable filtering.
 
 - Range: 0 255
 
@@ -49718,7 +49735,7 @@ Minimum acceptable return signal strength in dB. Returns weaker than this will b
 
 *Note: This parameter is for advanced users*
 
-The update rate of the sensor in Hz.
+The update rate of the sensor in Hz. Ignored by the SF000/B over I2C, which keeps its own update rate (48 Hz default, set in LightWare Studio).
 
 - Range: 1 50
 
@@ -49743,7 +49760,7 @@ Selects which single return to use.
 
 *Note: This parameter is for advanced users*
 
-Minimum acceptable return signal strength in dB. Returns weaker than this will be ignored. Set to 0 to disable filtering.
+Minimum acceptable return signal strength. Returns weaker than this will be ignored. Units are dB on the GRF-250/500 and percent on the SF000/B (I2C). Set to 0 to disable filtering.
 
 - Range: 0 255
 
@@ -49753,7 +49770,7 @@ Minimum acceptable return signal strength in dB. Returns weaker than this will b
 
 *Note: This parameter is for advanced users*
 
-The update rate of the sensor in Hz.
+The update rate of the sensor in Hz. Ignored by the SF000/B over I2C, which keeps its own update rate (48 Hz default, set in LightWare Studio).
 
 - Range: 1 50
 
@@ -49814,7 +49831,7 @@ Type of connected rangefinder
 |45|LightWare-GRF|
 |46|BenewakeTFS20L|
 |47|DTS6012M|
-|48|LightWare-GRF-I2C|
+|48|LightWare-GRF-SF000-I2C|
 |100|SITL|
 
 ## RNGFND4_PIN: Rangefinder pin
@@ -50078,7 +50095,7 @@ Selects which single return to use.
 
 *Note: This parameter is for advanced users*
 
-Minimum acceptable return signal strength in dB. Returns weaker than this will be ignored. Set to 0 to disable filtering.
+Minimum acceptable return signal strength. Returns weaker than this will be ignored. Units are dB on the GRF-250/500 and percent on the SF000/B (I2C). Set to 0 to disable filtering.
 
 - Range: 0 255
 
@@ -50088,7 +50105,7 @@ Minimum acceptable return signal strength in dB. Returns weaker than this will b
 
 *Note: This parameter is for advanced users*
 
-The update rate of the sensor in Hz.
+The update rate of the sensor in Hz. Ignored by the SF000/B over I2C, which keeps its own update rate (48 Hz default, set in LightWare Studio).
 
 - Range: 1 50
 
@@ -50113,7 +50130,7 @@ Selects which single return to use.
 
 *Note: This parameter is for advanced users*
 
-Minimum acceptable return signal strength in dB. Returns weaker than this will be ignored. Set to 0 to disable filtering.
+Minimum acceptable return signal strength. Returns weaker than this will be ignored. Units are dB on the GRF-250/500 and percent on the SF000/B (I2C). Set to 0 to disable filtering.
 
 - Range: 0 255
 
@@ -50123,7 +50140,7 @@ Minimum acceptable return signal strength in dB. Returns weaker than this will b
 
 *Note: This parameter is for advanced users*
 
-The update rate of the sensor in Hz.
+The update rate of the sensor in Hz. Ignored by the SF000/B over I2C, which keeps its own update rate (48 Hz default, set in LightWare Studio).
 
 - Range: 1 50
 
@@ -50184,7 +50201,7 @@ Type of connected rangefinder
 |45|LightWare-GRF|
 |46|BenewakeTFS20L|
 |47|DTS6012M|
-|48|LightWare-GRF-I2C|
+|48|LightWare-GRF-SF000-I2C|
 |100|SITL|
 
 ## RNGFND5_PIN: Rangefinder pin
@@ -50448,7 +50465,7 @@ Selects which single return to use.
 
 *Note: This parameter is for advanced users*
 
-Minimum acceptable return signal strength in dB. Returns weaker than this will be ignored. Set to 0 to disable filtering.
+Minimum acceptable return signal strength. Returns weaker than this will be ignored. Units are dB on the GRF-250/500 and percent on the SF000/B (I2C). Set to 0 to disable filtering.
 
 - Range: 0 255
 
@@ -50458,7 +50475,7 @@ Minimum acceptable return signal strength in dB. Returns weaker than this will b
 
 *Note: This parameter is for advanced users*
 
-The update rate of the sensor in Hz.
+The update rate of the sensor in Hz. Ignored by the SF000/B over I2C, which keeps its own update rate (48 Hz default, set in LightWare Studio).
 
 - Range: 1 50
 
@@ -50483,7 +50500,7 @@ Selects which single return to use.
 
 *Note: This parameter is for advanced users*
 
-Minimum acceptable return signal strength in dB. Returns weaker than this will be ignored. Set to 0 to disable filtering.
+Minimum acceptable return signal strength. Returns weaker than this will be ignored. Units are dB on the GRF-250/500 and percent on the SF000/B (I2C). Set to 0 to disable filtering.
 
 - Range: 0 255
 
@@ -50493,7 +50510,7 @@ Minimum acceptable return signal strength in dB. Returns weaker than this will b
 
 *Note: This parameter is for advanced users*
 
-The update rate of the sensor in Hz.
+The update rate of the sensor in Hz. Ignored by the SF000/B over I2C, which keeps its own update rate (48 Hz default, set in LightWare Studio).
 
 - Range: 1 50
 
@@ -50554,7 +50571,7 @@ Type of connected rangefinder
 |45|LightWare-GRF|
 |46|BenewakeTFS20L|
 |47|DTS6012M|
-|48|LightWare-GRF-I2C|
+|48|LightWare-GRF-SF000-I2C|
 |100|SITL|
 
 ## RNGFND6_PIN: Rangefinder pin
@@ -50818,7 +50835,7 @@ Selects which single return to use.
 
 *Note: This parameter is for advanced users*
 
-Minimum acceptable return signal strength in dB. Returns weaker than this will be ignored. Set to 0 to disable filtering.
+Minimum acceptable return signal strength. Returns weaker than this will be ignored. Units are dB on the GRF-250/500 and percent on the SF000/B (I2C). Set to 0 to disable filtering.
 
 - Range: 0 255
 
@@ -50828,7 +50845,7 @@ Minimum acceptable return signal strength in dB. Returns weaker than this will b
 
 *Note: This parameter is for advanced users*
 
-The update rate of the sensor in Hz.
+The update rate of the sensor in Hz. Ignored by the SF000/B over I2C, which keeps its own update rate (48 Hz default, set in LightWare Studio).
 
 - Range: 1 50
 
@@ -50853,7 +50870,7 @@ Selects which single return to use.
 
 *Note: This parameter is for advanced users*
 
-Minimum acceptable return signal strength in dB. Returns weaker than this will be ignored. Set to 0 to disable filtering.
+Minimum acceptable return signal strength. Returns weaker than this will be ignored. Units are dB on the GRF-250/500 and percent on the SF000/B (I2C). Set to 0 to disable filtering.
 
 - Range: 0 255
 
@@ -50863,7 +50880,7 @@ Minimum acceptable return signal strength in dB. Returns weaker than this will b
 
 *Note: This parameter is for advanced users*
 
-The update rate of the sensor in Hz.
+The update rate of the sensor in Hz. Ignored by the SF000/B over I2C, which keeps its own update rate (48 Hz default, set in LightWare Studio).
 
 - Range: 1 50
 
@@ -50924,7 +50941,7 @@ Type of connected rangefinder
 |45|LightWare-GRF|
 |46|BenewakeTFS20L|
 |47|DTS6012M|
-|48|LightWare-GRF-I2C|
+|48|LightWare-GRF-SF000-I2C|
 |100|SITL|
 
 ## RNGFND7_PIN: Rangefinder pin
@@ -51188,7 +51205,7 @@ Selects which single return to use.
 
 *Note: This parameter is for advanced users*
 
-Minimum acceptable return signal strength in dB. Returns weaker than this will be ignored. Set to 0 to disable filtering.
+Minimum acceptable return signal strength. Returns weaker than this will be ignored. Units are dB on the GRF-250/500 and percent on the SF000/B (I2C). Set to 0 to disable filtering.
 
 - Range: 0 255
 
@@ -51198,7 +51215,7 @@ Minimum acceptable return signal strength in dB. Returns weaker than this will b
 
 *Note: This parameter is for advanced users*
 
-The update rate of the sensor in Hz.
+The update rate of the sensor in Hz. Ignored by the SF000/B over I2C, which keeps its own update rate (48 Hz default, set in LightWare Studio).
 
 - Range: 1 50
 
@@ -51223,7 +51240,7 @@ Selects which single return to use.
 
 *Note: This parameter is for advanced users*
 
-Minimum acceptable return signal strength in dB. Returns weaker than this will be ignored. Set to 0 to disable filtering.
+Minimum acceptable return signal strength. Returns weaker than this will be ignored. Units are dB on the GRF-250/500 and percent on the SF000/B (I2C). Set to 0 to disable filtering.
 
 - Range: 0 255
 
@@ -51233,7 +51250,7 @@ Minimum acceptable return signal strength in dB. Returns weaker than this will b
 
 *Note: This parameter is for advanced users*
 
-The update rate of the sensor in Hz.
+The update rate of the sensor in Hz. Ignored by the SF000/B over I2C, which keeps its own update rate (48 Hz default, set in LightWare Studio).
 
 - Range: 1 50
 
@@ -51294,7 +51311,7 @@ Type of connected rangefinder
 |45|LightWare-GRF|
 |46|BenewakeTFS20L|
 |47|DTS6012M|
-|48|LightWare-GRF-I2C|
+|48|LightWare-GRF-SF000-I2C|
 |100|SITL|
 
 ## RNGFND8_PIN: Rangefinder pin
@@ -51558,7 +51575,7 @@ Selects which single return to use.
 
 *Note: This parameter is for advanced users*
 
-Minimum acceptable return signal strength in dB. Returns weaker than this will be ignored. Set to 0 to disable filtering.
+Minimum acceptable return signal strength. Returns weaker than this will be ignored. Units are dB on the GRF-250/500 and percent on the SF000/B (I2C). Set to 0 to disable filtering.
 
 - Range: 0 255
 
@@ -51568,7 +51585,7 @@ Minimum acceptable return signal strength in dB. Returns weaker than this will b
 
 *Note: This parameter is for advanced users*
 
-The update rate of the sensor in Hz.
+The update rate of the sensor in Hz. Ignored by the SF000/B over I2C, which keeps its own update rate (48 Hz default, set in LightWare Studio).
 
 - Range: 1 50
 
@@ -51593,7 +51610,7 @@ Selects which single return to use.
 
 *Note: This parameter is for advanced users*
 
-Minimum acceptable return signal strength in dB. Returns weaker than this will be ignored. Set to 0 to disable filtering.
+Minimum acceptable return signal strength. Returns weaker than this will be ignored. Units are dB on the GRF-250/500 and percent on the SF000/B (I2C). Set to 0 to disable filtering.
 
 - Range: 0 255
 
@@ -51603,7 +51620,7 @@ Minimum acceptable return signal strength in dB. Returns weaker than this will b
 
 *Note: This parameter is for advanced users*
 
-The update rate of the sensor in Hz.
+The update rate of the sensor in Hz. Ignored by the SF000/B over I2C, which keeps its own update rate (48 Hz default, set in LightWare Studio).
 
 - Range: 1 50
 
@@ -51664,7 +51681,7 @@ Type of connected rangefinder
 |45|LightWare-GRF|
 |46|BenewakeTFS20L|
 |47|DTS6012M|
-|48|LightWare-GRF-I2C|
+|48|LightWare-GRF-SF000-I2C|
 |100|SITL|
 
 ## RNGFND9_PIN: Rangefinder pin
@@ -51928,7 +51945,7 @@ Selects which single return to use.
 
 *Note: This parameter is for advanced users*
 
-Minimum acceptable return signal strength in dB. Returns weaker than this will be ignored. Set to 0 to disable filtering.
+Minimum acceptable return signal strength. Returns weaker than this will be ignored. Units are dB on the GRF-250/500 and percent on the SF000/B (I2C). Set to 0 to disable filtering.
 
 - Range: 0 255
 
@@ -51938,7 +51955,7 @@ Minimum acceptable return signal strength in dB. Returns weaker than this will b
 
 *Note: This parameter is for advanced users*
 
-The update rate of the sensor in Hz.
+The update rate of the sensor in Hz. Ignored by the SF000/B over I2C, which keeps its own update rate (48 Hz default, set in LightWare Studio).
 
 - Range: 1 50
 
@@ -51963,7 +51980,7 @@ Selects which single return to use.
 
 *Note: This parameter is for advanced users*
 
-Minimum acceptable return signal strength in dB. Returns weaker than this will be ignored. Set to 0 to disable filtering.
+Minimum acceptable return signal strength. Returns weaker than this will be ignored. Units are dB on the GRF-250/500 and percent on the SF000/B (I2C). Set to 0 to disable filtering.
 
 - Range: 0 255
 
@@ -51973,7 +51990,7 @@ Minimum acceptable return signal strength in dB. Returns weaker than this will b
 
 *Note: This parameter is for advanced users*
 
-The update rate of the sensor in Hz.
+The update rate of the sensor in Hz. Ignored by the SF000/B over I2C, which keeps its own update rate (48 Hz default, set in LightWare Studio).
 
 - Range: 1 50
 
@@ -52034,7 +52051,7 @@ Type of connected rangefinder
 |45|LightWare-GRF|
 |46|BenewakeTFS20L|
 |47|DTS6012M|
-|48|LightWare-GRF-I2C|
+|48|LightWare-GRF-SF000-I2C|
 |100|SITL|
 
 ## RNGFNDA_PIN: Rangefinder pin
@@ -52298,7 +52315,7 @@ Selects which single return to use.
 
 *Note: This parameter is for advanced users*
 
-Minimum acceptable return signal strength in dB. Returns weaker than this will be ignored. Set to 0 to disable filtering.
+Minimum acceptable return signal strength. Returns weaker than this will be ignored. Units are dB on the GRF-250/500 and percent on the SF000/B (I2C). Set to 0 to disable filtering.
 
 - Range: 0 255
 
@@ -52308,7 +52325,7 @@ Minimum acceptable return signal strength in dB. Returns weaker than this will b
 
 *Note: This parameter is for advanced users*
 
-The update rate of the sensor in Hz.
+The update rate of the sensor in Hz. Ignored by the SF000/B over I2C, which keeps its own update rate (48 Hz default, set in LightWare Studio).
 
 - Range: 1 50
 
@@ -52333,7 +52350,7 @@ Selects which single return to use.
 
 *Note: This parameter is for advanced users*
 
-Minimum acceptable return signal strength in dB. Returns weaker than this will be ignored. Set to 0 to disable filtering.
+Minimum acceptable return signal strength. Returns weaker than this will be ignored. Units are dB on the GRF-250/500 and percent on the SF000/B (I2C). Set to 0 to disable filtering.
 
 - Range: 0 255
 
@@ -52343,7 +52360,7 @@ Minimum acceptable return signal strength in dB. Returns weaker than this will b
 
 *Note: This parameter is for advanced users*
 
-The update rate of the sensor in Hz.
+The update rate of the sensor in Hz. Ignored by the SF000/B over I2C, which keeps its own update rate (48 Hz default, set in LightWare Studio).
 
 - Range: 1 50
 

@@ -38386,6 +38386,8 @@ Auxiliary RC Options function executed on pin change
 +-------+-----------------------------------------------------+
 | 181   | QuickTune                                           |
 +-------+-----------------------------------------------------+
+| 182   | VTOL AutoTrim                                       |
++-------+-----------------------------------------------------+
 | 184   | System ID Chirp                                     |
 +-------+-----------------------------------------------------+
 | 185   | Mount Roll/Pitch Lock                               |
@@ -38645,6 +38647,8 @@ Auxiliary RC Options function executed on pin change
 | 180   | Test autotuned gains after tune is complete         |
 +-------+-----------------------------------------------------+
 | 181   | QuickTune                                           |
++-------+-----------------------------------------------------+
+| 182   | VTOL AutoTrim                                       |
 +-------+-----------------------------------------------------+
 | 184   | System ID Chirp                                     |
 +-------+-----------------------------------------------------+
@@ -38906,6 +38910,8 @@ Auxiliary RC Options function executed on pin change
 +-------+-----------------------------------------------------+
 | 181   | QuickTune                                           |
 +-------+-----------------------------------------------------+
+| 182   | VTOL AutoTrim                                       |
++-------+-----------------------------------------------------+
 | 184   | System ID Chirp                                     |
 +-------+-----------------------------------------------------+
 | 185   | Mount Roll/Pitch Lock                               |
@@ -39165,6 +39171,8 @@ Auxiliary RC Options function executed on pin change
 | 180   | Test autotuned gains after tune is complete         |
 +-------+-----------------------------------------------------+
 | 181   | QuickTune                                           |
++-------+-----------------------------------------------------+
+| 182   | VTOL AutoTrim                                       |
 +-------+-----------------------------------------------------+
 | 184   | System ID Chirp                                     |
 +-------+-----------------------------------------------------+
@@ -100700,6 +100708,25 @@ Configuration for thrust loss detection detection\, this results in \"Potential 
 
 
 
+.. _Q_TRIM_ROLL:
+
+Q\_TRIM\_ROLL: Quadplane AHRS trim roll
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+| *Note: This parameter is for advanced users*
+
+Hover\-only roll trim\: the roll angle the VTOL attitude controller holds as level\, relative to calibrated AHRS level\. Positive values make the vehicle roll right in VTOL flight\. Forward flight is not affected\. Set by the VTOL AutoTrim switch \(RCx\_OPTION 182\) or by hand\. Not applied on tailsitters\.
+
+
++-----------+------------+---------+
+| Increment | Range      | Units   |
++===========+============+=========+
+| 0.1       | -10 to +10 | degrees |
++-----------+------------+---------+
+
+
+
+
 
 .. _parameters_Q_AUTOTUNE_:
 
@@ -104883,6 +104910,8 @@ Function assigned to this RC channel
 +-------+-----------------------------------------------------+
 | 181   | QuickTune                                           |
 +-------+-----------------------------------------------------+
+| 182   | VTOL AutoTrim                                       |
++-------+-----------------------------------------------------+
 | 184   | System ID Chirp                                     |
 +-------+-----------------------------------------------------+
 | 185   | Mount Roll/Pitch Lock                               |
@@ -105246,6 +105275,8 @@ Function assigned to this RC channel
 | 180   | Test autotuned gains after tune is complete         |
 +-------+-----------------------------------------------------+
 | 181   | QuickTune                                           |
++-------+-----------------------------------------------------+
+| 182   | VTOL AutoTrim                                       |
 +-------+-----------------------------------------------------+
 | 184   | System ID Chirp                                     |
 +-------+-----------------------------------------------------+
@@ -105611,6 +105642,8 @@ Function assigned to this RC channel
 +-------+-----------------------------------------------------+
 | 181   | QuickTune                                           |
 +-------+-----------------------------------------------------+
+| 182   | VTOL AutoTrim                                       |
++-------+-----------------------------------------------------+
 | 184   | System ID Chirp                                     |
 +-------+-----------------------------------------------------+
 | 185   | Mount Roll/Pitch Lock                               |
@@ -105974,6 +106007,8 @@ Function assigned to this RC channel
 | 180   | Test autotuned gains after tune is complete         |
 +-------+-----------------------------------------------------+
 | 181   | QuickTune                                           |
++-------+-----------------------------------------------------+
+| 182   | VTOL AutoTrim                                       |
 +-------+-----------------------------------------------------+
 | 184   | System ID Chirp                                     |
 +-------+-----------------------------------------------------+
@@ -106339,6 +106374,8 @@ Function assigned to this RC channel
 +-------+-----------------------------------------------------+
 | 181   | QuickTune                                           |
 +-------+-----------------------------------------------------+
+| 182   | VTOL AutoTrim                                       |
++-------+-----------------------------------------------------+
 | 184   | System ID Chirp                                     |
 +-------+-----------------------------------------------------+
 | 185   | Mount Roll/Pitch Lock                               |
@@ -106702,6 +106739,8 @@ Function assigned to this RC channel
 | 180   | Test autotuned gains after tune is complete         |
 +-------+-----------------------------------------------------+
 | 181   | QuickTune                                           |
++-------+-----------------------------------------------------+
+| 182   | VTOL AutoTrim                                       |
 +-------+-----------------------------------------------------+
 | 184   | System ID Chirp                                     |
 +-------+-----------------------------------------------------+
@@ -107067,6 +107106,8 @@ Function assigned to this RC channel
 +-------+-----------------------------------------------------+
 | 181   | QuickTune                                           |
 +-------+-----------------------------------------------------+
+| 182   | VTOL AutoTrim                                       |
++-------+-----------------------------------------------------+
 | 184   | System ID Chirp                                     |
 +-------+-----------------------------------------------------+
 | 185   | Mount Roll/Pitch Lock                               |
@@ -107430,6 +107471,8 @@ Function assigned to this RC channel
 | 180   | Test autotuned gains after tune is complete         |
 +-------+-----------------------------------------------------+
 | 181   | QuickTune                                           |
++-------+-----------------------------------------------------+
+| 182   | VTOL AutoTrim                                       |
 +-------+-----------------------------------------------------+
 | 184   | System ID Chirp                                     |
 +-------+-----------------------------------------------------+
@@ -107795,6 +107838,8 @@ Function assigned to this RC channel
 +-------+-----------------------------------------------------+
 | 181   | QuickTune                                           |
 +-------+-----------------------------------------------------+
+| 182   | VTOL AutoTrim                                       |
++-------+-----------------------------------------------------+
 | 184   | System ID Chirp                                     |
 +-------+-----------------------------------------------------+
 | 185   | Mount Roll/Pitch Lock                               |
@@ -108158,6 +108203,8 @@ Function assigned to this RC channel
 | 180   | Test autotuned gains after tune is complete         |
 +-------+-----------------------------------------------------+
 | 181   | QuickTune                                           |
++-------+-----------------------------------------------------+
+| 182   | VTOL AutoTrim                                       |
 +-------+-----------------------------------------------------+
 | 184   | System ID Chirp                                     |
 +-------+-----------------------------------------------------+
@@ -108523,6 +108570,8 @@ Function assigned to this RC channel
 +-------+-----------------------------------------------------+
 | 181   | QuickTune                                           |
 +-------+-----------------------------------------------------+
+| 182   | VTOL AutoTrim                                       |
++-------+-----------------------------------------------------+
 | 184   | System ID Chirp                                     |
 +-------+-----------------------------------------------------+
 | 185   | Mount Roll/Pitch Lock                               |
@@ -108886,6 +108935,8 @@ Function assigned to this RC channel
 | 180   | Test autotuned gains after tune is complete         |
 +-------+-----------------------------------------------------+
 | 181   | QuickTune                                           |
++-------+-----------------------------------------------------+
+| 182   | VTOL AutoTrim                                       |
 +-------+-----------------------------------------------------+
 | 184   | System ID Chirp                                     |
 +-------+-----------------------------------------------------+
@@ -109251,6 +109302,8 @@ Function assigned to this RC channel
 +-------+-----------------------------------------------------+
 | 181   | QuickTune                                           |
 +-------+-----------------------------------------------------+
+| 182   | VTOL AutoTrim                                       |
++-------+-----------------------------------------------------+
 | 184   | System ID Chirp                                     |
 +-------+-----------------------------------------------------+
 | 185   | Mount Roll/Pitch Lock                               |
@@ -109614,6 +109667,8 @@ Function assigned to this RC channel
 | 180   | Test autotuned gains after tune is complete         |
 +-------+-----------------------------------------------------+
 | 181   | QuickTune                                           |
++-------+-----------------------------------------------------+
+| 182   | VTOL AutoTrim                                       |
 +-------+-----------------------------------------------------+
 | 184   | System ID Chirp                                     |
 +-------+-----------------------------------------------------+
@@ -109979,6 +110034,8 @@ Function assigned to this RC channel
 +-------+-----------------------------------------------------+
 | 181   | QuickTune                                           |
 +-------+-----------------------------------------------------+
+| 182   | VTOL AutoTrim                                       |
++-------+-----------------------------------------------------+
 | 184   | System ID Chirp                                     |
 +-------+-----------------------------------------------------+
 | 185   | Mount Roll/Pitch Lock                               |
@@ -110342,6 +110399,8 @@ Function assigned to this RC channel
 | 180   | Test autotuned gains after tune is complete         |
 +-------+-----------------------------------------------------+
 | 181   | QuickTune                                           |
++-------+-----------------------------------------------------+
+| 182   | VTOL AutoTrim                                       |
 +-------+-----------------------------------------------------+
 | 184   | System ID Chirp                                     |
 +-------+-----------------------------------------------------+
@@ -113585,107 +113644,107 @@ RNGFND1\_TYPE: Rangefinder type
 Type of connected rangefinder
 
 
-+-------+------------------------+
-| Value | Meaning                |
-+=======+========================+
-| 0     | None                   |
-+-------+------------------------+
-| 1     | Analog                 |
-+-------+------------------------+
-| 2     | MaxbotixI2C            |
-+-------+------------------------+
-| 3     | LidarLite-I2C          |
-+-------+------------------------+
-| 5     | PWM                    |
-+-------+------------------------+
-| 6     | BBB-PRU                |
-+-------+------------------------+
-| 7     | LightWareI2C           |
-+-------+------------------------+
-| 8     | LightWareSerial        |
-+-------+------------------------+
-| 9     | Bebop                  |
-+-------+------------------------+
-| 10    | MAVLink                |
-+-------+------------------------+
-| 11    | USD1_Serial            |
-+-------+------------------------+
-| 12    | LeddarOne              |
-+-------+------------------------+
-| 13    | MaxbotixSerial         |
-+-------+------------------------+
-| 14    | TeraRangerI2C          |
-+-------+------------------------+
-| 15    | LidarLiteV3-I2C        |
-+-------+------------------------+
-| 16    | VL53L0X or VL53L1X     |
-+-------+------------------------+
-| 17    | NMEA                   |
-+-------+------------------------+
-| 18    | WASP-LRF               |
-+-------+------------------------+
-| 19    | BenewakeTF02           |
-+-------+------------------------+
-| 20    | BenewakeTFmini-Serial  |
-+-------+------------------------+
-| 21    | LidarLightV3HP         |
-+-------+------------------------+
-| 22    | PWM                    |
-+-------+------------------------+
-| 23    | BlueRoboticsPing       |
-+-------+------------------------+
-| 24    | DroneCAN               |
-+-------+------------------------+
-| 25    | BenewakeTFmini-I2C     |
-+-------+------------------------+
-| 26    | LanbaoPSK-CM8JL65-CC5  |
-+-------+------------------------+
-| 27    | BenewakeTF03           |
-+-------+------------------------+
-| 28    | VL53L1X-ShortRange     |
-+-------+------------------------+
-| 29    | LeddarVu8-Serial       |
-+-------+------------------------+
-| 30    | HC-SR04                |
-+-------+------------------------+
-| 31    | GYUS42v2               |
-+-------+------------------------+
-| 32    | MSP                    |
-+-------+------------------------+
-| 33    | USD1_CAN               |
-+-------+------------------------+
-| 34    | Benewake_CAN           |
-+-------+------------------------+
-| 35    | TeraRangerSerial       |
-+-------+------------------------+
-| 36    | Lua_Scripting          |
-+-------+------------------------+
-| 37    | NoopLoop_TOFSense      |
-+-------+------------------------+
-| 38    | NoopLoop_TOFSense_CAN  |
-+-------+------------------------+
-| 39    | NRA24_CAN              |
-+-------+------------------------+
-| 40    | NoopLoop_TOFSenseF_I2C |
-+-------+------------------------+
-| 41    | JRE_Serial             |
-+-------+------------------------+
-| 42    | Ainstein_LR_D1         |
-+-------+------------------------+
-| 43    | RDS02UF                |
-+-------+------------------------+
-| 44    | HexsoonRadar           |
-+-------+------------------------+
-| 45    | LightWare-GRF          |
-+-------+------------------------+
-| 46    | BenewakeTFS20L         |
-+-------+------------------------+
-| 47    | DTS6012M               |
-+-------+------------------------+
-| 48    | LightWare-GRF-I2C      |
-+-------+------------------------+
-| 100   | SITL                   |
-+-------+------------------------+
++-------+-------------------------+
+| Value | Meaning                 |
++=======+=========================+
+| 0     | None                    |
++-------+-------------------------+
+| 1     | Analog                  |
++-------+-------------------------+
+| 2     | MaxbotixI2C             |
++-------+-------------------------+
+| 3     | LidarLite-I2C           |
++-------+-------------------------+
+| 5     | PWM                     |
++-------+-------------------------+
+| 6     | BBB-PRU                 |
++-------+-------------------------+
+| 7     | LightWareI2C            |
++-------+-------------------------+
+| 8     | LightWareSerial         |
++-------+-------------------------+
+| 9     | Bebop                   |
++-------+-------------------------+
+| 10    | MAVLink                 |
++-------+-------------------------+
+| 11    | USD1_Serial             |
++-------+-------------------------+
+| 12    | LeddarOne               |
++-------+-------------------------+
+| 13    | MaxbotixSerial          |
++-------+-------------------------+
+| 14    | TeraRangerI2C           |
++-------+-------------------------+
+| 15    | LidarLiteV3-I2C         |
++-------+-------------------------+
+| 16    | VL53L0X or VL53L1X      |
++-------+-------------------------+
+| 17    | NMEA                    |
++-------+-------------------------+
+| 18    | WASP-LRF                |
++-------+-------------------------+
+| 19    | BenewakeTF02            |
++-------+-------------------------+
+| 20    | BenewakeTFmini-Serial   |
++-------+-------------------------+
+| 21    | LidarLightV3HP          |
++-------+-------------------------+
+| 22    | PWM                     |
++-------+-------------------------+
+| 23    | BlueRoboticsPing        |
++-------+-------------------------+
+| 24    | DroneCAN                |
++-------+-------------------------+
+| 25    | BenewakeTFmini-I2C      |
++-------+-------------------------+
+| 26    | LanbaoPSK-CM8JL65-CC5   |
++-------+-------------------------+
+| 27    | BenewakeTF03            |
++-------+-------------------------+
+| 28    | VL53L1X-ShortRange      |
++-------+-------------------------+
+| 29    | LeddarVu8-Serial        |
++-------+-------------------------+
+| 30    | HC-SR04                 |
++-------+-------------------------+
+| 31    | GYUS42v2                |
++-------+-------------------------+
+| 32    | MSP                     |
++-------+-------------------------+
+| 33    | USD1_CAN                |
++-------+-------------------------+
+| 34    | Benewake_CAN            |
++-------+-------------------------+
+| 35    | TeraRangerSerial        |
++-------+-------------------------+
+| 36    | Lua_Scripting           |
++-------+-------------------------+
+| 37    | NoopLoop_TOFSense       |
++-------+-------------------------+
+| 38    | NoopLoop_TOFSense_CAN   |
++-------+-------------------------+
+| 39    | NRA24_CAN               |
++-------+-------------------------+
+| 40    | NoopLoop_TOFSenseF_I2C  |
++-------+-------------------------+
+| 41    | JRE_Serial              |
++-------+-------------------------+
+| 42    | Ainstein_LR_D1          |
++-------+-------------------------+
+| 43    | RDS02UF                 |
++-------+-------------------------+
+| 44    | HexsoonRadar            |
++-------+-------------------------+
+| 45    | LightWare-GRF           |
++-------+-------------------------+
+| 46    | BenewakeTFS20L          |
++-------+-------------------------+
+| 47    | DTS6012M                |
++-------+-------------------------+
+| 48    | LightWare-GRF-SF000-I2C |
++-------+-------------------------+
+| 100   | SITL                    |
++-------+-------------------------+
 
 
 
@@ -114246,7 +114305,7 @@ RNGFND1\_GRF\_ST: LightWare GRF Minimum Return Strength
 | *Note: This parameter is for advanced users*
 | *Note: Reboot required after change*
 
-Minimum acceptable return signal strength in dB\. Returns weaker than this will be ignored\. Set to 0 to disable filtering\.
+Minimum acceptable return signal strength\. Returns weaker than this will be ignored\. Units are dB on the GRF\-250\/500 and percent on the SF000\/B \(I2C\)\. Set to 0 to disable filtering\.
 
 
 +----------+
@@ -114266,7 +114325,7 @@ RNGFND1\_GRF\_RATE: LightWare GRF Update Rate
 | *Note: This parameter is for advanced users*
 | *Note: Reboot required after change*
 
-The update rate of the sensor in Hz\.
+The update rate of the sensor in Hz\. Ignored by the SF000\/B over I2C\, which keeps its own update rate \(48 Hz default\, set in LightWare Studio\)\.
 
 
 +---------+
@@ -114318,7 +114377,7 @@ RNGFND1\_GRF\_ST: LightWare GRF Minimum Return Strength
 | *Note: This parameter is for advanced users*
 | *Note: Reboot required after change*
 
-Minimum acceptable return signal strength in dB\. Returns weaker than this will be ignored\. Set to 0 to disable filtering\.
+Minimum acceptable return signal strength\. Returns weaker than this will be ignored\. Units are dB on the GRF\-250\/500 and percent on the SF000\/B \(I2C\)\. Set to 0 to disable filtering\.
 
 
 +----------+
@@ -114338,7 +114397,7 @@ RNGFND1\_GRF\_RATE: LightWare GRF Update Rate
 | *Note: This parameter is for advanced users*
 | *Note: Reboot required after change*
 
-The update rate of the sensor in Hz\.
+The update rate of the sensor in Hz\. Ignored by the SF000\/B over I2C\, which keeps its own update rate \(48 Hz default\, set in LightWare Studio\)\.
 
 
 +---------+
@@ -114366,107 +114425,107 @@ RNGFND2\_TYPE: Rangefinder type
 Type of connected rangefinder
 
 
-+-------+------------------------+
-| Value | Meaning                |
-+=======+========================+
-| 0     | None                   |
-+-------+------------------------+
-| 1     | Analog                 |
-+-------+------------------------+
-| 2     | MaxbotixI2C            |
-+-------+------------------------+
-| 3     | LidarLite-I2C          |
-+-------+------------------------+
-| 5     | PWM                    |
-+-------+------------------------+
-| 6     | BBB-PRU                |
-+-------+------------------------+
-| 7     | LightWareI2C           |
-+-------+------------------------+
-| 8     | LightWareSerial        |
-+-------+------------------------+
-| 9     | Bebop                  |
-+-------+------------------------+
-| 10    | MAVLink                |
-+-------+------------------------+
-| 11    | USD1_Serial            |
-+-------+------------------------+
-| 12    | LeddarOne              |
-+-------+------------------------+
-| 13    | MaxbotixSerial         |
-+-------+------------------------+
-| 14    | TeraRangerI2C          |
-+-------+------------------------+
-| 15    | LidarLiteV3-I2C        |
-+-------+------------------------+
-| 16    | VL53L0X or VL53L1X     |
-+-------+------------------------+
-| 17    | NMEA                   |
-+-------+------------------------+
-| 18    | WASP-LRF               |
-+-------+------------------------+
-| 19    | BenewakeTF02           |
-+-------+------------------------+
-| 20    | BenewakeTFmini-Serial  |
-+-------+------------------------+
-| 21    | LidarLightV3HP         |
-+-------+------------------------+
-| 22    | PWM                    |
-+-------+------------------------+
-| 23    | BlueRoboticsPing       |
-+-------+------------------------+
-| 24    | DroneCAN               |
-+-------+------------------------+
-| 25    | BenewakeTFmini-I2C     |
-+-------+------------------------+
-| 26    | LanbaoPSK-CM8JL65-CC5  |
-+-------+------------------------+
-| 27    | BenewakeTF03           |
-+-------+------------------------+
-| 28    | VL53L1X-ShortRange     |
-+-------+------------------------+
-| 29    | LeddarVu8-Serial       |
-+-------+------------------------+
-| 30    | HC-SR04                |
-+-------+------------------------+
-| 31    | GYUS42v2               |
-+-------+------------------------+
-| 32    | MSP                    |
-+-------+------------------------+
-| 33    | USD1_CAN               |
-+-------+------------------------+
-| 34    | Benewake_CAN           |
-+-------+------------------------+
-| 35    | TeraRangerSerial       |
-+-------+------------------------+
-| 36    | Lua_Scripting          |
-+-------+------------------------+
-| 37    | NoopLoop_TOFSense      |
-+-------+------------------------+
-| 38    | NoopLoop_TOFSense_CAN  |
-+-------+------------------------+
-| 39    | NRA24_CAN              |
-+-------+------------------------+
-| 40    | NoopLoop_TOFSenseF_I2C |
-+-------+------------------------+
-| 41    | JRE_Serial             |
-+-------+------------------------+
-| 42    | Ainstein_LR_D1         |
-+-------+------------------------+
-| 43    | RDS02UF                |
-+-------+------------------------+
-| 44    | HexsoonRadar           |
-+-------+------------------------+
-| 45    | LightWare-GRF          |
-+-------+------------------------+
-| 46    | BenewakeTFS20L         |
-+-------+------------------------+
-| 47    | DTS6012M               |
-+-------+------------------------+
-| 48    | LightWare-GRF-I2C      |
-+-------+------------------------+
-| 100   | SITL                   |
-+-------+------------------------+
++-------+-------------------------+
+| Value | Meaning                 |
++=======+=========================+
+| 0     | None                    |
++-------+-------------------------+
+| 1     | Analog                  |
++-------+-------------------------+
+| 2     | MaxbotixI2C             |
++-------+-------------------------+
+| 3     | LidarLite-I2C           |
++-------+-------------------------+
+| 5     | PWM                     |
++-------+-------------------------+
+| 6     | BBB-PRU                 |
++-------+-------------------------+
+| 7     | LightWareI2C            |
++-------+-------------------------+
+| 8     | LightWareSerial         |
++-------+-------------------------+
+| 9     | Bebop                   |
++-------+-------------------------+
+| 10    | MAVLink                 |
++-------+-------------------------+
+| 11    | USD1_Serial             |
++-------+-------------------------+
+| 12    | LeddarOne               |
++-------+-------------------------+
+| 13    | MaxbotixSerial          |
++-------+-------------------------+
+| 14    | TeraRangerI2C           |
++-------+-------------------------+
+| 15    | LidarLiteV3-I2C         |
++-------+-------------------------+
+| 16    | VL53L0X or VL53L1X      |
++-------+-------------------------+
+| 17    | NMEA                    |
++-------+-------------------------+
+| 18    | WASP-LRF                |
++-------+-------------------------+
+| 19    | BenewakeTF02            |
++-------+-------------------------+
+| 20    | BenewakeTFmini-Serial   |
++-------+-------------------------+
+| 21    | LidarLightV3HP          |
++-------+-------------------------+
+| 22    | PWM                     |
++-------+-------------------------+
+| 23    | BlueRoboticsPing        |
++-------+-------------------------+
+| 24    | DroneCAN                |
++-------+-------------------------+
+| 25    | BenewakeTFmini-I2C      |
++-------+-------------------------+
+| 26    | LanbaoPSK-CM8JL65-CC5   |
++-------+-------------------------+
+| 27    | BenewakeTF03            |
++-------+-------------------------+
+| 28    | VL53L1X-ShortRange      |
++-------+-------------------------+
+| 29    | LeddarVu8-Serial        |
++-------+-------------------------+
+| 30    | HC-SR04                 |
++-------+-------------------------+
+| 31    | GYUS42v2                |
++-------+-------------------------+
+| 32    | MSP                     |
++-------+-------------------------+
+| 33    | USD1_CAN                |
++-------+-------------------------+
+| 34    | Benewake_CAN            |
++-------+-------------------------+
+| 35    | TeraRangerSerial        |
++-------+-------------------------+
+| 36    | Lua_Scripting           |
++-------+-------------------------+
+| 37    | NoopLoop_TOFSense       |
++-------+-------------------------+
+| 38    | NoopLoop_TOFSense_CAN   |
++-------+-------------------------+
+| 39    | NRA24_CAN               |
++-------+-------------------------+
+| 40    | NoopLoop_TOFSenseF_I2C  |
++-------+-------------------------+
+| 41    | JRE_Serial              |
++-------+-------------------------+
+| 42    | Ainstein_LR_D1          |
++-------+-------------------------+
+| 43    | RDS02UF                 |
++-------+-------------------------+
+| 44    | HexsoonRadar            |
++-------+-------------------------+
+| 45    | LightWare-GRF           |
++-------+-------------------------+
+| 46    | BenewakeTFS20L          |
++-------+-------------------------+
+| 47    | DTS6012M                |
++-------+-------------------------+
+| 48    | LightWare-GRF-SF000-I2C |
++-------+-------------------------+
+| 100   | SITL                    |
++-------+-------------------------+
 
 
 
@@ -115027,7 +115086,7 @@ RNGFND2\_GRF\_ST: LightWare GRF Minimum Return Strength
 | *Note: This parameter is for advanced users*
 | *Note: Reboot required after change*
 
-Minimum acceptable return signal strength in dB\. Returns weaker than this will be ignored\. Set to 0 to disable filtering\.
+Minimum acceptable return signal strength\. Returns weaker than this will be ignored\. Units are dB on the GRF\-250\/500 and percent on the SF000\/B \(I2C\)\. Set to 0 to disable filtering\.
 
 
 +----------+
@@ -115047,7 +115106,7 @@ RNGFND2\_GRF\_RATE: LightWare GRF Update Rate
 | *Note: This parameter is for advanced users*
 | *Note: Reboot required after change*
 
-The update rate of the sensor in Hz\.
+The update rate of the sensor in Hz\. Ignored by the SF000\/B over I2C\, which keeps its own update rate \(48 Hz default\, set in LightWare Studio\)\.
 
 
 +---------+
@@ -115099,7 +115158,7 @@ RNGFND2\_GRF\_ST: LightWare GRF Minimum Return Strength
 | *Note: This parameter is for advanced users*
 | *Note: Reboot required after change*
 
-Minimum acceptable return signal strength in dB\. Returns weaker than this will be ignored\. Set to 0 to disable filtering\.
+Minimum acceptable return signal strength\. Returns weaker than this will be ignored\. Units are dB on the GRF\-250\/500 and percent on the SF000\/B \(I2C\)\. Set to 0 to disable filtering\.
 
 
 +----------+
@@ -115119,7 +115178,7 @@ RNGFND2\_GRF\_RATE: LightWare GRF Update Rate
 | *Note: This parameter is for advanced users*
 | *Note: Reboot required after change*
 
-The update rate of the sensor in Hz\.
+The update rate of the sensor in Hz\. Ignored by the SF000\/B over I2C\, which keeps its own update rate \(48 Hz default\, set in LightWare Studio\)\.
 
 
 +---------+
@@ -115147,107 +115206,107 @@ RNGFND3\_TYPE: Rangefinder type
 Type of connected rangefinder
 
 
-+-------+------------------------+
-| Value | Meaning                |
-+=======+========================+
-| 0     | None                   |
-+-------+------------------------+
-| 1     | Analog                 |
-+-------+------------------------+
-| 2     | MaxbotixI2C            |
-+-------+------------------------+
-| 3     | LidarLite-I2C          |
-+-------+------------------------+
-| 5     | PWM                    |
-+-------+------------------------+
-| 6     | BBB-PRU                |
-+-------+------------------------+
-| 7     | LightWareI2C           |
-+-------+------------------------+
-| 8     | LightWareSerial        |
-+-------+------------------------+
-| 9     | Bebop                  |
-+-------+------------------------+
-| 10    | MAVLink                |
-+-------+------------------------+
-| 11    | USD1_Serial            |
-+-------+------------------------+
-| 12    | LeddarOne              |
-+-------+------------------------+
-| 13    | MaxbotixSerial         |
-+-------+------------------------+
-| 14    | TeraRangerI2C          |
-+-------+------------------------+
-| 15    | LidarLiteV3-I2C        |
-+-------+------------------------+
-| 16    | VL53L0X or VL53L1X     |
-+-------+------------------------+
-| 17    | NMEA                   |
-+-------+------------------------+
-| 18    | WASP-LRF               |
-+-------+------------------------+
-| 19    | BenewakeTF02           |
-+-------+------------------------+
-| 20    | BenewakeTFmini-Serial  |
-+-------+------------------------+
-| 21    | LidarLightV3HP         |
-+-------+------------------------+
-| 22    | PWM                    |
-+-------+------------------------+
-| 23    | BlueRoboticsPing       |
-+-------+------------------------+
-| 24    | DroneCAN               |
-+-------+------------------------+
-| 25    | BenewakeTFmini-I2C     |
-+-------+------------------------+
-| 26    | LanbaoPSK-CM8JL65-CC5  |
-+-------+------------------------+
-| 27    | BenewakeTF03           |
-+-------+------------------------+
-| 28    | VL53L1X-ShortRange     |
-+-------+------------------------+
-| 29    | LeddarVu8-Serial       |
-+-------+------------------------+
-| 30    | HC-SR04                |
-+-------+------------------------+
-| 31    | GYUS42v2               |
-+-------+------------------------+
-| 32    | MSP                    |
-+-------+------------------------+
-| 33    | USD1_CAN               |
-+-------+------------------------+
-| 34    | Benewake_CAN           |
-+-------+------------------------+
-| 35    | TeraRangerSerial       |
-+-------+------------------------+
-| 36    | Lua_Scripting          |
-+-------+------------------------+
-| 37    | NoopLoop_TOFSense      |
-+-------+------------------------+
-| 38    | NoopLoop_TOFSense_CAN  |
-+-------+------------------------+
-| 39    | NRA24_CAN              |
-+-------+------------------------+
-| 40    | NoopLoop_TOFSenseF_I2C |
-+-------+------------------------+
-| 41    | JRE_Serial             |
-+-------+------------------------+
-| 42    | Ainstein_LR_D1         |
-+-------+------------------------+
-| 43    | RDS02UF                |
-+-------+------------------------+
-| 44    | HexsoonRadar           |
-+-------+------------------------+
-| 45    | LightWare-GRF          |
-+-------+------------------------+
-| 46    | BenewakeTFS20L         |
-+-------+------------------------+
-| 47    | DTS6012M               |
-+-------+------------------------+
-| 48    | LightWare-GRF-I2C      |
-+-------+------------------------+
-| 100   | SITL                   |
-+-------+------------------------+
++-------+-------------------------+
+| Value | Meaning                 |
++=======+=========================+
+| 0     | None                    |
++-------+-------------------------+
+| 1     | Analog                  |
++-------+-------------------------+
+| 2     | MaxbotixI2C             |
++-------+-------------------------+
+| 3     | LidarLite-I2C           |
++-------+-------------------------+
+| 5     | PWM                     |
++-------+-------------------------+
+| 6     | BBB-PRU                 |
++-------+-------------------------+
+| 7     | LightWareI2C            |
++-------+-------------------------+
+| 8     | LightWareSerial         |
++-------+-------------------------+
+| 9     | Bebop                   |
++-------+-------------------------+
+| 10    | MAVLink                 |
++-------+-------------------------+
+| 11    | USD1_Serial             |
++-------+-------------------------+
+| 12    | LeddarOne               |
++-------+-------------------------+
+| 13    | MaxbotixSerial          |
++-------+-------------------------+
+| 14    | TeraRangerI2C           |
++-------+-------------------------+
+| 15    | LidarLiteV3-I2C         |
++-------+-------------------------+
+| 16    | VL53L0X or VL53L1X      |
++-------+-------------------------+
+| 17    | NMEA                    |
++-------+-------------------------+
+| 18    | WASP-LRF                |
++-------+-------------------------+
+| 19    | BenewakeTF02            |
++-------+-------------------------+
+| 20    | BenewakeTFmini-Serial   |
++-------+-------------------------+
+| 21    | LidarLightV3HP          |
++-------+-------------------------+
+| 22    | PWM                     |
++-------+-------------------------+
+| 23    | BlueRoboticsPing        |
++-------+-------------------------+
+| 24    | DroneCAN                |
++-------+-------------------------+
+| 25    | BenewakeTFmini-I2C      |
++-------+-------------------------+
+| 26    | LanbaoPSK-CM8JL65-CC5   |
++-------+-------------------------+
+| 27    | BenewakeTF03            |
++-------+-------------------------+
+| 28    | VL53L1X-ShortRange      |
++-------+-------------------------+
+| 29    | LeddarVu8-Serial        |
++-------+-------------------------+
+| 30    | HC-SR04                 |
++-------+-------------------------+
+| 31    | GYUS42v2                |
++-------+-------------------------+
+| 32    | MSP                     |
++-------+-------------------------+
+| 33    | USD1_CAN                |
++-------+-------------------------+
+| 34    | Benewake_CAN            |
++-------+-------------------------+
+| 35    | TeraRangerSerial        |
++-------+-------------------------+
+| 36    | Lua_Scripting           |
++-------+-------------------------+
+| 37    | NoopLoop_TOFSense       |
++-------+-------------------------+
+| 38    | NoopLoop_TOFSense_CAN   |
++-------+-------------------------+
+| 39    | NRA24_CAN               |
++-------+-------------------------+
+| 40    | NoopLoop_TOFSenseF_I2C  |
++-------+-------------------------+
+| 41    | JRE_Serial              |
++-------+-------------------------+
+| 42    | Ainstein_LR_D1          |
++-------+-------------------------+
+| 43    | RDS02UF                 |
++-------+-------------------------+
+| 44    | HexsoonRadar            |
++-------+-------------------------+
+| 45    | LightWare-GRF           |
++-------+-------------------------+
+| 46    | BenewakeTFS20L          |
++-------+-------------------------+
+| 47    | DTS6012M                |
++-------+-------------------------+
+| 48    | LightWare-GRF-SF000-I2C |
++-------+-------------------------+
+| 100   | SITL                    |
++-------+-------------------------+
 
 
 
@@ -115808,7 +115867,7 @@ RNGFND3\_GRF\_ST: LightWare GRF Minimum Return Strength
 | *Note: This parameter is for advanced users*
 | *Note: Reboot required after change*
 
-Minimum acceptable return signal strength in dB\. Returns weaker than this will be ignored\. Set to 0 to disable filtering\.
+Minimum acceptable return signal strength\. Returns weaker than this will be ignored\. Units are dB on the GRF\-250\/500 and percent on the SF000\/B \(I2C\)\. Set to 0 to disable filtering\.
 
 
 +----------+
@@ -115828,7 +115887,7 @@ RNGFND3\_GRF\_RATE: LightWare GRF Update Rate
 | *Note: This parameter is for advanced users*
 | *Note: Reboot required after change*
 
-The update rate of the sensor in Hz\.
+The update rate of the sensor in Hz\. Ignored by the SF000\/B over I2C\, which keeps its own update rate \(48 Hz default\, set in LightWare Studio\)\.
 
 
 +---------+
@@ -115880,7 +115939,7 @@ RNGFND3\_GRF\_ST: LightWare GRF Minimum Return Strength
 | *Note: This parameter is for advanced users*
 | *Note: Reboot required after change*
 
-Minimum acceptable return signal strength in dB\. Returns weaker than this will be ignored\. Set to 0 to disable filtering\.
+Minimum acceptable return signal strength\. Returns weaker than this will be ignored\. Units are dB on the GRF\-250\/500 and percent on the SF000\/B \(I2C\)\. Set to 0 to disable filtering\.
 
 
 +----------+
@@ -115900,7 +115959,7 @@ RNGFND3\_GRF\_RATE: LightWare GRF Update Rate
 | *Note: This parameter is for advanced users*
 | *Note: Reboot required after change*
 
-The update rate of the sensor in Hz\.
+The update rate of the sensor in Hz\. Ignored by the SF000\/B over I2C\, which keeps its own update rate \(48 Hz default\, set in LightWare Studio\)\.
 
 
 +---------+
@@ -115928,107 +115987,107 @@ RNGFND4\_TYPE: Rangefinder type
 Type of connected rangefinder
 
 
-+-------+------------------------+
-| Value | Meaning                |
-+=======+========================+
-| 0     | None                   |
-+-------+------------------------+
-| 1     | Analog                 |
-+-------+------------------------+
-| 2     | MaxbotixI2C            |
-+-------+------------------------+
-| 3     | LidarLite-I2C          |
-+-------+------------------------+
-| 5     | PWM                    |
-+-------+------------------------+
-| 6     | BBB-PRU                |
-+-------+------------------------+
-| 7     | LightWareI2C           |
-+-------+------------------------+
-| 8     | LightWareSerial        |
-+-------+------------------------+
-| 9     | Bebop                  |
-+-------+------------------------+
-| 10    | MAVLink                |
-+-------+------------------------+
-| 11    | USD1_Serial            |
-+-------+------------------------+
-| 12    | LeddarOne              |
-+-------+------------------------+
-| 13    | MaxbotixSerial         |
-+-------+------------------------+
-| 14    | TeraRangerI2C          |
-+-------+------------------------+
-| 15    | LidarLiteV3-I2C        |
-+-------+------------------------+
-| 16    | VL53L0X or VL53L1X     |
-+-------+------------------------+
-| 17    | NMEA                   |
-+-------+------------------------+
-| 18    | WASP-LRF               |
-+-------+------------------------+
-| 19    | BenewakeTF02           |
-+-------+------------------------+
-| 20    | BenewakeTFmini-Serial  |
-+-------+------------------------+
-| 21    | LidarLightV3HP         |
-+-------+------------------------+
-| 22    | PWM                    |
-+-------+------------------------+
-| 23    | BlueRoboticsPing       |
-+-------+------------------------+
-| 24    | DroneCAN               |
-+-------+------------------------+
-| 25    | BenewakeTFmini-I2C     |
-+-------+------------------------+
-| 26    | LanbaoPSK-CM8JL65-CC5  |
-+-------+------------------------+
-| 27    | BenewakeTF03           |
-+-------+------------------------+
-| 28    | VL53L1X-ShortRange     |
-+-------+------------------------+
-| 29    | LeddarVu8-Serial       |
-+-------+------------------------+
-| 30    | HC-SR04                |
-+-------+------------------------+
-| 31    | GYUS42v2               |
-+-------+------------------------+
-| 32    | MSP                    |
-+-------+------------------------+
-| 33    | USD1_CAN               |
-+-------+------------------------+
-| 34    | Benewake_CAN           |
-+-------+------------------------+
-| 35    | TeraRangerSerial       |
-+-------+------------------------+
-| 36    | Lua_Scripting          |
-+-------+------------------------+
-| 37    | NoopLoop_TOFSense      |
-+-------+------------------------+
-| 38    | NoopLoop_TOFSense_CAN  |
-+-------+------------------------+
-| 39    | NRA24_CAN              |
-+-------+------------------------+
-| 40    | NoopLoop_TOFSenseF_I2C |
-+-------+------------------------+
-| 41    | JRE_Serial             |
-+-------+------------------------+
-| 42    | Ainstein_LR_D1         |
-+-------+------------------------+
-| 43    | RDS02UF                |
-+-------+------------------------+
-| 44    | HexsoonRadar           |
-+-------+------------------------+
-| 45    | LightWare-GRF          |
-+-------+------------------------+
-| 46    | BenewakeTFS20L         |
-+-------+------------------------+
-| 47    | DTS6012M               |
-+-------+------------------------+
-| 48    | LightWare-GRF-I2C      |
-+-------+------------------------+
-| 100   | SITL                   |
-+-------+------------------------+
++-------+-------------------------+
+| Value | Meaning                 |
++=======+=========================+
+| 0     | None                    |
++-------+-------------------------+
+| 1     | Analog                  |
++-------+-------------------------+
+| 2     | MaxbotixI2C             |
++-------+-------------------------+
+| 3     | LidarLite-I2C           |
++-------+-------------------------+
+| 5     | PWM                     |
++-------+-------------------------+
+| 6     | BBB-PRU                 |
++-------+-------------------------+
+| 7     | LightWareI2C            |
++-------+-------------------------+
+| 8     | LightWareSerial         |
++-------+-------------------------+
+| 9     | Bebop                   |
++-------+-------------------------+
+| 10    | MAVLink                 |
++-------+-------------------------+
+| 11    | USD1_Serial             |
++-------+-------------------------+
+| 12    | LeddarOne               |
++-------+-------------------------+
+| 13    | MaxbotixSerial          |
++-------+-------------------------+
+| 14    | TeraRangerI2C           |
++-------+-------------------------+
+| 15    | LidarLiteV3-I2C         |
++-------+-------------------------+
+| 16    | VL53L0X or VL53L1X      |
++-------+-------------------------+
+| 17    | NMEA                    |
++-------+-------------------------+
+| 18    | WASP-LRF                |
++-------+-------------------------+
+| 19    | BenewakeTF02            |
++-------+-------------------------+
+| 20    | BenewakeTFmini-Serial   |
++-------+-------------------------+
+| 21    | LidarLightV3HP          |
++-------+-------------------------+
+| 22    | PWM                     |
++-------+-------------------------+
+| 23    | BlueRoboticsPing        |
++-------+-------------------------+
+| 24    | DroneCAN                |
++-------+-------------------------+
+| 25    | BenewakeTFmini-I2C      |
++-------+-------------------------+
+| 26    | LanbaoPSK-CM8JL65-CC5   |
++-------+-------------------------+
+| 27    | BenewakeTF03            |
++-------+-------------------------+
+| 28    | VL53L1X-ShortRange      |
++-------+-------------------------+
+| 29    | LeddarVu8-Serial        |
++-------+-------------------------+
+| 30    | HC-SR04                 |
++-------+-------------------------+
+| 31    | GYUS42v2                |
++-------+-------------------------+
+| 32    | MSP                     |
++-------+-------------------------+
+| 33    | USD1_CAN                |
++-------+-------------------------+
+| 34    | Benewake_CAN            |
++-------+-------------------------+
+| 35    | TeraRangerSerial        |
++-------+-------------------------+
+| 36    | Lua_Scripting           |
++-------+-------------------------+
+| 37    | NoopLoop_TOFSense       |
++-------+-------------------------+
+| 38    | NoopLoop_TOFSense_CAN   |
++-------+-------------------------+
+| 39    | NRA24_CAN               |
++-------+-------------------------+
+| 40    | NoopLoop_TOFSenseF_I2C  |
++-------+-------------------------+
+| 41    | JRE_Serial              |
++-------+-------------------------+
+| 42    | Ainstein_LR_D1          |
++-------+-------------------------+
+| 43    | RDS02UF                 |
++-------+-------------------------+
+| 44    | HexsoonRadar            |
++-------+-------------------------+
+| 45    | LightWare-GRF           |
++-------+-------------------------+
+| 46    | BenewakeTFS20L          |
++-------+-------------------------+
+| 47    | DTS6012M                |
++-------+-------------------------+
+| 48    | LightWare-GRF-SF000-I2C |
++-------+-------------------------+
+| 100   | SITL                    |
++-------+-------------------------+
 
 
 
@@ -116589,7 +116648,7 @@ RNGFND4\_GRF\_ST: LightWare GRF Minimum Return Strength
 | *Note: This parameter is for advanced users*
 | *Note: Reboot required after change*
 
-Minimum acceptable return signal strength in dB\. Returns weaker than this will be ignored\. Set to 0 to disable filtering\.
+Minimum acceptable return signal strength\. Returns weaker than this will be ignored\. Units are dB on the GRF\-250\/500 and percent on the SF000\/B \(I2C\)\. Set to 0 to disable filtering\.
 
 
 +----------+
@@ -116609,7 +116668,7 @@ RNGFND4\_GRF\_RATE: LightWare GRF Update Rate
 | *Note: This parameter is for advanced users*
 | *Note: Reboot required after change*
 
-The update rate of the sensor in Hz\.
+The update rate of the sensor in Hz\. Ignored by the SF000\/B over I2C\, which keeps its own update rate \(48 Hz default\, set in LightWare Studio\)\.
 
 
 +---------+
@@ -116661,7 +116720,7 @@ RNGFND4\_GRF\_ST: LightWare GRF Minimum Return Strength
 | *Note: This parameter is for advanced users*
 | *Note: Reboot required after change*
 
-Minimum acceptable return signal strength in dB\. Returns weaker than this will be ignored\. Set to 0 to disable filtering\.
+Minimum acceptable return signal strength\. Returns weaker than this will be ignored\. Units are dB on the GRF\-250\/500 and percent on the SF000\/B \(I2C\)\. Set to 0 to disable filtering\.
 
 
 +----------+
@@ -116681,7 +116740,7 @@ RNGFND4\_GRF\_RATE: LightWare GRF Update Rate
 | *Note: This parameter is for advanced users*
 | *Note: Reboot required after change*
 
-The update rate of the sensor in Hz\.
+The update rate of the sensor in Hz\. Ignored by the SF000\/B over I2C\, which keeps its own update rate \(48 Hz default\, set in LightWare Studio\)\.
 
 
 +---------+
@@ -116709,107 +116768,107 @@ RNGFND5\_TYPE: Rangefinder type
 Type of connected rangefinder
 
 
-+-------+------------------------+
-| Value | Meaning                |
-+=======+========================+
-| 0     | None                   |
-+-------+------------------------+
-| 1     | Analog                 |
-+-------+------------------------+
-| 2     | MaxbotixI2C            |
-+-------+------------------------+
-| 3     | LidarLite-I2C          |
-+-------+------------------------+
-| 5     | PWM                    |
-+-------+------------------------+
-| 6     | BBB-PRU                |
-+-------+------------------------+
-| 7     | LightWareI2C           |
-+-------+------------------------+
-| 8     | LightWareSerial        |
-+-------+------------------------+
-| 9     | Bebop                  |
-+-------+------------------------+
-| 10    | MAVLink                |
-+-------+------------------------+
-| 11    | USD1_Serial            |
-+-------+------------------------+
-| 12    | LeddarOne              |
-+-------+------------------------+
-| 13    | MaxbotixSerial         |
-+-------+------------------------+
-| 14    | TeraRangerI2C          |
-+-------+------------------------+
-| 15    | LidarLiteV3-I2C        |
-+-------+------------------------+
-| 16    | VL53L0X or VL53L1X     |
-+-------+------------------------+
-| 17    | NMEA                   |
-+-------+------------------------+
-| 18    | WASP-LRF               |
-+-------+------------------------+
-| 19    | BenewakeTF02           |
-+-------+------------------------+
-| 20    | BenewakeTFmini-Serial  |
-+-------+------------------------+
-| 21    | LidarLightV3HP         |
-+-------+------------------------+
-| 22    | PWM                    |
-+-------+------------------------+
-| 23    | BlueRoboticsPing       |
-+-------+------------------------+
-| 24    | DroneCAN               |
-+-------+------------------------+
-| 25    | BenewakeTFmini-I2C     |
-+-------+------------------------+
-| 26    | LanbaoPSK-CM8JL65-CC5  |
-+-------+------------------------+
-| 27    | BenewakeTF03           |
-+-------+------------------------+
-| 28    | VL53L1X-ShortRange     |
-+-------+------------------------+
-| 29    | LeddarVu8-Serial       |
-+-------+------------------------+
-| 30    | HC-SR04                |
-+-------+------------------------+
-| 31    | GYUS42v2               |
-+-------+------------------------+
-| 32    | MSP                    |
-+-------+------------------------+
-| 33    | USD1_CAN               |
-+-------+------------------------+
-| 34    | Benewake_CAN           |
-+-------+------------------------+
-| 35    | TeraRangerSerial       |
-+-------+------------------------+
-| 36    | Lua_Scripting          |
-+-------+------------------------+
-| 37    | NoopLoop_TOFSense      |
-+-------+------------------------+
-| 38    | NoopLoop_TOFSense_CAN  |
-+-------+------------------------+
-| 39    | NRA24_CAN              |
-+-------+------------------------+
-| 40    | NoopLoop_TOFSenseF_I2C |
-+-------+------------------------+
-| 41    | JRE_Serial             |
-+-------+------------------------+
-| 42    | Ainstein_LR_D1         |
-+-------+------------------------+
-| 43    | RDS02UF                |
-+-------+------------------------+
-| 44    | HexsoonRadar           |
-+-------+------------------------+
-| 45    | LightWare-GRF          |
-+-------+------------------------+
-| 46    | BenewakeTFS20L         |
-+-------+------------------------+
-| 47    | DTS6012M               |
-+-------+------------------------+
-| 48    | LightWare-GRF-I2C      |
-+-------+------------------------+
-| 100   | SITL                   |
-+-------+------------------------+
++-------+-------------------------+
+| Value | Meaning                 |
++=======+=========================+
+| 0     | None                    |
++-------+-------------------------+
+| 1     | Analog                  |
++-------+-------------------------+
+| 2     | MaxbotixI2C             |
++-------+-------------------------+
+| 3     | LidarLite-I2C           |
++-------+-------------------------+
+| 5     | PWM                     |
++-------+-------------------------+
+| 6     | BBB-PRU                 |
++-------+-------------------------+
+| 7     | LightWareI2C            |
++-------+-------------------------+
+| 8     | LightWareSerial         |
++-------+-------------------------+
+| 9     | Bebop                   |
++-------+-------------------------+
+| 10    | MAVLink                 |
++-------+-------------------------+
+| 11    | USD1_Serial             |
++-------+-------------------------+
+| 12    | LeddarOne               |
++-------+-------------------------+
+| 13    | MaxbotixSerial          |
++-------+-------------------------+
+| 14    | TeraRangerI2C           |
++-------+-------------------------+
+| 15    | LidarLiteV3-I2C         |
++-------+-------------------------+
+| 16    | VL53L0X or VL53L1X      |
++-------+-------------------------+
+| 17    | NMEA                    |
++-------+-------------------------+
+| 18    | WASP-LRF                |
++-------+-------------------------+
+| 19    | BenewakeTF02            |
++-------+-------------------------+
+| 20    | BenewakeTFmini-Serial   |
++-------+-------------------------+
+| 21    | LidarLightV3HP          |
++-------+-------------------------+
+| 22    | PWM                     |
++-------+-------------------------+
+| 23    | BlueRoboticsPing        |
++-------+-------------------------+
+| 24    | DroneCAN                |
++-------+-------------------------+
+| 25    | BenewakeTFmini-I2C      |
++-------+-------------------------+
+| 26    | LanbaoPSK-CM8JL65-CC5   |
++-------+-------------------------+
+| 27    | BenewakeTF03            |
++-------+-------------------------+
+| 28    | VL53L1X-ShortRange      |
++-------+-------------------------+
+| 29    | LeddarVu8-Serial        |
++-------+-------------------------+
+| 30    | HC-SR04                 |
++-------+-------------------------+
+| 31    | GYUS42v2                |
++-------+-------------------------+
+| 32    | MSP                     |
++-------+-------------------------+
+| 33    | USD1_CAN                |
++-------+-------------------------+
+| 34    | Benewake_CAN            |
++-------+-------------------------+
+| 35    | TeraRangerSerial        |
++-------+-------------------------+
+| 36    | Lua_Scripting           |
++-------+-------------------------+
+| 37    | NoopLoop_TOFSense       |
++-------+-------------------------+
+| 38    | NoopLoop_TOFSense_CAN   |
++-------+-------------------------+
+| 39    | NRA24_CAN               |
++-------+-------------------------+
+| 40    | NoopLoop_TOFSenseF_I2C  |
++-------+-------------------------+
+| 41    | JRE_Serial              |
++-------+-------------------------+
+| 42    | Ainstein_LR_D1          |
++-------+-------------------------+
+| 43    | RDS02UF                 |
++-------+-------------------------+
+| 44    | HexsoonRadar            |
++-------+-------------------------+
+| 45    | LightWare-GRF           |
++-------+-------------------------+
+| 46    | BenewakeTFS20L          |
++-------+-------------------------+
+| 47    | DTS6012M                |
++-------+-------------------------+
+| 48    | LightWare-GRF-SF000-I2C |
++-------+-------------------------+
+| 100   | SITL                    |
++-------+-------------------------+
 
 
 
@@ -117370,7 +117429,7 @@ RNGFND5\_GRF\_ST: LightWare GRF Minimum Return Strength
 | *Note: This parameter is for advanced users*
 | *Note: Reboot required after change*
 
-Minimum acceptable return signal strength in dB\. Returns weaker than this will be ignored\. Set to 0 to disable filtering\.
+Minimum acceptable return signal strength\. Returns weaker than this will be ignored\. Units are dB on the GRF\-250\/500 and percent on the SF000\/B \(I2C\)\. Set to 0 to disable filtering\.
 
 
 +----------+
@@ -117390,7 +117449,7 @@ RNGFND5\_GRF\_RATE: LightWare GRF Update Rate
 | *Note: This parameter is for advanced users*
 | *Note: Reboot required after change*
 
-The update rate of the sensor in Hz\.
+The update rate of the sensor in Hz\. Ignored by the SF000\/B over I2C\, which keeps its own update rate \(48 Hz default\, set in LightWare Studio\)\.
 
 
 +---------+
@@ -117442,7 +117501,7 @@ RNGFND5\_GRF\_ST: LightWare GRF Minimum Return Strength
 | *Note: This parameter is for advanced users*
 | *Note: Reboot required after change*
 
-Minimum acceptable return signal strength in dB\. Returns weaker than this will be ignored\. Set to 0 to disable filtering\.
+Minimum acceptable return signal strength\. Returns weaker than this will be ignored\. Units are dB on the GRF\-250\/500 and percent on the SF000\/B \(I2C\)\. Set to 0 to disable filtering\.
 
 
 +----------+
@@ -117462,7 +117521,7 @@ RNGFND5\_GRF\_RATE: LightWare GRF Update Rate
 | *Note: This parameter is for advanced users*
 | *Note: Reboot required after change*
 
-The update rate of the sensor in Hz\.
+The update rate of the sensor in Hz\. Ignored by the SF000\/B over I2C\, which keeps its own update rate \(48 Hz default\, set in LightWare Studio\)\.
 
 
 +---------+
@@ -117490,107 +117549,107 @@ RNGFND6\_TYPE: Rangefinder type
 Type of connected rangefinder
 
 
-+-------+------------------------+
-| Value | Meaning                |
-+=======+========================+
-| 0     | None                   |
-+-------+------------------------+
-| 1     | Analog                 |
-+-------+------------------------+
-| 2     | MaxbotixI2C            |
-+-------+------------------------+
-| 3     | LidarLite-I2C          |
-+-------+------------------------+
-| 5     | PWM                    |
-+-------+------------------------+
-| 6     | BBB-PRU                |
-+-------+------------------------+
-| 7     | LightWareI2C           |
-+-------+------------------------+
-| 8     | LightWareSerial        |
-+-------+------------------------+
-| 9     | Bebop                  |
-+-------+------------------------+
-| 10    | MAVLink                |
-+-------+------------------------+
-| 11    | USD1_Serial            |
-+-------+------------------------+
-| 12    | LeddarOne              |
-+-------+------------------------+
-| 13    | MaxbotixSerial         |
-+-------+------------------------+
-| 14    | TeraRangerI2C          |
-+-------+------------------------+
-| 15    | LidarLiteV3-I2C        |
-+-------+------------------------+
-| 16    | VL53L0X or VL53L1X     |
-+-------+------------------------+
-| 17    | NMEA                   |
-+-------+------------------------+
-| 18    | WASP-LRF               |
-+-------+------------------------+
-| 19    | BenewakeTF02           |
-+-------+------------------------+
-| 20    | BenewakeTFmini-Serial  |
-+-------+------------------------+
-| 21    | LidarLightV3HP         |
-+-------+------------------------+
-| 22    | PWM                    |
-+-------+------------------------+
-| 23    | BlueRoboticsPing       |
-+-------+------------------------+
-| 24    | DroneCAN               |
-+-------+------------------------+
-| 25    | BenewakeTFmini-I2C     |
-+-------+------------------------+
-| 26    | LanbaoPSK-CM8JL65-CC5  |
-+-------+------------------------+
-| 27    | BenewakeTF03           |
-+-------+------------------------+
-| 28    | VL53L1X-ShortRange     |
-+-------+------------------------+
-| 29    | LeddarVu8-Serial       |
-+-------+------------------------+
-| 30    | HC-SR04                |
-+-------+------------------------+
-| 31    | GYUS42v2               |
-+-------+------------------------+
-| 32    | MSP                    |
-+-------+------------------------+
-| 33    | USD1_CAN               |
-+-------+------------------------+
-| 34    | Benewake_CAN           |
-+-------+------------------------+
-| 35    | TeraRangerSerial       |
-+-------+------------------------+
-| 36    | Lua_Scripting          |
-+-------+------------------------+
-| 37    | NoopLoop_TOFSense      |
-+-------+------------------------+
-| 38    | NoopLoop_TOFSense_CAN  |
-+-------+------------------------+
-| 39    | NRA24_CAN              |
-+-------+------------------------+
-| 40    | NoopLoop_TOFSenseF_I2C |
-+-------+------------------------+
-| 41    | JRE_Serial             |
-+-------+------------------------+
-| 42    | Ainstein_LR_D1         |
-+-------+------------------------+
-| 43    | RDS02UF                |
-+-------+------------------------+
-| 44    | HexsoonRadar           |
-+-------+------------------------+
-| 45    | LightWare-GRF          |
-+-------+------------------------+
-| 46    | BenewakeTFS20L         |
-+-------+------------------------+
-| 47    | DTS6012M               |
-+-------+------------------------+
-| 48    | LightWare-GRF-I2C      |
-+-------+------------------------+
-| 100   | SITL                   |
-+-------+------------------------+
++-------+-------------------------+
+| Value | Meaning                 |
++=======+=========================+
+| 0     | None                    |
++-------+-------------------------+
+| 1     | Analog                  |
++-------+-------------------------+
+| 2     | MaxbotixI2C             |
++-------+-------------------------+
+| 3     | LidarLite-I2C           |
++-------+-------------------------+
+| 5     | PWM                     |
++-------+-------------------------+
+| 6     | BBB-PRU                 |
++-------+-------------------------+
+| 7     | LightWareI2C            |
++-------+-------------------------+
+| 8     | LightWareSerial         |
++-------+-------------------------+
+| 9     | Bebop                   |
++-------+-------------------------+
+| 10    | MAVLink                 |
++-------+-------------------------+
+| 11    | USD1_Serial             |
++-------+-------------------------+
+| 12    | LeddarOne               |
++-------+-------------------------+
+| 13    | MaxbotixSerial          |
++-------+-------------------------+
+| 14    | TeraRangerI2C           |
++-------+-------------------------+
+| 15    | LidarLiteV3-I2C         |
++-------+-------------------------+
+| 16    | VL53L0X or VL53L1X      |
++-------+-------------------------+
+| 17    | NMEA                    |
++-------+-------------------------+
+| 18    | WASP-LRF                |
++-------+-------------------------+
+| 19    | BenewakeTF02            |
++-------+-------------------------+
+| 20    | BenewakeTFmini-Serial   |
++-------+-------------------------+
+| 21    | LidarLightV3HP          |
++-------+-------------------------+
+| 22    | PWM                     |
++-------+-------------------------+
+| 23    | BlueRoboticsPing        |
++-------+-------------------------+
+| 24    | DroneCAN                |
++-------+-------------------------+
+| 25    | BenewakeTFmini-I2C      |
++-------+-------------------------+
+| 26    | LanbaoPSK-CM8JL65-CC5   |
++-------+-------------------------+
+| 27    | BenewakeTF03            |
++-------+-------------------------+
+| 28    | VL53L1X-ShortRange      |
++-------+-------------------------+
+| 29    | LeddarVu8-Serial        |
++-------+-------------------------+
+| 30    | HC-SR04                 |
++-------+-------------------------+
+| 31    | GYUS42v2                |
++-------+-------------------------+
+| 32    | MSP                     |
++-------+-------------------------+
+| 33    | USD1_CAN                |
++-------+-------------------------+
+| 34    | Benewake_CAN            |
++-------+-------------------------+
+| 35    | TeraRangerSerial        |
++-------+-------------------------+
+| 36    | Lua_Scripting           |
++-------+-------------------------+
+| 37    | NoopLoop_TOFSense       |
++-------+-------------------------+
+| 38    | NoopLoop_TOFSense_CAN   |
++-------+-------------------------+
+| 39    | NRA24_CAN               |
++-------+-------------------------+
+| 40    | NoopLoop_TOFSenseF_I2C  |
++-------+-------------------------+
+| 41    | JRE_Serial              |
++-------+-------------------------+
+| 42    | Ainstein_LR_D1          |
++-------+-------------------------+
+| 43    | RDS02UF                 |
++-------+-------------------------+
+| 44    | HexsoonRadar            |
++-------+-------------------------+
+| 45    | LightWare-GRF           |
++-------+-------------------------+
+| 46    | BenewakeTFS20L          |
++-------+-------------------------+
+| 47    | DTS6012M                |
++-------+-------------------------+
+| 48    | LightWare-GRF-SF000-I2C |
++-------+-------------------------+
+| 100   | SITL                    |
++-------+-------------------------+
 
 
 
@@ -118151,7 +118210,7 @@ RNGFND6\_GRF\_ST: LightWare GRF Minimum Return Strength
 | *Note: This parameter is for advanced users*
 | *Note: Reboot required after change*
 
-Minimum acceptable return signal strength in dB\. Returns weaker than this will be ignored\. Set to 0 to disable filtering\.
+Minimum acceptable return signal strength\. Returns weaker than this will be ignored\. Units are dB on the GRF\-250\/500 and percent on the SF000\/B \(I2C\)\. Set to 0 to disable filtering\.
 
 
 +----------+
@@ -118171,7 +118230,7 @@ RNGFND6\_GRF\_RATE: LightWare GRF Update Rate
 | *Note: This parameter is for advanced users*
 | *Note: Reboot required after change*
 
-The update rate of the sensor in Hz\.
+The update rate of the sensor in Hz\. Ignored by the SF000\/B over I2C\, which keeps its own update rate \(48 Hz default\, set in LightWare Studio\)\.
 
 
 +---------+
@@ -118223,7 +118282,7 @@ RNGFND6\_GRF\_ST: LightWare GRF Minimum Return Strength
 | *Note: This parameter is for advanced users*
 | *Note: Reboot required after change*
 
-Minimum acceptable return signal strength in dB\. Returns weaker than this will be ignored\. Set to 0 to disable filtering\.
+Minimum acceptable return signal strength\. Returns weaker than this will be ignored\. Units are dB on the GRF\-250\/500 and percent on the SF000\/B \(I2C\)\. Set to 0 to disable filtering\.
 
 
 +----------+
@@ -118243,7 +118302,7 @@ RNGFND6\_GRF\_RATE: LightWare GRF Update Rate
 | *Note: This parameter is for advanced users*
 | *Note: Reboot required after change*
 
-The update rate of the sensor in Hz\.
+The update rate of the sensor in Hz\. Ignored by the SF000\/B over I2C\, which keeps its own update rate \(48 Hz default\, set in LightWare Studio\)\.
 
 
 +---------+
@@ -118271,107 +118330,107 @@ RNGFND7\_TYPE: Rangefinder type
 Type of connected rangefinder
 
 
-+-------+------------------------+
-| Value | Meaning                |
-+=======+========================+
-| 0     | None                   |
-+-------+------------------------+
-| 1     | Analog                 |
-+-------+------------------------+
-| 2     | MaxbotixI2C            |
-+-------+------------------------+
-| 3     | LidarLite-I2C          |
-+-------+------------------------+
-| 5     | PWM                    |
-+-------+------------------------+
-| 6     | BBB-PRU                |
-+-------+------------------------+
-| 7     | LightWareI2C           |
-+-------+------------------------+
-| 8     | LightWareSerial        |
-+-------+------------------------+
-| 9     | Bebop                  |
-+-------+------------------------+
-| 10    | MAVLink                |
-+-------+------------------------+
-| 11    | USD1_Serial            |
-+-------+------------------------+
-| 12    | LeddarOne              |
-+-------+------------------------+
-| 13    | MaxbotixSerial         |
-+-------+------------------------+
-| 14    | TeraRangerI2C          |
-+-------+------------------------+
-| 15    | LidarLiteV3-I2C        |
-+-------+------------------------+
-| 16    | VL53L0X or VL53L1X     |
-+-------+------------------------+
-| 17    | NMEA                   |
-+-------+------------------------+
-| 18    | WASP-LRF               |
-+-------+------------------------+
-| 19    | BenewakeTF02           |
-+-------+------------------------+
-| 20    | BenewakeTFmini-Serial  |
-+-------+------------------------+
-| 21    | LidarLightV3HP         |
-+-------+------------------------+
-| 22    | PWM                    |
-+-------+------------------------+
-| 23    | BlueRoboticsPing       |
-+-------+------------------------+
-| 24    | DroneCAN               |
-+-------+------------------------+
-| 25    | BenewakeTFmini-I2C     |
-+-------+------------------------+
-| 26    | LanbaoPSK-CM8JL65-CC5  |
-+-------+------------------------+
-| 27    | BenewakeTF03           |
-+-------+------------------------+
-| 28    | VL53L1X-ShortRange     |
-+-------+------------------------+
-| 29    | LeddarVu8-Serial       |
-+-------+------------------------+
-| 30    | HC-SR04                |
-+-------+------------------------+
-| 31    | GYUS42v2               |
-+-------+------------------------+
-| 32    | MSP                    |
-+-------+------------------------+
-| 33    | USD1_CAN               |
-+-------+------------------------+
-| 34    | Benewake_CAN           |
-+-------+------------------------+
-| 35    | TeraRangerSerial       |
-+-------+------------------------+
-| 36    | Lua_Scripting          |
-+-------+------------------------+
-| 37    | NoopLoop_TOFSense      |
-+-------+------------------------+
-| 38    | NoopLoop_TOFSense_CAN  |
-+-------+------------------------+
-| 39    | NRA24_CAN              |
-+-------+------------------------+
-| 40    | NoopLoop_TOFSenseF_I2C |
-+-------+------------------------+
-| 41    | JRE_Serial             |
-+-------+------------------------+
-| 42    | Ainstein_LR_D1         |
-+-------+------------------------+
-| 43    | RDS02UF                |
-+-------+------------------------+
-| 44    | HexsoonRadar           |
-+-------+------------------------+
-| 45    | LightWare-GRF          |
-+-------+------------------------+
-| 46    | BenewakeTFS20L         |
-+-------+------------------------+
-| 47    | DTS6012M               |
-+-------+------------------------+
-| 48    | LightWare-GRF-I2C      |
-+-------+------------------------+
-| 100   | SITL                   |
-+-------+------------------------+
++-------+-------------------------+
+| Value | Meaning                 |
++=======+=========================+
+| 0     | None                    |
++-------+-------------------------+
+| 1     | Analog                  |
++-------+-------------------------+
+| 2     | MaxbotixI2C             |
++-------+-------------------------+
+| 3     | LidarLite-I2C           |
++-------+-------------------------+
+| 5     | PWM                     |
++-------+-------------------------+
+| 6     | BBB-PRU                 |
++-------+-------------------------+
+| 7     | LightWareI2C            |
++-------+-------------------------+
+| 8     | LightWareSerial         |
++-------+-------------------------+
+| 9     | Bebop                   |
++-------+-------------------------+
+| 10    | MAVLink                 |
++-------+-------------------------+
+| 11    | USD1_Serial             |
++-------+-------------------------+
+| 12    | LeddarOne               |
++-------+-------------------------+
+| 13    | MaxbotixSerial          |
++-------+-------------------------+
+| 14    | TeraRangerI2C           |
++-------+-------------------------+
+| 15    | LidarLiteV3-I2C         |
++-------+-------------------------+
+| 16    | VL53L0X or VL53L1X      |
++-------+-------------------------+
+| 17    | NMEA                    |
++-------+-------------------------+
+| 18    | WASP-LRF                |
++-------+-------------------------+
+| 19    | BenewakeTF02            |
++-------+-------------------------+
+| 20    | BenewakeTFmini-Serial   |
++-------+-------------------------+
+| 21    | LidarLightV3HP          |
++-------+-------------------------+
+| 22    | PWM                     |
++-------+-------------------------+
+| 23    | BlueRoboticsPing        |
++-------+-------------------------+
+| 24    | DroneCAN                |
++-------+-------------------------+
+| 25    | BenewakeTFmini-I2C      |
++-------+-------------------------+
+| 26    | LanbaoPSK-CM8JL65-CC5   |
++-------+-------------------------+
+| 27    | BenewakeTF03            |
++-------+-------------------------+
+| 28    | VL53L1X-ShortRange      |
++-------+-------------------------+
+| 29    | LeddarVu8-Serial        |
++-------+-------------------------+
+| 30    | HC-SR04                 |
++-------+-------------------------+
+| 31    | GYUS42v2                |
++-------+-------------------------+
+| 32    | MSP                     |
++-------+-------------------------+
+| 33    | USD1_CAN                |
++-------+-------------------------+
+| 34    | Benewake_CAN            |
++-------+-------------------------+
+| 35    | TeraRangerSerial        |
++-------+-------------------------+
+| 36    | Lua_Scripting           |
++-------+-------------------------+
+| 37    | NoopLoop_TOFSense       |
++-------+-------------------------+
+| 38    | NoopLoop_TOFSense_CAN   |
++-------+-------------------------+
+| 39    | NRA24_CAN               |
++-------+-------------------------+
+| 40    | NoopLoop_TOFSenseF_I2C  |
++-------+-------------------------+
+| 41    | JRE_Serial              |
++-------+-------------------------+
+| 42    | Ainstein_LR_D1          |
++-------+-------------------------+
+| 43    | RDS02UF                 |
++-------+-------------------------+
+| 44    | HexsoonRadar            |
++-------+-------------------------+
+| 45    | LightWare-GRF           |
++-------+-------------------------+
+| 46    | BenewakeTFS20L          |
++-------+-------------------------+
+| 47    | DTS6012M                |
++-------+-------------------------+
+| 48    | LightWare-GRF-SF000-I2C |
++-------+-------------------------+
+| 100   | SITL                    |
++-------+-------------------------+
 
 
 
@@ -118932,7 +118991,7 @@ RNGFND7\_GRF\_ST: LightWare GRF Minimum Return Strength
 | *Note: This parameter is for advanced users*
 | *Note: Reboot required after change*
 
-Minimum acceptable return signal strength in dB\. Returns weaker than this will be ignored\. Set to 0 to disable filtering\.
+Minimum acceptable return signal strength\. Returns weaker than this will be ignored\. Units are dB on the GRF\-250\/500 and percent on the SF000\/B \(I2C\)\. Set to 0 to disable filtering\.
 
 
 +----------+
@@ -118952,7 +119011,7 @@ RNGFND7\_GRF\_RATE: LightWare GRF Update Rate
 | *Note: This parameter is for advanced users*
 | *Note: Reboot required after change*
 
-The update rate of the sensor in Hz\.
+The update rate of the sensor in Hz\. Ignored by the SF000\/B over I2C\, which keeps its own update rate \(48 Hz default\, set in LightWare Studio\)\.
 
 
 +---------+
@@ -119004,7 +119063,7 @@ RNGFND7\_GRF\_ST: LightWare GRF Minimum Return Strength
 | *Note: This parameter is for advanced users*
 | *Note: Reboot required after change*
 
-Minimum acceptable return signal strength in dB\. Returns weaker than this will be ignored\. Set to 0 to disable filtering\.
+Minimum acceptable return signal strength\. Returns weaker than this will be ignored\. Units are dB on the GRF\-250\/500 and percent on the SF000\/B \(I2C\)\. Set to 0 to disable filtering\.
 
 
 +----------+
@@ -119024,7 +119083,7 @@ RNGFND7\_GRF\_RATE: LightWare GRF Update Rate
 | *Note: This parameter is for advanced users*
 | *Note: Reboot required after change*
 
-The update rate of the sensor in Hz\.
+The update rate of the sensor in Hz\. Ignored by the SF000\/B over I2C\, which keeps its own update rate \(48 Hz default\, set in LightWare Studio\)\.
 
 
 +---------+
@@ -119052,107 +119111,107 @@ RNGFND8\_TYPE: Rangefinder type
 Type of connected rangefinder
 
 
-+-------+------------------------+
-| Value | Meaning                |
-+=======+========================+
-| 0     | None                   |
-+-------+------------------------+
-| 1     | Analog                 |
-+-------+------------------------+
-| 2     | MaxbotixI2C            |
-+-------+------------------------+
-| 3     | LidarLite-I2C          |
-+-------+------------------------+
-| 5     | PWM                    |
-+-------+------------------------+
-| 6     | BBB-PRU                |
-+-------+------------------------+
-| 7     | LightWareI2C           |
-+-------+------------------------+
-| 8     | LightWareSerial        |
-+-------+------------------------+
-| 9     | Bebop                  |
-+-------+------------------------+
-| 10    | MAVLink                |
-+-------+------------------------+
-| 11    | USD1_Serial            |
-+-------+------------------------+
-| 12    | LeddarOne              |
-+-------+------------------------+
-| 13    | MaxbotixSerial         |
-+-------+------------------------+
-| 14    | TeraRangerI2C          |
-+-------+------------------------+
-| 15    | LidarLiteV3-I2C        |
-+-------+------------------------+
-| 16    | VL53L0X or VL53L1X     |
-+-------+------------------------+
-| 17    | NMEA                   |
-+-------+------------------------+
-| 18    | WASP-LRF               |
-+-------+------------------------+
-| 19    | BenewakeTF02           |
-+-------+------------------------+
-| 20    | BenewakeTFmini-Serial  |
-+-------+------------------------+
-| 21    | LidarLightV3HP         |
-+-------+------------------------+
-| 22    | PWM                    |
-+-------+------------------------+
-| 23    | BlueRoboticsPing       |
-+-------+------------------------+
-| 24    | DroneCAN               |
-+-------+------------------------+
-| 25    | BenewakeTFmini-I2C     |
-+-------+------------------------+
-| 26    | LanbaoPSK-CM8JL65-CC5  |
-+-------+------------------------+
-| 27    | BenewakeTF03           |
-+-------+------------------------+
-| 28    | VL53L1X-ShortRange     |
-+-------+------------------------+
-| 29    | LeddarVu8-Serial       |
-+-------+------------------------+
-| 30    | HC-SR04                |
-+-------+------------------------+
-| 31    | GYUS42v2               |
-+-------+------------------------+
-| 32    | MSP                    |
-+-------+------------------------+
-| 33    | USD1_CAN               |
-+-------+------------------------+
-| 34    | Benewake_CAN           |
-+-------+------------------------+
-| 35    | TeraRangerSerial       |
-+-------+------------------------+
-| 36    | Lua_Scripting          |
-+-------+------------------------+
-| 37    | NoopLoop_TOFSense      |
-+-------+------------------------+
-| 38    | NoopLoop_TOFSense_CAN  |
-+-------+------------------------+
-| 39    | NRA24_CAN              |
-+-------+------------------------+
-| 40    | NoopLoop_TOFSenseF_I2C |
-+-------+------------------------+
-| 41    | JRE_Serial             |
-+-------+------------------------+
-| 42    | Ainstein_LR_D1         |
-+-------+------------------------+
-| 43    | RDS02UF                |
-+-------+------------------------+
-| 44    | HexsoonRadar           |
-+-------+------------------------+
-| 45    | LightWare-GRF          |
-+-------+------------------------+
-| 46    | BenewakeTFS20L         |
-+-------+------------------------+
-| 47    | DTS6012M               |
-+-------+------------------------+
-| 48    | LightWare-GRF-I2C      |
-+-------+------------------------+
-| 100   | SITL                   |
-+-------+------------------------+
++-------+-------------------------+
+| Value | Meaning                 |
++=======+=========================+
+| 0     | None                    |
++-------+-------------------------+
+| 1     | Analog                  |
++-------+-------------------------+
+| 2     | MaxbotixI2C             |
++-------+-------------------------+
+| 3     | LidarLite-I2C           |
++-------+-------------------------+
+| 5     | PWM                     |
++-------+-------------------------+
+| 6     | BBB-PRU                 |
++-------+-------------------------+
+| 7     | LightWareI2C            |
++-------+-------------------------+
+| 8     | LightWareSerial         |
++-------+-------------------------+
+| 9     | Bebop                   |
++-------+-------------------------+
+| 10    | MAVLink                 |
++-------+-------------------------+
+| 11    | USD1_Serial             |
++-------+-------------------------+
+| 12    | LeddarOne               |
++-------+-------------------------+
+| 13    | MaxbotixSerial          |
++-------+-------------------------+
+| 14    | TeraRangerI2C           |
++-------+-------------------------+
+| 15    | LidarLiteV3-I2C         |
++-------+-------------------------+
+| 16    | VL53L0X or VL53L1X      |
++-------+-------------------------+
+| 17    | NMEA                    |
++-------+-------------------------+
+| 18    | WASP-LRF                |
++-------+-------------------------+
+| 19    | BenewakeTF02            |
++-------+-------------------------+
+| 20    | BenewakeTFmini-Serial   |
++-------+-------------------------+
+| 21    | LidarLightV3HP          |
++-------+-------------------------+
+| 22    | PWM                     |
++-------+-------------------------+
+| 23    | BlueRoboticsPing        |
++-------+-------------------------+
+| 24    | DroneCAN                |
++-------+-------------------------+
+| 25    | BenewakeTFmini-I2C      |
++-------+-------------------------+
+| 26    | LanbaoPSK-CM8JL65-CC5   |
++-------+-------------------------+
+| 27    | BenewakeTF03            |
++-------+-------------------------+
+| 28    | VL53L1X-ShortRange      |
++-------+-------------------------+
+| 29    | LeddarVu8-Serial        |
++-------+-------------------------+
+| 30    | HC-SR04                 |
++-------+-------------------------+
+| 31    | GYUS42v2                |
++-------+-------------------------+
+| 32    | MSP                     |
++-------+-------------------------+
+| 33    | USD1_CAN                |
++-------+-------------------------+
+| 34    | Benewake_CAN            |
++-------+-------------------------+
+| 35    | TeraRangerSerial        |
++-------+-------------------------+
+| 36    | Lua_Scripting           |
++-------+-------------------------+
+| 37    | NoopLoop_TOFSense       |
++-------+-------------------------+
+| 38    | NoopLoop_TOFSense_CAN   |
++-------+-------------------------+
+| 39    | NRA24_CAN               |
++-------+-------------------------+
+| 40    | NoopLoop_TOFSenseF_I2C  |
++-------+-------------------------+
+| 41    | JRE_Serial              |
++-------+-------------------------+
+| 42    | Ainstein_LR_D1          |
++-------+-------------------------+
+| 43    | RDS02UF                 |
++-------+-------------------------+
+| 44    | HexsoonRadar            |
++-------+-------------------------+
+| 45    | LightWare-GRF           |
++-------+-------------------------+
+| 46    | BenewakeTFS20L          |
++-------+-------------------------+
+| 47    | DTS6012M                |
++-------+-------------------------+
+| 48    | LightWare-GRF-SF000-I2C |
++-------+-------------------------+
+| 100   | SITL                    |
++-------+-------------------------+
 
 
 
@@ -119713,7 +119772,7 @@ RNGFND8\_GRF\_ST: LightWare GRF Minimum Return Strength
 | *Note: This parameter is for advanced users*
 | *Note: Reboot required after change*
 
-Minimum acceptable return signal strength in dB\. Returns weaker than this will be ignored\. Set to 0 to disable filtering\.
+Minimum acceptable return signal strength\. Returns weaker than this will be ignored\. Units are dB on the GRF\-250\/500 and percent on the SF000\/B \(I2C\)\. Set to 0 to disable filtering\.
 
 
 +----------+
@@ -119733,7 +119792,7 @@ RNGFND8\_GRF\_RATE: LightWare GRF Update Rate
 | *Note: This parameter is for advanced users*
 | *Note: Reboot required after change*
 
-The update rate of the sensor in Hz\.
+The update rate of the sensor in Hz\. Ignored by the SF000\/B over I2C\, which keeps its own update rate \(48 Hz default\, set in LightWare Studio\)\.
 
 
 +---------+
@@ -119785,7 +119844,7 @@ RNGFND8\_GRF\_ST: LightWare GRF Minimum Return Strength
 | *Note: This parameter is for advanced users*
 | *Note: Reboot required after change*
 
-Minimum acceptable return signal strength in dB\. Returns weaker than this will be ignored\. Set to 0 to disable filtering\.
+Minimum acceptable return signal strength\. Returns weaker than this will be ignored\. Units are dB on the GRF\-250\/500 and percent on the SF000\/B \(I2C\)\. Set to 0 to disable filtering\.
 
 
 +----------+
@@ -119805,7 +119864,7 @@ RNGFND8\_GRF\_RATE: LightWare GRF Update Rate
 | *Note: This parameter is for advanced users*
 | *Note: Reboot required after change*
 
-The update rate of the sensor in Hz\.
+The update rate of the sensor in Hz\. Ignored by the SF000\/B over I2C\, which keeps its own update rate \(48 Hz default\, set in LightWare Studio\)\.
 
 
 +---------+
@@ -119833,107 +119892,107 @@ RNGFND9\_TYPE: Rangefinder type
 Type of connected rangefinder
 
 
-+-------+------------------------+
-| Value | Meaning                |
-+=======+========================+
-| 0     | None                   |
-+-------+------------------------+
-| 1     | Analog                 |
-+-------+------------------------+
-| 2     | MaxbotixI2C            |
-+-------+------------------------+
-| 3     | LidarLite-I2C          |
-+-------+------------------------+
-| 5     | PWM                    |
-+-------+------------------------+
-| 6     | BBB-PRU                |
-+-------+------------------------+
-| 7     | LightWareI2C           |
-+-------+------------------------+
-| 8     | LightWareSerial        |
-+-------+------------------------+
-| 9     | Bebop                  |
-+-------+------------------------+
-| 10    | MAVLink                |
-+-------+------------------------+
-| 11    | USD1_Serial            |
-+-------+------------------------+
-| 12    | LeddarOne              |
-+-------+------------------------+
-| 13    | MaxbotixSerial         |
-+-------+------------------------+
-| 14    | TeraRangerI2C          |
-+-------+------------------------+
-| 15    | LidarLiteV3-I2C        |
-+-------+------------------------+
-| 16    | VL53L0X or VL53L1X     |
-+-------+------------------------+
-| 17    | NMEA                   |
-+-------+------------------------+
-| 18    | WASP-LRF               |
-+-------+------------------------+
-| 19    | BenewakeTF02           |
-+-------+------------------------+
-| 20    | BenewakeTFmini-Serial  |
-+-------+------------------------+
-| 21    | LidarLightV3HP         |
-+-------+------------------------+
-| 22    | PWM                    |
-+-------+------------------------+
-| 23    | BlueRoboticsPing       |
-+-------+------------------------+
-| 24    | DroneCAN               |
-+-------+------------------------+
-| 25    | BenewakeTFmini-I2C     |
-+-------+------------------------+
-| 26    | LanbaoPSK-CM8JL65-CC5  |
-+-------+------------------------+
-| 27    | BenewakeTF03           |
-+-------+------------------------+
-| 28    | VL53L1X-ShortRange     |
-+-------+------------------------+
-| 29    | LeddarVu8-Serial       |
-+-------+------------------------+
-| 30    | HC-SR04                |
-+-------+------------------------+
-| 31    | GYUS42v2               |
-+-------+------------------------+
-| 32    | MSP                    |
-+-------+------------------------+
-| 33    | USD1_CAN               |
-+-------+------------------------+
-| 34    | Benewake_CAN           |
-+-------+------------------------+
-| 35    | TeraRangerSerial       |
-+-------+------------------------+
-| 36    | Lua_Scripting          |
-+-------+------------------------+
-| 37    | NoopLoop_TOFSense      |
-+-------+------------------------+
-| 38    | NoopLoop_TOFSense_CAN  |
-+-------+------------------------+
-| 39    | NRA24_CAN              |
-+-------+------------------------+
-| 40    | NoopLoop_TOFSenseF_I2C |
-+-------+------------------------+
-| 41    | JRE_Serial             |
-+-------+------------------------+
-| 42    | Ainstein_LR_D1         |
-+-------+------------------------+
-| 43    | RDS02UF                |
-+-------+------------------------+
-| 44    | HexsoonRadar           |
-+-------+------------------------+
-| 45    | LightWare-GRF          |
-+-------+------------------------+
-| 46    | BenewakeTFS20L         |
-+-------+------------------------+
-| 47    | DTS6012M               |
-+-------+------------------------+
-| 48    | LightWare-GRF-I2C      |
-+-------+------------------------+
-| 100   | SITL                   |
-+-------+------------------------+
++-------+-------------------------+
+| Value | Meaning                 |
++=======+=========================+
+| 0     | None                    |
++-------+-------------------------+
+| 1     | Analog                  |
++-------+-------------------------+
+| 2     | MaxbotixI2C             |
++-------+-------------------------+
+| 3     | LidarLite-I2C           |
++-------+-------------------------+
+| 5     | PWM                     |
++-------+-------------------------+
+| 6     | BBB-PRU                 |
++-------+-------------------------+
+| 7     | LightWareI2C            |
++-------+-------------------------+
+| 8     | LightWareSerial         |
++-------+-------------------------+
+| 9     | Bebop                   |
++-------+-------------------------+
+| 10    | MAVLink                 |
++-------+-------------------------+
+| 11    | USD1_Serial             |
++-------+-------------------------+
+| 12    | LeddarOne               |
++-------+-------------------------+
+| 13    | MaxbotixSerial          |
++-------+-------------------------+
+| 14    | TeraRangerI2C           |
++-------+-------------------------+
+| 15    | LidarLiteV3-I2C         |
++-------+-------------------------+
+| 16    | VL53L0X or VL53L1X      |
++-------+-------------------------+
+| 17    | NMEA                    |
++-------+-------------------------+
+| 18    | WASP-LRF                |
++-------+-------------------------+
+| 19    | BenewakeTF02            |
++-------+-------------------------+
+| 20    | BenewakeTFmini-Serial   |
++-------+-------------------------+
+| 21    | LidarLightV3HP          |
++-------+-------------------------+
+| 22    | PWM                     |
++-------+-------------------------+
+| 23    | BlueRoboticsPing        |
++-------+-------------------------+
+| 24    | DroneCAN                |
++-------+-------------------------+
+| 25    | BenewakeTFmini-I2C      |
++-------+-------------------------+
+| 26    | LanbaoPSK-CM8JL65-CC5   |
++-------+-------------------------+
+| 27    | BenewakeTF03            |
++-------+-------------------------+
+| 28    | VL53L1X-ShortRange      |
++-------+-------------------------+
+| 29    | LeddarVu8-Serial        |
++-------+-------------------------+
+| 30    | HC-SR04                 |
++-------+-------------------------+
+| 31    | GYUS42v2                |
++-------+-------------------------+
+| 32    | MSP                     |
++-------+-------------------------+
+| 33    | USD1_CAN                |
++-------+-------------------------+
+| 34    | Benewake_CAN            |
++-------+-------------------------+
+| 35    | TeraRangerSerial        |
++-------+-------------------------+
+| 36    | Lua_Scripting           |
++-------+-------------------------+
+| 37    | NoopLoop_TOFSense       |
++-------+-------------------------+
+| 38    | NoopLoop_TOFSense_CAN   |
++-------+-------------------------+
+| 39    | NRA24_CAN               |
++-------+-------------------------+
+| 40    | NoopLoop_TOFSenseF_I2C  |
++-------+-------------------------+
+| 41    | JRE_Serial              |
++-------+-------------------------+
+| 42    | Ainstein_LR_D1          |
++-------+-------------------------+
+| 43    | RDS02UF                 |
++-------+-------------------------+
+| 44    | HexsoonRadar            |
++-------+-------------------------+
+| 45    | LightWare-GRF           |
++-------+-------------------------+
+| 46    | BenewakeTFS20L          |
++-------+-------------------------+
+| 47    | DTS6012M                |
++-------+-------------------------+
+| 48    | LightWare-GRF-SF000-I2C |
++-------+-------------------------+
+| 100   | SITL                    |
++-------+-------------------------+
 
 
 
@@ -120494,7 +120553,7 @@ RNGFND9\_GRF\_ST: LightWare GRF Minimum Return Strength
 | *Note: This parameter is for advanced users*
 | *Note: Reboot required after change*
 
-Minimum acceptable return signal strength in dB\. Returns weaker than this will be ignored\. Set to 0 to disable filtering\.
+Minimum acceptable return signal strength\. Returns weaker than this will be ignored\. Units are dB on the GRF\-250\/500 and percent on the SF000\/B \(I2C\)\. Set to 0 to disable filtering\.
 
 
 +----------+
@@ -120514,7 +120573,7 @@ RNGFND9\_GRF\_RATE: LightWare GRF Update Rate
 | *Note: This parameter is for advanced users*
 | *Note: Reboot required after change*
 
-The update rate of the sensor in Hz\.
+The update rate of the sensor in Hz\. Ignored by the SF000\/B over I2C\, which keeps its own update rate \(48 Hz default\, set in LightWare Studio\)\.
 
 
 +---------+
@@ -120566,7 +120625,7 @@ RNGFND9\_GRF\_ST: LightWare GRF Minimum Return Strength
 | *Note: This parameter is for advanced users*
 | *Note: Reboot required after change*
 
-Minimum acceptable return signal strength in dB\. Returns weaker than this will be ignored\. Set to 0 to disable filtering\.
+Minimum acceptable return signal strength\. Returns weaker than this will be ignored\. Units are dB on the GRF\-250\/500 and percent on the SF000\/B \(I2C\)\. Set to 0 to disable filtering\.
 
 
 +----------+
@@ -120586,7 +120645,7 @@ RNGFND9\_GRF\_RATE: LightWare GRF Update Rate
 | *Note: This parameter is for advanced users*
 | *Note: Reboot required after change*
 
-The update rate of the sensor in Hz\.
+The update rate of the sensor in Hz\. Ignored by the SF000\/B over I2C\, which keeps its own update rate \(48 Hz default\, set in LightWare Studio\)\.
 
 
 +---------+
@@ -120614,107 +120673,107 @@ RNGFNDA\_TYPE: Rangefinder type
 Type of connected rangefinder
 
 
-+-------+------------------------+
-| Value | Meaning                |
-+=======+========================+
-| 0     | None                   |
-+-------+------------------------+
-| 1     | Analog                 |
-+-------+------------------------+
-| 2     | MaxbotixI2C            |
-+-------+------------------------+
-| 3     | LidarLite-I2C          |
-+-------+------------------------+
-| 5     | PWM                    |
-+-------+------------------------+
-| 6     | BBB-PRU                |
-+-------+------------------------+
-| 7     | LightWareI2C           |
-+-------+------------------------+
-| 8     | LightWareSerial        |
-+-------+------------------------+
-| 9     | Bebop                  |
-+-------+------------------------+
-| 10    | MAVLink                |
-+-------+------------------------+
-| 11    | USD1_Serial            |
-+-------+------------------------+
-| 12    | LeddarOne              |
-+-------+------------------------+
-| 13    | MaxbotixSerial         |
-+-------+------------------------+
-| 14    | TeraRangerI2C          |
-+-------+------------------------+
-| 15    | LidarLiteV3-I2C        |
-+-------+------------------------+
-| 16    | VL53L0X or VL53L1X     |
-+-------+------------------------+
-| 17    | NMEA                   |
-+-------+------------------------+
-| 18    | WASP-LRF               |
-+-------+------------------------+
-| 19    | BenewakeTF02           |
-+-------+------------------------+
-| 20    | BenewakeTFmini-Serial  |
-+-------+------------------------+
-| 21    | LidarLightV3HP         |
-+-------+------------------------+
-| 22    | PWM                    |
-+-------+------------------------+
-| 23    | BlueRoboticsPing       |
-+-------+------------------------+
-| 24    | DroneCAN               |
-+-------+------------------------+
-| 25    | BenewakeTFmini-I2C     |
-+-------+------------------------+
-| 26    | LanbaoPSK-CM8JL65-CC5  |
-+-------+------------------------+
-| 27    | BenewakeTF03           |
-+-------+------------------------+
-| 28    | VL53L1X-ShortRange     |
-+-------+------------------------+
-| 29    | LeddarVu8-Serial       |
-+-------+------------------------+
-| 30    | HC-SR04                |
-+-------+------------------------+
-| 31    | GYUS42v2               |
-+-------+------------------------+
-| 32    | MSP                    |
-+-------+------------------------+
-| 33    | USD1_CAN               |
-+-------+------------------------+
-| 34    | Benewake_CAN           |
-+-------+------------------------+
-| 35    | TeraRangerSerial       |
-+-------+------------------------+
-| 36    | Lua_Scripting          |
-+-------+------------------------+
-| 37    | NoopLoop_TOFSense      |
-+-------+------------------------+
-| 38    | NoopLoop_TOFSense_CAN  |
-+-------+------------------------+
-| 39    | NRA24_CAN              |
-+-------+------------------------+
-| 40    | NoopLoop_TOFSenseF_I2C |
-+-------+------------------------+
-| 41    | JRE_Serial             |
-+-------+------------------------+
-| 42    | Ainstein_LR_D1         |
-+-------+------------------------+
-| 43    | RDS02UF                |
-+-------+------------------------+
-| 44    | HexsoonRadar           |
-+-------+------------------------+
-| 45    | LightWare-GRF          |
-+-------+------------------------+
-| 46    | BenewakeTFS20L         |
-+-------+------------------------+
-| 47    | DTS6012M               |
-+-------+------------------------+
-| 48    | LightWare-GRF-I2C      |
-+-------+------------------------+
-| 100   | SITL                   |
-+-------+------------------------+
++-------+-------------------------+
+| Value | Meaning                 |
++=======+=========================+
+| 0     | None                    |
++-------+-------------------------+
+| 1     | Analog                  |
++-------+-------------------------+
+| 2     | MaxbotixI2C             |
++-------+-------------------------+
+| 3     | LidarLite-I2C           |
++-------+-------------------------+
+| 5     | PWM                     |
++-------+-------------------------+
+| 6     | BBB-PRU                 |
++-------+-------------------------+
+| 7     | LightWareI2C            |
++-------+-------------------------+
+| 8     | LightWareSerial         |
++-------+-------------------------+
+| 9     | Bebop                   |
++-------+-------------------------+
+| 10    | MAVLink                 |
++-------+-------------------------+
+| 11    | USD1_Serial             |
++-------+-------------------------+
+| 12    | LeddarOne               |
++-------+-------------------------+
+| 13    | MaxbotixSerial          |
++-------+-------------------------+
+| 14    | TeraRangerI2C           |
++-------+-------------------------+
+| 15    | LidarLiteV3-I2C         |
++-------+-------------------------+
+| 16    | VL53L0X or VL53L1X      |
++-------+-------------------------+
+| 17    | NMEA                    |
++-------+-------------------------+
+| 18    | WASP-LRF                |
++-------+-------------------------+
+| 19    | BenewakeTF02            |
++-------+-------------------------+
+| 20    | BenewakeTFmini-Serial   |
++-------+-------------------------+
+| 21    | LidarLightV3HP          |
++-------+-------------------------+
+| 22    | PWM                     |
++-------+-------------------------+
+| 23    | BlueRoboticsPing        |
++-------+-------------------------+
+| 24    | DroneCAN                |
++-------+-------------------------+
+| 25    | BenewakeTFmini-I2C      |
++-------+-------------------------+
+| 26    | LanbaoPSK-CM8JL65-CC5   |
++-------+-------------------------+
+| 27    | BenewakeTF03            |
++-------+-------------------------+
+| 28    | VL53L1X-ShortRange      |
++-------+-------------------------+
+| 29    | LeddarVu8-Serial        |
++-------+-------------------------+
+| 30    | HC-SR04                 |
++-------+-------------------------+
+| 31    | GYUS42v2                |
++-------+-------------------------+
+| 32    | MSP                     |
++-------+-------------------------+
+| 33    | USD1_CAN                |
++-------+-------------------------+
+| 34    | Benewake_CAN            |
++-------+-------------------------+
+| 35    | TeraRangerSerial        |
++-------+-------------------------+
+| 36    | Lua_Scripting           |
++-------+-------------------------+
+| 37    | NoopLoop_TOFSense       |
++-------+-------------------------+
+| 38    | NoopLoop_TOFSense_CAN   |
++-------+-------------------------+
+| 39    | NRA24_CAN               |
++-------+-------------------------+
+| 40    | NoopLoop_TOFSenseF_I2C  |
++-------+-------------------------+
+| 41    | JRE_Serial              |
++-------+-------------------------+
+| 42    | Ainstein_LR_D1          |
++-------+-------------------------+
+| 43    | RDS02UF                 |
++-------+-------------------------+
+| 44    | HexsoonRadar            |
++-------+-------------------------+
+| 45    | LightWare-GRF           |
++-------+-------------------------+
+| 46    | BenewakeTFS20L          |
++-------+-------------------------+
+| 47    | DTS6012M                |
++-------+-------------------------+
+| 48    | LightWare-GRF-SF000-I2C |
++-------+-------------------------+
+| 100   | SITL                    |
++-------+-------------------------+
 
 
 
@@ -121275,7 +121334,7 @@ RNGFNDA\_GRF\_ST: LightWare GRF Minimum Return Strength
 | *Note: This parameter is for advanced users*
 | *Note: Reboot required after change*
 
-Minimum acceptable return signal strength in dB\. Returns weaker than this will be ignored\. Set to 0 to disable filtering\.
+Minimum acceptable return signal strength\. Returns weaker than this will be ignored\. Units are dB on the GRF\-250\/500 and percent on the SF000\/B \(I2C\)\. Set to 0 to disable filtering\.
 
 
 +----------+
@@ -121295,7 +121354,7 @@ RNGFNDA\_GRF\_RATE: LightWare GRF Update Rate
 | *Note: This parameter is for advanced users*
 | *Note: Reboot required after change*
 
-The update rate of the sensor in Hz\.
+The update rate of the sensor in Hz\. Ignored by the SF000\/B over I2C\, which keeps its own update rate \(48 Hz default\, set in LightWare Studio\)\.
 
 
 +---------+
@@ -121347,7 +121406,7 @@ RNGFNDA\_GRF\_ST: LightWare GRF Minimum Return Strength
 | *Note: This parameter is for advanced users*
 | *Note: Reboot required after change*
 
-Minimum acceptable return signal strength in dB\. Returns weaker than this will be ignored\. Set to 0 to disable filtering\.
+Minimum acceptable return signal strength\. Returns weaker than this will be ignored\. Units are dB on the GRF\-250\/500 and percent on the SF000\/B \(I2C\)\. Set to 0 to disable filtering\.
 
 
 +----------+
@@ -121367,7 +121426,7 @@ RNGFNDA\_GRF\_RATE: LightWare GRF Update Rate
 | *Note: This parameter is for advanced users*
 | *Note: Reboot required after change*
 
-The update rate of the sensor in Hz\.
+The update rate of the sensor in Hz\. Ignored by the SF000\/B over I2C\, which keeps its own update rate \(48 Hz default\, set in LightWare Studio\)\.
 
 
 +---------+
