@@ -122,6 +122,9 @@ Built for throwing a wing off your hand safely:
 - **Knob-tunable pitch trim** (`PTCH_TRIM_DEG`, plus `Q_TRIM_PITCH` on
   VTOL) and **three switchable tuning sets** (`TUNE_PARAM`/`PARAM2`/`PARAM3`)
   — retune live without a laptop.
+- **Adaptive pitch trim** (v2.1, `RCx_OPTION 254`) — pitch trim that follows
+  airspeed, learned by the aircraft itself in a few straight legs, so FBWA
+  and CRUISE fly level at every speed instead of only one.
 - **Move sticks to cancel auto launch**: nudge pitch or roll during an
   automatic takeoff and the plane drops to FBWA so you can abort a bad
   launch — iNav-style, active only while the takeoff is running.
@@ -159,8 +162,12 @@ Built for throwing a wing off your hand safely:
 - **POI lock with head tracking** (`RCx_OPTION 186`) — lock the gimbal onto the spot
   you are looking at, look around freely, flip back to head tracking. Available on
   every board with gimbal support, including the light F4 boards.
+- **Walksnail Ascent goggles too** (v2.1) — the Ascent never sends head tracking over
+  MSP, so the FC reads it from the VTX's gimbal port instead (one extra wire,
+  `SERIALn_PROTOCOL 51`). Same switches, same gimbals.
 
-→ [Walksnail Headtracking via MSP and Serial Gimbal](#walksnail-headtracking-via-msp-and-serial-gimbal)
+→ [Walksnail Headtracking via MSP and Serial Gimbal](#walksnail-headtracking-via-msp-and-serial-gimbal) ·
+[Walksnail Ascent](#walksnail-ascent-head-tracking-from-the-vtx-gimbal-port-serialn_protocol-51)
 
 ### 🆙 On the ArduPlane 4.7.1 base (v2.0)
 
@@ -366,9 +373,10 @@ adjustments. Exiting the mode stops the loop.
   [Yaapu telemetry](#-yaapu-telemetry--showing-and-announcing-course-hold-and-auto-trim).
 
 ### RC aux switch entries (Plane)
-Plane's `RCx_OPTION` enum gains four entries — two so the pilot can
+Plane's `RCx_OPTION` enum gains five entries — two so the pilot can
 put autotrim and autotune on momentary aux switches without burning a
-FLTMODE_n slot, plus the RTL Autoland Commit gate and VTOL AutoTrim:
+FLTMODE_n slot, plus the RTL Autoland Commit gate, VTOL AutoTrim and
+Adaptive Pitch Trim:
 
 - **`RCx_OPTION = 17` — AUTOTUNE Mode.** Switches into Plane's
   AUTOTUNE flight mode (mode 8) on switch HIGH. Upstream had this
@@ -401,6 +409,10 @@ FLTMODE_n slot, plus the RTL Autoland Commit gate and VTOL AutoTrim:
   you flip this switch HIGH, then commits to `DO_LAND_START`. See
   [RTL & failsafe behaviour](#rtl--failsafe-behaviour) for the full
   behaviour and the `RTL_AUTOLAND_DLY` failsafe grace timer.
+- **`RCx_OPTION = 254` — Adaptive Pitch Trim** (new in v2.1). A
+  3-position switch: LOW off, MIDDLE on, HIGH learns the airspeed trim
+  curve. See
+  [Adaptive pitch trim](#adaptive-pitch-trim--airspeed-schedule-learned-in-flight-rcx_option--254).
 
 ### `FLTMODE_EXT` — 12-position FLTMODE_CH
 Default `0` keeps the upstream 6-position behaviour bit-for-bit. Set
@@ -797,6 +809,67 @@ multi-second holds.
 The logged `ATT.DesPitch` channel now has `PTCH_TRIM_DEG` subtracted
 out, so log replay matches the value the controller actually targets
 in horizon-relative terms.
+
+### Adaptive pitch trim — airspeed schedule, learned in flight (`RCx_OPTION = 254`)
+
+*New in v2.1.*
+
+`PTCH_TRIM_DEG` is only right at one airspeed. A wing trimmed level at
+cruise flies nose-high when slow and nose-low when fast, so FBWA drifts off
+level and CRUISE / FBWB carry a standing pitch correction. Adaptive pitch
+trim adds an **airspeed-dependent offset** on top of `PTCH_TRIM_DEG`, and the
+aircraft can learn the curve by itself.
+
+**Parameters** (`PTCH_TRIM_SPD1` = 0 turns the whole feature off):
+
+| Param | Unit | Meaning |
+|---|---|---|
+| `PTCH_TRIM_SPD1` / `SPD2` / `SPD3` | m/s | three airspeeds, increasing |
+| `PTCH_TRIM_OFS1` / `OFS2` / `OFS3` | deg (±10) | trim added to `PTCH_TRIM_DEG` at each speed |
+
+Between the points the offset is interpolated in a straight line; outside
+them it stays at the end value. The offset only applies when armed and
+flying in normal flight: not during takeoff or landing, and not in VTOL or
+assisted flight. It changes smoothly (about a 1 s time constant).
+
+**Stall taper.** From 1.25 × `AIRSPEED_MIN` down to `AIRSPEED_MIN` the offset
+fades to the *least nose-up* of the three offsets, so slowing towards the
+stall never raises the nose.
+
+**The switch** (`RCx_OPTION = 254`, 3-position):
+
+| Switch | Effect |
+|---|---|
+| **LOW** | off (the learned curve is kept) |
+| **MIDDLE** | on |
+| **HIGH** | learn; moving off HIGH fits the curve and saves it |
+
+With no switch assigned, the curve is used whenever one exists. The
+position at boot only chooses on or off; it never starts a learn.
+
+**Learning a curve:**
+1. Put the switch HIGH (`Adaptive trim learn: fly level FBWB/CRUISE`).
+2. In FBWB or CRUISE, fly straight and level at 4–5 different speeds, about
+   4–5 m/s apart, holding each speed for 5–10 s. Samples are only taken
+   when wings are level (under 5° of roll), the climb rate is under
+   0.5 m/s and the airspeed is steady. Progress shows as
+   `Adaptive trim learn: N speeds`.
+3. Move the switch off HIGH. The curve is fitted and saved, and printed as
+   speed/offset pairs, for example
+   `Adaptive trim: 14.0 +2.1 18.0 +1.0 22.0 +0.2`.
+   It needs at least 3 speeds spanning 3 m/s. With fewer (or if the fit
+   fails) nothing is saved and the old values stay.
+
+You can also set the six values by hand: in FBWB or CRUISE, straight and
+steady, `OFS` = OSD pitch − `PTCH_TRIM_DEG` at that speed. The offsets should
+fall as speed rises.
+
+**Without a pitot** it uses ArduPilot's synthetic airspeed (GPS ground speed
+corrected by the wind estimate). That works, but a wind-estimate error
+shifts the curve along the speed axis. Learn on a calm day, fly a few
+circles first, and fly each speed both upwind and downwind.
+
+Costs about 2.9 KB of flash on a 1 MB F4 board.
 
 ## RTL & failsafe behaviour
 
@@ -1947,6 +2020,54 @@ gimbal stays on target, flip back to return to head tracking.
   what you were looking at. The terrain-based version needs an extra 8 KB thread
   and RAM is the F405's limit, so it is only on full-track boards (with terrain
   enabled).
+
+## Walksnail Ascent: head tracking from the VTX gimbal port (`SERIALn_PROTOCOL 51`)
+
+*New in v2.1.*
+
+The **Walksnail Ascent** goggles never send head tracking over MSP. The MSP link
+from their VTX carries only status polls, and the VTX doesn't answer a head-tracker
+request either. The only place the Ascent's head angles leave the VTX is its
+**gimbal port** (the VTX's second UART), which normally drives a CADDX gimbal
+directly. This firmware listens to that port:
+
+    goggles ──air link──► VTX ──gimbal UART──► FC RX ──► FC ──serial/PWM──► gimbal
+
+The FC decodes the CADDX gimbal commands the VTX sends, turns them back into head
+angles, and feeds them into the same head-tracking path as MSP. So the enable
+switch (`252`), centre lock (`253`), POI lock (`186`), the stream-loss lock and
+every supported gimbal work the same as with the Goggles X.
+
+**Wiring:** VTX gimbal-port **TX** → a spare FC **RX** pad, plus ground. The FC
+only listens, so the FC's TX on that UART stays unconnected. The gimbal moves
+from the VTX to the FC: a CADDX gimbal goes to an FC TX pad (`SERIALy_PROTOCOL 8`,
+`MNT1_TYPE 13`), or use servos. Don't leave a gimbal wired to both the VTX and the
+FC — the two TX lines would fight.
+
+| Param | Value | Purpose |
+|---|---|---|
+| `SERIALz_PROTOCOL` | `51` (CADDX HeadTracker) | Ascent VTX gimbal-port **input** (115200 baud is forced) |
+| `SERIALy_PROTOCOL` | `8` (Gimbal) | serial-gimbal output, if the gimbal is a CADDX |
+| everything else | as in [Setup](#setup) | mount type, limits, switches |
+
+On boot, `CDXHT: head tracker stream up` appears in the messages once the
+first valid frame arrives, so you can confirm the wiring.
+
+**Differences from the MSP source:**
+- **Angles are 1:1.** The Ascent sends real degrees, applied directly and clamped
+  at the `MNT1_*` limits. (MSP instead stretches full head deflection across the
+  limits.) With a CADDX gimbal this needs no tuning. On a servo pan/tilt, set the
+  `MNT1_*_MIN/MAX` limits to the servos' **real travel** so 30° of head gives
+  30° of camera.
+- **Direction on servos.** The CADDX gimbal follows the correct way on all three
+  axes. On a servo mount, if an axis runs backwards, set `SERVOn_REVERSED` for it.
+- **Recentre from the goggles** (back button ×3) works as normal. It arrives as
+  re-zeroed angles.
+- **Goggles X keep working over MSP.** Both inputs are in the same firmware;
+  with the Goggles X, leave the gimbal-port wire off (or disconnected).
+
+Bench-verified with an Ascent and a CADDX GM3 v2, and with a servo pan/tilt.
+`51` is a fork-only protocol number; stock ArduPilot doesn't have it.
 
 ## Notes
 
