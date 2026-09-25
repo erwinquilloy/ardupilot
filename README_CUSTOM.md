@@ -71,6 +71,9 @@ aimed at efficiency and situational awareness:
   param name + value**, and **loiter radius**.
 - **Under/over-speed warning flashes**, one/two-decimal polish on speed,
   vertical speed and attitude, and a shortenable **plus code** home locator.
+- **ADS-B traffic in the goggles** (full-track boards): the nearest aircraft
+  from an ADS-B receiver, with direction arrow, distance and height relative
+  to you — iNav-style. Upstream only shows ADS-B traffic on the GCS map.
 
 → [OSD additions](#osd-additions)
 
@@ -1863,6 +1866,40 @@ gimbal stays on target, flip back to return to head tracking.
 | `OSDx_PEAK_RR`     | Peak roll rate (since last reset)             |
 | `OSDx_PEAK_PR`     | Peak pitch rate                               |
 | `OSDx_STATS_EN`    | **Flight stats grid** — 11-row post-flight summary (see below) |
+| `OSDx_ADSB`        | Nearest ADS-B aircraft — arrow, distance, relative altitude (full track only, see below) |
+
+## ADS-B traffic element (`OSDx_ADSB`)
+
+Shows the **nearest aircraft** heard by an ADS-B receiver, laid out like the
+[radar element](#osd-element):
+
+    ADS↗ 1000m      ← direction arrow (relative to your nose) and horizontal distance
+       ⇈150m        ← height relative to YOUR aircraft (up arrows above, down arrows below)
+
+The element is blank when no aircraft is tracked. The altitude line is left
+out if the aircraft doesn't report an altitude.
+
+**Setup** — the receiver is connected the same way as in iNav: any receiver
+that sends MAVLink `ADSB_VEHICLE` messages (pingRX-class modules, Aerobit
+TT-SC1, …) on a serial port.
+
+| Param | Value | Purpose |
+|---|---|---|
+| `SERIALn_PROTOCOL` | `2` (MAVLink2) | receiver UART; set `SERIALn_BAUD` to the receiver's rate |
+| `ADSB_TYPE` | `1` | MAVLink ADS-B input |
+| `ADSB_LIST_RADIUS` | default 10000 m | aircraft further away are ignored |
+| `ADSB_LIST_ALT` | default 0 (no limit) | ignore aircraft more than this many metres above or below you |
+| `OSDx_ADSB_EN` / `_X` / `_Y` | `1` / position | the element |
+
+Upstream ArduPilot uses the same traffic for the GCS map and for collision
+avoidance (`AVD_*`), both unchanged. It has no OSD element for it.
+
+- **Full-track boards only.** Upstream compiles ADS-B support only on boards
+  with more than 1 MB of flash, so the light-track F4 boards have neither the
+  receiver input nor this element.
+- **Altitude is a guide.** Many aircraft report barometric altitude, which is
+  compared directly with your GPS altitude, so the relative height can be off
+  by tens of metres depending on the day's air pressure.
 
 ## OSD options (`OSD_OPTIONS` bits)
 

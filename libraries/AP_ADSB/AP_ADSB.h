@@ -25,6 +25,7 @@
 
 #if HAL_ADSB_ENABLED
 #include <AP_Common/AP_Common.h>
+#include <AP_HAL/Semaphores.h>
 #include <AP_Param/AP_Param.h>
 #include <AP_Common/Location.h>
 #include <GCS_MAVLink/GCS_MAVLink.h>
@@ -201,6 +202,11 @@ public:
     // when true, a vehicle with that ICAO was found in database and the vehicle is populated.
     bool get_vehicle_by_ICAO(const uint32_t icao, adsb_vehicle_t &vehicle) const;
 
+    // fork: nearest tracked aircraft (horizontal distance), for the OSD. Safe to
+    // call from another thread: it returns a snapshot taken on the main thread by
+    // update(). alt_valid is false when the aircraft reports no altitude.
+    bool get_nearest_vehicle(Location &loc, bool &alt_valid) const;
+
     uint32_t get_special_ICAO_target() const { return (uint32_t)_special_ICAO_target; };
     void set_special_ICAO_target(const uint32_t new_icao_target) { _special_ICAO_target.set((int32_t)new_icao_target); };
     bool is_special_vehicle(uint32_t icao) const { return _special_ICAO_target != 0 && (_special_ICAO_target == (int32_t)icao); }
@@ -232,6 +238,15 @@ private:
 
     // compares current vector against vehicle_list to detect threats
     void determine_furthest_aircraft(void);
+
+    // fork: refresh the nearest-aircraft snapshot read by get_nearest_vehicle()
+    void update_nearest_vehicle(void);
+    struct {
+        Location loc;
+        bool alt_valid;
+        bool valid;
+    } _nearest;
+    mutable HAL_Semaphore _nearest_sem;
 
     // return index of given vehicle if ICAO_ADDRESS matches. return -1 if no match
     bool find_index(const adsb_vehicle_t &vehicle, uint16_t *index) const;
