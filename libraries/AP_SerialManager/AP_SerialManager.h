@@ -87,6 +87,10 @@ public:
         SerialProtocol_PPP = 48,
         SerialProtocol_IBUS_Telem = 49,                // i-BUS telemetry data, ie via sensor port of FS-iA6B
         SerialProtocol_IOMCU = 50,                     // IOMCU 
+        // fork: head tracker input from a Walksnail/CADDX VTX gimbal port.
+        // 51 is unused upstream as of 4.7.1 - re-check on every rebase, the
+        // number is stored in SERIALn_PROTOCOL so a collision changes meaning.
+        SerialProtocol_CADDX_HeadTracker = 51,
         SerialProtocol_NumProtocols                    // must be the last value
     };
 

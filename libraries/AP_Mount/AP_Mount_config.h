@@ -80,6 +80,12 @@
 #define HAL_MOUNT_TOPOTEK_ENABLED AP_MOUNT_BACKEND_DEFAULT_ENABLED
 #endif
 
+// Custom: head tracker input decoded from a Walksnail/CADDX VTX gimbal port
+// (SERIALn_PROTOCOL 51). Feeds the same path as the MSP head tracker.
+#ifndef AP_MOUNT_CADDX_HEADTRACKER_ENABLED
+#define AP_MOUNT_CADDX_HEADTRACKER_ENABLED HAL_MOUNT_ENABLED
+#endif
+
 // set camera source is supported on gimbals that may have more than one lens
 #ifndef HAL_MOUNT_SET_CAMERA_SOURCE_ENABLED
 #define HAL_MOUNT_SET_CAMERA_SOURCE_ENABLED HAL_MOUNT_SIYI_ENABLED || HAL_MOUNT_XACTI_ENABLED || HAL_MOUNT_VIEWPRO_ENABLED

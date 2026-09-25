@@ -118,6 +118,13 @@ public:
     // gimbal's configured angle limits. Applied only while head tracking is enabled
     // and not center-locked.
     void handle_msp_headtracker(int16_t pan, int16_t tilt, int16_t roll);
+
+#if AP_MOUNT_CADDX_HEADTRACKER_ENABLED
+    // handle_caddx_headtracker: head tracker angles decoded from a CADDX gimbal-port
+    // stream. Already in degrees, so they drive the gimbal one-for-one rather than
+    // being scaled onto the MNTx angle limits the way the MSP source is.
+    void handle_caddx_headtracker(float roll_deg, float pitch_deg, float yaw_deg);
+#endif
     // enable/disable head tracking (RCx_OPTION toggle). Disabling returns the mount
     // to its default mode (e.g. manual RC targeting).
     void set_headtracking_enabled(bool enable);
@@ -414,6 +421,14 @@ protected:
     int16_t _ht_pan_prev = 0;       // previous raw pan value (for wrap detection)
     float _ht_pan_unwrapped = 0;    // continuous (unwrapped) pan used for yaw targeting
     uint32_t _ht_last_frame_ms = 0; // system time of the last head tracker frame (for stream-loss timeout)
+#if AP_MOUNT_CADDX_HEADTRACKER_ENABLED
+    float _ht_yaw_prev_deg = 0;     // previous raw yaw angle (for wrap detection)
+    float _ht_yaw_unwrapped_deg = 0;// continuous (unwrapped) yaw used for targeting
+#endif
+
+    // stamp head tracker stream liveness and report whether the frame should be
+    // applied; shared by every head tracker source
+    bool headtracker_frame_accepted();
 
     // true if the gimbal should be centered + FPV-locked, whether by the RCx_OPTION
     // center-lock switch or by head tracker stream loss (goggles lock button / link loss)
