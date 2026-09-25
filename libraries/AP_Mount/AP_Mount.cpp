@@ -207,12 +207,25 @@ void AP_Mount::init()
         }
     }
 
+#if AP_MOUNT_CADDX_HEADTRACKER_ENABLED
+    // fork: optional head tracker input on its own serial port
+    _caddx_headtracker = AP_HeadTracker_CADDX::create();
+#endif
+
     (void)serial_instance;
 }
 
 // update - give mount opportunity to update servos.  should be called at 10hz or higher
 void AP_Mount::update()
 {
+#if AP_MOUNT_CADDX_HEADTRACKER_ENABLED
+    // fork: decode any pending head tracker frames before the backends run, so a
+    // new target is applied in the same cycle it arrived
+    if (_caddx_headtracker != nullptr) {
+        _caddx_headtracker->update();
+    }
+#endif
+
     // update each instance
     for (uint8_t instance=0; instance<AP_MOUNT_MAX_INSTANCES; instance++) {
         if (_backends[instance] != nullptr) {
@@ -368,6 +381,17 @@ void AP_Mount::handle_msp_headtracker(uint8_t instance, int16_t pan, int16_t til
     }
     backend->handle_msp_headtracker(pan, tilt, roll);
 }
+
+#if AP_MOUNT_CADDX_HEADTRACKER_ENABLED
+void AP_Mount::handle_caddx_headtracker(float roll_deg, float pitch_deg, float yaw_deg)
+{
+    auto *backend = get_instance(_primary);
+    if (backend == nullptr) {
+        return;
+    }
+    backend->handle_caddx_headtracker(roll_deg, pitch_deg, yaw_deg);
+}
+#endif
 
 void AP_Mount::set_headtracking_enabled(uint8_t instance, bool enable)
 {

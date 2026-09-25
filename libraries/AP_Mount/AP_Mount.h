@@ -31,6 +31,7 @@
 #include <GCS_MAVLink/GCS_MAVLink.h>
 #include <AP_Camera/AP_Camera_shareddefs.h>
 #include "AP_Mount_Params.h"
+#include "AP_HeadTracker_CADDX.h"
 
 // maximum number of mounts
 #define AP_MOUNT_MAX_INSTANCES          2
@@ -203,6 +204,12 @@ public:
     // handle_msp_headtracker: apply -2048..2047 pan/tilt/roll from an MSP head tracker to the primary mount
     void handle_msp_headtracker(int16_t pan, int16_t tilt, int16_t roll) { handle_msp_headtracker(_primary, pan, tilt, roll); }
     void handle_msp_headtracker(uint8_t instance, int16_t pan, int16_t tilt, int16_t roll);
+
+#if AP_MOUNT_CADDX_HEADTRACKER_ENABLED
+    // handle_caddx_headtracker: apply head tracker angles decoded from a CADDX
+    // gimbal-port stream (already in degrees) to the primary mount
+    void handle_caddx_headtracker(float roll_deg, float pitch_deg, float yaw_deg);
+#endif
     // enable/disable head tracking (RCx_OPTION toggle)
     void set_headtracking_enabled(uint8_t instance, bool enable);
     // lock the gimbal to neutral (forward), overriding head tracking (RCx_OPTION toggle)
@@ -349,6 +356,9 @@ protected:
     uint8_t             _num_instances;     // number of mounts instantiated
     uint8_t             _primary;           // primary mount
     AP_Mount_Backend    *_backends[AP_MOUNT_MAX_INSTANCES];         // pointers to instantiated mounts
+#if AP_MOUNT_CADDX_HEADTRACKER_ENABLED
+    AP_HeadTracker_CADDX *_caddx_headtracker;   // fork: optional CADDX gimbal-port head tracker input
+#endif
 
 private:
     // Check if instance backend is ok

@@ -236,16 +236,7 @@ void AP_Mount_Backend::set_rate_target(float roll_degs, float pitch_degs, float 
 // follows the head continuously.
 void AP_Mount_Backend::handle_msp_headtracker(int16_t pan, int16_t tilt, int16_t roll)
 {
-    // stamp stream liveness (regardless of lock state) and clear any stream-loss
-    // auto-lock now that a frame has arrived, re-baselining the yaw unwrap
-    _ht_last_frame_ms = AP_HAL::millis();
-    if (_ht_stream_lost) {
-        _ht_stream_lost = false;
-        _ht_pan_valid = false;
-    }
-
-    // center-lock overrides head tracking; enable gates it
-    if (_ht_center_lock || !_ht_enabled) {
+    if (!headtracker_frame_accepted()) {
         return;
     }
 
@@ -297,6 +288,57 @@ void AP_Mount_Backend::handle_msp_headtracker(int16_t pan, int16_t tilt, int16_t
     // body-frame yaw so the gimbal follows the head relative to the airframe
     set_angle_target(roll_deg, pitch_deg, yaw_deg, false);
 }
+
+// stamp stream liveness (regardless of lock state) and clear any stream-loss
+// auto-lock now that a frame has arrived, re-baselining the yaw unwrap. Returns
+// false when the frame must not be applied: center-lock overrides head tracking,
+// and the enable switch gates it.
+bool AP_Mount_Backend::headtracker_frame_accepted()
+{
+    _ht_last_frame_ms = AP_HAL::millis();
+    if (_ht_stream_lost) {
+        _ht_stream_lost = false;
+        _ht_pan_valid = false;
+    }
+    return _ht_enabled && !_ht_center_lock;
+}
+
+#if AP_MOUNT_CADDX_HEADTRACKER_ENABLED
+// CADDX gimbal-port head tracker input (fork feature). Angles arrive as absolute
+// degrees, so unlike the MSP source they are commanded directly and the gimbal
+// follows the head one-for-one; set_angle_target() clamps them to the MNTx limits.
+void AP_Mount_Backend::handle_caddx_headtracker(float roll_deg, float pitch_deg, float yaw_deg)
+{
+    if (!headtracker_frame_accepted()) {
+        return;
+    }
+
+    // a POI lock (RCx_OPTION 186) holds the gimbal on its point, exactly as for the
+    // MSP source; re-baseline the yaw unwrap so tracking resumes cleanly afterwards
+    if (poi_lock_tracking()) {
+        _ht_pan_valid = false;
+        return;
+    }
+
+    // Yaw is absolute and wraps at +/-180 like a heading. Unwrap it into a
+    // continuous value so that turning past the extreme keeps the gimbal pinned at
+    // its yaw limit instead of flipping to the opposite side; turning back resumes.
+    if (!_ht_pan_valid) {
+        _ht_yaw_unwrapped_deg = yaw_deg;
+        _ht_pan_valid = true;
+    } else {
+        _ht_yaw_unwrapped_deg += wrap_180(yaw_deg - _ht_yaw_prev_deg);
+    }
+    _ht_yaw_prev_deg = yaw_deg;
+
+    // body-frame yaw targets wrap at +/-180 inside set_angle_target(); clamp here so
+    // a MNTx_YAW limit beyond +/-180 saturates instead of flipping
+    const float yaw_target_deg = constrain_float(_ht_yaw_unwrapped_deg, -180.0f, 180.0f);
+
+    // body-frame so the gimbal follows the head relative to the airframe
+    set_angle_target(roll_deg, pitch_deg, yaw_target_deg, false);
+}
+#endif  // AP_MOUNT_CADDX_HEADTRACKER_ENABLED
 
 // enable/disable head tracking (RCx_OPTION toggle)
 void AP_Mount_Backend::set_headtracking_enabled(bool enable)
