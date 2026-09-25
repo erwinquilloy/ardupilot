@@ -116,6 +116,7 @@ const AP_Scheduler::Task Plane::scheduler_tasks[] = {
 #if HAL_LOGGING_ENABLED
     SCHED_TASK(Log_Write_FullRate,        400,    300, 117),
     SCHED_TASK(update_logging10,        10,    300, 120),
+    SCHED_TASK(update_pitch_trim_sched, 10,    100, 121),
     SCHED_TASK(update_logging25,        25,    300, 123),
 #endif
 #if HAL_SOARING_ENABLED
@@ -805,7 +806,7 @@ void Plane::update_alt()
                                                  throttle_nudge,
                                                  tecs_hgt_afe(),
                                                  aerodynamic_load_factor,
-                                                 g.pitch_trim.get(),
+                                                 get_pitch_trim_deg(),
                                                  max_climb_rate,
                                                  max_sink_rate);
     }
@@ -1184,7 +1185,7 @@ void Plane::get_osd_attitude_rad(float &roll, float &pitch, float &yaw)
     pitch = ahrs.get_pitch_rad();
     roll = ahrs.get_roll_rad();
     if (!(flight_option_enabled(FlightOptions::OSD_REMOVE_TRIM_PITCH))) {  // correct for PTCH_TRIM_DEG
-        pitch -= g.pitch_trim * DEG_TO_RAD;
+        pitch -= get_pitch_trim_deg() * DEG_TO_RAD;
     }
     yaw = ahrs.get_yaw_rad();
 }

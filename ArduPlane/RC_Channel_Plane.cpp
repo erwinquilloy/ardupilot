@@ -198,6 +198,12 @@ void RC_Channel_Plane::init_aux_function(const RC_Channel::AUX_FUNC ch_option,
     case AUX_FUNC::AHRS_AUTO_TRIM:
 #endif
         break;
+    // Fork: adaptive pitch trim -- the boot position sets on/off, but a
+    // switch already HIGH at boot never starts learning.
+    case AUX_FUNC::PITCH_TRIM_LEARN:
+        plane.pitch_trim_sched.set_switch(ch_flag == AuxSwitchPos::LOW ? 0 : 1, true, plane.g.pitch_trim,
+                                          rc().has_valid_input());
+        break;
     case AUX_FUNC::SOARING:
 #if HAL_QUADPLANE_ENABLED
     case AUX_FUNC::Q_ASSIST:
@@ -425,6 +431,14 @@ bool RC_Channel_Plane::do_aux_function(const AuxFuncTrigger &trigger)
             plane.auto_trim.run = false;
             gcs().send_text(MAV_SEVERITY_INFO, "Servos auto trim stopped");
         }
+        break;
+
+    // Fork: adaptive pitch trim (PTCH_TRIM_SPD/OFS): LOW off, MID on, HIGH
+    // learn; leaving HIGH fits the curve and saves it. See pitch_trim_sched.cpp
+    case AUX_FUNC::PITCH_TRIM_LEARN:
+        plane.pitch_trim_sched.set_switch(ch_flag == AuxSwitchPos::LOW ? 0 :
+                                          ch_flag == AuxSwitchPos::MIDDLE ? 1 : 2,
+                                          false, plane.g.pitch_trim);
         break;
 
 #if HAL_QUADPLANE_ENABLED

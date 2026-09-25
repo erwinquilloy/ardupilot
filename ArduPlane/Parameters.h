@@ -373,6 +373,9 @@ public:
         k_param_takeoff_throttle_idle,      // fork: moved here, radar keeps its 4.6.3 slot above
         k_param_mode_autoland,              // fork: moved here from 272; compiled out (MODE_AUTOLAND_ENABLED 0)
 
+        // fork-only keys, well clear of upstream's range so a rebase can't collide
+        k_param_pitch_trim_sched = 400,     // PTCH_TRIM_SPD/OFS airspeed-scheduled pitch trim
+
     };
 
     AP_Int16 format_version;

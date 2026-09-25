@@ -900,6 +900,10 @@ const AP_Param::Info Plane::var_info[] = {
     GOBJECT(quadplane,           "Q_", QuadPlane),
 #endif
 
+    // @Group: PTCH_TRIM_
+    // @Path: pitch_trim_sched.cpp
+    GOBJECT(pitch_trim_sched,     "PTCH_TRIM_", PitchTrimSched),
+
 #if AP_TUNING_ENABLED
     // @Group: TUNE_
     // @Path: tuning.cpp,../libraries/AP_Tuning/AP_Tuning.cpp

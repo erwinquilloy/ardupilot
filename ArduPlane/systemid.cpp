@@ -457,7 +457,7 @@ void AP_SystemID::log_plane_data() const
     const auto &pitch_pid_info = plane.pitchController.get_pid_info();
     const auto &roll_pid_info = plane.rollController.get_pid_info();
 
-    int16_t demanded_pitch = plane.nav_pitch_cd + int32_t(plane.g.pitch_trim * 100.0) + SRV_Channels::get_output_scaled(SRV_Channel::k_throttle) * plane.g.kff_throttle_to_pitch;
+    int16_t demanded_pitch = plane.nav_pitch_cd + int32_t(plane.get_pitch_trim_deg() * 100.0) + SRV_Channels::get_output_scaled(SRV_Channel::k_throttle) * plane.g.kff_throttle_to_pitch;
     AP::logger().WriteStreaming("SIDP", "TimeUS,DRll,Rll,DPit,Pit,rdes,r,pdes,p,Aile,Elev,aspd,eastas",
                                 "soooooooooooo", "F------------", "Qffffffffffff",
                                 AP_HAL::micros64(),

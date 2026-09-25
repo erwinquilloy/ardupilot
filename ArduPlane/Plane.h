@@ -126,6 +126,7 @@
 #include "AP_Arming_Plane.h"
 #include "pullup.h"
 #include "systemid.h"
+#include "pitch_trim_sched.h"
 
 /*
   main APM:Plane class
@@ -352,6 +353,9 @@ private:
 #endif  // QAUTOTUNE_ENABLED
 #endif  // HAL_QUADPLANE_ENABLED
     ModeTakeoff mode_takeoff;
+
+    // fork: airspeed-scheduled pitch trim (PTCH_TRIM_SPD/OFS, RCx_OPTION 254)
+    PitchTrimSched pitch_trim_sched;
 #if MODE_AUTOLAND_ENABLED
     ModeAutoLand mode_autoland;
 #endif
@@ -1066,6 +1070,9 @@ private:
     void stabilize_roll();
     float stabilize_roll_get_roll_out();
     void stabilize_pitch();
+    // PTCH_TRIM_DEG plus the airspeed-scheduled offset: the trim actually applied
+    float get_pitch_trim_deg() const { return g.pitch_trim + pitch_trim_sched.get_offset_deg(); }
+    void update_pitch_trim_sched();
     float stabilize_pitch_get_pitch_out();
     void stabilize_stick_mixing_fbw();
     void stabilize_yaw();
