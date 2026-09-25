@@ -27,6 +27,7 @@
 #include <GCS_MAVLink/GCS_config.h>
 #include <AP_OLC/AP_OLC.h>
 #include <AP_MSP/msp.h>
+#include <AP_ADSB/AP_ADSB_config.h>
 #include <Filter/AverageFilter.h>  // fork #46 OSD accel elements
 #include <AP_Baro/AP_Baro.h>
 #include <AP_RPM/AP_RPM_config.h>
@@ -247,6 +248,9 @@ private:
     AP_OSD_Setting avg_eff_air{false, 0, 0};       // fork: flight-long avg efficiency over air distance (Plane only via AP_Stats)
     AP_OSD_Setting aspd_dem{false, 0, 0};          // fork #38: demanded airspeed in auto-throttle modes (Plane only)
     AP_OSD_Setting radar{false, 0, 0};             // iNav Radar / FormationFlight peer-aircraft display
+#if HAL_ADSB_ENABLED
+    AP_OSD_Setting adsb{false, 0, 0};              // fork: nearest ADS-B aircraft (arrow, distance, relative altitude)
+#endif
     AP_OSD_Setting atemp;
     AP_OSD_Setting bat2_vlt;
     AP_OSD_Setting bat2used;
@@ -308,6 +312,9 @@ private:
     void draw_horizon(uint8_t x, uint8_t y);
     void draw_home(uint8_t x, uint8_t y);
     void draw_radar(uint8_t x, uint8_t y);
+#if HAL_ADSB_ENABLED
+    void draw_adsb(uint8_t x, uint8_t y);
+#endif
     void draw_throttle(uint8_t x, uint8_t y);
     void draw_heading(uint8_t x, uint8_t y);
 #if AP_RPM_ENABLED
