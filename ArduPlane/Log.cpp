@@ -11,7 +11,7 @@ void Plane::Log_Write_Attitude(void)
     // is biased low/high by the trim pitch when reviewing logs.
     Vector3f targets {       // Package up the targets into a vector for commonality with Copter usage of Log_Wrote_Attitude
         nav_roll_cd * 0.01f,
-        nav_pitch_cd * 0.01f + g.pitch_trim,
+        nav_pitch_cd * 0.01f + get_pitch_trim_deg(),
         0 //Plane does not have the concept of navyaw. This is a placeholder.
     };
 
@@ -98,7 +98,7 @@ void Plane::Log_Write_Control_Tuning()
     AP_AHRS::AirspeedEstimateType airspeed_estimate_type = AP_AHRS::AirspeedEstimateType::NO_NEW_ESTIMATE;
     ahrs.airspeed_EAS(est_airspeed, airspeed_estimate_type);
 
-    int16_t pitch = ahrs.pitch_sensor - g.pitch_trim * 100;
+    int16_t pitch = ahrs.pitch_sensor - get_pitch_trim_deg() * 100;
 #if HAL_QUADPLANE_ENABLED
     if (quadplane.show_vtol_view()) {
         pitch = quadplane.ahrs_view->pitch_sensor;

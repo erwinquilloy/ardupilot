@@ -421,6 +421,8 @@ public:
         // gimbal to its neutral (forward) position, overriding head tracking.
         MOUNT1_HEADTRACK        = 252,
         MOUNT1_HEADTRACK_CENTER = 253,
+        // Fork: adaptive pitch trim switch (PTCH_TRIM_SPD/OFS): LOW off, MID on, HIGH learn
+        PITCH_TRIM_LEARN        = 254,
 
         // inputs 248-249 are reserved for the Skybrush fork at
         // https://github.com/skybrush-io/ardupilot

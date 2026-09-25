@@ -247,7 +247,7 @@ float Plane::stabilize_pitch_get_pitch_out()
     const bool quadplane_in_frwd_transition = false;
 #endif
 
-    int32_t demanded_pitch = nav_pitch_cd + int32_t(g.pitch_trim * 100.0) + SRV_Channels::get_output_scaled(SRV_Channel::k_throttle) * g.kff_throttle_to_pitch;
+    int32_t demanded_pitch = nav_pitch_cd + int32_t(get_pitch_trim_deg() * 100.0) + SRV_Channels::get_output_scaled(SRV_Channel::k_throttle) * g.kff_throttle_to_pitch;
     bool disable_integrator = false;
     if (control_mode == &mode_stabilize && !is_zero(channel_pitch->get_control_in())) {
         disable_integrator = true;
@@ -800,4 +800,22 @@ void Plane::apply_load_factor_roll_limits(void)
 
     nav_roll_cd = constrain_int32(nav_roll_cd, -lf_roll_limit_deg * 100, lf_roll_limit_deg * 100);
     roll_limit_cd = MIN(roll_limit_cd, lf_roll_limit_deg * 100);
+}
+
+/*
+  fork: 10 Hz update of the airspeed-scheduled pitch trim. The offset applies
+  in fixed-wing flight once past takeoff; learning samples only in FBWB and
+  CRUISE, where TECS holds altitude and so settles on the level-flight pitch.
+ */
+void Plane::update_pitch_trim_sched()
+{
+    bool fw_flying = arming.is_armed() && is_flying() &&
+        flight_stage == AP_FixedWing::FlightStage::NORMAL;
+#if HAL_QUADPLANE_ENABLED
+    fw_flying &= !quadplane.in_vtol_mode() && !quadplane.in_assisted_flight();
+#endif
+    // learning only samples while learn_ok, so the switch can go high before
+    // takeoff; landing and disarming just pause it
+    const bool learn_ok = fw_flying && (control_mode == &mode_fbwb || control_mode == &mode_cruise);
+    pitch_trim_sched.update(fw_flying, learn_ok, aparm.airspeed_min);
 }
