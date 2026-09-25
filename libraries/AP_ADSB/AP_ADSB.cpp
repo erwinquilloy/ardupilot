@@ -376,6 +376,9 @@ void AP_ADSB::update(void)
 void AP_ADSB::update(const AP_ADSB::Loc &loc)
 {
     if (!check_startup()) {
+        // fork: don't leave a stale aircraft on the OSD
+        WITH_SEMAPHORE(_nearest_sem);
+        _nearest.valid = false;
         return;
     }
 
@@ -436,6 +439,48 @@ void AP_ADSB::update(const AP_ADSB::Loc &loc)
         }
     }
 
+    update_nearest_vehicle();
+}
+
+/*
+ * fork: snapshot the nearest aircraft with a valid position for the OSD. Done
+ * here on the main thread, which owns vehicle_list, so the OSD thread never
+ * walks the list while it is being edited.
+ */
+void AP_ADSB::update_nearest_vehicle(void)
+{
+    float min_distance = 0;
+    int32_t nearest_index = -1;
+
+    for (uint16_t index = 0; index < in_state.vehicle_count; index++) {
+        if ((in_state.vehicle_list[index].info.flags & ADSB_FLAGS_VALID_COORDS) == 0) {
+            continue;
+        }
+        const float distance = _my_loc.get_distance(get_location(in_state.vehicle_list[index]));
+        if (nearest_index < 0 || distance < min_distance) {
+            min_distance = distance;
+            nearest_index = index;
+        }
+    }
+
+    WITH_SEMAPHORE(_nearest_sem);
+    _nearest.valid = nearest_index >= 0;
+    if (_nearest.valid) {
+        const adsb_vehicle_t &vehicle = in_state.vehicle_list[nearest_index];
+        _nearest.loc = get_location(vehicle);
+        _nearest.alt_valid = (vehicle.info.flags & ADSB_FLAGS_VALID_ALTITUDE) != 0;
+    }
+}
+
+bool AP_ADSB::get_nearest_vehicle(Location &loc, bool &alt_valid) const
+{
+    WITH_SEMAPHORE(_nearest_sem);
+    if (!_nearest.valid) {
+        return false;
+    }
+    loc = _nearest.loc;
+    alt_valid = _nearest.alt_valid;
+    return true;
 }
 
 /*

@@ -37,6 +37,7 @@
 #include <AP_BattMonitor/AP_BattMonitor.h>
 #include <AP_GPS/AP_GPS.h>
 #include <AP_Radar/AP_Radar.h>
+#include <AP_ADSB/AP_ADSB.h>
 #include <AP_RTC/AP_RTC.h>
 #include <AP_MSP/msp.h>
 #include <AP_OLC/AP_OLC.h>
@@ -1478,6 +1479,24 @@ const AP_Param::GroupInfo AP_OSD_Screen::var_info2[] = {
     AP_SUBGROUPINFO(radar, "RADAR", 28, AP_OSD_Screen, AP_OSD_Setting),
 #endif
 
+#if HAL_ADSB_ENABLED
+    // @Param: ADSB_EN
+    // @DisplayName: ADSB_EN
+    // @Description: Displays the nearest ADS-B aircraft: a bearing arrow and horizontal distance, with its altitude relative to this aircraft on the line below. Only aircraft within ADSB_LIST_RADIUS and ADSB_LIST_ALT are considered. Blank when none is tracked. Needs an ADS-B receiver (ADSB_TYPE).
+    // @Values: 0:Disabled,1:Enabled
+
+    // @Param: ADSB_X
+    // @DisplayName: ADSB_X
+    // @Description: Horizontal position on screen
+    // @Range: 0 29
+
+    // @Param: ADSB_Y
+    // @DisplayName: ADSB_Y
+    // @Description: Vertical position on screen
+    // @Range: 0 15
+    AP_SUBGROUPINFO(adsb, "ADSB", 29, AP_OSD_Screen, AP_OSD_Setting),
+#endif
+
     AP_GROUPEND
 };
 
@@ -2231,6 +2250,41 @@ void AP_OSD_Screen::draw_radar(uint8_t x, uint8_t y)
     }
 }
 #endif // AP_RADAR_ENABLED
+
+#if HAL_ADSB_ENABLED
+// fork: nearest ADS-B aircraft, laid out like the radar element: label, bearing
+// arrow and horizontal distance, with the altitude relative to us below.
+void AP_OSD_Screen::draw_adsb(uint8_t x, uint8_t y)
+{
+    const AP_ADSB *adsb_lib = AP::ADSB();
+    if (adsb_lib == nullptr) {
+        return;
+    }
+    Location target;
+    bool alt_valid;
+    if (!adsb_lib->get_nearest_vehicle(target, alt_valid)) {
+        return;
+    }
+    AP_AHRS &ahrs = AP::ahrs();
+    WITH_SEMAPHORE(ahrs.get_semaphore());
+    Location loc;
+    if (!ahrs.get_location(loc)) {
+        return;
+    }
+    const float distance = loc.get_distance(target);
+    int32_t angle_cd = wrap_360_cd(loc.get_bearing_to(target) - ahrs.yaw_sensor);
+    if (distance < 2.0f) {
+        // avoid a fast-rotating arrow at small distances
+        angle_cd = 0;
+    }
+    backend->write(x, y, false, "ADS%c", get_arrow_font_index(angle_cd));
+    draw_distance(x+4, y, distance, true);
+    ftype vertical_distance;
+    if (alt_valid && target.get_height_above(loc, vertical_distance)) {
+        draw_vdistance(x+3, y+1, vertical_distance);
+    }
+}
+#endif  // HAL_ADSB_ENABLED
 
 void AP_OSD_Screen::draw_heading(uint8_t x, uint8_t y)
 {
@@ -3777,6 +3831,9 @@ void AP_OSD_Screen::draw(void)
     DRAW_SETTING(aspd_dem);
 #if AP_RADAR_ENABLED
     DRAW_SETTING(radar);
+#endif
+#if HAL_ADSB_ENABLED
+    DRAW_SETTING(adsb);
 #endif
     DRAW_SETTING(callsign);
     DRAW_SETTING(current2);
