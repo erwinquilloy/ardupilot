@@ -343,8 +343,15 @@ servo trims while still actively flying — no need to land between
 adjustments. Exiting the mode stops the loop.
 
 - **Enable:** set any `FLTMODE_n = 27` (or use FLTMODE_EXT slots 7..12)
-- The same `SERVO_AUTO_TRIM` / `SAT_FINISHTHRESH` parameters that
-  control the always-on auto-trim apply here too.
+- **When it trims:** only while roll and pitch demands are within ±7°
+  and ground and air speed are both 8 m/s or more, so turns and slow
+  flight are skipped. Trims are saved every 10 s.
+- **`SERVO_AUTO_TRIM` decides when it stops:** `0` keeps trimming until
+  you leave the mode; `1` stops by itself once every surface has settled
+  (`SAT_FINISHTHRESH`, "Servo auto trim finished") and sets the
+  parameter back to 0 — the plane keeps flying Auto Trim, it just stops
+  trimming; `2` trims in every eligible mode anyway, so the mode adds
+  nothing. See [Servo auto-trim](#auto-trim-improvements).
 - The mode shares Course Hold's `CRUISE_YAW_RATE` + `FLIGHT_OPTIONS`
   bit 20 (yaw-stick steers locked heading) behaviour because it
   inherits from `ModeCourseHold`.
@@ -1180,9 +1187,28 @@ Terrain-aware via `AP_Terrain` where available.
 
 ## Auto-trim improvements
 
-- Servo auto-trim only triggers when `SERVO_AUTO_TRIM = 1` (one-shot);
-  the param self-disables back to 0 after a successful trim run, so a
-  follow-up flight doesn't accidentally re-trim.
+Servo auto-trim moves `SERVOn_TRIM` so the roll and pitch controllers'
+integrators drain toward zero. There are three ways to run it:
+
+| How | Runs | Stops |
+|---|---|---|
+| `SERVO_AUTO_TRIM = 1` (once) | in every eligible mode, from takeoff | by itself once every surface has settled; the parameter then goes back to 0, so the next flight doesn't re-trim |
+| `SERVO_AUTO_TRIM = 2` (permanent) | in every eligible mode, every flight | never — it keeps correcting for the whole flight |
+| Auto Trim mode (27) or `RCx_OPTION = 200` | on demand, even with `SERVO_AUTO_TRIM = 0` | when you leave the mode or flip the switch low (or on settling, if `SERVO_AUTO_TRIM = 1`) |
+
+- **Eligible modes:** FBWA, Auto Trim, and the modes that manage the
+  throttle themselves — FBWB, CRUISE, LOITER, RTL, GUIDED, CIRCLE,
+  THERMAL. Never MANUAL, STABILIZE, ACRO, Course Hold, AUTO or TAKEOFF,
+  nor with VTOL motors running. The `RCx_OPTION = 200` switch does
+  nothing in a non-eligible mode.
+- **Conditions:** armed and flying, roll and pitch demands within ±7°,
+  ground and air speed both 8 m/s or more.
+- **Rate and limits:** each surface moves at most about 2 µs per second,
+  never more than ±25 % of its range from centre; trims are saved every
+  10 s. Leave `SERVOx_ABS_MIN/MAX` at 0, or auto-trim also slides and saves
+  `SERVOx_MIN/MAX`.
+- With `SERVO_AUTO_TRIM = 2` the switch cannot stop the trimming — set
+  the parameter to 0 or 1 to use the switch.
 - GCS reports trim progress per surface: "Ailerons trim finished",
   "Elevator trim finished", then "Servo auto trim finished".
 - `SAT_FINISHTHRESH` (default 20, range 0–255) — the PWM-microsecond
