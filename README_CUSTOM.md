@@ -218,8 +218,8 @@ ArduPlane V<x.y.z> Custom <FORK_VERSION>[ Light] (<git-hash>)
 For example:
 
 ```
-ArduPlane V4.7.1 Custom v2.0 (c06cfd5)        # 2 MB board (full track)
-ArduPlane V4.7.1 Custom v2.0 Light (c06cfd5)  # 1 MB board (light track)
+ArduPlane V4.7.1 Custom v2.0 (f9823a9)        # 2 MB board (full track)
+ArduPlane V4.7.1 Custom v2.0 Light (f9823a9)  # 1 MB board (light track)
 ```
 
 The upstream `ArduPlane V4.7.1` prefix is kept so GCS tools that parse
@@ -2249,11 +2249,11 @@ Measured at **v2.0**:
 
 | Board | MCU / Flash | Free after fork features | vs v1.1 | Status |
 |---|---|---:|---:|---|
-| MatekF765-Wing | F7 / 2 MB | **557.7 KB** | +38.3 | Ships — Matek F765-WING (most flash headroom in the fleet) |
-| KakuteH7-Wing | H7 / 2 MB | **146.8 KB** | +43.3 | Ships — Holybro Kakute H743 Wing |
-| TBS_LUCID_H7_OEM | H7 / 2 MB | **131.4 KB** | new | **New in v2.0** — TBS Lucid H7 OEM |
-| MatekH743-bdshot | H7 / 2 MB | **129.4 KB** | +30.4 | Ships — Matek H743-WING (bidirectional DShot) |
-| XFLY-H743-bdshot | H7 / 2 MB | **117.9 KB** | new | **New in v2.0** — XFly VTOL kit FC (bidirectional DShot); tightest of the full fleet |
+| MatekF765-Wing | F7 / 2 MB | **556.9 KB** | +37.5 | Ships — Matek F765-WING (most flash headroom in the fleet) |
+| KakuteH7-Wing | H7 / 2 MB | **146.3 KB** | +42.8 | Ships — Holybro Kakute H743 Wing |
+| TBS_LUCID_H7_OEM | H7 / 2 MB | **130.9 KB** | new | **New in v2.0** — TBS Lucid H7 OEM |
+| MatekH743-bdshot | H7 / 2 MB | **128.8 KB** | +29.8 | Ships — Matek H743-WING (bidirectional DShot) |
+| XFLY-H743-bdshot | H7 / 2 MB | **117.4 KB** | new | **New in v2.0** — XFly VTOL kit FC (bidirectional DShot); tightest of the full fleet |
 
 Every returning board gained 30–43 KB over v1.1, mostly from ArduPlane 4.7's smaller EKF3
 and from backends 4.7 no longer builds for 2 MB boards (External AHRS,
@@ -2294,13 +2294,13 @@ Measured at **v2.0** with radar, `LAND_WIND_DIST` and `LAND_WIND_STRICT` on:
 | Board | Flash | Free after fork features | vs v1.1 | Status |
 |---|---:|---:|---:|---|
 | KakuteF4-Wing-Buzz | 1 MB | **81.8 KB** | +2.2 | Ships — Kakute F4 Wing + tone buzzer (see below) |
-| speedybeef4v3 | 1 MB | **50.5 KB** | +0.1 | Ships — most F4 headroom with gimbal support |
+| speedybeef4v3 | 1 MB | **50.4 KB** | 0.0 | Ships — most F4 headroom with gimbal support |
 | MatekF405-STD | 1 MB | **47.2 KB** | +2.3 | Ships |
 | omnibusf4pro | 1 MB | **42.1 KB** | +2.3 | Ships — Omnibus F4 Pro FPV FC |
 | MatekF405-TE-bdshot | 1 MB | **35.3 KB** | −4.5 | Ships — RunCam camera control now compiled in |
 | AtomRCF405NAVI | 1 MB | **32.2 KB** | +1.3 | Ships — AtomRC F405 Navi FPV FC |
 | SpeedyBeeF405WING | 1 MB | **27.0 KB** | −0.1 | Ships |
-| SpeedyBeeF405WING-Buzz | 1 MB | **26.7 KB** | −0.1 | Ships — SpeedyBee F405 WING + tone buzzer (see below) |
+| SpeedyBeeF405WING-Buzz | 1 MB | **26.6 KB** | −0.2 | Ships — SpeedyBee F405 WING + tone buzzer (see below) |
 | MatekF405-Wing-bdshot | 1 MB | **21.0 KB** | −3.7 | Ships — tightest of the F4 fleet; RunCam camera control now compiled in |
 
 ArduPlane 4.7's smaller EKF3 roughly pays for the new upstream features and the
