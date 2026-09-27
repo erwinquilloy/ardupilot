@@ -22913,6 +22913,18 @@
       <param humanName="RADAR_Y" name="OSD1_RADAR_Y" documentation="Vertical position on screen">
         <field name="Range">0 15</field>
       </param>
+      <param humanName="ADSB_EN" name="OSD1_ADSB_EN" documentation="Displays the nearest ADS-B aircraft: a bearing arrow and horizontal distance, with its altitude relative to this aircraft on the line below. Only aircraft within ADSB_LIST_RADIUS and ADSB_LIST_ALT are considered. Blank when none is tracked. Needs an ADS-B receiver (ADSB_TYPE).">
+        <values>
+          <value code="0">Disabled</value>
+          <value code="1">Enabled</value>
+        </values>
+      </param>
+      <param humanName="ADSB_X" name="OSD1_ADSB_X" documentation="Horizontal position on screen">
+        <field name="Range">0 29</field>
+      </param>
+      <param humanName="ADSB_Y" name="OSD1_ADSB_Y" documentation="Vertical position on screen">
+        <field name="Range">0 15</field>
+      </param>
     </parameters>
     <parameters name="OSD2_">
       <param humanName="Enable screen" name="OSD2_ENABLE" documentation="Enable this screen" user="Standard">
@@ -23934,6 +23946,18 @@
         <field name="Range">0 29</field>
       </param>
       <param humanName="RADAR_Y" name="OSD2_RADAR_Y" documentation="Vertical position on screen">
+        <field name="Range">0 15</field>
+      </param>
+      <param humanName="ADSB_EN" name="OSD2_ADSB_EN" documentation="Displays the nearest ADS-B aircraft: a bearing arrow and horizontal distance, with its altitude relative to this aircraft on the line below. Only aircraft within ADSB_LIST_RADIUS and ADSB_LIST_ALT are considered. Blank when none is tracked. Needs an ADS-B receiver (ADSB_TYPE).">
+        <values>
+          <value code="0">Disabled</value>
+          <value code="1">Enabled</value>
+        </values>
+      </param>
+      <param humanName="ADSB_X" name="OSD2_ADSB_X" documentation="Horizontal position on screen">
+        <field name="Range">0 29</field>
+      </param>
+      <param humanName="ADSB_Y" name="OSD2_ADSB_Y" documentation="Vertical position on screen">
         <field name="Range">0 15</field>
       </param>
     </parameters>
@@ -24959,6 +24983,18 @@
       <param humanName="RADAR_Y" name="OSD3_RADAR_Y" documentation="Vertical position on screen">
         <field name="Range">0 15</field>
       </param>
+      <param humanName="ADSB_EN" name="OSD3_ADSB_EN" documentation="Displays the nearest ADS-B aircraft: a bearing arrow and horizontal distance, with its altitude relative to this aircraft on the line below. Only aircraft within ADSB_LIST_RADIUS and ADSB_LIST_ALT are considered. Blank when none is tracked. Needs an ADS-B receiver (ADSB_TYPE).">
+        <values>
+          <value code="0">Disabled</value>
+          <value code="1">Enabled</value>
+        </values>
+      </param>
+      <param humanName="ADSB_X" name="OSD3_ADSB_X" documentation="Horizontal position on screen">
+        <field name="Range">0 29</field>
+      </param>
+      <param humanName="ADSB_Y" name="OSD3_ADSB_Y" documentation="Vertical position on screen">
+        <field name="Range">0 15</field>
+      </param>
     </parameters>
     <parameters name="OSD4_">
       <param humanName="Enable screen" name="OSD4_ENABLE" documentation="Enable this screen" user="Standard">
@@ -25982,6 +26018,18 @@
       <param humanName="RADAR_Y" name="OSD4_RADAR_Y" documentation="Vertical position on screen">
         <field name="Range">0 15</field>
       </param>
+      <param humanName="ADSB_EN" name="OSD4_ADSB_EN" documentation="Displays the nearest ADS-B aircraft: a bearing arrow and horizontal distance, with its altitude relative to this aircraft on the line below. Only aircraft within ADSB_LIST_RADIUS and ADSB_LIST_ALT are considered. Blank when none is tracked. Needs an ADS-B receiver (ADSB_TYPE).">
+        <values>
+          <value code="0">Disabled</value>
+          <value code="1">Enabled</value>
+        </values>
+      </param>
+      <param humanName="ADSB_X" name="OSD4_ADSB_X" documentation="Horizontal position on screen">
+        <field name="Range">0 29</field>
+      </param>
+      <param humanName="ADSB_Y" name="OSD4_ADSB_Y" documentation="Vertical position on screen">
+        <field name="Range">0 15</field>
+      </param>
     </parameters>
     <parameters name="OSD5_">
       <param humanName="Enable screen" name="OSD5_ENABLE" documentation="Enable this screen" user="Standard">
@@ -27003,6 +27051,18 @@
         <field name="Range">0 29</field>
       </param>
       <param humanName="RADAR_Y" name="OSD5_RADAR_Y" documentation="Vertical position on screen">
+        <field name="Range">0 15</field>
+      </param>
+      <param humanName="ADSB_EN" name="OSD5_ADSB_EN" documentation="Displays the nearest ADS-B aircraft: a bearing arrow and horizontal distance, with its altitude relative to this aircraft on the line below. Only aircraft within ADSB_LIST_RADIUS and ADSB_LIST_ALT are considered. Blank when none is tracked. Needs an ADS-B receiver (ADSB_TYPE).">
+        <values>
+          <value code="0">Disabled</value>
+          <value code="1">Enabled</value>
+        </values>
+      </param>
+      <param humanName="ADSB_X" name="OSD5_ADSB_X" documentation="Horizontal position on screen">
+        <field name="Range">0 29</field>
+      </param>
+      <param humanName="ADSB_Y" name="OSD5_ADSB_Y" documentation="Vertical position on screen">
         <field name="Range">0 15</field>
       </param>
     </parameters>
