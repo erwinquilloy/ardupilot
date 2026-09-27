@@ -1330,11 +1330,11 @@ integrators drain toward zero. There are three ways to run it:
 | `SERVO_AUTO_TRIM = 2` (permanent) | in every eligible mode, every flight | never — it keeps correcting for the whole flight |
 | Auto Trim mode (27) or `RCx_OPTION = 200` | on demand, even with `SERVO_AUTO_TRIM = 0` | when you leave the mode or flip the switch low (or on settling, if `SERVO_AUTO_TRIM = 1`) |
 
-- **Eligible modes:** FBWA, Auto Trim, and the modes that manage the
-  throttle themselves — FBWB, CRUISE, LOITER, RTL, GUIDED, CIRCLE,
-  THERMAL. Never MANUAL, STABILIZE, ACRO, Course Hold, AUTO or TAKEOFF,
-  nor with VTOL motors running. The `RCx_OPTION = 200` switch does
-  nothing in a non-eligible mode.
+- **Eligible modes:** FBWA, Course Hold (new in v2.1), Auto Trim, and
+  the modes that manage the throttle themselves — FBWB, CRUISE, LOITER,
+  RTL, GUIDED, CIRCLE, THERMAL. Never MANUAL, STABILIZE, ACRO, AUTO or
+  TAKEOFF, nor with VTOL motors running. The `RCx_OPTION = 200` switch
+  does nothing in a non-eligible mode.
 - **Conditions:** armed and flying, roll and pitch demands within ±7°,
   ground and air speed both 8 m/s or more.
 - **Rate and limits:** each surface moves at most about 2 µs per second,
@@ -1351,6 +1351,10 @@ integrators drain toward zero. There are three ways to run it:
   higher = more lenient. Default raised from a hardcoded 4 to match
   ArduCustom, so users with mechanical slop or noisy inputs see
   autotrim settle faster.
+- **Continuous trim in Course Hold (new in v2.1):** `SERVO_AUTO_TRIM = 2`
+  now also trims in Course Hold, so with the modes above it runs for
+  practically the whole manual-throttle flight, like iNav's continuous
+  servo autotrim. Before v2.1 Course Hold was excluded.
 
 ## Move sticks to cancel auto launch
 
