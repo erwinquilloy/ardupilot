@@ -35900,6 +35900,27 @@ Vertical position on screen
 
 - Range: 0 15
 
+## OSD1_ADSB_EN: ADSB_EN
+
+Displays the nearest ADS-B aircraft: a bearing arrow and horizontal distance, with its altitude relative to this aircraft on the line below. Only aircraft within ADSB_LIST_RADIUS and ADSB_LIST_ALT are considered. Blank when none is tracked. Needs an ADS-B receiver (ADSB_TYPE).
+
+|Value|Meaning|
+|:---:|:---:|
+|0|Disabled|
+|1|Enabled|
+
+## OSD1_ADSB_X: ADSB_X
+
+Horizontal position on screen
+
+- Range: 0 29
+
+## OSD1_ADSB_Y: ADSB_Y
+
+Vertical position on screen
+
+- Range: 0 15
+
 # OSD2 Parameters
 
 ## OSD2_ENABLE: Enable screen
@@ -37683,6 +37704,27 @@ Horizontal position on screen
 - Range: 0 29
 
 ## OSD2_RADAR_Y: RADAR_Y
+
+Vertical position on screen
+
+- Range: 0 15
+
+## OSD2_ADSB_EN: ADSB_EN
+
+Displays the nearest ADS-B aircraft: a bearing arrow and horizontal distance, with its altitude relative to this aircraft on the line below. Only aircraft within ADSB_LIST_RADIUS and ADSB_LIST_ALT are considered. Blank when none is tracked. Needs an ADS-B receiver (ADSB_TYPE).
+
+|Value|Meaning|
+|:---:|:---:|
+|0|Disabled|
+|1|Enabled|
+
+## OSD2_ADSB_X: ADSB_X
+
+Horizontal position on screen
+
+- Range: 0 29
+
+## OSD2_ADSB_Y: ADSB_Y
 
 Vertical position on screen
 
@@ -39476,6 +39518,27 @@ Vertical position on screen
 
 - Range: 0 15
 
+## OSD3_ADSB_EN: ADSB_EN
+
+Displays the nearest ADS-B aircraft: a bearing arrow and horizontal distance, with its altitude relative to this aircraft on the line below. Only aircraft within ADSB_LIST_RADIUS and ADSB_LIST_ALT are considered. Blank when none is tracked. Needs an ADS-B receiver (ADSB_TYPE).
+
+|Value|Meaning|
+|:---:|:---:|
+|0|Disabled|
+|1|Enabled|
+
+## OSD3_ADSB_X: ADSB_X
+
+Horizontal position on screen
+
+- Range: 0 29
+
+## OSD3_ADSB_Y: ADSB_Y
+
+Vertical position on screen
+
+- Range: 0 15
+
 # OSD4 Parameters
 
 ## OSD4_ENABLE: Enable screen
@@ -41264,6 +41327,27 @@ Vertical position on screen
 
 - Range: 0 15
 
+## OSD4_ADSB_EN: ADSB_EN
+
+Displays the nearest ADS-B aircraft: a bearing arrow and horizontal distance, with its altitude relative to this aircraft on the line below. Only aircraft within ADSB_LIST_RADIUS and ADSB_LIST_ALT are considered. Blank when none is tracked. Needs an ADS-B receiver (ADSB_TYPE).
+
+|Value|Meaning|
+|:---:|:---:|
+|0|Disabled|
+|1|Enabled|
+
+## OSD4_ADSB_X: ADSB_X
+
+Horizontal position on screen
+
+- Range: 0 29
+
+## OSD4_ADSB_Y: ADSB_Y
+
+Vertical position on screen
+
+- Range: 0 15
+
 # OSD5 Parameters
 
 ## OSD5_ENABLE: Enable screen
@@ -43047,6 +43131,27 @@ Horizontal position on screen
 - Range: 0 29
 
 ## OSD5_RADAR_Y: RADAR_Y
+
+Vertical position on screen
+
+- Range: 0 15
+
+## OSD5_ADSB_EN: ADSB_EN
+
+Displays the nearest ADS-B aircraft: a bearing arrow and horizontal distance, with its altitude relative to this aircraft on the line below. Only aircraft within ADSB_LIST_RADIUS and ADSB_LIST_ALT are considered. Blank when none is tracked. Needs an ADS-B receiver (ADSB_TYPE).
+
+|Value|Meaning|
+|:---:|:---:|
+|0|Disabled|
+|1|Enabled|
+
+## OSD5_ADSB_X: ADSB_X
+
+Horizontal position on screen
+
+- Range: 0 29
+
+## OSD5_ADSB_Y: ADSB_Y
 
 Vertical position on screen
 

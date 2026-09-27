@@ -30927,6 +30927,30 @@
         "low": "0"
       }
     },
+    "OSD1_ADSB_EN": {
+      "Description": "Displays the nearest ADS-B aircraft: a bearing arrow and horizontal distance, with its altitude relative to this aircraft on the line below. Only aircraft within ADSB_LIST_RADIUS and ADSB_LIST_ALT are considered. Blank when none is tracked. Needs an ADS-B receiver (ADSB_TYPE).",
+      "DisplayName": "ADSB_EN",
+      "Values": {
+        "0": "Disabled",
+        "1": "Enabled"
+      }
+    },
+    "OSD1_ADSB_X": {
+      "Description": "Horizontal position on screen",
+      "DisplayName": "ADSB_X",
+      "Range": {
+        "high": "29",
+        "low": "0"
+      }
+    },
+    "OSD1_ADSB_Y": {
+      "Description": "Vertical position on screen",
+      "DisplayName": "ADSB_Y",
+      "Range": {
+        "high": "15",
+        "low": "0"
+      }
+    },
     "OSD1_ALTITUDE_EN": {
       "Description": "Enables display of altitude AGL",
       "DisplayName": "ALTITUDE_EN",
@@ -32972,6 +32996,30 @@
       "DisplayName": "ACRVOLT_Y",
       "Range": {
         "high": "21",
+        "low": "0"
+      }
+    },
+    "OSD2_ADSB_EN": {
+      "Description": "Displays the nearest ADS-B aircraft: a bearing arrow and horizontal distance, with its altitude relative to this aircraft on the line below. Only aircraft within ADSB_LIST_RADIUS and ADSB_LIST_ALT are considered. Blank when none is tracked. Needs an ADS-B receiver (ADSB_TYPE).",
+      "DisplayName": "ADSB_EN",
+      "Values": {
+        "0": "Disabled",
+        "1": "Enabled"
+      }
+    },
+    "OSD2_ADSB_X": {
+      "Description": "Horizontal position on screen",
+      "DisplayName": "ADSB_X",
+      "Range": {
+        "high": "29",
+        "low": "0"
+      }
+    },
+    "OSD2_ADSB_Y": {
+      "Description": "Vertical position on screen",
+      "DisplayName": "ADSB_Y",
+      "Range": {
+        "high": "15",
         "low": "0"
       }
     },
@@ -35023,6 +35071,30 @@
         "low": "0"
       }
     },
+    "OSD3_ADSB_EN": {
+      "Description": "Displays the nearest ADS-B aircraft: a bearing arrow and horizontal distance, with its altitude relative to this aircraft on the line below. Only aircraft within ADSB_LIST_RADIUS and ADSB_LIST_ALT are considered. Blank when none is tracked. Needs an ADS-B receiver (ADSB_TYPE).",
+      "DisplayName": "ADSB_EN",
+      "Values": {
+        "0": "Disabled",
+        "1": "Enabled"
+      }
+    },
+    "OSD3_ADSB_X": {
+      "Description": "Horizontal position on screen",
+      "DisplayName": "ADSB_X",
+      "Range": {
+        "high": "29",
+        "low": "0"
+      }
+    },
+    "OSD3_ADSB_Y": {
+      "Description": "Vertical position on screen",
+      "DisplayName": "ADSB_Y",
+      "Range": {
+        "high": "15",
+        "low": "0"
+      }
+    },
     "OSD3_ALTITUDE_EN": {
       "Description": "Enables display of altitude AGL",
       "DisplayName": "ALTITUDE_EN",
@@ -37071,6 +37143,30 @@
         "low": "0"
       }
     },
+    "OSD4_ADSB_EN": {
+      "Description": "Displays the nearest ADS-B aircraft: a bearing arrow and horizontal distance, with its altitude relative to this aircraft on the line below. Only aircraft within ADSB_LIST_RADIUS and ADSB_LIST_ALT are considered. Blank when none is tracked. Needs an ADS-B receiver (ADSB_TYPE).",
+      "DisplayName": "ADSB_EN",
+      "Values": {
+        "0": "Disabled",
+        "1": "Enabled"
+      }
+    },
+    "OSD4_ADSB_X": {
+      "Description": "Horizontal position on screen",
+      "DisplayName": "ADSB_X",
+      "Range": {
+        "high": "29",
+        "low": "0"
+      }
+    },
+    "OSD4_ADSB_Y": {
+      "Description": "Vertical position on screen",
+      "DisplayName": "ADSB_Y",
+      "Range": {
+        "high": "15",
+        "low": "0"
+      }
+    },
     "OSD4_ALTITUDE_EN": {
       "Description": "Enables display of altitude AGL",
       "DisplayName": "ALTITUDE_EN",
@@ -39116,6 +39212,30 @@
       "DisplayName": "ACRVOLT_Y",
       "Range": {
         "high": "21",
+        "low": "0"
+      }
+    },
+    "OSD5_ADSB_EN": {
+      "Description": "Displays the nearest ADS-B aircraft: a bearing arrow and horizontal distance, with its altitude relative to this aircraft on the line below. Only aircraft within ADSB_LIST_RADIUS and ADSB_LIST_ALT are considered. Blank when none is tracked. Needs an ADS-B receiver (ADSB_TYPE).",
+      "DisplayName": "ADSB_EN",
+      "Values": {
+        "0": "Disabled",
+        "1": "Enabled"
+      }
+    },
+    "OSD5_ADSB_X": {
+      "Description": "Horizontal position on screen",
+      "DisplayName": "ADSB_X",
+      "Range": {
+        "high": "29",
+        "low": "0"
+      }
+    },
+    "OSD5_ADSB_Y": {
+      "Description": "Vertical position on screen",
+      "DisplayName": "ADSB_Y",
+      "Range": {
+        "high": "15",
         "low": "0"
       }
     },
