@@ -75,10 +75,15 @@ void ModeFBWA::check_transition_handover()
 void ModeFBWA::update()
 {
 #if HAL_QUADPLANE_ENABLED
-    check_transition_handover();
-    if (plane.control_mode != &plane.mode_fbwa) {
-        // handover took us to FBWB; do not keep driving FBWA targets
-        return;
+    // AUTOTUNE borrows this update() for its stick mapping, so only run the
+    // handover when FBWA itself is the active mode. Testing control_mode
+    // unconditionally returned early in AUTOTUNE and froze nav_roll/pitch.
+    if (plane.control_mode == &plane.mode_fbwa) {
+        check_transition_handover();
+        if (plane.control_mode != &plane.mode_fbwa) {
+            // handover took us to FBWB; do not keep driving FBWA targets
+            return;
+        }
     }
 #endif
 
