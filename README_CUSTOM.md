@@ -297,30 +297,32 @@ input still rolls the plane; releasing returns to the locked course.
 > Course Hold either way — only the label is wrong. To teach MAVProxy the right
 > name, edit `mode_mapping_apm` in `modules/mavlink/pymavlink/mavutil.py`.
 
-#### 📡 Yaapu telemetry — showing and announcing Course Hold
+#### 📡 Yaapu telemetry — showing and announcing Course Hold and Auto Trim
 
 Stock Yaapu's plane-mode table stops short of mode 26, so Course Hold
-shows as a blank chip with no audio cue. Two drop-in files fix it —
+shows as a blank chip with no audio cue, and Auto Trim (mode 27) has no
+entry at all, which stops the Yaapu script. Drop-in files fix both —
 [`Tools/yaapu-coursehold/`](Tools/yaapu-coursehold/README.md) in this
-repo, and attached to every release as `plane.lua` + `coursehold.wav`
-so you don't need to clone anything.
+repo, and attached to every release as `plane.lua` + `coursehold.wav` +
+`autotrim.wav` so you don't need to clone anything.
 
 On an **EdgeTX widget install** (e.g. RadioMaster TX16S):
 
 1. Replace Yaapu's `plane.lua` under `WIDGETS/yaapu/` with the one
-   provided — this adds `CourseHold` at index 27 (Yaapu indexes
-   `flight_mode + 1`, so 27 = our mode 26).
+   provided — this adds `CourseHold` at index 27 and `AutoTrim` at
+   index 28 (Yaapu indexes `flight_mode + 1`, so 27 = our mode 26 and
+   28 = mode 27).
 2. Delete the `plane.luac` next to it; it's a compiled cache and will
    regenerate.
-3. Copy `coursehold.wav` into **`WIDGETS/yaapu/sounds/en/`** (your
-   language folder if not English).
+3. Copy `coursehold.wav` and `autotrim.wav` into
+   **`WIDGETS/yaapu/sounds/en/`** (your language folder if not English).
 
 > ⚠️ **Right name but no sound?** That's the WAV being in a folder
 > Yaapu doesn't read — the two things are looked up separately, so the
 > HUD text can work while the audio silently doesn't. The sound folder
 > depends on which Yaapu build you run:
 >
-> | Build | `coursehold.wav` goes in |
+> | Build | the WAVs go in |
 > |---|---|
 > | EdgeTX widget (TX16S) | `WIDGETS/yaapu/sounds/en/` |
 > | OpenTX / Horus script | `SOUNDS/yaapu0/en/` |
@@ -348,6 +350,10 @@ adjustments. Exiting the mode stops the loop.
   inherits from `ModeCourseHold`.
 - Upstream ArduPlane 4.7.1 does not use mode number 27. As with Course Hold,
   GCSs that read `AVAILABLE_MODES` show it by name (**AUTO TRIM**).
+- **Yaapu:** install the fork's `plane.lua` first — stock Yaapu has no
+  entry for mode 27 and its script stops when you switch into Auto Trim.
+  The pack also adds an `autotrim.wav` cue; see
+  [Yaapu telemetry](#-yaapu-telemetry--showing-and-announcing-course-hold-and-auto-trim).
 
 ### RC aux switch entries (Plane)
 Plane's `RCx_OPTION` enum gains four entries — two so the pilot can
@@ -2850,7 +2856,7 @@ collected here rather than scattered through the feature sections.
 | **Full parameter reference** | Every parameter this firmware exposes, with descriptions, units and ranges — your GCS ships upstream metadata and will not describe fork parameters | [below](#full-parameter-reference) |
 | **Bitmask calculator** | Tick bits, copy out the integer — or paste a value back to see which bits are set. Knows this fork's bits | [below](#bitmask-calculator) |
 | **TECS tuning helper** | Step-by-step TECS tuning from the transmitter, reading live telemetry — Ethos and EdgeTX | [below](#tecs-tuning-helper-ethos--edgetx) |
-| **Yaapu Course Hold pack** | Makes mode 26 (Course Hold) show a name and speak its cue on Yaapu telemetry | [below](#yaapu-course-hold-telemetry-pack) |
+| **Yaapu Course Hold pack** | Makes modes 26 (Course Hold) and 27 (Auto Trim) show a name and speak their cue on Yaapu telemetry | [below](#yaapu-course-hold-telemetry-pack) |
 
 The parameter reference and the bitmask calculator cover **both** release
 tracks — they are generated from the same source.
@@ -2984,13 +2990,14 @@ the design and workflow are mf0o's. Built on Yaapu's
 ## Yaapu Course Hold telemetry pack
 
 Stock Yaapu's plane-mode table stops short of mode 26, so **Course Hold**
-draws as a blank chip with no audio cue. Two drop-in files fix it:
+draws as a blank chip with no audio cue, and **Auto Trim** (mode 27) has no
+entry at all, which stops the Yaapu script. Drop-in files fix both:
 [`Tools/yaapu-coursehold/`](Tools/yaapu-coursehold/README.md) in this repo,
-also attached to every release as `plane.lua` + `coursehold.wav` so you do
-not need to clone anything. Full install instructions — including the
+also attached to every release as `plane.lua` + `coursehold.wav` +
+`autotrim.wav` so you do not need to clone anything. Full install instructions — including the
 EdgeTX widget sound path, which is not the one you would guess — are in
 [that directory's README](Tools/yaapu-coursehold/README.md) and in the
-[Course Hold flight-mode section](#-yaapu-telemetry--showing-and-announcing-course-hold).
+[Course Hold flight-mode section](#-yaapu-telemetry--showing-and-announcing-course-hold-and-auto-trim).
 
 ---
 

@@ -24,6 +24,9 @@ enum FlightMode {
     QAUTOTUNE	    = 22,
     QACRO         = 23,
     THERMAL       = 24,
+    LOITER_ALT_QLAND = 25,
+    COURSE_HOLD   = 26,  -- Custom fork
+    AUTO_TRIM     = 27,  -- Custom fork
 };
 --]]
 
@@ -57,6 +60,7 @@ flightModes[24]="QAcro"
 flightModes[25]="Thermal"
 flightModes[26]=""
 flightModes[27]="CourseHold"
+flightModes[28]="AutoTrim"
 --
 return {flightModes=flightModes}
 
