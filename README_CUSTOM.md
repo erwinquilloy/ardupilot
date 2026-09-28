@@ -2591,14 +2591,40 @@ pitch error was learned as −2.91° / −2.04°, and a −4.01° / −2.86° er
 
 ## `Q_M_FRTB_RATIO` — Tri-frame front/rear thrust balance
 
-Scales the rear motor's thrust output relative to the front pair on
-Tri-class VTOL planes. Lets you bias the hover thrust split without
-rebuilding the airframe or re-tuning the rate loop.
+Scales the tail motor's thrust on Tri-class VTOL planes by
+1 / `Q_M_FRTB_RATIO`. The two front motors are not changed.
 
 - `Q_M_FRTB_RATIO = 1.0` (default) — unchanged from upstream behaviour
-- `< 1.0` — push the rear motor harder (front motors do less work)
-- `> 1.0` — push the front motors harder (rear motor does less work)
-- Range: 0.5–2.0, step 0.001, Q_M_ subgroup
+- `< 1.0` — the tail motor works harder, for a tail-heavy aircraft
+- `> 1.0` — the tail motor works less, for a nose-heavy aircraft
+- Range: 0.5–2.0, step 0.001, Q_M_ subgroup. Values of 0 or below are
+  ignored (treated as 1.0); other values outside the range are clamped.
+
+**What it actually changes.** It is a feed-forward trim for an
+off-centre CG. The pitch controller already holds a tri level with a
+CG offset, by carrying the imbalance in its I-term. This parameter
+moves that correction into the mixer, so the I-term starts near zero
+and there is no pitch lurch at takeoff while it builds up. On a
+balanced aircraft, a value other than 1.0 creates the very imbalance
+it is meant to remove: in SITL, 0.8 or 1.25 on a balanced tri gave a
+10–13° pitch transient on takeoff before the hover settled.
+
+**How to set it.** Hover in QHOVER and look at the pitch I-term
+(`PIQP.I` in the log). Near zero means leave the ratio at 1.0. A
+steady offset means the CG is off:
+
+- `PIQP.I` steadily **negative** (the controller is holding the nose
+  down against a sagging tail) → **lower** the ratio
+- `PIQP.I` steadily **positive** → **raise** the ratio
+
+Change it in steps of about 0.05 and re-check. As a scale, on the
+SITL tri a ratio of 0.8 needed about +0.13 of I-term to cancel it, and
+1.25 about −0.14.
+
+The tail motor's share of pitch control is scaled the same way. The
+mixer accounts for the tail motor reaching full throttle earlier with
+a ratio below 1.0. With a reversed-pitch tri, the single motor is at
+the front and the same scaling applies to it.
 
 Only the `AP_MotorsTri` backend uses this; ignored for quad / hex /
 oct frames.
