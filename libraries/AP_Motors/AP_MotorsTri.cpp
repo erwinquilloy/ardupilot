@@ -179,7 +179,18 @@ void AP_MotorsTri::output_armed_stabilizing()
         }
     }
 
-    float pivot_thrust_max = cosf(_pivot_angle);
+    // Q_M_FRTB_RATIO (ArduCustom a3867c0938) biases the tri's front/rear
+    // balance by scaling rear thrust, and so rear pitch authority, by 1/ratio;
+    // default 1.0 = no change. Constrained here because @Range is only a GCS
+    // hint: 0 would divide by zero and a negative value would cut the rear
+    // motor. The rear motor saturates once its pre-scale demand reaches
+    // 1/rear_gain, so that is what the headroom check below must use -
+    // applying the ratio after the check let the rear clip at full throttle
+    // without setting limit.pitch/throttle_upper. Capped at 1 because a ratio
+    // above 1 would otherwise let thrust_max exceed full throttle.
+    const float frtb_ratio = constrain_float(_front_rear_throttle_balance_ratio, 0.5f, 2.0f);
+    const float rear_gain = 1.0f / (frtb_ratio * cosf(_pivot_angle));
+    float pivot_thrust_max = MIN(1.0f / rear_gain, 1.0f);
     float thrust_max = 1.0f;
 
     // sanity check throttle is above zero and below current limited throttle
@@ -267,11 +278,9 @@ void AP_MotorsTri::output_armed_stabilizing()
     _thrust_left = throttle_thrust_best_plus_adj + rpy_scale * _thrust_left;
     _thrust_rear = throttle_thrust_best_plus_adj + rpy_scale * _thrust_rear;
 
-    // scale pivot thrust to account for pivot angle
+    // scale pivot thrust to account for pivot angle and Q_M_FRTB_RATIO
     // we should not need to check for divide by zero as _pivot_angle is constrained to the 5deg ~ 80 deg range
-    // Q_M_FRTB_RATIO (ArduCustom a3867c0938) further scales rear thrust to
-    // bias the tri's front/rear balance; defaults to 1.0 = no change.
-    _thrust_rear = _thrust_rear / _front_rear_throttle_balance_ratio / cosf(_pivot_angle);
+    _thrust_rear *= rear_gain;
 
     // constrain all outputs to 0.0f to 1.0f
     // test code should be run with these lines commented out as they should not do anything
