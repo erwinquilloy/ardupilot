@@ -181,14 +181,19 @@ void AP_MotorsTri::output_armed_stabilizing()
 
     // Q_M_FRTB_RATIO (ArduCustom a3867c0938) biases the tri's front/rear
     // balance by scaling rear thrust, and so rear pitch authority, by 1/ratio;
-    // default 1.0 = no change. Constrained here because @Range is only a GCS
+    // default 1.0 = no change. Checked here because @Range is only a GCS
     // hint: 0 would divide by zero and a negative value would cut the rear
-    // motor. The rear motor saturates once its pre-scale demand reaches
-    // 1/rear_gain, so that is what the headroom check below must use -
-    // applying the ratio after the check let the rear clip at full throttle
-    // without setting limit.pitch/throttle_upper. Capped at 1 because a ratio
-    // above 1 would otherwise let thrust_max exceed full throttle.
-    const float frtb_ratio = constrain_float(_front_rear_throttle_balance_ratio, 0.5f, 2.0f);
+    // motor. A value <= 0 is not a ratio (most likely unset or a typo), so it
+    // is ignored rather than clamped to 0.5, which would double the rear's
+    // authority (a ~60 deg pitch transient on takeoff in SITL); positive
+    // values are clamped to the documented range. The rear motor saturates
+    // once its pre-scale demand reaches 1/rear_gain, so that is what the
+    // headroom check below must use - applying the ratio after the check let
+    // the rear clip at full throttle without setting limit.pitch or
+    // limit.throttle_upper. Capped at 1 because a ratio above 1 would
+    // otherwise let thrust_max exceed full throttle.
+    const float frtb_ratio = is_positive(_front_rear_throttle_balance_ratio) ?
+                             constrain_float(_front_rear_throttle_balance_ratio, 0.5f, 2.0f) : 1.0f;
     const float rear_gain = 1.0f / (frtb_ratio * cosf(_pivot_angle));
     float pivot_thrust_max = MIN(1.0f / rear_gain, 1.0f);
     float thrust_max = 1.0f;
