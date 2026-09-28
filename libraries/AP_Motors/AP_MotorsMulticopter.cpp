@@ -231,7 +231,7 @@ const AP_Param::GroupInfo AP_MotorsMulticopter::var_info[] = {
 
     // @Param: FRTB_RATIO
     // @DisplayName: Front/rear thrust balance ratio (TRI frames only)
-    // @Description: Scales the tail motor's thrust on Tri frames by 1/ratio; the two front motors are not changed. Values below 1.0 make the tail motor work harder (for a tail-heavy aircraft); values above 1.0 reduce it (for a nose-heavy aircraft). The tail motor's share of pitch control is scaled the same way. Default 1.0 leaves the thrust split unchanged. With a reversed-pitch tri the single motor is at the front and the same scaling applies to it. Values outside 0.5 to 2.0 are clamped. Only Tri frames use this parameter.
+    // @Description: Scales the tail motor's thrust on Tri frames by 1/ratio; the two front motors are not changed. Values below 1.0 make the tail motor work harder (for a tail-heavy aircraft); values above 1.0 reduce it (for a nose-heavy aircraft). The tail motor's share of pitch control is scaled the same way. Default 1.0 leaves the thrust split unchanged. With a reversed-pitch tri the single motor is at the front and the same scaling applies to it. Values of 0 or below are ignored (treated as 1.0); other values outside 0.5 to 2.0 are clamped. Only Tri frames use this parameter.
     // @Range: 0.5 2.0
     // @Increment: 0.001
     // @User: Advanced
