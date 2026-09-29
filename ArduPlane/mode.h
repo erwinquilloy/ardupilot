@@ -947,6 +947,10 @@ private:
         climb,
         RTL,
     } submode;
+
+    // RTL altitude above home latched on entry, so RTL_ALTITUDE -1
+    // (return at current altitude) holds the entry altitude in approach
+    float rtl_alt_m;
 };
 
 class ModeQAcro : public Mode
