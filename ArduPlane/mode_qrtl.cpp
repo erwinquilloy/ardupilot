@@ -13,6 +13,7 @@ bool ModeQRTL::_enter()
     }
     submode = SubMode::RTL;
     plane.prev_WP_loc = plane.current_loc;
+    rtl_alt_m = (plane.get_RTL_altitude_cm() - plane.home.alt) * 0.01f;
 
     int32_t RTL_alt_abs_cm = plane.home.alt + quadplane.qrtl_alt_m*100UL;
     if (quadplane.motors->get_desired_spool_state() == AP_Motors::DesiredSpoolState::THROTTLE_UNLIMITED) {
@@ -196,11 +197,11 @@ void ModeQRTL::update_target_altitude()
     }
 
     /*
-      initially approach at RTL_ALT_CM, then drop down to QRTL_ALT based on maximum sink rate from TECS,
+      initially approach at RTL_ALTITUDE (altitude on entry if -1), then drop down to QRTL_ALT based on maximum sink rate from TECS,
       giving time to lose speed before we transition
      */
     const float radius = MAX(fabsf(float(plane.aparm.loiter_radius)), fabsf(float(plane.g.rtl_radius)));
-    const float rtl_alt_delta = MAX(0, plane.g.RTL_altitude - plane.quadplane.qrtl_alt_m);
+    const float rtl_alt_delta = MAX(0, rtl_alt_m - plane.quadplane.qrtl_alt_m);
     const float sink_time = rtl_alt_delta / MAX(0.6*plane.TECS_controller.get_max_sinkrate(), 1);
     const float sink_dist = plane.aparm.airspeed_cruise * sink_time;
     const float dist = plane.auto_state.wp_distance;
