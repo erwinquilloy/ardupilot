@@ -1656,7 +1656,9 @@ Affected boards: `MatekF405-TE(-bdshot)`, `MatekF405-STD`, `omnibusf4pro`,
 the rule; `XFLY-H743-bdshot` and `TBS_LUCID_H7_OEM` joined already numbered
 this way. Where a UART is missing, its number is an `EMPTY` placeholder so
 the rest stay aligned: `SERIAL2`/`SERIAL5` on `omnibusf4pro`, `SERIAL4` on
-`KakuteH7-Wing` (no UART4).
+`KakuteH7-Wing` (no UART4), `SERIAL5` on `MatekH743-bdshot`, and
+`SERIAL4`/`SERIAL6` on `XFLY-H743-bdshot`. Upstream's `KakuteF4-Wing`
+(and so `KakuteF4-Wing-Buzz`) already had an empty `SERIAL4`.
 
 The v0.3-beta boards changed `SERIAL_ORDER` only, so their default protocols
 fall on the stock per-index defaults (S1/S2 MAVLink, S3/S4 GPS); set
@@ -1693,6 +1695,36 @@ becomes `BRD_SER7_RTSCTS` on both boards.
 > (CRSF/ELRS) may need reassigning to the new `SERIALn`. On the two v2.0
 > boards, ports you never changed follow their pads automatically; only
 > values you set yourself need moving.
+
+### Configure serial ports in the Full Parameter List
+
+An `EMPTY` number has no `SERIALn_*` parameters at all, and Mission
+Planner's **Serial Ports** page (Config → Serial Ports) does not expect a
+gap. Changing a protocol from its drop-down pops up:
+
+```
+System.NullReferenceException: Object reference not set to an instance of an object.
+   at MissionPlanner.GCSViews.ConfigurationView.ConfigSerial.doApplyRules(...)
+```
+
+After writing your change, the page counts how many ports are set to
+MAVLink by reading `SERIAL1_PROTOCOL` up to the highest port number, without
+checking that each one exists, and stops at the first missing number. The
+table itself already skips missing ports; only that check does not. So:
+
+- **The value you picked is saved.** The protocol, and any baud or options
+  the page applies with it, are written before the error. The only thing
+  lost is Mission Planner's "too many MAVLink ports" warning.
+- **It is a Mission Planner bug, not a firmware one.** Stock ArduPilot
+  boards with a missing port hit it too (`KakuteF4-Wing` upstream).
+- It affects `KakuteH7-Wing`, `MatekH743-bdshot`, `XFLY-H743-bdshot`,
+  `omnibusf4pro` and `KakuteF4-Wing-Buzz`. The other fleet boards have no
+  gap.
+
+**Recommended:** set `SERIALn_PROTOCOL`, `SERIALn_BAUD` and
+`SERIALn_OPTIONS` in **Config → Full Parameter List** (or Full Parameter
+Tree). If you use the Serial Ports page anyway, dismiss the error and press
+**Refresh Params** to confirm the value took.
 
 ## `is_flying` heuristic — fixed thresholds
 
