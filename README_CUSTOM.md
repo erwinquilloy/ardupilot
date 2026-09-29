@@ -218,8 +218,8 @@ ArduPlane V<x.y.z> Custom <FORK_VERSION>[ Light] (<git-hash>)
 For example:
 
 ```
-ArduPlane V4.7.1 Custom v2.0 (f9823a9)        # 2 MB board (full track)
-ArduPlane V4.7.1 Custom v2.0 Light (f9823a9)  # 1 MB board (light track)
+ArduPlane V4.7.1 Custom v2.0 (a9cf161)        # 2 MB board (full track)
+ArduPlane V4.7.1 Custom v2.0 Light (a9cf161)  # 1 MB board (light track)
 ```
 
 The upstream `ArduPlane V4.7.1` prefix is kept so GCS tools that parse
@@ -1079,6 +1079,48 @@ landing.
 
 Strict mode is silently ignored when `LAND_WIND_DIST = 0` (no
 cap set) or `LAND_WIND_BIAS = 0` (whole feature off).
+
+### QRTL with `RTL_ALTITUDE -1` (fixed in v2.0)
+
+When QRTL is selected far from home, it flies back as a plane: it holds the
+RTL altitude and only sinks to `Q_RTL_ALT` on the last stretch, then slows,
+transitions and lands vertically. Before v2.0 that approach read
+`RTL_ALTITUDE` as a plain height. With `-1` ("return at the current
+altitude", which RTL itself handles correctly) it treated the return height
+as −1 m. So the plane cut the throttle and dropped to `Q_RTL_ALT` as soon as
+QRTL was selected, then flew the whole way home that low: 20 km out, that
+meant about 20 km at `Q_RTL_ALT` above **home**, with any rising ground in
+between even closer. The same code is in upstream ArduPlane since the QRTL
+approach was added in 2021, and in v1.1.
+
+v2.0 records the RTL altitude when QRTL is entered, so `-1` now means the
+height you selected QRTL at. A positive `RTL_ALTITUDE` works as before.
+
+**Where the descent starts.** The plane reaches `Q_RTL_ALT` at
+2 × max(`WP_LOITER_RAD`, `RTL_RADIUS`) from home, and starts down early
+enough to lose the height at 60% of `TECS_SINK_MAX`:
+
+```
+start = 2·R + AIRSPEED_CRUISE · (H − Q_RTL_ALT) / (0.6 · TECS_SINK_MAX)
+R = max(WP_LOITER_RAD, RTL_RADIUS),  H = height when QRTL was entered
+capped at 20·R
+```
+
+Example, with `WP_LOITER_RAD 150`, `RTL_RADIUS 90`, `AIRSPEED_CRUISE 18.7`,
+`TECS_SINK_MAX 5` and `Q_RTL_ALT 40`: entered at 80 m it starts down about
+550 m from home, at 100 m about 675 m, at 200 m about 1.3 km. It is at
+40 m by 300 m out. In practice the descent starts a little later than the
+formula, because TECS lags the target.
+
+**`Q_RTL_MODE` does not change this.** It is only read by RTL, to decide how
+RTL hands over to a VTOL landing; a QRTL selected on a switch ignores it.
+With `Q_RTL_MODE 1` RTL switches to QRTL within `RTL_RADIUS` of home, too
+close for this approach, so all the height is lost in a hover. With
+`Q_RTL_MODE 2` RTL comes home at RTL altitude, circles down on
+`Q_FW_LND_APR_RAD` to `Q_RTL_ALT`, and only hovers for the last part.
+
+- **On v1.1:** set `RTL_ALTITUDE` to a real height above `Q_RTL_ALT` if you
+  use QRTL from far away. Plain RTL then returns at that height too.
 
 ## Pilot control of loiter radius and direction (LOITER, RTL, TAKEOFF)
 
@@ -2282,10 +2324,10 @@ Measured at **v2.0**:
 | Board | MCU / Flash | Free after fork features | vs v1.1 | Status |
 |---|---|---:|---:|---|
 | MatekF765-Wing | F7 / 2 MB | **556.9 KB** | +37.5 | Ships — Matek F765-WING (most flash headroom in the fleet) |
-| KakuteH7-Wing | H7 / 2 MB | **146.3 KB** | +42.8 | Ships — Holybro Kakute H743 Wing |
-| TBS_LUCID_H7_OEM | H7 / 2 MB | **130.9 KB** | new | **New in v2.0** — TBS Lucid H7 OEM |
-| MatekH743-bdshot | H7 / 2 MB | **128.8 KB** | +29.8 | Ships — Matek H743-WING (bidirectional DShot) |
-| XFLY-H743-bdshot | H7 / 2 MB | **117.4 KB** | new | **New in v2.0** — XFly VTOL kit FC (bidirectional DShot); tightest of the full fleet |
+| KakuteH7-Wing | H7 / 2 MB | **146.2 KB** | +42.7 | Ships — Holybro Kakute H743 Wing |
+| TBS_LUCID_H7_OEM | H7 / 2 MB | **130.8 KB** | new | **New in v2.0** — TBS Lucid H7 OEM |
+| MatekH743-bdshot | H7 / 2 MB | **128.7 KB** | +29.7 | Ships — Matek H743-WING (bidirectional DShot) |
+| XFLY-H743-bdshot | H7 / 2 MB | **117.3 KB** | new | **New in v2.0** — XFly VTOL kit FC (bidirectional DShot); tightest of the full fleet |
 
 Every returning board gained 30–43 KB over v1.1, mostly from ArduPlane 4.7's smaller EKF3
 and from backends 4.7 no longer builds for 2 MB boards (External AHRS,
@@ -2325,15 +2367,15 @@ Measured at **v2.0** with radar, `LAND_WIND_DIST` and `LAND_WIND_STRICT` on:
 
 | Board | Flash | Free after fork features | vs v1.1 | Status |
 |---|---:|---:|---:|---|
-| KakuteF4-Wing-Buzz | 1 MB | **81.8 KB** | +2.2 | Ships — Kakute F4 Wing + tone buzzer (see below) |
+| KakuteF4-Wing-Buzz | 1 MB | **81.7 KB** | +2.1 | Ships — Kakute F4 Wing + tone buzzer (see below) |
 | speedybeef4v3 | 1 MB | **50.4 KB** | 0.0 | Ships — most F4 headroom with gimbal support |
-| MatekF405-STD | 1 MB | **47.2 KB** | +2.3 | Ships |
+| MatekF405-STD | 1 MB | **47.1 KB** | +2.2 | Ships |
 | omnibusf4pro | 1 MB | **42.1 KB** | +2.3 | Ships — Omnibus F4 Pro FPV FC |
-| MatekF405-TE-bdshot | 1 MB | **35.3 KB** | −4.5 | Ships — RunCam camera control now compiled in |
+| MatekF405-TE-bdshot | 1 MB | **35.2 KB** | −4.6 | Ships — RunCam camera control now compiled in |
 | AtomRCF405NAVI | 1 MB | **32.2 KB** | +1.3 | Ships — AtomRC F405 Navi FPV FC |
-| SpeedyBeeF405WING | 1 MB | **27.0 KB** | −0.1 | Ships |
-| SpeedyBeeF405WING-Buzz | 1 MB | **26.6 KB** | −0.2 | Ships — SpeedyBee F405 WING + tone buzzer (see below) |
-| MatekF405-Wing-bdshot | 1 MB | **21.0 KB** | −3.7 | Ships — tightest of the F4 fleet; RunCam camera control now compiled in |
+| SpeedyBeeF405WING | 1 MB | **26.8 KB** | −0.3 | Ships |
+| SpeedyBeeF405WING-Buzz | 1 MB | **26.5 KB** | −0.3 | Ships — SpeedyBee F405 WING + tone buzzer (see below) |
+| MatekF405-Wing-bdshot | 1 MB | **20.9 KB** | −3.8 | Ships — tightest of the F4 fleet; RunCam camera control now compiled in |
 
 ArduPlane 4.7's smaller EKF3 roughly pays for the new upstream features and the
 fork additions, so every board stays within a few KB of v1.1. The six boards
@@ -2355,7 +2397,7 @@ routing them through the DShot ESCs. Cost is one servo output (S11 /
 channel 11); outputs 1-10 and 12 (WS2812 LED) are unchanged. Board ID
 is inherited (1106) so the `.apj` flashes over the stock SpeedyBee
 bootloader as a normal update. Flash footprint is essentially identical
-to stock `SpeedyBeeF405WING` (27.4 KB vs 27.7 KB free at v2.0 —
+to stock `SpeedyBeeF405WING` (26.5 KB vs 26.8 KB free at v2.0 —
 a 0.3 KB difference). Shipped as an extra
 asset on the light release alongside the other boards above.
 
@@ -2490,7 +2532,7 @@ notes and wiring photos live in the board's `Readme.md`.
   goes **3 → 5 boards**; light is unchanged at 9.
 - No board was removed and no board changed track.
 - Returning full boards gained 30–43 KB of free flash; light boards moved by
-  −4.5 to +2.3 KB.
+  −4.6 to +2.3 KB.
 
 If a 1 MB F4 board overflows, the cheapest first trim is
 `define HAL_SOARING_ENABLED 0` in that board's hwdef (Plane soaring
