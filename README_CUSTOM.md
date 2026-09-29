@@ -1653,7 +1653,7 @@ pads showing up on `SERIAL6`).
 Affected boards: `MatekF405-TE(-bdshot)`, `MatekF405-STD`, `omnibusf4pro`,
 `MatekH743(-bdshot)` since v0.3-beta, and **`MatekF765-Wing` and
 `KakuteH7-Wing` since v2.0**. Every board in both release fleets now follows
-the rule; `XFLY-H743-bdshot` and `TBS_LUCID_H7_OEM` joined already numbered
+the rule; `XFLY-H743-bdshot`, `TBS_LUCID_H7_OEM` and `MatekH7A3-Wing` joined already numbered
 this way. Where a UART is missing, its number is an `EMPTY` placeholder so
 the rest stay aligned: `SERIAL2`/`SERIAL5` on `omnibusf4pro`, `SERIAL4` on
 `KakuteH7-Wing` (no UART4), `SERIAL5` on `MatekH743-bdshot`, and
@@ -2349,13 +2349,14 @@ full build has no suffix.
 Since v1.1 the two tracks don't overlap — a given board appears on exactly one
 of them, so there is no choice to get wrong.
 
-### Full track — 5 boards (F7 / H7, 2 MB)
+### Full track — 6 boards (F7 / H7, 2 MB)
 
 Measured at **v2.0**:
 
 | Board | MCU / Flash | Free after fork features | vs v1.1 | Status |
 |---|---|---:|---:|---|
 | MatekF765-Wing | F7 / 2 MB | **556.9 KB** | +37.5 | Ships — Matek F765-WING (most flash headroom in the fleet) |
+| MatekH7A3-Wing | H7 / 2 MB | **496.7 KB** | new | **New in v2.0** — Matek H7A3-WING (bidirectional DShot); most room of any H7 |
 | KakuteH7-Wing | H7 / 2 MB | **146.2 KB** | +42.7 | Ships — Holybro Kakute H743 Wing |
 | TBS_LUCID_H7_OEM | H7 / 2 MB | **130.8 KB** | new | **New in v2.0** — TBS Lucid H7 OEM |
 | MatekH743-bdshot | H7 / 2 MB | **128.7 KB** | +29.7 | Ships — Matek H743-WING (bidirectional DShot) |
@@ -2364,7 +2365,8 @@ Measured at **v2.0**:
 Every returning board gained 30–43 KB over v1.1, mostly from ArduPlane 4.7's smaller EKF3
 and from backends 4.7 no longer builds for 2 MB boards (External AHRS,
 generators, KDECAN, Robotis and Volz servos). `MatekF765-Wing` still has several
-times the room of any H7, because the H7 hwdefs reserve more flash.
+times the room of any H743, because the H743 hwdefs reserve more flash; the
+H7A3 in `MatekH7A3-Wing` comes close to it.
 
 **`MatekH743-bdshot` is the full track's canary**, the way
 `MatekF405-Wing-bdshot` is light's — the first board a future upstream rebase or
@@ -2392,6 +2394,15 @@ feature add will push against.
 > [the board README](libraries/AP_HAL_ChibiOS/hwdef/XFLY-H743-bdshot/README.md).
 > Bidirectional DShot covers outputs 1–8. Only the `-bdshot` target ships;
 > the plain `XFLY-H743` builds but is not released.
+
+> **`MatekH7A3-Wing`** (STM32H7A3, 2 MB, board ID 1228) ships on
+> upstream's own board definition, unchanged. It already numbers its serial
+> ports `SERIALn` = chip UART `n` with no gaps (`SERIAL1` telemetry,
+> `SERIAL2` RC input, `SERIAL3` GPS, `SERIAL4`–`SERIAL6` free), and
+> outputs 1–8 support bidirectional DShot. Coming from INAV or Betaflight,
+> flash `arduplane_with_bl.hex` over DFU first (hold the boot button while
+> plugging in USB). See
+> [the board README](libraries/AP_HAL_ChibiOS/hwdef/MatekH7A3-Wing/README.md).
 
 ### Light track — 9 boards (all 1 MB F4)
 
@@ -2559,9 +2570,10 @@ notes and wiring photos live in the board's `Readme.md`.
 **v2.0 fleet change vs v1.1:**
 - **Rebased onto ArduPlane 4.7.1** (from 4.6.3). Both tracks are now built from
   one branch and one commit; the light configuration is picked by flash size.
-- **Added to full:** `TBS_LUCID_H7_OEM` (H7 / 2 MB, board ID 5255) and
-  `XFLY-H743-bdshot` (H7 / 2 MB, board ID 8888, the XFly VTOL kit FC). Full
-  goes **3 → 5 boards**; light is unchanged at 9.
+- **Added to full:** `TBS_LUCID_H7_OEM` (H7 / 2 MB, board ID 5255),
+  `XFLY-H743-bdshot` (H7 / 2 MB, board ID 8888, the XFly VTOL kit FC) and
+  `MatekH7A3-Wing` (H7A3 / 2 MB, board ID 1228). Full goes **3 → 6 boards**;
+  light is unchanged at 9.
 - No board was removed and no board changed track.
 - Returning full boards gained 30–43 KB of free flash; light boards moved by
   −4.6 to +2.3 KB.
