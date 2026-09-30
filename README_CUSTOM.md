@@ -2007,6 +2007,58 @@ avoidance (`AVD_*`), both unchanged. It has no OSD element for it.
   compared directly with your GPS altitude, so the relative height can be off
   by tens of metres depending on the day's air pressure.
 
+### How far away an aircraft shows up
+
+With the defaults, **any aircraft within 10 km (6.2 mi) horizontally, at any
+height**, can appear, provided the receiver hears it. The distance shown is
+horizontal only. For example, `ADS← 2.758 mi` over `6047 ft` is an aircraft
+about 4.4 km away and about 1,840 m above you.
+
+An aircraft reaches the element only if all of these hold:
+
+1. **The receiver hears it.** A 1090 MHz receiver usually hears airliners
+   tens of km away, often 50–150 km or more, with a clear view of the sky.
+   Reception needs line of sight: on a bench, indoors, or low behind
+   buildings and hills it drops sharply, and aircraft below your horizon are
+   not heard at all.
+2. **It broadcasts ADS-B position.** Aircraft with only a Mode C/S
+   transponder, or no ADS-B Out, send no position and never appear. Many
+   light aircraft, helicopters and military aircraft are in this group.
+3. **The firmware keeps it.** Upstream `AP_ADSB` drops an aircraft that is
+   - further than `ADSB_LIST_RADIUS` (Plane default **10000 m**),
+   - more than `ADSB_LIST_ALT` above or below you (default **0**, no limit),
+   - missing a valid position or altitude, or
+   - not heard again within **5 seconds**.
+4. **It is the nearest.** The element shows one aircraft: the closest one
+   still being tracked.
+
+So the OSD usually stops at 10 km, even when the receiver can hear much
+further.
+
+**Why it sometimes shows nothing:**
+
+- No qualifying aircraft is within 10 km. The receiver may be hearing
+  traffic further out, but the firmware ignores anything beyond
+  `ADSB_LIST_RADIUS`.
+- On the ground, a few seconds of missed messages is enough for the 5 s
+  timeout, so an aircraft can come and go. Reception is far better in the
+  air.
+- The aircraft is not broadcasting ADS-B position (point 2 above).
+
+**Tuning:**
+
+- `ADSB_LIST_RADIUS` (up to 100000 m) extends the reach, for example `20000`
+  for 20 km (12.4 mi). The element still shows only the nearest aircraft,
+  and very distant traffic is rarely useful; 10 km is a sensible default.
+- `ADSB_LIST_ALT` hides airliners far above. For example `1000` keeps only
+  aircraft within 1,000 m above or below you, so a jet at 6,000 ft above
+  does not take the single slot.
+
+**Checking it:** the Mission Planner map shows every aircraft the flight
+controller is tracking. An aircraft on the map within `ADSB_LIST_RADIUS` that
+is missing from the goggles is worth a log; gaps with nothing on the map are
+reception or range.
+
 ## OSD options (`OSD_OPTIONS` bits)
 
 | Bit | Name                                       | Effect                                              |
