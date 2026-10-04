@@ -46262,7 +46262,7 @@ Delay after arming before spool transitions are allowed, used to let ESCs/servos
 
 *Note: This parameter is for advanced users*
 
-Adjusts how rear thrust is scaled relative to front thrust on Tri-class VTOL planes. Values < 1.0 push the rear motor harder relative to the front; values > 1.0 push the front motor harder. Default 1.0 leaves the existing thrust split unchanged. Only the AP_MotorsTri backend uses this param; ignored for quad/hex/oct frames.
+Scales the tail motor's thrust on Tri frames by 1/ratio; the two front motors are not changed. Values below 1.0 make the tail motor work harder (for a tail-heavy aircraft); values above 1.0 reduce it (for a nose-heavy aircraft). The tail motor's share of pitch control is scaled the same way. Default 1.0 leaves the thrust split unchanged. With a reversed-pitch tri the single motor is at the front and the same scaling applies to it. Values of 0 or below are ignored (treated as 1.0); other values outside 0.5 to 2.0 are clamped. Only Tri frames use this parameter.
 
 - Range: 0.5 2.0
 
