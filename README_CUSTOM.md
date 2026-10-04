@@ -218,9 +218,12 @@ ArduPlane V<x.y.z> Custom <FORK_VERSION>[ Light] (<git-hash>)
 For example:
 
 ```
-ArduPlane V4.7.1 Custom v2.0 (a9cf161)        # 2 MB board (full track)
-ArduPlane V4.7.1 Custom v2.0 Light (a9cf161)  # 1 MB board (light track)
+ArduPlane V4.7.1 Custom v2.0 (1a2b3c4)        # 2 MB board (full track)
+ArduPlane V4.7.1 Custom v2.0 Light (1a2b3c4)  # 1 MB board (light track)
 ```
+
+The hash is the commit the release was built from; the release notes
+print it, and the `full-v2.0` / `light-v2.0` tags point at it.
 
 The upstream `ArduPlane V4.7.1` prefix is kept so GCS tools that parse
 the upstream version string (MissionPlanner, MAVProxy, autotest
@@ -729,6 +732,9 @@ differs.
 > one takes 18 and leaves 17 as a one-bit buffer between the two. Checked
 > against 4.7.0, 4.7.1-beta1 and 4.8.0-dev: none of them uses a bit above 16.
 
+Flight-tested on a KakuteH7-Wing VTOL: QHOVER → FBWA, and FBWB was
+announced as the transition completed.
+
 ## Pitch trim & tuning knob
 
 ### `PTCH_TRIM_DEG` is now knob-tunable
@@ -1121,6 +1127,19 @@ close for this approach, so all the height is lost in a hover. With
 
 - **On v1.1:** set `RTL_ALTITUDE` to a real height above `Q_RTL_ALT` if you
   use QRTL from far away. Plain RTL then returns at that height too.
+
+**QRTL that stops in QHOVER over home.** If QRTL switches to QHOVER
+instead of descending, the EKF failsafe fired (log: `MODE` with `Rsn 6`,
+`ERR` subsystem 17, `EKF variance`). In QRTL, QLOITER and QLAND it
+checks the EKF's velocity, position and compass innovations against
+`FS_EKF_THRESH` (0.8), and on a failure anywhere outside AUTO it falls back
+to QHOVER, which does not hold position, so you land by hand. This is
+upstream behaviour. On a **compassless** VTOL (`EK3_SRC1_YAW 8`, GSF) the
+usual trigger is a yaw error showing up in the hard deceleration over home:
+before declaring the failsafe the firmware asks for a GSF yaw reset, but
+`EK3_GSF_RST_MAX` (default 2) allows only two per flight. Raise it to 5
+(reboot required), consider `FS_EKF_THRESH 1.0`, and fly a short level
+straight leg after the first transition so GSF converges before turning.
 
 ## Pilot control of loiter radius and direction (LOITER, RTL, TAKEOFF)
 
@@ -2725,7 +2744,8 @@ VTOL flight, matching `Q_TRIM_PITCH`'s positive = nose up.
 Validated in SITL with a deliberately tilted hover: a 2.86° roll / 2.01°
 pitch error was learned as −2.91° / −2.04°, and a −4.01° / −2.86° error as
 +3.90° / +2.84°; hands-off drift fell from 2.41 to 0.21 m/s and from 9.19 to
-0.52 m/s. Costs about 0.7 KB of flash.
+0.52 m/s. Costs about 0.7 KB of flash. On hardware it engages in QHOVER
+(KakuteH7-Wing VTOL); a full learn-and-save run has not been flown yet.
 
 ## `Q_M_FRTB_RATIO` — Tri-frame front/rear thrust balance
 
