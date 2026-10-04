@@ -49019,7 +49019,7 @@ DO NOT EDIT
 
 <h2>Front/rear thrust balance ratio (TRI frames only) (Q_M_FRTB_RATIO)</h2><em>Note: This parameter is for advanced users</em><br>
 
-<p>Adjusts how rear thrust is scaled relative to front thrust on Tri-class VTOL planes. Values &lt; 1.0 push the rear motor harder relative to the front; values &gt; 1.0 push the front motor harder. Default 1.0 leaves the existing thrust split unchanged. Only the AP_MotorsTri backend uses this param; ignored for quad/hex/oct frames.</p>
+<p>Scales the tail motor&#x27;s thrust on Tri frames by 1/ratio; the two front motors are not changed. Values below 1.0 make the tail motor work harder (for a tail-heavy aircraft); values above 1.0 reduce it (for a nose-heavy aircraft). The tail motor&#x27;s share of pitch control is scaled the same way. Default 1.0 leaves the thrust split unchanged. With a reversed-pitch tri the single motor is at the front and the same scaling applies to it. Values of 0 or below are ignored (treated as 1.0); other values outside 0.5 to 2.0 are clamped. Only Tri frames use this parameter.</p>
 <ul>
 <li>Range: 0.5 2.0</li>
 <li>Increment: 0.001</li>
