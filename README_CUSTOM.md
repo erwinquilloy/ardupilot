@@ -2744,8 +2744,15 @@ VTOL flight, matching `Q_TRIM_PITCH`'s positive = nose up.
 Validated in SITL with a deliberately tilted hover: a 2.86° roll / 2.01°
 pitch error was learned as −2.91° / −2.04°, and a −4.01° / −2.86° error as
 +3.90° / +2.84°; hands-off drift fell from 2.41 to 0.21 m/s and from 9.19 to
-0.52 m/s. Costs about 0.7 KB of flash. On hardware it engages in QHOVER
-(KakuteH7-Wing VTOL); a full learn-and-save run has not been flown yet.
+0.52 m/s. Costs about 0.7 KB of flash.
+
+Flight-tested on a KakuteH7-Wing quad-X VTOL: a full learn-and-save run in
+QHOVER. It refused to start in QLOITER, ran about 85 s in QHOVER and saved
+`Q_TRIM_ROLL` 0.4° / `Q_TRIM_PITCH` −4.1°, with `AHRS_TRIM_X/Y` untouched;
+the last ~50 s were hands-off at about 3 m with no drift. That run was all
+on one heading, and the hover has no wind estimate, so part of a learned
+pitch trim can be headwind. Learn it in calm air, or repeat on the opposite
+heading and compare.
 
 ## `Q_M_FRTB_RATIO` — Tri-frame front/rear thrust balance
 
