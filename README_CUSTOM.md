@@ -860,14 +860,37 @@ position at boot only chooses on or off; it never starts a learn.
    It needs at least 3 speeds spanning 3 m/s. With fewer (or if the fit
    fails) nothing is saved and the old values stay.
 
-You can also set the six values by hand: in FBWB or CRUISE, straight and
-steady, `OFS` = OSD pitch − `PTCH_TRIM_DEG` at that speed. The offsets should
-fall as speed rises.
+You can also set the six values by hand: with the switch LOW, fly straight
+and steady in FBWB or CRUISE and read the OSD pitch at each speed. By default
+the OSD (and the GCS / passthrough telemetry) already shows pitch with
+`PTCH_TRIM_DEG` removed, so `OFS` = OSD pitch. Only if `FLIGHT_OPTIONS` bit 9
+is set (OSD shows the raw pitch) is it `OFS` = OSD pitch − `PTCH_TRIM_DEG`.
+With the switch MIDDLE the displayed pitch also has the current offset
+removed, so read it with the switch LOW. The offsets should fall as speed
+rises.
+
+**Set `KFF_THR2PTCH` to 0.** It is stock ArduPlane's throttle-based version
+of the same idea: it adds `KFF_THR2PTCH` × throttle % / 100 degrees to the
+pitch target in every stabilised mode. The learned curve already lowers the
+nose as speed rises, so a non-zero `KFF_THR2PTCH` would apply that correction
+a second time at high throttle. `STAB_PITCH_DOWN` can stay: it only lowers the
+nose when you pull the throttle back in FBWA, for the glide.
+
+**Tuning TECS with a transmitter helper** (for example the
+[TECS tuning helper](https://github.com/erwinquilloy/Arduplane_TECS_tuning_helper_ETHOS_ETX)):
+run it with the switch LOW. Those helpers read pitch from telemetry, which has
+the trim removed, so with the curve active every pitch they capture
+(`TECS_PITCH_MAX` / `MIN`, `STAB_PITCH_DOWN`) would be shifted by the offset at
+that speed. Tune TECS first, then learn the curve.
 
 **Without a pitot** it uses ArduPilot's synthetic airspeed (GPS ground speed
 corrected by the wind estimate). That works, but a wind-estimate error
 shifts the curve along the speed axis. Learn on a calm day, fly a few
 circles first, and fly each speed both upwind and downwind.
+Without a pitot, TECS also sets throttle from the pitch measured against the
+trim, so in FBWB, CRUISE and AUTO the curve changes throttle as well: with an
+accurate curve level flight reads as trim at every speed and throttle stays
+near `TRIM_THROTTLE`. This combination has not been flight-tested yet.
 
 Costs about 2.9 KB of flash on a 1 MB F4 board.
 
