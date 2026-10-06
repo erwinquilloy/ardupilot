@@ -9,7 +9,7 @@
 const AP_Param::GroupInfo PitchTrimSched::var_info[] = {
     // @Param: SPD1
     // @DisplayName: Pitch trim schedule speed 1
-    // @Description: Lowest airspeed point of the airspeed-scheduled pitch trim. At or below this airspeed PTCH_TRIM_OFS1 is added to PTCH_TRIM_DEG. Set 0 to disable the schedule. The three speeds must increase. Can be learned in flight with the Pitch Trim Learn switch (RCx_OPTION 254). Near the stall the schedule is tapered: from 1.25 x AIRSPEED_MIN down to AIRSPEED_MIN the extra trim fades to the least nose-up of the three offsets, so it never raises the nose to hold altitude while slowing towards the stall.
+    // @Description: Lowest airspeed point of the airspeed-scheduled pitch trim. At or below this airspeed PTCH_TRIM_OFS1 is added to PTCH_TRIM_DEG. Set 0 to disable the schedule. The three speeds must increase. Can be learned in flight with the Pitch Trim Learn switch (RCx_OPTION 254). Near the stall the schedule is tapered: from 1.25 x AIRSPEED_MIN down to AIRSPEED_MIN the extra trim fades to the least nose-up of the three offsets, so it never raises the nose to hold altitude while slowing towards the stall. Set KFF_THR2PTCH to 0 when using this schedule: it adds pitch with throttle and would apply the same correction a second time.
     // @Units: m/s
     // @Range: 0 60
     // @Increment: 0.1
