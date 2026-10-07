@@ -891,12 +891,17 @@ With the switch MIDDLE the displayed pitch also has the current offset
 removed, so read it with the switch LOW. The offsets should fall as speed
 rises.
 
-**Set `KFF_THR2PTCH` to 0.** It is stock ArduPlane's throttle-based version
-of the same idea: it adds `KFF_THR2PTCH` × throttle % / 100 degrees to the
-pitch target in every stabilised mode. The learned curve already lowers the
-nose as speed rises, so a non-zero `KFF_THR2PTCH` would apply that correction
-a second time at high throttle. `STAB_PITCH_DOWN` can stay: it only lowers the
-nose when you pull the throttle back in FBWA, for the glide.
+**`KFF_THR2PTCH` is ignored while the curve is active.** It is stock
+ArduPlane's throttle-based version of the same idea: it adds `KFF_THR2PTCH` ×
+throttle % / 100 degrees to the pitch target in every stabilised mode. The
+learned curve already lowers the nose as speed rises, so applying both would
+make that correction twice. When the curve takes over, `KFF_THR2PTCH` fades out
+over the same ~1 s as the curve fades in, and the first time this happens after
+boot with a non-zero value the GCS shows `Adaptive trim on: KFF_THR2PTCH
+ignored`. Whenever the curve is off (switch LOW, no curve set, no airspeed
+estimate, takeoff, landing, VTOL) `KFF_THR2PTCH` applies as normal, so you can
+keep your tuned value for those cases. `STAB_PITCH_DOWN` is not affected: it
+only lowers the nose when you pull the throttle back in FBWA, for the glide.
 
 **Tuning TECS with a transmitter helper** (for example the
 [TECS tuning helper](https://github.com/erwinquilloy/Arduplane_TECS_tuning_helper_ETHOS_ETX)):

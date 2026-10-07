@@ -9,7 +9,7 @@
 const AP_Param::GroupInfo PitchTrimSched::var_info[] = {
     // @Param: SPD1
     // @DisplayName: Pitch trim schedule speed 1
-    // @Description: Lowest airspeed point of the airspeed-scheduled pitch trim. At or below this airspeed PTCH_TRIM_OFS1 is added to PTCH_TRIM_DEG. Set 0 to disable the schedule. The three speeds must increase. Can be learned in flight with the Pitch Trim Learn switch (RCx_OPTION 254). Near the stall the schedule is tapered: from 1.25 x AIRSPEED_MIN down to AIRSPEED_MIN the extra trim fades to the least nose-up of the three offsets, so it never raises the nose to hold altitude while slowing towards the stall. Set KFF_THR2PTCH to 0 when using this schedule: it adds pitch with throttle and would apply the same correction a second time.
+    // @Description: Lowest airspeed point of the airspeed-scheduled pitch trim. At or below this airspeed PTCH_TRIM_OFS1 is added to PTCH_TRIM_DEG. Set 0 to disable the schedule. The three speeds must increase. Can be learned in flight with the Pitch Trim Learn switch (RCx_OPTION 254). Near the stall the schedule is tapered: from 1.25 x AIRSPEED_MIN down to AIRSPEED_MIN the extra trim fades to the least nose-up of the three offsets, so it never raises the nose to hold altitude while slowing towards the stall. KFF_THR2PTCH is ignored while the schedule is active (it adds pitch with throttle and would apply the same correction a second time) and applies again when the schedule is off.
     // @Units: m/s
     // @Range: 0 60
     // @Increment: 0.1
@@ -112,7 +112,7 @@ float PitchTrimSched::scheduled_deg(float aspd, float airspeed_min) const
     return least_nose_up + k * (ofs_curve - least_nose_up);
 }
 
-void PitchTrimSched::update(bool fw_flying, bool learn_ok, float airspeed_min)
+void PitchTrimSched::update(bool fw_flying, bool learn_ok, float airspeed_min, bool kff_set)
 {
     // a boot without RC left the switch position unknown. Once RC has been
     // valid for 1 s, any real position has already arrived through the normal
@@ -144,13 +144,20 @@ void PitchTrimSched::update(bool fw_flying, bool learn_ok, float airspeed_min)
         aspd_rate = (aspd_filt - prev) * 10;
     }
 
+    const bool active = fw_flying && have_aspd && enabled() && !switched_off;
     float target = 0;
-    if (fw_flying && have_aspd && enabled() && !switched_off) {
+    if (active) {
         target = scheduled_deg(aspd_filt, airspeed_min);
     }
     // ~1 s time constant, so entering or leaving fixed-wing flight, or a
     // parameter change, never steps the pitch demand
     offset_deg += (target - offset_deg) * 0.1f;
+    // KFF_THR2PTCH fades out over the same ~1 s as the curve fades in
+    curve_weight += ((active ? 1.0f : 0.0f) - curve_weight) * 0.1f;
+    if (active && kff_set && !kff_msg_sent) {
+        kff_msg_sent = true;
+        GCS_SEND_TEXT(MAV_SEVERITY_INFO, "Adaptive trim on: KFF_THR2PTCH ignored");
+    }
 
     if (learn.running) {
         if (learn_ok && have_aspd) {
