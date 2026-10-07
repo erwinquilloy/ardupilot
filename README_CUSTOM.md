@@ -123,9 +123,11 @@ Built for throwing a wing off your hand safely:
   VTOL) and **three switchable tuning sets** (`TUNE_PARAM`/`PARAM2`/`PARAM3`)
   — retune live without a laptop.
 - **Adaptive pitch trim** (v2.1, `RCx_OPTION 254`) — airspeed-scheduled pitch
-  trim, learned by the aircraft itself in a few straight legs, so FBWA flies
-  level hands-off at every speed instead of only one, and TECS no longer has
-  to integrate out the speed-dependent pitch in CRUISE / FBWB / AUTO.
+  trim, learned by the aircraft itself in a few straight legs. FBWA holds
+  height hands-off much better across the speed range (SITL: climb with speed
+  halved with a pitot, cut by two thirds without); without a pitot, FBWB /
+  CRUISE speed changes also lose about 20 % less height. With a pitot the
+  TECS modes gain nothing.
 - **Move sticks to cancel auto launch**: nudge pitch or roll during an
   automatic takeoff and the plane drops to FBWA so you can abort a bad
   launch — iNav-style, active only while the takeoff is running.
@@ -826,21 +828,48 @@ estimate involved: it is pitch trim scheduled on airspeed. "Adaptive Pitch
 Trim" is the name used everywhere in the firmware (the `RCx_OPTION 254`
 switch, the `Adaptive trim …` messages and the `PTCH_TRIM_*` parameters).
 
-**How it differs from TECS tuning.** The offset is added to the pitch demand
-after the mode has computed it, the same place `PTCH_TRIM_DEG` goes:
+**What it does.** The offset is added to the pitch demand after the flight
+mode has computed it, the same place `PTCH_TRIM_DEG` goes, so the trim
+matches the level-flight pitch at every speed instead of at one. It is off
+during takeoff, landing and VTOL, and `KFF_THR2PTCH` is ignored while it is
+active (see below).
 
-- **FBWA, STABILIZE:** TECS does not run, and the stick alone sets the pitch
-  demand. Without the schedule, a hands-off plane is level at only one speed.
-  No TECS parameter can change this; the schedule can.
-- **FBWB, CRUISE, AUTO, RTL, LOITER:** TECS finds the level-flight pitch
-  anyway, but through its integrator, which takes time to wind up and shows
-  as height error after every speed change. The schedule supplies that pitch
-  up front, so the integrator stays near zero (in SITL the steady-cruise TECS
-  pitch demand fell from 3.1° to 0.1°). `TECS_INTEG_GAIN`, `TECS_PTCH_DAMP`
-  and `TECS_TIME_CONST` only change how fast TECS gets there.
-  `TECS_PTCH_FF_K` looks similar but only applies while gliding.
+**What it gains, by mode and setup** (SITL, v2.1 `974622f338`, no wind;
+FBWB speed changes are a 10 m/s stick step, 10 runs each with a pitot,
+6 without):
 
-Use both: tune TECS first, then learn the curve.
+| Mode | With a pitot | Without a pitot |
+|---|---|---|
+| **FBWA, STABILIZE** (no TECS) | **Gain.** Hands-off climb with speed roughly halved: +0.35…+0.74 → +0.27…+0.36 m/s | **Gain.** Cut by about two thirds: +0.34…+0.71 → +0.14…+0.23 m/s |
+| **FBWB, CRUISE, AUTO, RTL, LOITER** — steady | No flight-path change: TECS already holds height and speed. Its pitch correction moves into the trim (−0.87° → −0.21° at full speed) | Same: −0.80° → −0.07° |
+| Same modes — speed changes | **Small cost.** 0.1–0.2 m more height change: up 5.48 → 5.61 m, down 3.25 → 3.46 m (2–6 %) | **Gain.** About 20 % less: up 1.00 → 0.83 m, down 0.86 → 0.66 m |
+| Near the stall, TECS modes | No change: TECS holds `AIRSPEED_MIN` the same | Not tested; the taper then rests on synthetic airspeed |
+| Takeoff, landing, VTOL | Off | Off |
+
+Why the two setups differ: with a pitot TECS ignores the trim, so it simply
+cancels the offset in its own pitch demand, slightly late as the speed
+changes (a 0.02–0.04° pitch difference, enough for 0.1–0.2 m). Without a
+pitot TECS sets throttle from the pitch measured against the trim
+(`AP_TECS.cpp`, `_update_throttle_without_airspeed`), so a trim that matches
+level flight at every speed is used by the throttle loop as well; this is the
+likely reason speed changes improve there.
+
+**Which setup benefits:**
+
+| Setup | Recommendation |
+|---|---|
+| Pitot, flown mostly in TECS modes | Not needed. `KFF_THR2PTCH` 0 and no curve does as well: in the same step test a best-fit `KFF_THR2PTCH` (−1.69) and the curve both stayed within ±0.25 m of using neither |
+| Pitot, flies FBWA | Use the curve, `PTCH_TRIM_SPD1` = `AIRSPEED_CRUISE` |
+| No pitot | Use it in all modes, `PTCH_TRIM_SPD1` not below the trim-throttle speed (see *Without a pitot*) |
+
+The SITL plane's level pitch changes by only about 0.9° across its speed
+range; on four real logs it changed by 2.5–3.7°, so expect both the gains and
+the pitot speed-change cost to be larger on a real airframe. Not yet
+flight-tested.
+
+`TECS_INTEG_GAIN`, `TECS_PTCH_DAMP` and `TECS_TIME_CONST` only change how fast
+TECS reaches the level pitch; `TECS_PTCH_FF_K` looks similar but only applies
+while gliding. Tune TECS first, then learn the curve.
 
 **Parameters** (`PTCH_TRIM_SPD1` = 0 turns the whole feature off):
 
