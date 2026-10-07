@@ -877,7 +877,7 @@ position at boot only chooses on or off; it never starts a learn.
    as `Adaptive trim learn: N speeds`.
 3. Move the switch off HIGH — one move, no need to go back to HIGH. The
    curve is fitted and saved, and printed as speed/offset pairs, for example
-   `Adaptive trim: 14.0 +2.1 18.0 +1.0 22.0 +0.2`.
+   `Adaptive trim: 14.5 +2.1 18.5 +1.0 22.5 +0.2`.
    Move to MIDDLE, not LOW: both save, but LOW also turns the curve off.
    It needs at least 3 speeds spanning 3 m/s. With fewer (or if the fit
    fails) the GCS shows `Adaptive trim: N speeds (need 3 over 3m/s)`,
@@ -906,7 +906,8 @@ throttle:
   within 5°. Samples pause while banked further; nothing is lost.
 - **Throttle stick sets each speed.** With an airspeed sensor the FBWB /
   CRUISE throttle stick sets the target airspeed between `AIRSPEED_MIN`
-  and `AIRSPEED_MAX`. Set it, then let the speed settle: samples are
+  and `AIRSPEED_MAX` (unless `FLIGHT_OPTIONS` bit 3, `CRUISE_TRIM_AIRSPEED`,
+  is set: then it holds `AIRSPEED_CRUISE`). Set it, then let the speed settle: samples are
   rejected while it is still changing. Without a pitot see below.
 - **Turns are free.** Banked flight is just skipped, so fly a leg, turn
   around and come back at the same speed: the samples for that speed keep
@@ -967,7 +968,7 @@ the dataflash `.bin` instead of a display. Plot these on one time axis:
 | `CTUN.As` (m/s) | airspeed — the same `airspeed_EAS()` value the learner uses |
 | `ATT.Pitch` (deg) | real aircraft pitch, nothing subtracted |
 | `ATT.Roll` (deg) | keep stretches within ±5° |
-| `XKF1.VD` (m/s, core 0), or `TECS.dh` | keep stretches under 0.5 m/s; `TECS.dh` is only logged in TECS modes |
+| `XKF1.VD` (m/s, the core in use: XKF1.C), or `TECS.dh` | keep stretches under 0.5 m/s; `TECS.dh` is only logged in TECS modes |
 | `CTUN.AsT` | airspeed source: 1 pitot, 2 / 3 synthetic (DCM / EKF3), 0 no new estimate (drop) |
 
 Do not use `CTUN.Pitch` (logged with `PTCH_TRIM_DEG` and the current curve
