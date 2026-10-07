@@ -25,11 +25,17 @@ public:
     // degrees to add to PTCH_TRIM_DEG right now (smoothed; 0 when off)
     float get_offset_deg() const { return offset_deg; }
 
+    // multiplier for KFF_THR2PTCH: 1 while the curve is off, fading to 0 as
+    // it takes over, because KFF_THR2PTCH does the same job by throttle and
+    // would apply the speed correction a second time
+    float get_kff_scale() const { return 1.0f - curve_weight; }
+
     // call at 10 Hz. fw_flying: fixed-wing flight past takeoff, where the
     // offset applies. learn_ok: also in a mode that holds altitude by itself
     // (FBWB / CRUISE), so the pitch it settles on is the level-flight pitch.
     // airspeed_min: AIRSPEED_MIN, for the stall taper.
-    void update(bool fw_flying, bool learn_ok, float airspeed_min);
+    // kff_set: KFF_THR2PTCH is non-zero (for the one-time "ignored" notice).
+    void update(bool fw_flying, bool learn_ok, float airspeed_min, bool kff_set);
 
     // RCx_OPTION 254 switch: 0 = LOW (off), 1 = MID (on), 2 = HIGH (learn).
     // at_boot: set on/off from the position but never start learning.
@@ -51,6 +57,8 @@ private:
     AP_Float ofs3;
 
     float offset_deg;
+    float curve_weight;    // 0 = curve off, 1 = curve fully applied
+    bool kff_msg_sent;
     bool switched_off;     // switch assigned and LOW
     bool boot_sync_pending;
     uint32_t rc_valid_since_ms;

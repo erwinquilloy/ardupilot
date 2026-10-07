@@ -247,7 +247,7 @@ float Plane::stabilize_pitch_get_pitch_out()
     const bool quadplane_in_frwd_transition = false;
 #endif
 
-    int32_t demanded_pitch = nav_pitch_cd + int32_t(get_pitch_trim_deg() * 100.0) + SRV_Channels::get_output_scaled(SRV_Channel::k_throttle) * g.kff_throttle_to_pitch;
+    int32_t demanded_pitch = nav_pitch_cd + int32_t(get_pitch_trim_deg() * 100.0) + SRV_Channels::get_output_scaled(SRV_Channel::k_throttle) * g.kff_throttle_to_pitch * pitch_trim_sched.get_kff_scale();
     bool disable_integrator = false;
     if (control_mode == &mode_stabilize && !is_zero(channel_pitch->get_control_in())) {
         disable_integrator = true;
@@ -817,5 +817,5 @@ void Plane::update_pitch_trim_sched()
     // learning only samples while learn_ok, so the switch can go high before
     // takeoff; landing and disarming just pause it
     const bool learn_ok = fw_flying && (control_mode == &mode_fbwb || control_mode == &mode_cruise);
-    pitch_trim_sched.update(fw_flying, learn_ok, aparm.airspeed_min);
+    pitch_trim_sched.update(fw_flying, learn_ok, aparm.airspeed_min, !is_zero(g.kff_throttle_to_pitch.get()));
 }

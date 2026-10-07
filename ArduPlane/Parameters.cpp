@@ -55,7 +55,7 @@ const AP_Param::Info Plane::var_info[] = {
 
     // @Param: KFF_THR2PTCH
     // @DisplayName: Throttle to Pitch Mix
-    // @Description: Pitch up to add in proportion to throttle. 100% throttle will add this number of degrees to the pitch target.
+    // @Description: Pitch up to add in proportion to throttle. 100% throttle will add this number of degrees to the pitch target. Ignored while the adaptive pitch trim curve (PTCH_TRIM_SPD1) is active since that does the same job by airspeed.
     // @Range: -5 5
     // @Increment: 0.01
     // @User: Advanced
