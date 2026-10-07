@@ -122,9 +122,10 @@ Built for throwing a wing off your hand safely:
 - **Knob-tunable pitch trim** (`PTCH_TRIM_DEG`, plus `Q_TRIM_PITCH` on
   VTOL) and **three switchable tuning sets** (`TUNE_PARAM`/`PARAM2`/`PARAM3`)
   — retune live without a laptop.
-- **Adaptive pitch trim** (v2.1, `RCx_OPTION 254`) — pitch trim that follows
-  airspeed, learned by the aircraft itself in a few straight legs, so FBWA
-  and CRUISE fly level at every speed instead of only one.
+- **Adaptive pitch trim** (v2.1, `RCx_OPTION 254`) — airspeed-scheduled pitch
+  trim, learned by the aircraft itself in a few straight legs, so FBWA flies
+  level hands-off at every speed instead of only one, and TECS no longer has
+  to integrate out the speed-dependent pitch in CRUISE / FBWB / AUTO.
 - **Move sticks to cancel auto launch**: nudge pitch or roll during an
   automatic takeoff and the plane drops to FBWA so you can abort a bad
   launch — iNav-style, active only while the takeoff is running.
@@ -819,6 +820,27 @@ cruise flies nose-high when slow and nose-low when fast, so FBWA drifts off
 level and CRUISE / FBWB carry a standing pitch correction. Adaptive pitch
 trim adds an **airspeed-dependent offset** on top of `PTCH_TRIM_DEG`, and the
 aircraft can learn the curve by itself.
+
+It does not measure or control angle of attack. There is no AOA vane or AOA
+estimate involved: it is pitch trim scheduled on airspeed. "Adaptive Pitch
+Trim" is the name used everywhere in the firmware (the `RCx_OPTION 254`
+switch, the `Adaptive trim …` messages and the `PTCH_TRIM_*` parameters).
+
+**How it differs from TECS tuning.** The offset is added to the pitch demand
+after the mode has computed it, the same place `PTCH_TRIM_DEG` goes:
+
+- **FBWA, STABILIZE:** TECS does not run, and the stick alone sets the pitch
+  demand. Without the schedule, a hands-off plane is level at only one speed.
+  No TECS parameter can change this; the schedule can.
+- **FBWB, CRUISE, AUTO, RTL, LOITER:** TECS finds the level-flight pitch
+  anyway, but through its integrator, which takes time to wind up and shows
+  as height error after every speed change. The schedule supplies that pitch
+  up front, so the integrator stays near zero (in SITL the steady-cruise TECS
+  pitch demand fell from 3.1° to 0.1°). `TECS_INTEG_GAIN`, `TECS_PTCH_DAMP`
+  and `TECS_TIME_CONST` only change how fast TECS gets there.
+  `TECS_PTCH_FF_K` looks similar but only applies while gliding.
+
+Use both: tune TECS first, then learn the curve.
 
 **Parameters** (`PTCH_TRIM_SPD1` = 0 turns the whole feature off):
 
