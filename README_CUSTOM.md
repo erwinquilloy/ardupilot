@@ -959,6 +959,52 @@ throttle:
 To turn a hand-set curve off later without a switch, set `PTCH_TRIM_SPD1`
 to 0; put the old value back to turn it on again.
 
+**Setting a curve from logs** (no OSD needed). Fly the same legs, then read
+the dataflash `.bin` instead of a display. Plot these on one time axis:
+
+| Field | Use |
+|---|---|
+| `CTUN.As` (m/s) | airspeed — the same `airspeed_EAS()` value the learner uses |
+| `ATT.Pitch` (deg) | real aircraft pitch, nothing subtracted |
+| `ATT.Roll` (deg) | keep stretches within ±5° |
+| `XKF1.VD` (m/s, core 0), or `TECS.dh` | keep stretches under 0.5 m/s; `TECS.dh` is only logged in TECS modes |
+| `CTUN.AsT` | airspeed source: 1 pitot, 2 / 3 synthetic (DCM / EKF3), 0 no new estimate (drop) |
+
+Do not use `CTUN.Pitch` (logged with `PTCH_TRIM_DEG` and the current curve
+offset already subtracted) or `ATT.DesPitch` (the target, trim included).
+Because `ATT.Pitch` is the real pitch, the curve does not need to be off
+while flying the legs, and the `FLIGHT_OPTIONS` display bits do not matter.
+
+1. Find stretches of 3 s or more where `CTUN.As` is flat, `ATT.Roll` stays
+   within ±5° and `XKF1.VD` within ±0.5 m/s (the learner's own checks).
+2. Note the mean `CTUN.As` and mean `ATT.Pitch` of each.
+3. `OFS` = mean `ATT.Pitch` − `PTCH_TRIM_DEG`, with `PTCH_TRIM_DEG` read
+   from the log's PARM values. This is the same formula the learner saves.
+   The offsets should fall as speed rises.
+4. Enter them as in step 5 above, `PTCH_TRIM_SPD1` last.
+
+A scatter of `ATT.Pitch` against `CTUN.As`, using only samples that pass the
+roll and climb checks, shows the level-flight curve as a band to read three
+points from.
+
+*With a pitot*, `CTUN.AsT` should read 1 throughout. The pitot is only used
+while `ARSPD_USE` is 1 and the sensor is healthy; stretches with 2 or 3 used
+synthetic airspeed and belong to the no-pitot case.
+
+*Without a pitot* (`AsT` 2 or 3) the method is the same, with three
+differences:
+- A wind-estimate error shifts the whole curve along the speed axis. Fly a
+  few circles first, fly each speed upwind and downwind and average the
+  pair. If the two disagree by more than about 1 m/s, the wind estimate is
+  off and that pair is unreliable.
+- FBWB / CRUISE cannot fly slower than the `TRIM_THROTTLE` speed (the
+  throttle stick only adds throttle above mid). Lower `TRIM_THROTTLE` for a
+  slow leg, or fly it in FBWA.
+- FBWA legs count from logs. `ATT.Pitch` is the real pitch in any mode, so a
+  stretch where you held altitude by hand is as good as a TECS-held one, as
+  long as `XKF1.VD` stays within ±0.5 m/s and the speed is steady. The
+  in-flight learner cannot use these: it only samples in FBWB and CRUISE.
+
 **`KFF_THR2PTCH` is ignored while the curve is active.** It is stock
 ArduPlane's throttle-based version of the same idea: it adds `KFF_THR2PTCH` ×
 throttle % / 100 degrees to the pitch target in every stabilised mode. The
