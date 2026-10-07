@@ -882,14 +882,49 @@ position at boot only chooses on or off; it never starts a learn.
    It needs at least 3 speeds spanning 3 m/s. With fewer (or if the fit
    fails) nothing is saved and the old values stay.
 
-You can also set the six values by hand: with the switch LOW, fly straight
-and steady in FBWB or CRUISE and read the OSD pitch at each speed. By default
-the OSD (and the GCS / passthrough telemetry) already shows pitch with
-`PTCH_TRIM_DEG` removed, so `OFS` = OSD pitch. Only if `FLIGHT_OPTIONS` bit 9
-is set (OSD shows the raw pitch) is it `OFS` = OSD pitch − `PTCH_TRIM_DEG`.
-With the switch MIDDLE the displayed pitch also has the current offset
-removed, so read it with the switch LOW. The offsets should fall as speed
-rises.
+**Setting a curve by hand** (no switch needed):
+
+1. **Turn the curve off while you measure.** With a switch, put it LOW.
+   Without one, set `PTCH_TRIM_SPD1` to 0 (the other five values are kept).
+   A fresh install is already off: all six default to 0. While the curve is
+   on, the displayed pitch also has the offset removed, so readings taken
+   then are wrong.
+2. **Check how your display shows pitch.** By default the pitch you see has
+   `PTCH_TRIM_DEG` subtracted, so a plane level at its trim attitude reads 0°.
+   Two `FLIGHT_OPTIONS` bits turn that off and show the raw pitch instead:
+
+   | Where you read pitch | Bit | Value |
+   |---|---|---|
+   | OSD, and passthrough / MSP telemetry on the radio (Yaapu, TECS helper) | 9 | 512 |
+   | Mission Planner / GCS HUD | 8 | 256 |
+
+   The fork default (`FLIGHT_OPTIONS` 4096) has both clear.
+3. **Measure three speeds in FBWB or CRUISE**, where TECS holds altitude so
+   the pitch it settles on is the level-flight pitch. Pick a slow, a middle
+   and a fast speed you actually fly, about 4–5 m/s apart, with the slow one
+   above 1.25 × `AIRSPEED_MIN` (below that the stall taper takes over). At
+   each speed fly straight, wings level and holding altitude for 5–10 s, and
+   note the airspeed and the pitch.
+4. **Work out each offset.** If the bit for your display is clear,
+   `OFS` = displayed pitch. If it is set, `OFS` = displayed pitch −
+   `PTCH_TRIM_DEG`. The offsets should fall as speed rises; if one doesn't,
+   measure that leg again.
+5. **Enter the values, `PTCH_TRIM_SPD1` last.** Set `SPD2`, `SPD3` and
+   `OFS1`–`OFS3` first, then `SPD1`. The curve switches on as soon as
+   `SPD1` > 0 and `SPD1` < `SPD2` < `SPD3`, so entering `SPD1` last keeps a
+   half-entered curve from going live. Doing this on the ground is simplest;
+   in flight the offset fades in over about 1 s.
+6. **Check it.** With the curve on (switch MIDDLE, or no switch), fly FBWA
+   hands-off at each speed: the plane should hold altitude, and the displayed
+   pitch should read about 0° when level.
+
+| Param | Value |
+|---|---|
+| `PTCH_TRIM_SPD1` / `SPD2` / `SPD3` | slow / middle / fast airspeed (m/s) |
+| `PTCH_TRIM_OFS1` / `OFS2` / `OFS3` | offset at each speed (deg, positive nose up, ±10) |
+
+To turn a hand-set curve off later without a switch, set `PTCH_TRIM_SPD1`
+to 0; put the old value back to turn it on again.
 
 **`KFF_THR2PTCH` is ignored while the curve is active.** It is stock
 ArduPlane's throttle-based version of the same idea: it adds `KFF_THR2PTCH` ×
