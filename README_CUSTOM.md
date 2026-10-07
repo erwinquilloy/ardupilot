@@ -997,12 +997,13 @@ differences:
   few circles first, fly each speed upwind and downwind and average the
   pair. If the two disagree by more than about 1 m/s, the wind estimate is
   off and that pair is unreliable.
-- FBWB / CRUISE cannot fly slower than the `TRIM_THROTTLE` speed (the
-  throttle stick only adds throttle above mid). Lower `TRIM_THROTTLE` for a
-  slow leg, or fly it in FBWA.
+- No points below the trim-throttle speed (the speed the plane flies at
+  `TRIM_THROTTLE`): keep `PTCH_TRIM_SPD1` at or above it, see *Without a
+  pitot* below. FBWB / CRUISE cannot fly slower anyway.
 - FBWA legs count from logs. `ATT.Pitch` is the real pitch in any mode, so a
   stretch where you held altitude by hand is as good as a TECS-held one, as
-  long as `XKF1.VD` stays within ±0.5 m/s and the speed is steady. The
+  long as `XKF1.VD` stays within ±0.5 m/s and the speed is steady — useful
+  if you don't fly FBWB, still at or above the trim-throttle speed. The
   in-flight learner cannot use these: it only samples in FBWB and CRUISE.
 
 **`KFF_THR2PTCH` is ignored while the curve is active.** It is stock
@@ -1035,8 +1036,15 @@ near `TRIM_THROTTLE`. This combination has not been flight-tested yet.
 For the learn legs this also means the throttle stick does not set a target
 airspeed: with `THROTTLE_NUDGE` on, the stick above mid only adds throttle
 on top of `TRIM_THROTTLE` (toward `THR_MAX`), and below mid it does
-nothing. Speeds below the trim-throttle cruise speed need a lower
-`TRIM_THROTTLE` for that leg.
+nothing, so the slowest leg is the trim-throttle speed.
+
+That is also the lowest `PTCH_TRIM_SPD1` to use without a pitot. Below
+`SPD1` the curve holds `OFS1`, so slow flight behaves as it does today.
+Without a pitot the plane only flies slower than that with the throttle
+pulled back (descents, FBWA throttle-back), where `STAB_PITCH_DOWN` is
+lowering the nose and a curve's extra nose-up would partly cancel it, and
+the stall taper near `AIRSPEED_MIN` would rest on the synthetic estimate.
+Don't lower `TRIM_THROTTLE` or use FBWA legs to get points below it.
 
 Costs about 2.9 KB of flash on a 1 MB F4 board.
 
