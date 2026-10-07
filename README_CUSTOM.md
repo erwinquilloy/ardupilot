@@ -871,16 +871,49 @@ position at boot only chooses on or off; it never starts a learn.
 
 **Learning a curve:**
 1. Put the switch HIGH (`Adaptive trim learn: fly level FBWB/CRUISE`).
+   A switch already HIGH at boot does not learn: move it off HIGH and back.
 2. In FBWB or CRUISE, fly straight and level at 4–5 different speeds, about
-   4–5 m/s apart, holding each speed for 5–10 s. Samples are only taken
-   when wings are level (under 5° of roll), the climb rate is under
-   0.5 m/s and the airspeed is steady. Progress shows as
-   `Adaptive trim learn: N speeds`.
-3. Move the switch off HIGH. The curve is fitted and saved, and printed as
-   speed/offset pairs, for example
+   4–5 m/s apart, holding each speed for 5–10 s. Progress shows every 10 s
+   as `Adaptive trim learn: N speeds`.
+3. Move the switch off HIGH — one move, no need to go back to HIGH. The
+   curve is fitted and saved, and printed as speed/offset pairs, for example
    `Adaptive trim: 14.0 +2.1 18.0 +1.0 22.0 +0.2`.
+   Move to MIDDLE, not LOW: both save, but LOW also turns the curve off.
    It needs at least 3 speeds spanning 3 m/s. With fewer (or if the fit
-   fails) nothing is saved and the old values stay.
+   fails) the GCS shows `Adaptive trim: N speeds (need 3 over 3m/s)`,
+   nothing is saved and the old values stay.
+
+Every move to HIGH starts a new learn run and discards the samples
+collected so far (the saved curve is untouched until that run is saved).
+
+**How to fly the learn legs.** The learner never reads the sticks; it
+samples the aircraft 10 times a second and keeps a sample only when all of
+these hold:
+
+| Check | Limit |
+|---|---|
+| Roll | within ±5° |
+| Vertical speed | under 0.5 m/s up or down |
+| Airspeed change | under 0.5 m/s per second (filtered) |
+
+A 1 m/s airspeed band counts as one learned speed after 30 kept samples
+(about 3 s of steady flight). So the legs are hands-off on pitch, not on
+throttle:
+
+- **Pitch stick centred.** In FBWB the pitch stick commands a climb or
+  descent, and anything over 0.5 m/s drops the samples.
+- **Roll: small heading corrections are fine** while the bank stays
+  within 5°. Samples pause while banked further; nothing is lost.
+- **Throttle stick sets each speed.** With an airspeed sensor the FBWB /
+  CRUISE throttle stick sets the target airspeed between `AIRSPEED_MIN`
+  and `AIRSPEED_MAX`. Set it, then let the speed settle: samples are
+  rejected while it is still changing. Without a pitot see below.
+- **Turns are free.** Banked flight is just skipped, so fly a leg, turn
+  around and come back at the same speed: the samples for that speed keep
+  adding up across legs.
+- **Calm air.** Gusts push the vertical speed and airspeed rate past the
+  limits, so on a bumpy day the counts climb slowly; fly longer legs rather
+  than more speeds.
 
 **Setting a curve by hand** (no switch needed):
 
@@ -953,6 +986,11 @@ Without a pitot, TECS also sets throttle from the pitch measured against the
 trim, so in FBWB, CRUISE and AUTO the curve changes throttle as well: with an
 accurate curve level flight reads as trim at every speed and throttle stays
 near `TRIM_THROTTLE`. This combination has not been flight-tested yet.
+For the learn legs this also means the throttle stick does not set a target
+airspeed: with `THROTTLE_NUDGE` on, the stick above mid only adds throttle
+on top of `TRIM_THROTTLE` (toward `THR_MAX`), and below mid it does
+nothing. Speeds below the trim-throttle cruise speed need a lower
+`TRIM_THROTTLE` for that leg.
 
 Costs about 2.9 KB of flash on a 1 MB F4 board.
 
