@@ -48,6 +48,87 @@ plus a few additions originating in this fork.
 
 ---
 
+## Contents
+
+An outline of everything this fork adds and where it is documented. Each line links to its section.
+
+- **Getting started** — [Why flash this instead of stock ArduPlane 4.7.1?](#why-flash-this-instead-of-stock-arduplane-471), [Building](#building), [Supported boards](#supported-boards), [Which file in the zip do I flash?](#which-file-in-the-zip-do-i-flash), [Release fleets (`full-v2.0` / `light-v2.0`)](#release-fleets-full-v20--light-v20), [Tone-buzzer board variant: `SpeedyBeeF405WING-Buzz`](#tone-buzzer-board-variant-speedybeef405wing-buzz)
+- **[What this fork adds](#what-this-fork-adds)**
+  - [Flight modes](#flight-modes)
+    - [Course Hold (mode 26)](#course-hold-mode-26)
+    - [Auto Trim (mode 27)](#auto-trim-mode-27)
+    - [RC aux switch entries (Plane)](#rc-aux-switch-entries-plane)
+    - [`FLTMODE_EXT` — 12-position FLTMODE_CH](#fltmode_ext--12-position-fltmode_ch)
+  - [Arming & takeoff](#arming--takeoff)
+    - [Arm-switch safety — in-flight disarm cuts throttle, doesn't disarm](#arm-switch-safety--in-flight-disarm-cuts-throttle-doesnt-disarm)
+    - [`ARMING_MODE_SW` — auto mode switch after arming](#arming_mode_sw--auto-mode-switch-after-arming)
+    - [`TKOFF_THR_IDLE` — pre-launch idle throttle](#tkoff_thr_idle--pre-launch-idle-throttle)
+    - [`TKOFF_IDL_DELAY` — pause before idle ramp](#tkoff_idl_delay--pause-before-idle-ramp)
+    - [Pre-launch audio cues](#pre-launch-audio-cues)
+    - [Pilot altitude control during TAKEOFF loiter](#pilot-altitude-control-during-takeoff-loiter)
+    - [`FLIGHT_OPTIONS` bit 21 — end TAKEOFF in FBWB instead of loitering](#flight_options-bit-21--end-takeoff-in-fbwb-instead-of-loitering)
+  - [VTOL transition](#vtol-transition)
+    - [`FLIGHT_OPTIONS` bit 18 — end a VTOL transition in FBWB instead of FBWA](#flight_options-bit-18--end-a-vtol-transition-in-fbwb-instead-of-fbwa)
+  - [Pitch trim & tuning knob](#pitch-trim--tuning-knob)
+    - [`PTCH_TRIM_DEG` is now knob-tunable](#ptch_trim_deg-is-now-knob-tunable)
+    - [Three switchable tuning sets — `TUNE_PARAM` / `PARAM2` / `PARAM3`](#three-switchable-tuning-sets--tune_param--param2--param3)
+    - [Faster tuning selector timing](#faster-tuning-selector-timing)
+    - [ATT log uses trim-corrected pitch target](#att-log-uses-trim-corrected-pitch-target)
+  - [RTL & failsafe behaviour](#rtl--failsafe-behaviour)
+    - [`RTL_LVL_RLL_LMT` — separate roll limit for the initial climb](#rtl_lvl_rll_lmt--separate-roll-limit-for-the-initial-climb)
+    - [`FLIGHT_OPTIONS` bit 22 — `RTL_CLIMB_FIRST_ONLY_IN_FS`](#flight_options-bit-22--rtl_climb_first_only_in_fs)
+    - [`FLIGHT_OPTIONS` bit 23 — `ALLOW_GLIDING_IN_AUTO_THR_MODES`](#flight_options-bit-23--allow_gliding_in_auto_thr_modes)
+    - [`FLIGHT_OPTIONS` bit 12 — FBW-B style loiter altitude control *(upstream)*](#flight_options-bit-12--fbw-b-style-loiter-altitude-control-upstream)
+    - [`FLIGHT_OPTIONS` bit 24 — `RTL_MANUAL_ALT_CONTROL`](#flight_options-bit-24--rtl_manual_alt_control)
+    - [RTL Autoland Commit (`RCx_OPTION 251`) — hold at home, commit on your command](#rtl-autoland-commit-rcx_option-251--hold-at-home-commit-on-your-command)
+    - [Lost-vehicle audio alarm during RC failsafe](#lost-vehicle-audio-alarm-during-rc-failsafe)
+    - [Mission restart on AUTO if not flying](#mission-restart-on-auto-if-not-flying)
+    - [`LAND_WIND_BIAS` — pick the upwind `DO_LAND_START`](#land_wind_bias--pick-the-upwind-do_land_start)
+    - [`LAND_WIND_DIST` — why: cap how far the wind bias can reach](#land_wind_dist--why-cap-how-far-the-wind-bias-can-reach)
+    - [`LAND_WIND_STRICT` — why: make the cap a *hard* fence](#land_wind_strict--why-make-the-cap-a-hard-fence)
+    - [QRTL with `RTL_ALTITUDE -1` (fixed in v2.0)](#qrtl-with-rtl_altitude--1-fixed-in-v20)
+  - [Pilot control of loiter radius and direction (LOITER, RTL, TAKEOFF)](#pilot-control-of-loiter-radius-and-direction-loiter-rtl-takeoff)
+  - [Emergency landing (RC failsafe)](#emergency-landing-rc-failsafe)
+  - [Auto-trim improvements](#auto-trim-improvements)
+  - [Move sticks to cancel auto launch](#move-sticks-to-cancel-auto-launch)
+  - [Manual airspeed control in nav modes](#manual-airspeed-control-in-nav-modes)
+  - [Throttle output deadzone](#throttle-output-deadzone)
+  - [Throttle voltage compensation in MANUAL mode](#throttle-voltage-compensation-in-manual-mode)
+  - [Revert to MANUAL after disarming](#revert-to-manual-after-disarming)
+  - [Smarter RC relays](#smarter-rc-relays)
+  - [Steering assist supports reverse driving](#steering-assist-supports-reverse-driving)
+  - [MAVFTP reliability on low-RAM F4 boards](#mavftp-reliability-on-low-ram-f4-boards)
+  - [`EKF3 allocation failed` on 1 MB F4 — allocation order and the fix](#ekf3-allocation-failed-on-1-mb-f4--allocation-order-and-the-fix)
+  - [Serial port numbering matched to chip UART numbers](#serial-port-numbering-matched-to-chip-uart-numbers)
+  - [`is_flying` heuristic — fixed thresholds](#is_flying-heuristic--fixed-thresholds)
+  - [Stick mixing default](#stick-mixing-default)
+  - [Aileron / elevator differential throws](#aileron--elevator-differential-throws)
+  - [Throttle / flap → elevator PWM offset mixes](#throttle--flap--elevator-pwm-offset-mixes)
+- **[Walksnail Headtracking via MSP and Serial Gimbal](#walksnail-headtracking-via-msp-and-serial-gimbal)** — [How it flows](#how-it-flows), [Setup](#setup), [Controls](#controls), [POI lock with head tracking](#poi-lock-with-head-tracking), [Notes](#notes)
+- **[OSD additions](#osd-additions)** — [New elements](#new-elements), [ADS-B traffic element (`OSDx_ADSB`)](#ads-b-traffic-element-osdx_adsb), [OSD options (`OSD_OPTIONS` bits)](#osd-options-osd_options-bits), [Tunables added](#tunables-added), [Display polish](#display-polish), [Setting up cell voltage on the OSD](#setting-up-cell-voltage-on-the-osd), [Stats grid](#stats-grid)
+- **[Peer-aircraft radar (iNav Radar / FormationFlight)](#peer-aircraft-radar-inav-radar--formationflight)** — [Setup](#setup-1), [OSD element](#osd-element), [Build gating](#build-gating), [Peer callsigns on the radar OSD](#peer-callsigns-on-the-radar-osd), [Limitations / scope](#limitations--scope)
+- **[Quadplane / VTOL](#quadplane--vtol)**
+  - [`Q_TRIM_PITCH` is now knob-tunable](#q_trim_pitch-is-now-knob-tunable)
+  - [VTOL AutoTrim — learn the hover level in QHOVER (`RCx_OPTION = 182`)](#vtol-autotrim--learn-the-hover-level-in-qhover-rcx_option--182)
+  - [`Q_M_FRTB_RATIO` — Tri-frame front/rear thrust balance](#q_m_frtb_ratio--tri-frame-frontrear-thrust-balance)
+- **[Battery monitoring (AP_BattMonitor)](#battery-monitoring-ap_battmonitor)** — [New params](#new-params), [Behaviour changes](#behaviour-changes)
+- **[Stats (AP_Stats)](#stats-ap_stats)**
+- **[TECS / throttle](#tecs--throttle)** — [Default changes](#default-changes), [New params](#new-params-1), [Behaviour changes](#behaviour-changes-1)
+- **[EKF / state estimator](#ekf--state-estimator)**
+- **[Sensors](#sensors)** — [LightWare SF000/B rangefinder over I2C](#lightware-sf000b-rangefinder-over-i2c)
+- **[Telemetry](#telemetry)** — [CRSF](#crsf), [MSP / DJI](#msp--dji), [FrSky SPort passthrough](#frsky-sport-passthrough), [Common](#common)
+- **[Behaviour changes vs upstream — migration notes](#behaviour-changes-vs-upstream--migration-notes)** — [Upgrading from v1.1 (ArduPlane 4.6.3 base)](#upgrading-from-v11-arduplane-463-base)
+- **[Deliberately *not* included](#deliberately-not-included)**
+- **[Documentation and tooling](#documentation-and-tooling)**
+  - [Full parameter reference](#full-parameter-reference)
+  - [Bitmask calculator](#bitmask-calculator)
+  - [TECS tuning helper (Ethos / EdgeTX)](#tecs-tuning-helper-ethos--edgetx)
+  - [Yaapu Course Hold telemetry pack](#yaapu-course-hold-telemetry-pack)
+- **[Branch / repository layout](#branch--repository-layout)**
+- **[Credits](#credits)**
+
+---
+
 ## Why flash this instead of stock ArduPlane 4.7.1?
 
 Everything stock ArduPlane 4.7.1 does still works underneath — this fork
