@@ -1672,7 +1672,7 @@ pads showing up on `SERIAL6`).
 Affected boards: `MatekF405-TE(-bdshot)`, `MatekF405-STD`, `omnibusf4pro`,
 `MatekH743(-bdshot)` since v0.3-beta, and **`MatekF765-Wing` and
 `KakuteH7-Wing` since v2.0**. Every board in both release fleets now follows
-the rule; `XFLY-H743-bdshot`, `TBS_LUCID_H7_OEM` and `MatekH7A3-Wing` joined already numbered
+the rule; `XFLY-H743-bdshot`, `TBS_LUCID_H7_OEM`, `MatekH7A3-Wing` and `TBS_LUCID_H7_WING_AIO` joined already numbered
 this way. Where a UART is missing, its number is an `EMPTY` placeholder so
 the rest stay aligned: `SERIAL2`/`SERIAL5` on `omnibusf4pro`, `SERIAL4` on
 `KakuteH7-Wing` (no UART4), `SERIAL5` on `MatekH743-bdshot`, and
@@ -2420,7 +2420,7 @@ full build has no suffix.
 Since v1.1 the two tracks don't overlap — a given board appears on exactly one
 of them, so there is no choice to get wrong.
 
-### Full track — 6 boards (F7 / H7, 2 MB)
+### Full track — 7 boards (F7 / H7, 2 MB)
 
 Measured at **v2.0**:
 
@@ -2429,6 +2429,7 @@ Measured at **v2.0**:
 | MatekF765-Wing | F7 / 2 MB | **556.9 KB** | +37.5 | Ships — Matek F765-WING (most flash headroom in the fleet) |
 | MatekH7A3-Wing | H7 / 2 MB | **496.7 KB** | new | **New in v2.0** — Matek H7A3-WING (bidirectional DShot); most room of any H7 |
 | KakuteH7-Wing | H7 / 2 MB | **146.2 KB** | +42.7 | Ships — Holybro Kakute H743 Wing |
+| TBS_LUCID_H7_WING_AIO | H7 / 2 MB | **136.4 KB** | new | **New in v2.0** — TBS Lucid H7 Wing AIO (added after release, same `ea34a7d` build) |
 | TBS_LUCID_H7_OEM | H7 / 2 MB | **130.8 KB** | new | **New in v2.0** — TBS Lucid H7 OEM |
 | MatekH743-bdshot | H7 / 2 MB | **128.7 KB** | +29.7 | Ships — Matek H743-WING (bidirectional DShot) |
 | XFLY-H743-bdshot | H7 / 2 MB | **117.3 KB** | new | **New in v2.0** — XFly VTOL kit FC (bidirectional DShot); tightest of the full fleet |
@@ -2474,6 +2475,18 @@ feature add will push against.
 > flash `arduplane_with_bl.hex` over DFU first (hold the boot button while
 > plugging in USB). See
 > [the board README](libraries/AP_HAL_ChibiOS/hwdef/MatekH7A3-Wing/README.md).
+
+> **`TBS_LUCID_H7_WING_AIO`** (STM32H743, 2 MB, board ID 5254) was added to
+> the `full-v2.0` release after it shipped, built from the same `ea34a7d`
+> commit as the rest of the fleet, so its version string matches. It ships on
+> upstream's own board definition, unchanged, and like `TBS_LUCID_H7_OEM` it
+> is a genuine STM32H7, not the AT32 "Lucid Pro". Serial ports already follow
+> `SERIALn` = chip UART `n` (`SERIAL5` is an `EMPTY` placeholder): `SERIAL1`
+> SBUS on the HD VTX connector, `SERIAL3` DisplayPort, `SERIAL4` RC input,
+> `SERIAL6` GPS, `SERIAL7` ESC telemetry (RX only), `SERIAL8` MAVLink2. Outputs
+> 1–7 plus 13 (LED strip by default). Coming from INAV or Betaflight, flash
+> `arduplane_with_bl.hex` over DFU first. Not flown on this firmware yet. See
+> [the board README](libraries/AP_HAL_ChibiOS/hwdef/TBS_LUCID_H7_WING_AIO/README.md).
 
 ### Light track — 9 boards (all 1 MB F4)
 
@@ -2643,8 +2656,9 @@ notes and wiring photos live in the board's `Readme.md`.
   one branch and one commit; the light configuration is picked by flash size.
 - **Added to full:** `TBS_LUCID_H7_OEM` (H7 / 2 MB, board ID 5255),
   `XFLY-H743-bdshot` (H7 / 2 MB, board ID 8888, the XFly VTOL kit FC) and
-  `MatekH7A3-Wing` (H7A3 / 2 MB, board ID 1228). Full goes **3 → 6 boards**;
-  light is unchanged at 9.
+  `MatekH7A3-Wing` (H7A3 / 2 MB, board ID 1228), then after release
+  `TBS_LUCID_H7_WING_AIO` (H7 / 2 MB, board ID 5254). Full goes
+  **3 → 7 boards**; light is unchanged at 9.
 - No board was removed and no board changed track.
 - Returning full boards gained 30–43 KB of free flash; light boards moved by
   −4.6 to +2.3 KB.
