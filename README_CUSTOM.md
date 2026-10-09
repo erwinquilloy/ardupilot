@@ -1959,8 +1959,8 @@ Affected boards: `MatekF405-TE(-bdshot)`, `MatekF405-STD`, `omnibusf4pro`,
 the rule; `XFLY-H743-bdshot`, `TBS_LUCID_H7_OEM`, `MatekH7A3-Wing` and `TBS_LUCID_H7_WING_AIO` joined already numbered
 this way. Where a UART is missing, its number is an `EMPTY` placeholder so
 the rest stay aligned: `SERIAL2`/`SERIAL5` on `omnibusf4pro`, `SERIAL4` on
-`KakuteH7-Wing` (no UART4), `SERIAL5` on `MatekH743-bdshot`, and
-`SERIAL4`/`SERIAL6` on `XFLY-H743-bdshot`. Upstream's `KakuteF4-Wing`
+`KakuteH7-Wing` (no UART4), `SERIAL5` on `MatekH743-bdshot` and
+`TBS_LUCID_H7_WING_AIO`, and `SERIAL4`/`SERIAL6` on `XFLY-H743-bdshot`. Upstream's `KakuteF4-Wing`
 (and so `KakuteF4-Wing-Buzz`) already had an empty `SERIAL4`.
 
 The v0.3-beta boards changed `SERIAL_ORDER` only, so their default protocols
