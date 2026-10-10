@@ -44,7 +44,9 @@ plus a few additions originating in this fork.
 >
 > Those two, plus the transmitter-side scripts (**TECS tuning helper**,
 > **Yaapu Course Hold pack**), are collected under
-> **[Documentation and tooling](#documentation-and-tooling)**.
+> **[Documentation and tooling](#documentation-and-tooling)**. The browser
+> tools are also on one page:
+> **[ArduPilot Tools](https://erwinquilloy.github.io/ardupilot-tools/)**.
 
 ---
 
@@ -3586,8 +3588,14 @@ Everything in this chapter is a tool you can use *outside* the firmware —
 parameter docs, a bitmask calculator, and transmitter scripts. They are
 collected here rather than scattered through the feature sections.
 
+**→ [ArduPilot Tools](https://erwinquilloy.github.io/ardupilot-tools/)**
+collects the browser tools on one page: the searchable parameter list,
+the bitmask calculator, the QRTL Planner, the LAND_WIND_BIAS Explorer and
+a link to the TECS tuning helper. Everything runs in your browser.
+
 | Tool | What it is for | Where |
 |---|---|---|
+| **ArduPilot Tools site** | The browser tools below plus the QRTL Planner (where a QRTL starts its glide and how low it gets) and the LAND_WIND_BIAS Explorer (which `DO_LAND_START` an autoland picks, and why) | [erwinquilloy.github.io/ardupilot-tools](https://erwinquilloy.github.io/ardupilot-tools/) |
 | **Full parameter reference** | Every parameter this firmware exposes, with descriptions, units and ranges — your GCS ships upstream metadata and will not describe fork parameters | [below](#full-parameter-reference) |
 | **Bitmask calculator** | Tick bits, copy out the integer — or paste a value back to see which bits are set. Knows this fork's bits | [below](#bitmask-calculator) |
 | **TECS tuning helper** | Step-by-step TECS tuning from the transmitter, reading live telemetry — Ethos and EdgeTX | [below](#tecs-tuning-helper-ethos--edgetx) |
@@ -3608,6 +3616,8 @@ the firmware exposes — including every fork-added bit on
 Click the link below to read the full HTML parameter reference
 in your browser — no download, no GitHub account:
 
+- **Searchable:** <https://erwinquilloy.github.io/ardupilot-tools/parameters.html>
+  (filter by name or text; each parameter has its own link, e.g. `parameters.html#LAND_WIND_BIAS`)
 - <https://raw.githack.com/erwinquilloy/ardupilot/master_custom_4.7.1/docs/parameters/Parameters.html>
 
 (`raw.githack.com` serves the HTML with the right `Content-Type` so
@@ -3651,8 +3661,9 @@ account needed.
 
 ### 👉 Open the calculator
 
-Click the link below to use the calculator in your browser:
+Click a link below to use the calculator in your browser:
 
+- <https://erwinquilloy.github.io/ardupilot-tools/bitmask-calculator.html>
 - <https://raw.githack.com/erwinquilloy/ardupilot/master_custom_4.7.1/docs/bitmask_calculator.html>
 
 `raw.githack.com` is a free public CDN — no account, no login. It
