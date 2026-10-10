@@ -54,7 +54,7 @@ plus a few additions originating in this fork.
 
 An outline of everything this fork adds and where it is documented. Each line links to its section.
 
-- **Getting started** — [Why flash this instead of stock ArduPlane 4.7.1?](#why-flash-this-instead-of-stock-arduplane-471), [Building](#building), [Supported boards](#supported-boards), [Which file in the zip do I flash?](#which-file-in-the-zip-do-i-flash), [Release fleets (full-v2.0 / light-v2.0)](#release-fleets-full-v20--light-v20), [Tone-buzzer board variant (SpeedyBeeF405WING-Buzz)](#tone-buzzer-board-variant-speedybeef405wing-buzz)
+- **Getting started** — [Why flash this instead of stock ArduPlane 4.7.1?](#why-flash-this-instead-of-stock-arduplane-471), [Building](#building), [Which file in the zip do I flash?](#which-file-in-the-zip-do-i-flash), [Release fleets (full-v2.0 / light-v2.0)](#release-fleets-full-v20--light-v20), [Tone-buzzer board variant (SpeedyBeeF405WING-Buzz)](#tone-buzzer-board-variant-speedybeef405wing-buzz)
 - **[What this fork adds](#what-this-fork-adds)**
   - [Flight modes](#flight-modes)
     - [Course Hold (mode 26)](#course-hold-mode-26)
@@ -269,8 +269,8 @@ Identical to upstream. From a configured WSL / Linux toolchain:
 ./waf plane
 ```
 
-The branch builds clean for every board listed under "Supported boards"
-below; SITL builds and runs cleanly.
+The branch builds clean for every board in the
+[release fleets](#release-fleets-full-v20--light-v20); SITL builds and runs cleanly.
 
 ### Full or light is picked by the board's flash size
 
@@ -316,45 +316,6 @@ The `Light` suffix is added automatically on 1 MB boards
 (`AP_CUSTOM_LIGHT`, see above). Both tracks of a release are built from
 the same commit, so they show the same hash. Up to v1.1 the brand in the
 string was `ArduCustom`.
-
-## Supported boards
-
-> ℹ️ **1 MB F4 boards build as light automatically.** The full backend set no
-> longer fits 1 MB of flash alongside the fork's features, so boards with
-> 1 MB of flash get the light configuration (see
-> [Building](#full-or-light-is-picked-by-the-boards-flash-size)). F7 / H7 /
-> 2 MB boards get everything.
-
-Fork-specific board work covers:
-
-- **MatekF405-Wing** — LED-pad-as-relay output, U3 DMA fix, bootloader
-  serial wiring
-- **revo-mini-sd** *(custom target)*
-- **SkystarsF405DJI** *(custom target)*
-- **qUark mini wing v4** *(custom target)*
-- **NeutronRC_H7_BT** *(custom target, H743, ported from ArduCustom)*
-- **SpeedyBeeF405WING-Buzz**, **KakuteF4-Wing-Buzz** *(custom targets —
-  tone buzzer added, see [below](#tone-buzzer-board-variant-speedybeef405wing-buzz))*
-- **OMNIBUSF7V2** — quadplane disabled to fit the firmware
-- **F4 mount support re-enabled** on `speedybeef4v3`, `MatekF405-TE`,
-  `MatekF405-Wing`, `LongBowF405WING`, `SpeedyBeeF405WING`,
-  `AtomRCF405NAVI` (v1.1). Upstream's
-  `minimize_common.inc` zeros `HAL_MOUNT_ENABLED` on flash-constrained
-  boards, which breaks gimbal users on F4 (MissionPlanner reports
-  "Invalid channel option" for `RCx_OPTION = 212/213/214` — the
-  MOUNT1_ROLL/PITCH/YAW input labels). Each F4 hwdef now does an
-  `undef`/`define` after the `minimize_*` include to turn mount back
-  on with **servo + CADDX** backends enabled (other backends stay off
-  to preserve flash budget). LongBow's existing upstream attempt used
-  `#undef`/`#define` which is a hwdef comment, not a directive —
-  fixed by dropping the `#`.
-- All stock-upstream boards build and run as-is, including: SpeedyBee
-  F405 / F405 Wing / F405 V3 / F405 V4 / F405 AIO / F405 Mini,
-  CoreWing F405 Wing, Lefei Longbow F405 Wing, FlyingRC F405 mini,
-  Holybro Kakute H743 Wing
-
-Other boards in the upstream tree still build; only the boards above
-have been actively validated.
 
 ---
 
@@ -2639,6 +2600,12 @@ Measured at **v2.0** with radar, `LAND_WIND_DIST` and `LAND_WIND_STRICT` on:
 ArduPlane 4.7's smaller EKF3 roughly pays for the new upstream features and the
 fork additions, so every board stays within a few KB of v1.1. The six boards
 with gimbal support also carry the POI lock switch (about 1.2 KB).
+
+Gimbal mount support is switched back on in these F4 hwdefs. Upstream's
+`minimize_common.inc` turns `HAL_MOUNT_ENABLED` off on flash-constrained
+boards, which leaves Mission Planner reporting "Invalid channel option" for
+`RCx_OPTION` 212/213/214 (mount roll/pitch/yaw). The fork re-enables it
+with only the servo and CADDX mount backends to save flash.
 
 `MatekF405-Wing-bdshot` is the canary board — first to bump the
 1 MB ceiling in any future upstream rebase or feature add. Every board on
