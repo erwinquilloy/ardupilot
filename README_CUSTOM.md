@@ -2337,6 +2337,14 @@ consumed mAh/Wh, avg/max ground/air/wind speed, avg efficiency
 max altitude, and flight time. Renders on disarm or with the screen
 selector.
 
+![Post-flight stats grid on the OSD after landing](docs/images/osd-stats-grid.jpg)
+
+*The stats grid after a 2:23 flight. Top to bottom: minimum battery
+voltage, average and maximum current/power, used mAh/Wh, average and
+maximum air/ground/wind speed, efficiency (air/ground), distance
+travelled (air/ground), maximum distance from home, maximum altitude
+and flight time.*
+
 Stats themselves are armed-relative (pre-arm baseline captured,
 deltas accumulated armed); wind stats are gated until 30 s of flight
 time has accumulated.
