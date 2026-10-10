@@ -1206,6 +1206,36 @@ close for this approach, so all the height is lost in a hover. With
 `Q_RTL_MODE 2` RTL comes home at RTL altitude, circles down on
 `Q_FW_LND_APR_RAD` to `Q_RTL_ALT`, and only hovers for the last part.
 
+**Fork vs upstream, switching to QRTL vs RTL.** Example: cruising at
+120 m, 1 km from home, `RTL_ALTITUDE -1`, `Q_RTL_ALT 40`, `Q_RTL_MODE 2`,
+`WP_LOITER_RAD -120`, `RTL_RADIUS 60`, `Q_FW_LND_APR_RAD 80`,
+`AIRSPEED_CRUISE 20`, `TECS_SINK_MAX 5`.
+
+![Altitude against distance to home: fork v2.0 QRTL, upstream 4.7.1 QRTL and RTL](docs/images/qrtl-vs-rtl-descent.jpg)
+
+| | QRTL, v2.0 | QRTL, upstream 4.7.1 | QRTL, 4.8-dev (master) | RTL (all three) |
+|---|---|---|---|---|
+| Height on the way home | holds 120 m to 773 m out | drops to 40 m at once (reached ~680 m out) | glides from the entry point | holds 120 m to home |
+| Down to 40 m | straight line, 773 → 240 m out | at up to `TECS_SINK_MAX` on entry | straight line, 1000 → 240 m out | spirals down on the 80 m circle over home |
+| Height 500 m out | 79 m | 40 m | 67 m | 120 m |
+| Final approach | from the direction it arrives | same | same | into the wind (EKF wind estimate) |
+| Lift motors start | ~140 m out (airbrake) | same | same | on the into-wind leg near home |
+
+4.8-dev's ramp is upstream PR #33786. It still reads `-1` as −1 m, so it
+starts down as soon as QRTL is selected instead of holding the entry
+height, and it only ramps when the drop is at least `ALT_SLOPE_MIN`. With a
+positive `RTL_ALTITUDE` above the entry height it is the only one of the
+three that ramps down to it; v2.0 and 4.7.1 step down to it at once. RTL is
+identical in all three. The 4.8-dev numbers come from master's code
+(checked 2026-10-10) and match a SITL run of master.
+
+Which to use: RTL keeps the height until it is over home and lands into
+the wind, but on a VTOL without a pitot the wind estimate can be badly off
+and pick the wrong approach. QRTL is quicker and doesn't depend on the wind
+estimate, but without a pitot a low synthetic airspeed reading (below
+`max(AIRSPEED_MIN − 2, Q_ASSIST_SPEED)`) can switch it to a hover far from
+home; on v2.0 that happens at the entry height, not at `Q_RTL_ALT`.
+
 - **On v1.1:** set `RTL_ALTITUDE` to a real height above `Q_RTL_ALT` if you
   use QRTL from far away. Plain RTL then returns at that height too.
 
