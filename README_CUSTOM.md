@@ -1335,12 +1335,23 @@ into the wind. Each candidate is scored as
 score = distance * (1 - LAND_WIND_BIAS * cos(approach_heading - wind_from))
 ```
 
-where `cos` returns `+1` for a perfect headwind approach (no
-penalty) and `-1` for a perfect tailwind approach (multiplier
-`1 + LAND_WIND_BIAS`). The lowest-scoring candidate wins.
+where `cos` returns `+1` for a perfect headwind approach (multiplier
+`1 - LAND_WIND_BIAS`, so it counts as shorter) and `-1` for a perfect
+tailwind approach (multiplier `1 + LAND_WIND_BIAS`). The lowest-scoring candidate wins.
 `LAND_WIND_BIAS = 1` lets a direct-tailwind 500 m approach lose to a
 direct-headwind 1000 m approach; `0.3` is a gentler tilt that still
 breaks ties in favour of upwind landings.
+
+![LAND_WIND_BIAS example: the into-wind landing #12 is picked over the nearer crosswind #24](docs/images/land-wind-bias-example.png)
+
+*Example with `LAND_WIND_BIAS 0.5` and the wind from 200°. Stock
+ArduPlane would fly to #24, the nearest at 522 m. The fork scores #12
+lower (781 × 0.53 = 414 against 522 × 0.83 = 433) because its approach
+faces the wind, so the plane flies the extra 259 m and lands into wind.
+The tailwind approach #18 scores 1837. The GCS shows
+`DO_LAND_START 12 (upwind, nearest was 24)`. To try other winds and
+positions, use the
+[LAND_WIND_BIAS Explorer](https://erwinquilloy.github.io/ardupilot-tools/land-wind-bias.html).*
 
 The approach heading for each `DO_LAND_START` is derived from the
 bearing toward the next `NAV_*` waypoint in the mission — typically
