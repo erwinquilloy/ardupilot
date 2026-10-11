@@ -2390,6 +2390,8 @@ BOB→
    1.2km ↑15m
 ```
 
+![Radar OSD element in flight (boxed): peer B with its bearing arrow and distance, and how far below us it is; the red arrow marks the peer aircraft itself](docs/images/radar-osd-element.jpg)
+
 - **callsign** — the peer's 3-character name when the radio supplies one,
   otherwise the slot letter `A`..`F`, matching the letter the ESP32 shows
   for that node on its own display and web UI. See
