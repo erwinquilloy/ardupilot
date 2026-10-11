@@ -261,7 +261,9 @@ void ModeTakeoff::update()
         if (plane.flight_option_enabled(FlightOptions::TKOFF_END_IN_FBWB) &&
             !plane.long_failsafe_pending &&
             !plane.failsafe.rc_failsafe) {
-            gcs().send_text(MAV_SEVERITY_INFO, "Switching to FBWB");
+            // starts with "Takeoff complete" so Yaapu plays its takeoff
+            // complete sound (it matches the first 16 characters)
+            gcs().send_text(MAV_SEVERITY_INFO, "Takeoff complete - FBWB");
             plane.set_mode(plane.mode_fbwb, ModeReason::TAKEOFF_COMPLETE);
             return;
         }
