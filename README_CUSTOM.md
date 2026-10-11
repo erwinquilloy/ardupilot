@@ -2086,6 +2086,8 @@ Shows the **nearest aircraft** heard by an ADS-B receiver, laid out like the
     ADS↗ 1000m      ← direction arrow (relative to your nose) and horizontal distance
        ⇈150m        ← height relative to YOUR aircraft (up arrows above, down arrows below)
 
+![ADS-B element on the bench (boxed), imperial units: real traffic 2.758 mi away and 6,047 ft above](docs/images/adsb-osd-element.jpg)
+
 The element is blank when no aircraft is tracked. The altitude line is left
 out if the aircraft doesn't report an altitude.
 
