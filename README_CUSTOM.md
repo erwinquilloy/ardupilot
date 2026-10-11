@@ -2416,12 +2416,49 @@ reception or range.
 |----:|--------------------------------------------|-----------------------------------------------------|
 | 18  | `OPTION_TWO_DECIMALS_VERTICAL_SPEED`       | Vspeed shown to 2 decimals                          |
 | 21  | `OPTION_ONE_DECIMAL_ATTITUDE`              | Pitch / roll shown to 1 decimal (default ON)        |
+| 22  | `OPTION_DISPLAYPORT_STRICT_CANVAS`         | Clip MSP DisplayPort writes to the `OSDx_TXT_RES` grid instead of 53 × 20 — for HDZero and other goggles that draw the smaller grids (v2.1) — see [DisplayPort canvas clip](#displayport-canvas-clip-v21) |
 | 23  | `OPTION_SHORTEN_PLUSCODE`                  | Strip leading digits from plus codes when home is near |
 
 > **Plus code (OLC):** the `OSDx_PLUSCODE_*` Open Location Code panel is
 > compiled into **every** board, including the 1 MB F4s (~2–3 KB flash) —
 > upstream only builds it for boards with more than 1 MB of flash.
 > `OSD_OPTIONS` bit 23 shortens the code when the aircraft is near home.
+
+## DisplayPort canvas clip (v2.1)
+
+Before v2.1 the flight controller sent every OSD write to MSP DisplayPort
+goggles as it was, even one placed off the goggles' grid or a string running
+past the right edge. Such a write is the suspected cause of the Walksnail OSD
+freezing. From v2.1 a write that starts off the grid is dropped and text is cut
+at the right edge.
+
+The grid it clips to:
+
+| `OSDx_TXT_RES` | `OSD_OPTIONS` bit 22 **off** (default) | bit 22 **on** |
+|---|---|---|
+| `0` | 53 × 20 | 30 × 16 |
+| `1` | 53 × 20 | 50 × 18 |
+| `2` | 60 × 22 | 60 × 22 |
+
+- **Walksnail and DJI O3/O4: leave bit 22 off and keep your `TXT_RES`.**
+  `TXT_RES` is only a request to the goggles. These draw a 53 × 20 grid
+  whatever `0` or `1` asks for, and layouts place elements out to that edge
+  (columns up to 52, rows up to 19). The OSD looks exactly as before; only
+  writes beyond 53 × 20, which were off-screen anyway, stop being sent.
+- **HDZero and other goggles that draw the grid they are asked for: turn bit
+  22 on** and set `TXT_RES` to the grid they use (`1` for HDZero HD). The
+  clip then matches their real edge.
+- **Analog (MAX7456) and DJI stock goggles are not affected.** The analog
+  backend already clips to its own 30 × 16, and stock DJI goggles are not
+  driven over DisplayPort.
+- **Takes effect immediately.** The grid is re-read on every OSD redraw, so
+  flipping the bit or `TXT_RES` needs no reboot.
+
+**Upstream:** ArduPlane 4.8-dev has the same clip (`0201c44f1c`), always with
+the bit-on sizes. Taken verbatim it would hide elements on most Walksnail
+layouts that use `TXT_RES 0` (callsign, flight time and the battery rows past
+column 30 or row 16). The fork's version is that commit plus the 53 × 20
+default.
 
 ## Tunables added
 
