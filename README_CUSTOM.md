@@ -662,6 +662,8 @@ there is no loiter at `TKOFF_DIST`, no pitch-stick altitude nudging, no
 radius or direction control — you are flying the aircraft, with a
 `"Switching to FBWB"` message on the GCS and OSD.
 
+![End of a TAKEOFF-mode climb with bit 21 set: the OSD shows SWITCHING TO FBWB and the flight mode is now FBWB](docs/images/takeoff-fbwb-handover.jpg)
+
 The climb itself is unchanged. `TKOFF_ALT`, `TKOFF_LVL_ALT`,
 `TKOFF_LVL_PITCH` and the launch-cancel window all behave exactly as they
 do with the bit clear; only the end of the sequence differs.
