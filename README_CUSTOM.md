@@ -1657,6 +1657,8 @@ takeoff** and the plane switches to FBWA, handing you manual control so
 you can save a bad launch without reaching for the mode switch. Modelled
 on iNav's "move sticks to cancel auto launch".
 
+![The OSD prompt during a TAKEOFF-mode launch: MOVE STICKS TO CANCEL AUTO (boxed)](docs/images/move-sticks-to-cancel.jpg)
+
 There are two windows, matching iNav's fixed-wing launch behaviour:
 
 - **Before launch — available immediately.** Once armed and waiting for the
