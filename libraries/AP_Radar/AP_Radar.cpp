@@ -35,6 +35,13 @@ const AP_Param::GroupInfo AP_Radar::var_info[] = {
     // @RebootRequired: True
     AP_GROUPINFO_FLAGS("_TYPE", 0, AP_Radar, _type, (float)RADAR_TYPE_DEFAULT, AP_PARAM_FLAG_ENABLE),
 
+    // @Param: _OSD_MODE
+    // @DisplayName: Radar OSD peer selection
+    // @Description: Which peer the radar OSD element shows. Cycle steps through every peer heard in the last 3 seconds and shows each one for 2 seconds. Nearest always shows the closest peer that reports a position; another peer only takes its place once it is at least 10 percent closer so two aircraft at similar range do not flicker. Peers without a position cannot be ranked so Nearest falls back to cycling until one has a fix.
+    // @Values: 0:Cycle through all peers,1:Nearest peer
+    // @User: Standard
+    AP_GROUPINFO("_OSD_MODE", 1, AP_Radar, _osd_mode, (int8_t)OsdMode::CYCLE),
+
     AP_GROUPEND
 };
 
@@ -123,7 +130,12 @@ bool AP_Radar::get_peer_fresh(uint8_t id)
 
 bool AP_Radar::get_peer_healthy(uint8_t id)
 {
-    return get_peer_fresh(id) && !_state.peers[id].location.is_zero();
+    // A peer without a GPS fix forwards lat/lon 0/0, but its altitude need
+    // not be 0 (a node that lost its fix keeps the last value), so
+    // Location::is_zero() would call it healthy and draw a distance to the
+    // Gulf of Guinea. 0/0 is never a real position here.
+    const Location &loc = _state.peers[id].location;
+    return get_peer_fresh(id) && (loc.lat != 0 || loc.lng != 0);
 }
 
 uint8_t AP_Radar::get_next_healthy_peer(uint8_t current_id)
@@ -141,6 +153,37 @@ uint8_t AP_Radar::get_next_healthy_peer(uint8_t current_id)
         }
     }
     return current_id;
+}
+
+// Closest peer with a position, measured from loc. Keeps current_id unless
+// another peer is at least 10% closer, so two aircraft at similar range do
+// not swap labels every frame. Returns false when no peer has a position;
+// the caller then falls back to cycling so position-less peers still show.
+bool AP_Radar::get_nearest_healthy_peer(const Location &loc, uint8_t current_id, uint8_t &nearest_id)
+{
+    bool found = false;
+    float best_dist = 0;
+    for (uint8_t i = 0; i < RADAR_MAX_PEERS; i++) {
+        if (!get_peer_healthy(i)) {
+            continue;
+        }
+        const float dist = loc.get_distance(_state.peers[i].location);
+        if (!found || dist < best_dist) {
+            found = true;
+            best_dist = dist;
+            nearest_id = i;
+        }
+    }
+    if (!found) {
+        return false;
+    }
+    if (nearest_id != current_id && current_id < RADAR_MAX_PEERS && get_peer_healthy(current_id)) {
+        const float current_dist = loc.get_distance(_state.peers[current_id].location);
+        if (best_dist > current_dist * 0.9f) {
+            nearest_id = current_id;
+        }
+    }
+    return true;
 }
 
 AP_Radar *AP_Radar::_singleton;

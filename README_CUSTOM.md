@@ -2594,6 +2594,7 @@ Parameters:
 | Param | Value | Notes |
 |---|---|---|
 | `RADAR_TYPE` | `1` | `1`=MSP, `0`=disabled (defaults to MSP) |
+| `RADAR_OSD_MODE` | `0` / `1` | Peer shown on the OSD: `0` = cycle through all (default), `1` = nearest — see [OSD element](#osd-element) (v2.1) |
 | `SERIALn_PROTOCOL` | `33` | MSP — the same protocol used by DJI/Walksnail OSD telemetry; can share that port |
 | `SERIALn_BAUD` | `115` | 115200 |
 | `OSDx_RADAR_EN` | `1` | Per-screen enable for the radar OSD element |
@@ -2622,7 +2623,25 @@ message ID.
 
 ## OSD element
 
-Cycles through up to 6 fresh peers (one every 2 s) and renders:
+Shows one peer at a time. Which one is set by `RADAR_OSD_MODE` (v2.1):
+
+| `RADAR_OSD_MODE` | Peer shown |
+|---|---|
+| `0` (default) | Cycles through up to 6 fresh peers, one every 2 s — the behaviour before v2.1 |
+| `1` | Always the **nearest** peer that reports a position |
+
+In nearest mode:
+
+- **No flicker between similar ranges.** The element only switches to
+  another peer once it is at least **10 % closer** than the one shown, so two
+  wingmen at about the same distance do not swap labels every frame.
+- **Peers without a GPS fix can't be ranked.** While no peer reports a
+  position (or this aircraft has none), the element falls back to cycling, so
+  you still see who is on the link.
+- **Distance is horizontal**, the same distance the element draws; relative
+  altitude does not count.
+
+Each peer renders as:
 
 ```
 BOB→
@@ -2661,6 +2680,11 @@ BOB→
   made a peer invisible even when its callsign and link quality were known —
   unhelpful on the bench and during pre-flight, where you want to confirm
   who is on the mesh before anyone has a fix.
+- **"No position" means lat/lon 0/0, whatever the altitude** (v2.1). The ESP32
+  forwards the peer's GPS fields as they are, and a node that lost its fix
+  can still carry an altitude. Before v2.1 such a peer counted as having a
+  position and the element drew a distance of thousands of kilometres to
+  0°/0°.
 
 ## Build gating
 

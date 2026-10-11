@@ -95,6 +95,14 @@ public:
     bool get_peer_fresh(uint8_t id);
     bool get_peer_healthy(uint8_t id);
     uint8_t get_next_healthy_peer(uint8_t current_id);
+    bool get_nearest_healthy_peer(const Location &loc, uint8_t current_id, uint8_t &nearest_id);
+
+    // RADAR_OSD_MODE: how the OSD element picks the peer it shows
+    enum class OsdMode : int8_t {
+        CYCLE   = 0,
+        NEAREST = 1,
+    };
+    OsdMode osd_mode() const { return (OsdMode)_osd_mode.get(); }
 
     static const struct AP_Param::GroupInfo var_info[];
 
@@ -108,6 +116,7 @@ private:
     } _flags;
 
     AP_Enum<Type> _type;
+    AP_Int8 _osd_mode;
 
     void update_state(const Radar_state &state);
 

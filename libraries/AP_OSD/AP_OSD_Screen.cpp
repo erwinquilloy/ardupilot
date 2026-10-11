@@ -1464,7 +1464,7 @@ const AP_Param::GroupInfo AP_OSD_Screen::var_info2[] = {
 #if AP_RADAR_ENABLED
     // @Param: RADAR_EN
     // @DisplayName: RADAR_EN
-    // @Description: Displays iNav Radar / FormationFlight peer-aircraft info (callsign letter A..F + bearing arrow + distance + relative altitude). Cycles through healthy peers every 2 seconds.
+    // @Description: Displays iNav Radar / FormationFlight peer-aircraft info (callsign letter A..F + bearing arrow + distance + relative altitude). RADAR_OSD_MODE picks the peer shown: cycle through all peers every 2 seconds or always show the nearest.
     // @Values: 0:Disabled,1:Enabled
 
     // @Param: RADAR_X
@@ -2207,6 +2207,19 @@ void AP_OSD_Screen::draw_radar(uint8_t x, uint8_t y)
     }
     WITH_SEMAPHORE(ahrs.get_semaphore());
     Location loc;
+    const bool have_loc = ahrs.get_location(loc);
+
+    // RADAR_OSD_MODE 1 pins the element to the closest peer. With no peer
+    // position to rank (or no own position) it cycles as in mode 0, so
+    // peers still waiting for a GPS fix show their name.
+    bool cycle = true;
+    if (have_loc && ap_radar->osd_mode() == AP_Radar::OsdMode::NEAREST) {
+        uint8_t nearest_id;
+        if (ap_radar->get_nearest_healthy_peer(loc, id, nearest_id)) {
+            id = nearest_id;
+            cycle = false;
+        }
+    }
     const radar_peer_t peer = ap_radar->get_peer(id);
 
     // Label is the peer callsign when the sender supplies one (FormationFlightAPC),
@@ -2225,7 +2238,7 @@ void AP_OSD_Screen::draw_radar(uint8_t x, uint8_t y)
         label[0] = (id == 0) ? 'X' : ('A' + id - 1);
     }
 
-    if (ahrs.get_location(loc) && ap_radar->get_peer_healthy(id)) {
+    if (have_loc && ap_radar->get_peer_healthy(id)) {
         const Location &peer_loc = peer.location;
         float distance = loc.get_distance(peer_loc);
         ftype vertical_distance;
@@ -2244,7 +2257,7 @@ void AP_OSD_Screen::draw_radar(uint8_t x, uint8_t y)
     } else {
         backend->write(x, y, true, "%s", label);
     }
-    if (AP_HAL::millis() - last_peer_change > 2000) {
+    if (cycle && AP_HAL::millis() - last_peer_change > 2000) {
         id = ap_radar->get_next_healthy_peer(id);
         last_peer_change = AP_HAL::millis();
     }
