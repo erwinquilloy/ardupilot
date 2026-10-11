@@ -13677,6 +13677,7 @@
         "251": "RTL Autoland Commit",
         "252": "Mount1 Head Track Enable",
         "253": "Mount1 Head Track Center Lock",
+        "254": "Adaptive Pitch Trim",
         "27": "Retract Mount1",
         "28": "Relay1 On/Off",
         "29": "Landing Gear",
@@ -13807,6 +13808,7 @@
         "251": "RTL Autoland Commit",
         "252": "Mount1 Head Track Enable",
         "253": "Mount1 Head Track Center Lock",
+        "254": "Adaptive Pitch Trim",
         "27": "Retract Mount1",
         "28": "Relay1 On/Off",
         "29": "Landing Gear",
@@ -13937,6 +13939,7 @@
         "251": "RTL Autoland Commit",
         "252": "Mount1 Head Track Enable",
         "253": "Mount1 Head Track Center Lock",
+        "254": "Adaptive Pitch Trim",
         "27": "Retract Mount1",
         "28": "Relay1 On/Off",
         "29": "Landing Gear",
@@ -14067,6 +14070,7 @@
         "251": "RTL Autoland Commit",
         "252": "Mount1 Head Track Enable",
         "253": "Mount1 Head Track Center Lock",
+        "254": "Adaptive Pitch Trim",
         "27": "Retract Mount1",
         "28": "Relay1 On/Off",
         "29": "Landing Gear",
@@ -15066,6 +15070,7 @@
         "49": "i-BUS Telemetry",
         "5": "GPS",
         "50": "IOMCU",
+        "51": "CADDX HeadTracker",
         "7": "Alexmos Gimbal Serial",
         "8": "Gimbal",
         "9": "Rangefinder"
@@ -15181,6 +15186,7 @@
         "49": "i-BUS Telemetry",
         "5": "GPS",
         "50": "IOMCU",
+        "51": "CADDX HeadTracker",
         "7": "Alexmos Gimbal Serial",
         "8": "Gimbal",
         "9": "Rangefinder"
@@ -15296,6 +15302,7 @@
         "49": "i-BUS Telemetry",
         "5": "GPS",
         "50": "IOMCU",
+        "51": "CADDX HeadTracker",
         "7": "Alexmos Gimbal Serial",
         "8": "Gimbal",
         "9": "Rangefinder"
@@ -15753,6 +15760,7 @@
         "49": "i-BUS Telemetry",
         "5": "GPS",
         "50": "IOMCU",
+        "51": "CADDX HeadTracker",
         "7": "Alexmos Gimbal Serial",
         "8": "Gimbal",
         "9": "Rangefinder"
@@ -15868,6 +15876,7 @@
         "49": "i-BUS Telemetry",
         "5": "GPS",
         "50": "IOMCU",
+        "51": "CADDX HeadTracker",
         "7": "Alexmos Gimbal Serial",
         "8": "Gimbal",
         "9": "Rangefinder"
@@ -15983,6 +15992,7 @@
         "49": "i-BUS Telemetry",
         "5": "GPS",
         "50": "IOMCU",
+        "51": "CADDX HeadTracker",
         "7": "Alexmos Gimbal Serial",
         "8": "Gimbal",
         "9": "Rangefinder"
@@ -16440,6 +16450,7 @@
         "49": "i-BUS Telemetry",
         "5": "GPS",
         "50": "IOMCU",
+        "51": "CADDX HeadTracker",
         "7": "Alexmos Gimbal Serial",
         "8": "Gimbal",
         "9": "Rangefinder"
@@ -16555,6 +16566,7 @@
         "49": "i-BUS Telemetry",
         "5": "GPS",
         "50": "IOMCU",
+        "51": "CADDX HeadTracker",
         "7": "Alexmos Gimbal Serial",
         "8": "Gimbal",
         "9": "Rangefinder"
@@ -16670,6 +16682,7 @@
         "49": "i-BUS Telemetry",
         "5": "GPS",
         "50": "IOMCU",
+        "51": "CADDX HeadTracker",
         "7": "Alexmos Gimbal Serial",
         "8": "Gimbal",
         "9": "Rangefinder"
@@ -29855,6 +29868,7 @@
         "49": "i-BUS Telemetry",
         "5": "GPS",
         "50": "IOMCU",
+        "51": "CADDX HeadTracker",
         "7": "Alexmos Gimbal Serial",
         "8": "Gimbal",
         "9": "Rangefinder"
@@ -29974,6 +29988,7 @@
         "49": "i-BUS Telemetry",
         "5": "GPS",
         "50": "IOMCU",
+        "51": "CADDX HeadTracker",
         "7": "Alexmos Gimbal Serial",
         "8": "Gimbal",
         "9": "Rangefinder"
@@ -30093,6 +30108,7 @@
         "49": "i-BUS Telemetry",
         "5": "GPS",
         "50": "IOMCU",
+        "51": "CADDX HeadTracker",
         "7": "Alexmos Gimbal Serial",
         "8": "Gimbal",
         "9": "Rangefinder"
@@ -30212,6 +30228,7 @@
         "49": "i-BUS Telemetry",
         "5": "GPS",
         "50": "IOMCU",
+        "51": "CADDX HeadTracker",
         "7": "Alexmos Gimbal Serial",
         "8": "Gimbal",
         "9": "Rangefinder"
@@ -30609,6 +30626,7 @@
         "19": "RightJustifyTunedParamName",
         "2": "InvertedAHRoll",
         "21": "OneDecimalAttitude",
+        "22": "DisplayPortStrictCanvas",
         "23": "ShortenPluscode",
         "3": "Convert feet to miles at 5280ft instead of 10000ft",
         "4": "DisableCrosshair",
@@ -32268,7 +32286,7 @@
       }
     },
     "OSD1_RADAR_EN": {
-      "Description": "Displays iNav Radar / FormationFlight peer-aircraft info (callsign letter A..F + bearing arrow + distance + relative altitude). Cycles through healthy peers every 2 seconds.",
+      "Description": "Displays iNav Radar / FormationFlight peer-aircraft info (callsign letter A..F + bearing arrow + distance + relative altitude). RADAR_OSD_MODE picks the peer shown: cycle through all peers every 2 seconds or always show the nearest.",
       "DisplayName": "RADAR_EN",
       "Values": {
         "0": "Disabled",
@@ -34340,7 +34358,7 @@
       }
     },
     "OSD2_RADAR_EN": {
-      "Description": "Displays iNav Radar / FormationFlight peer-aircraft info (callsign letter A..F + bearing arrow + distance + relative altitude). Cycles through healthy peers every 2 seconds.",
+      "Description": "Displays iNav Radar / FormationFlight peer-aircraft info (callsign letter A..F + bearing arrow + distance + relative altitude). RADAR_OSD_MODE picks the peer shown: cycle through all peers every 2 seconds or always show the nearest.",
       "DisplayName": "RADAR_EN",
       "Values": {
         "0": "Disabled",
@@ -36412,7 +36430,7 @@
       }
     },
     "OSD3_RADAR_EN": {
-      "Description": "Displays iNav Radar / FormationFlight peer-aircraft info (callsign letter A..F + bearing arrow + distance + relative altitude). Cycles through healthy peers every 2 seconds.",
+      "Description": "Displays iNav Radar / FormationFlight peer-aircraft info (callsign letter A..F + bearing arrow + distance + relative altitude). RADAR_OSD_MODE picks the peer shown: cycle through all peers every 2 seconds or always show the nearest.",
       "DisplayName": "RADAR_EN",
       "Values": {
         "0": "Disabled",
@@ -38484,7 +38502,7 @@
       }
     },
     "OSD4_RADAR_EN": {
-      "Description": "Displays iNav Radar / FormationFlight peer-aircraft info (callsign letter A..F + bearing arrow + distance + relative altitude). Cycles through healthy peers every 2 seconds.",
+      "Description": "Displays iNav Radar / FormationFlight peer-aircraft info (callsign letter A..F + bearing arrow + distance + relative altitude). RADAR_OSD_MODE picks the peer shown: cycle through all peers every 2 seconds or always show the nearest.",
       "DisplayName": "RADAR_EN",
       "Values": {
         "0": "Disabled",
@@ -40556,7 +40574,7 @@
       }
     },
     "OSD5_RADAR_EN": {
-      "Description": "Displays iNav Radar / FormationFlight peer-aircraft info (callsign letter A..F + bearing arrow + distance + relative altitude). Cycles through healthy peers every 2 seconds.",
+      "Description": "Displays iNav Radar / FormationFlight peer-aircraft info (callsign letter A..F + bearing arrow + distance + relative altitude). RADAR_OSD_MODE picks the peer shown: cycle through all peers every 2 seconds or always show the nearest.",
       "DisplayName": "RADAR_EN",
       "Values": {
         "0": "Disabled",
@@ -42813,6 +42831,74 @@
       "User": "Advanced"
     }
   },
+  "PTCH_TRIM_": {
+    "PTCH_TRIM_OFS1": {
+      "Description": "Pitch trim added to PTCH_TRIM_DEG at PTCH_TRIM_SPD1 and below. Positive is nose up.",
+      "DisplayName": "Pitch trim schedule offset 1",
+      "Increment": "0.1",
+      "Range": {
+        "high": "10",
+        "low": "-10"
+      },
+      "Units": "deg",
+      "User": "Advanced"
+    },
+    "PTCH_TRIM_OFS2": {
+      "Description": "Pitch trim added to PTCH_TRIM_DEG at PTCH_TRIM_SPD2. Positive is nose up.",
+      "DisplayName": "Pitch trim schedule offset 2",
+      "Increment": "0.1",
+      "Range": {
+        "high": "10",
+        "low": "-10"
+      },
+      "Units": "deg",
+      "User": "Advanced"
+    },
+    "PTCH_TRIM_OFS3": {
+      "Description": "Pitch trim added to PTCH_TRIM_DEG at PTCH_TRIM_SPD3 and above. Positive is nose up.",
+      "DisplayName": "Pitch trim schedule offset 3",
+      "Increment": "0.1",
+      "Range": {
+        "high": "10",
+        "low": "-10"
+      },
+      "Units": "deg",
+      "User": "Advanced"
+    },
+    "PTCH_TRIM_SPD1": {
+      "Description": "Lowest airspeed point of the airspeed-scheduled pitch trim. At or below this airspeed PTCH_TRIM_OFS1 is added to PTCH_TRIM_DEG. Set 0 to disable the schedule. The three speeds must increase. Can be learned in flight with the Pitch Trim Learn switch (RCx_OPTION 254). Near the stall the schedule is tapered: from 1.25 x AIRSPEED_MIN down to AIRSPEED_MIN the extra trim fades to the least nose-up of the three offsets, so it never raises the nose to hold altitude while slowing towards the stall. KFF_THR2PTCH is ignored while the schedule is active (it adds pitch with throttle and would apply the same correction a second time) and applies again when the schedule is off.",
+      "DisplayName": "Pitch trim schedule speed 1",
+      "Increment": "0.1",
+      "Range": {
+        "high": "60",
+        "low": "0"
+      },
+      "Units": "m/s",
+      "User": "Advanced"
+    },
+    "PTCH_TRIM_SPD2": {
+      "Description": "Middle airspeed point of the airspeed-scheduled pitch trim. The extra trim is blended linearly between the points.",
+      "DisplayName": "Pitch trim schedule speed 2",
+      "Increment": "0.1",
+      "Range": {
+        "high": "60",
+        "low": "0"
+      },
+      "Units": "m/s",
+      "User": "Advanced"
+    },
+    "PTCH_TRIM_SPD3": {
+      "Description": "Highest airspeed point of the airspeed-scheduled pitch trim. At or above this airspeed PTCH_TRIM_OFS3 is added to PTCH_TRIM_DEG.",
+      "DisplayName": "Pitch trim schedule speed 3",
+      "Increment": "0.1",
+      "Range": {
+        "high": "60",
+        "low": "0"
+      },
+      "Units": "m/s",
+      "User": "Advanced"
+    }
+  },
   "PUP_": {
     "PUP_ARSPD_START": {
       "Description": "Target airspeed for initial airspeed wait",
@@ -43989,7 +44075,7 @@
       "User": "Standard"
     },
     "KFF_THR2PTCH": {
-      "Description": "Pitch up to add in proportion to throttle. 100% throttle will add this number of degrees to the pitch target.",
+      "Description": "Pitch up to add in proportion to throttle. 100% throttle will add this number of degrees to the pitch target. Ignored while the adaptive pitch trim curve (PTCH_TRIM_SPD1) is active since that does the same job by airspeed.",
       "DisplayName": "Throttle to Pitch Mix",
       "Increment": "0.01",
       "Range": {
@@ -47480,6 +47566,15 @@
     }
   },
   "RADAR": {
+    "RADAR_OSD_MODE": {
+      "Description": "Which peer the radar OSD element shows. Cycle steps through every peer heard in the last 3 seconds and shows each one for 2 seconds. Nearest always shows the closest peer that reports a position; another peer only takes its place once it is at least 10 percent closer so two aircraft at similar range do not flicker. Peers without a position cannot be ranked so Nearest falls back to cycling until one has a fix.",
+      "DisplayName": "Radar OSD peer selection",
+      "User": "Standard",
+      "Values": {
+        "0": "Cycle through all peers",
+        "1": "Nearest peer"
+      }
+    },
     "RADAR_TYPE": {
       "Description": "Selects the peer-aircraft radar backend. MSP listens for iNav Radar / FormationFlight position frames (MSP2_SET_RADAR_POS 0x100B) on any serial port configured as MSP (SERIALn_PROTOCOL=33).",
       "DisplayName": "Radar sensor type",
@@ -47685,6 +47780,7 @@
         "251": "RTL Autoland Commit",
         "252": "Mount1 Head Track Enable",
         "253": "Mount1 Head Track Center Lock",
+        "254": "Adaptive Pitch Trim",
         "27": "Retract Mount1",
         "28": "Relay1 On/Off",
         "29": "Landing Gear",
@@ -47869,6 +47965,7 @@
         "251": "RTL Autoland Commit",
         "252": "Mount1 Head Track Enable",
         "253": "Mount1 Head Track Center Lock",
+        "254": "Adaptive Pitch Trim",
         "27": "Retract Mount1",
         "28": "Relay1 On/Off",
         "29": "Landing Gear",
@@ -48053,6 +48150,7 @@
         "251": "RTL Autoland Commit",
         "252": "Mount1 Head Track Enable",
         "253": "Mount1 Head Track Center Lock",
+        "254": "Adaptive Pitch Trim",
         "27": "Retract Mount1",
         "28": "Relay1 On/Off",
         "29": "Landing Gear",
@@ -48237,6 +48335,7 @@
         "251": "RTL Autoland Commit",
         "252": "Mount1 Head Track Enable",
         "253": "Mount1 Head Track Center Lock",
+        "254": "Adaptive Pitch Trim",
         "27": "Retract Mount1",
         "28": "Relay1 On/Off",
         "29": "Landing Gear",
@@ -48421,6 +48520,7 @@
         "251": "RTL Autoland Commit",
         "252": "Mount1 Head Track Enable",
         "253": "Mount1 Head Track Center Lock",
+        "254": "Adaptive Pitch Trim",
         "27": "Retract Mount1",
         "28": "Relay1 On/Off",
         "29": "Landing Gear",
@@ -48605,6 +48705,7 @@
         "251": "RTL Autoland Commit",
         "252": "Mount1 Head Track Enable",
         "253": "Mount1 Head Track Center Lock",
+        "254": "Adaptive Pitch Trim",
         "27": "Retract Mount1",
         "28": "Relay1 On/Off",
         "29": "Landing Gear",
@@ -48789,6 +48890,7 @@
         "251": "RTL Autoland Commit",
         "252": "Mount1 Head Track Enable",
         "253": "Mount1 Head Track Center Lock",
+        "254": "Adaptive Pitch Trim",
         "27": "Retract Mount1",
         "28": "Relay1 On/Off",
         "29": "Landing Gear",
@@ -48973,6 +49075,7 @@
         "251": "RTL Autoland Commit",
         "252": "Mount1 Head Track Enable",
         "253": "Mount1 Head Track Center Lock",
+        "254": "Adaptive Pitch Trim",
         "27": "Retract Mount1",
         "28": "Relay1 On/Off",
         "29": "Landing Gear",
@@ -49157,6 +49260,7 @@
         "251": "RTL Autoland Commit",
         "252": "Mount1 Head Track Enable",
         "253": "Mount1 Head Track Center Lock",
+        "254": "Adaptive Pitch Trim",
         "27": "Retract Mount1",
         "28": "Relay1 On/Off",
         "29": "Landing Gear",
@@ -49341,6 +49445,7 @@
         "251": "RTL Autoland Commit",
         "252": "Mount1 Head Track Enable",
         "253": "Mount1 Head Track Center Lock",
+        "254": "Adaptive Pitch Trim",
         "27": "Retract Mount1",
         "28": "Relay1 On/Off",
         "29": "Landing Gear",
@@ -49525,6 +49630,7 @@
         "251": "RTL Autoland Commit",
         "252": "Mount1 Head Track Enable",
         "253": "Mount1 Head Track Center Lock",
+        "254": "Adaptive Pitch Trim",
         "27": "Retract Mount1",
         "28": "Relay1 On/Off",
         "29": "Landing Gear",
@@ -49709,6 +49815,7 @@
         "251": "RTL Autoland Commit",
         "252": "Mount1 Head Track Enable",
         "253": "Mount1 Head Track Center Lock",
+        "254": "Adaptive Pitch Trim",
         "27": "Retract Mount1",
         "28": "Relay1 On/Off",
         "29": "Landing Gear",
@@ -49893,6 +50000,7 @@
         "251": "RTL Autoland Commit",
         "252": "Mount1 Head Track Enable",
         "253": "Mount1 Head Track Center Lock",
+        "254": "Adaptive Pitch Trim",
         "27": "Retract Mount1",
         "28": "Relay1 On/Off",
         "29": "Landing Gear",
@@ -50077,6 +50185,7 @@
         "251": "RTL Autoland Commit",
         "252": "Mount1 Head Track Enable",
         "253": "Mount1 Head Track Center Lock",
+        "254": "Adaptive Pitch Trim",
         "27": "Retract Mount1",
         "28": "Relay1 On/Off",
         "29": "Landing Gear",
@@ -50261,6 +50370,7 @@
         "251": "RTL Autoland Commit",
         "252": "Mount1 Head Track Enable",
         "253": "Mount1 Head Track Center Lock",
+        "254": "Adaptive Pitch Trim",
         "27": "Retract Mount1",
         "28": "Relay1 On/Off",
         "29": "Landing Gear",
@@ -50445,6 +50555,7 @@
         "251": "RTL Autoland Commit",
         "252": "Mount1 Head Track Enable",
         "253": "Mount1 Head Track Center Lock",
+        "254": "Adaptive Pitch Trim",
         "27": "Retract Mount1",
         "28": "Relay1 On/Off",
         "29": "Landing Gear",
@@ -56033,6 +56144,7 @@
         "49": "i-BUS Telemetry",
         "5": "GPS",
         "50": "IOMCU",
+        "51": "CADDX HeadTracker",
         "7": "Alexmos Gimbal Serial",
         "8": "Gimbal",
         "9": "Rangefinder"
@@ -56089,6 +56201,7 @@
         "49": "i-BUS Telemetry",
         "5": "GPS",
         "50": "IOMCU",
+        "51": "CADDX HeadTracker",
         "7": "Alexmos Gimbal Serial",
         "8": "Gimbal",
         "9": "Rangefinder"
@@ -56145,6 +56258,7 @@
         "49": "i-BUS Telemetry",
         "5": "GPS",
         "50": "IOMCU",
+        "51": "CADDX HeadTracker",
         "7": "Alexmos Gimbal Serial",
         "8": "Gimbal",
         "9": "Rangefinder"
@@ -56357,6 +56471,7 @@
         "49": "i-BUS Telemetry",
         "5": "GPS",
         "50": "IOMCU",
+        "51": "CADDX HeadTracker",
         "7": "Alexmos Gimbal Serial",
         "8": "Gimbal",
         "9": "Rangefinder"
@@ -56462,6 +56577,7 @@
         "49": "i-BUS Telemetry",
         "5": "GPS",
         "50": "IOMCU",
+        "51": "CADDX HeadTracker",
         "7": "Alexmos Gimbal Serial",
         "8": "Gimbal",
         "9": "Rangefinder"
@@ -56567,6 +56683,7 @@
         "49": "i-BUS Telemetry",
         "5": "GPS",
         "50": "IOMCU",
+        "51": "CADDX HeadTracker",
         "7": "Alexmos Gimbal Serial",
         "8": "Gimbal",
         "9": "Rangefinder"
@@ -56672,6 +56789,7 @@
         "49": "i-BUS Telemetry",
         "5": "GPS",
         "50": "IOMCU",
+        "51": "CADDX HeadTracker",
         "7": "Alexmos Gimbal Serial",
         "8": "Gimbal",
         "9": "Rangefinder"
@@ -56777,6 +56895,7 @@
         "49": "i-BUS Telemetry",
         "5": "GPS",
         "50": "IOMCU",
+        "51": "CADDX HeadTracker",
         "7": "Alexmos Gimbal Serial",
         "8": "Gimbal",
         "9": "Rangefinder"
@@ -56882,6 +57001,7 @@
         "49": "i-BUS Telemetry",
         "5": "GPS",
         "50": "IOMCU",
+        "51": "CADDX HeadTracker",
         "7": "Alexmos Gimbal Serial",
         "8": "Gimbal",
         "9": "Rangefinder"
@@ -56987,6 +57107,7 @@
         "49": "i-BUS Telemetry",
         "5": "GPS",
         "50": "IOMCU",
+        "51": "CADDX HeadTracker",
         "7": "Alexmos Gimbal Serial",
         "8": "Gimbal",
         "9": "Rangefinder"
@@ -57092,6 +57213,7 @@
         "49": "i-BUS Telemetry",
         "5": "GPS",
         "50": "IOMCU",
+        "51": "CADDX HeadTracker",
         "7": "Alexmos Gimbal Serial",
         "8": "Gimbal",
         "9": "Rangefinder"
@@ -57197,6 +57319,7 @@
         "49": "i-BUS Telemetry",
         "5": "GPS",
         "50": "IOMCU",
+        "51": "CADDX HeadTracker",
         "7": "Alexmos Gimbal Serial",
         "8": "Gimbal",
         "9": "Rangefinder"

@@ -135,7 +135,7 @@ KFF\_THR2PTCH: Throttle to Pitch Mix
 
 | *Note: This parameter is for advanced users*
 
-Pitch up to add in proportion to throttle\. 100\% throttle will add this number of degrees to the pitch target\.
+Pitch up to add in proportion to throttle\. 100\% throttle will add this number of degrees to the pitch target\. Ignored while the adaptive pitch trim curve \(PTCH\_TRIM\_SPD1\) is active since that does the same job by airspeed\.
 
 
 +-----------+---------+
@@ -33021,6 +33021,8 @@ Auxiliary RC Options function executed on pin change
 | +-------+-----------------------------------------------------+ |
 | | 253   | Mount1 Head Track Center Lock                       | |
 | +-------+-----------------------------------------------------+ |
+| | 254   | Adaptive Pitch Trim                                 | |
+| +-------+-----------------------------------------------------+ |
 | | 300   | Scripting1                                          | |
 | +-------+-----------------------------------------------------+ |
 | | 301   | Scripting2                                          | |
@@ -33287,6 +33289,8 @@ Auxiliary RC Options function executed on pin change
 | | 252   | Mount1 Head Track Enable                            | |
 | +-------+-----------------------------------------------------+ |
 | | 253   | Mount1 Head Track Center Lock                       | |
+| +-------+-----------------------------------------------------+ |
+| | 254   | Adaptive Pitch Trim                                 | |
 | +-------+-----------------------------------------------------+ |
 | | 300   | Scripting1                                          | |
 | +-------+-----------------------------------------------------+ |
@@ -33555,6 +33559,8 @@ Auxiliary RC Options function executed on pin change
 | +-------+-----------------------------------------------------+ |
 | | 253   | Mount1 Head Track Center Lock                       | |
 | +-------+-----------------------------------------------------+ |
+| | 254   | Adaptive Pitch Trim                                 | |
+| +-------+-----------------------------------------------------+ |
 | | 300   | Scripting1                                          | |
 | +-------+-----------------------------------------------------+ |
 | | 301   | Scripting2                                          | |
@@ -33821,6 +33827,8 @@ Auxiliary RC Options function executed on pin change
 | | 252   | Mount1 Head Track Enable                            | |
 | +-------+-----------------------------------------------------+ |
 | | 253   | Mount1 Head Track Center Lock                       | |
+| +-------+-----------------------------------------------------+ |
+| | 254   | Adaptive Pitch Trim                                 | |
 | +-------+-----------------------------------------------------+ |
 | | 300   | Scripting1                                          | |
 | +-------+-----------------------------------------------------+ |
@@ -35801,6 +35809,8 @@ Serial protocol of DroneCAN serial port
 | +-------+----------------------------------+ |
 | | 50    | IOMCU                            | |
 | +-------+----------------------------------+ |
+| | 51    | CADDX HeadTracker                | |
+| +-------+----------------------------------+ |
 |                                              |
 +----------------------------------------------+
 
@@ -36036,6 +36046,8 @@ Serial protocol of DroneCAN serial port
 | +-------+----------------------------------+ |
 | | 50    | IOMCU                            | |
 | +-------+----------------------------------+ |
+| | 51    | CADDX HeadTracker                | |
+| +-------+----------------------------------+ |
 |                                              |
 +----------------------------------------------+
 
@@ -36270,6 +36282,8 @@ Serial protocol of DroneCAN serial port
 | | 49    | i-BUS Telemetry                  | |
 | +-------+----------------------------------+ |
 | | 50    | IOMCU                            | |
+| +-------+----------------------------------+ |
+| | 51    | CADDX HeadTracker                | |
 | +-------+----------------------------------+ |
 |                                              |
 +----------------------------------------------+
@@ -37267,6 +37281,8 @@ Serial protocol of DroneCAN serial port
 | +-------+----------------------------------+ |
 | | 50    | IOMCU                            | |
 | +-------+----------------------------------+ |
+| | 51    | CADDX HeadTracker                | |
+| +-------+----------------------------------+ |
 |                                              |
 +----------------------------------------------+
 
@@ -37502,6 +37518,8 @@ Serial protocol of DroneCAN serial port
 | +-------+----------------------------------+ |
 | | 50    | IOMCU                            | |
 | +-------+----------------------------------+ |
+| | 51    | CADDX HeadTracker                | |
+| +-------+----------------------------------+ |
 |                                              |
 +----------------------------------------------+
 
@@ -37736,6 +37754,8 @@ Serial protocol of DroneCAN serial port
 | | 49    | i-BUS Telemetry                  | |
 | +-------+----------------------------------+ |
 | | 50    | IOMCU                            | |
+| +-------+----------------------------------+ |
+| | 51    | CADDX HeadTracker                | |
 | +-------+----------------------------------+ |
 |                                              |
 +----------------------------------------------+
@@ -38733,6 +38753,8 @@ Serial protocol of DroneCAN serial port
 | +-------+----------------------------------+ |
 | | 50    | IOMCU                            | |
 | +-------+----------------------------------+ |
+| | 51    | CADDX HeadTracker                | |
+| +-------+----------------------------------+ |
 |                                              |
 +----------------------------------------------+
 
@@ -38968,6 +38990,8 @@ Serial protocol of DroneCAN serial port
 | +-------+----------------------------------+ |
 | | 50    | IOMCU                            | |
 | +-------+----------------------------------+ |
+| | 51    | CADDX HeadTracker                | |
+| +-------+----------------------------------+ |
 |                                              |
 +----------------------------------------------+
 
@@ -39202,6 +39226,8 @@ Serial protocol of DroneCAN serial port
 | | 49    | i-BUS Telemetry                  | |
 | +-------+----------------------------------+ |
 | | 50    | IOMCU                            | |
+| +-------+----------------------------------+ |
+| | 51    | CADDX HeadTracker                | |
 | +-------+----------------------------------+ |
 |                                              |
 +----------------------------------------------+
@@ -65928,6 +65954,8 @@ Networked serial port protocol
 | +-------+----------------------------------+ |
 | | 50    | IOMCU                            | |
 | +-------+----------------------------------+ |
+| | 51    | CADDX HeadTracker                | |
+| +-------+----------------------------------+ |
 |                                              |
 +----------------------------------------------+
 
@@ -66189,6 +66217,8 @@ Networked serial port protocol
 | | 49    | i-BUS Telemetry                  | |
 | +-------+----------------------------------+ |
 | | 50    | IOMCU                            | |
+| +-------+----------------------------------+ |
+| | 51    | CADDX HeadTracker                | |
 | +-------+----------------------------------+ |
 |                                              |
 +----------------------------------------------+
@@ -66452,6 +66482,8 @@ Networked serial port protocol
 | +-------+----------------------------------+ |
 | | 50    | IOMCU                            | |
 | +-------+----------------------------------+ |
+| | 51    | CADDX HeadTracker                | |
+| +-------+----------------------------------+ |
 |                                              |
 +----------------------------------------------+
 
@@ -66713,6 +66745,8 @@ Networked serial port protocol
 | | 49    | i-BUS Telemetry                  | |
 | +-------+----------------------------------+ |
 | | 50    | IOMCU                            | |
+| +-------+----------------------------------+ |
+| | 51    | CADDX HeadTracker                | |
 | +-------+----------------------------------+ |
 |                                              |
 +----------------------------------------------+
@@ -67495,6 +67529,8 @@ This sets options that change the display
 | | 19  | RightJustifyTunedParamName                         | |
 | +-----+----------------------------------------------------+ |
 | | 21  | OneDecimalAttitude                                 | |
+| +-----+----------------------------------------------------+ |
+| | 22  | DisplayPortStrictCanvas                            | |
 | +-----+----------------------------------------------------+ |
 | | 23  | ShortenPluscode                                    | |
 | +-----+----------------------------------------------------+ |
@@ -73220,7 +73256,7 @@ OSD1\_RADAR\_EN: RADAR\_EN
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
-Displays iNav Radar \/ FormationFlight peer\-aircraft info \(callsign letter A\.\.F \+ bearing arrow \+ distance \+ relative altitude\)\. Cycles through healthy peers every 2 seconds\.
+Displays iNav Radar \/ FormationFlight peer\-aircraft info \(callsign letter A\.\.F \+ bearing arrow \+ distance \+ relative altitude\)\. RADAR\_OSD\_MODE picks the peer shown\: cycle through all peers every 2 seconds or always show the nearest\.
 
 
 +----------------------+
@@ -78475,7 +78511,7 @@ OSD2\_RADAR\_EN: RADAR\_EN
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
-Displays iNav Radar \/ FormationFlight peer\-aircraft info \(callsign letter A\.\.F \+ bearing arrow \+ distance \+ relative altitude\)\. Cycles through healthy peers every 2 seconds\.
+Displays iNav Radar \/ FormationFlight peer\-aircraft info \(callsign letter A\.\.F \+ bearing arrow \+ distance \+ relative altitude\)\. RADAR\_OSD\_MODE picks the peer shown\: cycle through all peers every 2 seconds or always show the nearest\.
 
 
 +----------------------+
@@ -83730,7 +83766,7 @@ OSD3\_RADAR\_EN: RADAR\_EN
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
-Displays iNav Radar \/ FormationFlight peer\-aircraft info \(callsign letter A\.\.F \+ bearing arrow \+ distance \+ relative altitude\)\. Cycles through healthy peers every 2 seconds\.
+Displays iNav Radar \/ FormationFlight peer\-aircraft info \(callsign letter A\.\.F \+ bearing arrow \+ distance \+ relative altitude\)\. RADAR\_OSD\_MODE picks the peer shown\: cycle through all peers every 2 seconds or always show the nearest\.
 
 
 +----------------------+
@@ -88985,7 +89021,7 @@ OSD4\_RADAR\_EN: RADAR\_EN
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
-Displays iNav Radar \/ FormationFlight peer\-aircraft info \(callsign letter A\.\.F \+ bearing arrow \+ distance \+ relative altitude\)\. Cycles through healthy peers every 2 seconds\.
+Displays iNav Radar \/ FormationFlight peer\-aircraft info \(callsign letter A\.\.F \+ bearing arrow \+ distance \+ relative altitude\)\. RADAR\_OSD\_MODE picks the peer shown\: cycle through all peers every 2 seconds or always show the nearest\.
 
 
 +----------------------+
@@ -94240,7 +94276,7 @@ OSD5\_RADAR\_EN: RADAR\_EN
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
-Displays iNav Radar \/ FormationFlight peer\-aircraft info \(callsign letter A\.\.F \+ bearing arrow \+ distance \+ relative altitude\)\. Cycles through healthy peers every 2 seconds\.
+Displays iNav Radar \/ FormationFlight peer\-aircraft info \(callsign letter A\.\.F \+ bearing arrow \+ distance \+ relative altitude\)\. RADAR\_OSD\_MODE picks the peer shown\: cycle through all peers every 2 seconds or always show the nearest\.
 
 
 +----------------------+
@@ -97685,6 +97721,127 @@ Pitch Error notch filter index
 +========+
 | 1 to 8 |
 +--------+
+
+
+
+
+
+.. _parameters_PTCH_TRIM_:
+
+PTCH\_TRIM\_ Parameters
+-----------------------
+
+
+.. _PTCH_TRIM_SPD1:
+
+PTCH\_TRIM\_SPD1: Pitch trim schedule speed 1
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+| *Note: This parameter is for advanced users*
+
+Lowest airspeed point of the airspeed\-scheduled pitch trim\. At or below this airspeed PTCH\_TRIM\_OFS1 is added to PTCH\_TRIM\_DEG\. Set 0 to disable the schedule\. The three speeds must increase\. Can be learned in flight with the Pitch Trim Learn switch \(RCx\_OPTION 254\)\. Near the stall the schedule is tapered\: from 1\.25 x AIRSPEED\_MIN down to AIRSPEED\_MIN the extra trim fades to the least nose\-up of the three offsets\, so it never raises the nose to hold altitude while slowing towards the stall\. KFF\_THR2PTCH is ignored while the schedule is active \(it adds pitch with throttle and would apply the same correction a second time\) and applies again when the schedule is off\.
+
+
++-----------+---------+-------------------+
+| Increment | Range   | Units             |
++===========+=========+===================+
+| 0.1       | 0 to 60 | meters per second |
++-----------+---------+-------------------+
+
+
+
+
+.. _PTCH_TRIM_SPD2:
+
+PTCH\_TRIM\_SPD2: Pitch trim schedule speed 2
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+| *Note: This parameter is for advanced users*
+
+Middle airspeed point of the airspeed\-scheduled pitch trim\. The extra trim is blended linearly between the points\.
+
+
++-----------+---------+-------------------+
+| Increment | Range   | Units             |
++===========+=========+===================+
+| 0.1       | 0 to 60 | meters per second |
++-----------+---------+-------------------+
+
+
+
+
+.. _PTCH_TRIM_SPD3:
+
+PTCH\_TRIM\_SPD3: Pitch trim schedule speed 3
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+| *Note: This parameter is for advanced users*
+
+Highest airspeed point of the airspeed\-scheduled pitch trim\. At or above this airspeed PTCH\_TRIM\_OFS3 is added to PTCH\_TRIM\_DEG\.
+
+
++-----------+---------+-------------------+
+| Increment | Range   | Units             |
++===========+=========+===================+
+| 0.1       | 0 to 60 | meters per second |
++-----------+---------+-------------------+
+
+
+
+
+.. _PTCH_TRIM_OFS1:
+
+PTCH\_TRIM\_OFS1: Pitch trim schedule offset 1
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+| *Note: This parameter is for advanced users*
+
+Pitch trim added to PTCH\_TRIM\_DEG at PTCH\_TRIM\_SPD1 and below\. Positive is nose up\.
+
+
++-----------+-----------+---------+
+| Increment | Range     | Units   |
++===========+===========+=========+
+| 0.1       | -10 to 10 | degrees |
++-----------+-----------+---------+
+
+
+
+
+.. _PTCH_TRIM_OFS2:
+
+PTCH\_TRIM\_OFS2: Pitch trim schedule offset 2
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+| *Note: This parameter is for advanced users*
+
+Pitch trim added to PTCH\_TRIM\_DEG at PTCH\_TRIM\_SPD2\. Positive is nose up\.
+
+
++-----------+-----------+---------+
+| Increment | Range     | Units   |
++===========+===========+=========+
+| 0.1       | -10 to 10 | degrees |
++-----------+-----------+---------+
+
+
+
+
+.. _PTCH_TRIM_OFS3:
+
+PTCH\_TRIM\_OFS3: Pitch trim schedule offset 3
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+| *Note: This parameter is for advanced users*
+
+Pitch trim added to PTCH\_TRIM\_DEG at PTCH\_TRIM\_SPD3 and above\. Positive is nose up\.
+
+
++-----------+-----------+---------+
+| Increment | Range     | Units   |
++===========+===========+=========+
+| 0.1       | -10 to 10 | degrees |
++-----------+-----------+---------+
 
 
 
@@ -103111,6 +103268,31 @@ Selects the peer\-aircraft radar backend\. MSP listens for iNav Radar \/ Formati
 
 
 
+.. _RADAR_OSD_MODE:
+
+RADAR\_OSD\_MODE: Radar OSD peer selection
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+Which peer the radar OSD element shows\. Cycle steps through every peer heard in the last 3 seconds and shows each one for 2 seconds\. Nearest always shows the closest peer that reports a position\; another peer only takes its place once it is at least 10 percent closer so two aircraft at similar range do not flicker\. Peers without a position cannot be ranked so Nearest falls back to cycling until one has a fix\.
+
+
++-------------------------------------+
+| Values                              |
++=====================================+
+| +-------+-------------------------+ |
+| | Value | Meaning                 | |
+| +=======+=========================+ |
+| | 0     | Cycle through all peers | |
+| +-------+-------------------------+ |
+| | 1     | Nearest peer            | |
+| +-------+-------------------------+ |
+|                                     |
++-------------------------------------+
+
+
+
+
 
 .. _parameters_RALLY_:
 
@@ -103664,6 +103846,8 @@ Function assigned to this RC channel
 | +-------+-----------------------------------------------------+ |
 | | 253   | Mount1 Head Track Center Lock                       | |
 | +-------+-----------------------------------------------------+ |
+| | 254   | Adaptive Pitch Trim                                 | |
+| +-------+-----------------------------------------------------+ |
 | | 300   | Scripting1                                          | |
 | +-------+-----------------------------------------------------+ |
 | | 301   | Scripting2                                          | |
@@ -104039,6 +104223,8 @@ Function assigned to this RC channel
 | | 252   | Mount1 Head Track Enable                            | |
 | +-------+-----------------------------------------------------+ |
 | | 253   | Mount1 Head Track Center Lock                       | |
+| +-------+-----------------------------------------------------+ |
+| | 254   | Adaptive Pitch Trim                                 | |
 | +-------+-----------------------------------------------------+ |
 | | 300   | Scripting1                                          | |
 | +-------+-----------------------------------------------------+ |
@@ -104416,6 +104602,8 @@ Function assigned to this RC channel
 | +-------+-----------------------------------------------------+ |
 | | 253   | Mount1 Head Track Center Lock                       | |
 | +-------+-----------------------------------------------------+ |
+| | 254   | Adaptive Pitch Trim                                 | |
+| +-------+-----------------------------------------------------+ |
 | | 300   | Scripting1                                          | |
 | +-------+-----------------------------------------------------+ |
 | | 301   | Scripting2                                          | |
@@ -104791,6 +104979,8 @@ Function assigned to this RC channel
 | | 252   | Mount1 Head Track Enable                            | |
 | +-------+-----------------------------------------------------+ |
 | | 253   | Mount1 Head Track Center Lock                       | |
+| +-------+-----------------------------------------------------+ |
+| | 254   | Adaptive Pitch Trim                                 | |
 | +-------+-----------------------------------------------------+ |
 | | 300   | Scripting1                                          | |
 | +-------+-----------------------------------------------------+ |
@@ -105168,6 +105358,8 @@ Function assigned to this RC channel
 | +-------+-----------------------------------------------------+ |
 | | 253   | Mount1 Head Track Center Lock                       | |
 | +-------+-----------------------------------------------------+ |
+| | 254   | Adaptive Pitch Trim                                 | |
+| +-------+-----------------------------------------------------+ |
 | | 300   | Scripting1                                          | |
 | +-------+-----------------------------------------------------+ |
 | | 301   | Scripting2                                          | |
@@ -105543,6 +105735,8 @@ Function assigned to this RC channel
 | | 252   | Mount1 Head Track Enable                            | |
 | +-------+-----------------------------------------------------+ |
 | | 253   | Mount1 Head Track Center Lock                       | |
+| +-------+-----------------------------------------------------+ |
+| | 254   | Adaptive Pitch Trim                                 | |
 | +-------+-----------------------------------------------------+ |
 | | 300   | Scripting1                                          | |
 | +-------+-----------------------------------------------------+ |
@@ -105920,6 +106114,8 @@ Function assigned to this RC channel
 | +-------+-----------------------------------------------------+ |
 | | 253   | Mount1 Head Track Center Lock                       | |
 | +-------+-----------------------------------------------------+ |
+| | 254   | Adaptive Pitch Trim                                 | |
+| +-------+-----------------------------------------------------+ |
 | | 300   | Scripting1                                          | |
 | +-------+-----------------------------------------------------+ |
 | | 301   | Scripting2                                          | |
@@ -106295,6 +106491,8 @@ Function assigned to this RC channel
 | | 252   | Mount1 Head Track Enable                            | |
 | +-------+-----------------------------------------------------+ |
 | | 253   | Mount1 Head Track Center Lock                       | |
+| +-------+-----------------------------------------------------+ |
+| | 254   | Adaptive Pitch Trim                                 | |
 | +-------+-----------------------------------------------------+ |
 | | 300   | Scripting1                                          | |
 | +-------+-----------------------------------------------------+ |
@@ -106672,6 +106870,8 @@ Function assigned to this RC channel
 | +-------+-----------------------------------------------------+ |
 | | 253   | Mount1 Head Track Center Lock                       | |
 | +-------+-----------------------------------------------------+ |
+| | 254   | Adaptive Pitch Trim                                 | |
+| +-------+-----------------------------------------------------+ |
 | | 300   | Scripting1                                          | |
 | +-------+-----------------------------------------------------+ |
 | | 301   | Scripting2                                          | |
@@ -107047,6 +107247,8 @@ Function assigned to this RC channel
 | | 252   | Mount1 Head Track Enable                            | |
 | +-------+-----------------------------------------------------+ |
 | | 253   | Mount1 Head Track Center Lock                       | |
+| +-------+-----------------------------------------------------+ |
+| | 254   | Adaptive Pitch Trim                                 | |
 | +-------+-----------------------------------------------------+ |
 | | 300   | Scripting1                                          | |
 | +-------+-----------------------------------------------------+ |
@@ -107424,6 +107626,8 @@ Function assigned to this RC channel
 | +-------+-----------------------------------------------------+ |
 | | 253   | Mount1 Head Track Center Lock                       | |
 | +-------+-----------------------------------------------------+ |
+| | 254   | Adaptive Pitch Trim                                 | |
+| +-------+-----------------------------------------------------+ |
 | | 300   | Scripting1                                          | |
 | +-------+-----------------------------------------------------+ |
 | | 301   | Scripting2                                          | |
@@ -107799,6 +108003,8 @@ Function assigned to this RC channel
 | | 252   | Mount1 Head Track Enable                            | |
 | +-------+-----------------------------------------------------+ |
 | | 253   | Mount1 Head Track Center Lock                       | |
+| +-------+-----------------------------------------------------+ |
+| | 254   | Adaptive Pitch Trim                                 | |
 | +-------+-----------------------------------------------------+ |
 | | 300   | Scripting1                                          | |
 | +-------+-----------------------------------------------------+ |
@@ -108176,6 +108382,8 @@ Function assigned to this RC channel
 | +-------+-----------------------------------------------------+ |
 | | 253   | Mount1 Head Track Center Lock                       | |
 | +-------+-----------------------------------------------------+ |
+| | 254   | Adaptive Pitch Trim                                 | |
+| +-------+-----------------------------------------------------+ |
 | | 300   | Scripting1                                          | |
 | +-------+-----------------------------------------------------+ |
 | | 301   | Scripting2                                          | |
@@ -108551,6 +108759,8 @@ Function assigned to this RC channel
 | | 252   | Mount1 Head Track Enable                            | |
 | +-------+-----------------------------------------------------+ |
 | | 253   | Mount1 Head Track Center Lock                       | |
+| +-------+-----------------------------------------------------+ |
+| | 254   | Adaptive Pitch Trim                                 | |
 | +-------+-----------------------------------------------------+ |
 | | 300   | Scripting1                                          | |
 | +-------+-----------------------------------------------------+ |
@@ -108928,6 +109138,8 @@ Function assigned to this RC channel
 | +-------+-----------------------------------------------------+ |
 | | 253   | Mount1 Head Track Center Lock                       | |
 | +-------+-----------------------------------------------------+ |
+| | 254   | Adaptive Pitch Trim                                 | |
+| +-------+-----------------------------------------------------+ |
 | | 300   | Scripting1                                          | |
 | +-------+-----------------------------------------------------+ |
 | | 301   | Scripting2                                          | |
@@ -109303,6 +109515,8 @@ Function assigned to this RC channel
 | | 252   | Mount1 Head Track Enable                            | |
 | +-------+-----------------------------------------------------+ |
 | | 253   | Mount1 Head Track Center Lock                       | |
+| +-------+-----------------------------------------------------+ |
+| | 254   | Adaptive Pitch Trim                                 | |
 | +-------+-----------------------------------------------------+ |
 | | 300   | Scripting1                                          | |
 | +-------+-----------------------------------------------------+ |
@@ -122375,6 +122589,8 @@ Serial protocol of scripting serial device
 | +-------+----------------------------------+ |
 | | 50    | IOMCU                            | |
 | +-------+----------------------------------+ |
+| | 51    | CADDX HeadTracker                | |
+| +-------+----------------------------------+ |
 |                                              |
 +----------------------------------------------+
 
@@ -122494,6 +122710,8 @@ Serial protocol of scripting serial device
 | +-------+----------------------------------+ |
 | | 50    | IOMCU                            | |
 | +-------+----------------------------------+ |
+| | 51    | CADDX HeadTracker                | |
+| +-------+----------------------------------+ |
 |                                              |
 +----------------------------------------------+
 
@@ -122612,6 +122830,8 @@ Serial protocol of scripting serial device
 | | 49    | i-BUS Telemetry                  | |
 | +-------+----------------------------------+ |
 | | 50    | IOMCU                            | |
+| +-------+----------------------------------+ |
+| | 51    | CADDX HeadTracker                | |
 | +-------+----------------------------------+ |
 |                                              |
 +----------------------------------------------+
@@ -122819,6 +123039,8 @@ Control what protocol to use on the Telem1 port\. Note that the Frsky options re
 | +-------+----------------------------------+ |
 | | 50    | IOMCU                            | |
 | +-------+----------------------------------+ |
+| | 51    | CADDX HeadTracker                | |
+| +-------+----------------------------------+ |
 |                                              |
 +----------------------------------------------+
 
@@ -122991,6 +123213,8 @@ Control what protocol to use on the Telem2 port\. Note that the Frsky options re
 | | 49    | i-BUS Telemetry                  | |
 | +-------+----------------------------------+ |
 | | 50    | IOMCU                            | |
+| +-------+----------------------------------+ |
+| | 51    | CADDX HeadTracker                | |
 | +-------+----------------------------------+ |
 |                                              |
 +----------------------------------------------+
@@ -123165,6 +123389,8 @@ Control what protocol Serial 3 \(GPS\) should be used for\. Note that the Frsky 
 | +-------+----------------------------------+ |
 | | 50    | IOMCU                            | |
 | +-------+----------------------------------+ |
+| | 51    | CADDX HeadTracker                | |
+| +-------+----------------------------------+ |
 |                                              |
 +----------------------------------------------+
 
@@ -123337,6 +123563,8 @@ Control what protocol Serial4 port should be used for\. Note that the Frsky opti
 | | 49    | i-BUS Telemetry                  | |
 | +-------+----------------------------------+ |
 | | 50    | IOMCU                            | |
+| +-------+----------------------------------+ |
+| | 51    | CADDX HeadTracker                | |
 | +-------+----------------------------------+ |
 |                                              |
 +----------------------------------------------+
@@ -123511,6 +123739,8 @@ Control what protocol Serial5 port should be used for\. Note that the Frsky opti
 | +-------+----------------------------------+ |
 | | 50    | IOMCU                            | |
 | +-------+----------------------------------+ |
+| | 51    | CADDX HeadTracker                | |
+| +-------+----------------------------------+ |
 |                                              |
 +----------------------------------------------+
 
@@ -123683,6 +123913,8 @@ Control what protocol Serial6 port should be used for\. Note that the Frsky opti
 | | 49    | i-BUS Telemetry                  | |
 | +-------+----------------------------------+ |
 | | 50    | IOMCU                            | |
+| +-------+----------------------------------+ |
+| | 51    | CADDX HeadTracker                | |
 | +-------+----------------------------------+ |
 |                                              |
 +----------------------------------------------+
@@ -124246,6 +124478,8 @@ Control what protocol Serial7 port should be used for\. Note that the Frsky opti
 | +-------+----------------------------------+ |
 | | 50    | IOMCU                            | |
 | +-------+----------------------------------+ |
+| | 51    | CADDX HeadTracker                | |
+| +-------+----------------------------------+ |
 |                                              |
 +----------------------------------------------+
 
@@ -124468,6 +124702,8 @@ Control what protocol Serial8 port should be used for\. Note that the Frsky opti
 | +-------+----------------------------------+ |
 | | 50    | IOMCU                            | |
 | +-------+----------------------------------+ |
+| | 51    | CADDX HeadTracker                | |
+| +-------+----------------------------------+ |
 |                                              |
 +----------------------------------------------+
 
@@ -124689,6 +124925,8 @@ Control what protocol Serial9 port should be used for\. Note that the Frsky opti
 | | 49    | i-BUS Telemetry                  | |
 | +-------+----------------------------------+ |
 | | 50    | IOMCU                            | |
+| +-------+----------------------------------+ |
+| | 51    | CADDX HeadTracker                | |
 | +-------+----------------------------------+ |
 |                                              |
 +----------------------------------------------+
