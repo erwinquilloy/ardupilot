@@ -343,6 +343,8 @@ input still rolls the plane; releasing returns to the locked course.
 - **Tunable:** `CRUISE_YAW_RATE` (deg/s — how fast the locked course
   rotates when you hold roll input)
 
+![Course Hold in flight: the OSD flight-mode field shows CRSH (boxed)](docs/images/course-hold-osd.jpg)
+
 > ⚠️ **Mode 26 is also upstream's AUTOLAND.** ArduPlane 4.7 added an
 > AUTOLAND flight mode numbered 26. This firmware **compiles AUTOLAND out**
 > (`MODE_AUTOLAND_ENABLED 0`) and keeps Course Hold at 26 — wind-aware
