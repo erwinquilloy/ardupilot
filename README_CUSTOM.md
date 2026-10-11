@@ -3703,6 +3703,8 @@ the results into ArduPlane parameter units (e.g. dm/s → kph) on the radio
 itself. The finished TECS values are shown on screen and written to
 `/LOGS/tecs_<timestamp>.txt`.
 
+![TECS tuning helper on an EdgeTX radio: live telemetry on the left, the finished TECS parameter values on the right](docs/images/tecs-tuning-helper.jpg)
+
 It runs as a loop: read the instruction for the next step, wait for you to
 get the aircraft into the required state or speed, then capture the
 relevant values. Each step is triggered by one configured switch. The run
