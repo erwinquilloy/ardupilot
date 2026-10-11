@@ -675,7 +675,9 @@ climb hands the plane straight to you in **FBWB** instead of entering the
 loiter circle. The mode changes, so everything above stops applying:
 there is no loiter at `TKOFF_DIST`, no pitch-stick altitude nudging, no
 radius or direction control — you are flying the aircraft, with a
-`"Switching to FBWB"` message on the GCS and OSD.
+`"Takeoff complete - FBWB"` message on the GCS and OSD. Yaapu speaks
+"takeoff complete" for it (it voices any message starting with those
+words), followed by the FBWB mode announcement.
 
 The climb itself is unchanged. `TKOFF_ALT`, `TKOFF_LVL_ALT`,
 `TKOFF_LVL_PITCH` and the launch-cancel window all behave exactly as they
