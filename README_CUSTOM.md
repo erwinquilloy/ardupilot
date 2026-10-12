@@ -73,6 +73,7 @@ An outline of everything this fork adds and where it is documented. Each line li
     - [FLIGHT_OPTIONS bit 18: end a VTOL transition in FBWB](#flight_options-bit-18--end-a-vtol-transition-in-fbwb-instead-of-fbwa)
   - [Pitch trim & tuning knob](#pitch-trim--tuning-knob)
     - [PTCH_TRIM_DEG is now knob-tunable](#ptch_trim_deg-is-now-knob-tunable)
+    - [Adaptive pitch trim: airspeed schedule learned in flight (RCx_OPTION 254, v2.1)](#adaptive-pitch-trim--airspeed-schedule-learned-in-flight-rcx_option--254)
     - [Three switchable tuning sets (TUNE_PARAM / PARAM2 / PARAM3)](#three-switchable-tuning-sets--tune_param--param2--param3)
     - [Faster tuning selector timing](#faster-tuning-selector-timing)
     - [ATT log uses trim-corrected pitch target](#att-log-uses-trim-corrected-pitch-target)
@@ -106,8 +107,8 @@ An outline of everything this fork adds and where it is documented. Each line li
   - [Stick mixing default](#stick-mixing-default)
   - [Aileron / elevator differential throws](#aileron--elevator-differential-throws)
   - [Throttle / flap → elevator PWM offset mixes](#throttle--flap--elevator-pwm-offset-mixes)
-- **[Walksnail Headtracking via MSP and Serial Gimbal](#walksnail-headtracking-via-msp-and-serial-gimbal)** — [How it flows](#how-it-flows), [Setup](#setup), [Controls](#controls), [POI lock with head tracking](#poi-lock-with-head-tracking), [Notes](#notes)
-- **[OSD additions](#osd-additions)** — [New elements](#new-elements), [ADS-B traffic element (OSDx_ADSB)](#ads-b-traffic-element-osdx_adsb), [OSD options (OSD_OPTIONS bits)](#osd-options-osd_options-bits), [Tunables added](#tunables-added), [Display polish](#display-polish), [Setting up cell voltage on the OSD](#setting-up-cell-voltage-on-the-osd), [Stats grid](#stats-grid)
+- **[Walksnail Headtracking via MSP and Serial Gimbal](#walksnail-headtracking-via-msp-and-serial-gimbal)** — [How it flows](#how-it-flows), [Setup](#setup), [Controls](#controls), [POI lock with head tracking](#poi-lock-with-head-tracking), [Notes](#notes), [Head tracking from the VTX gimbal port (v2.1)](#head-tracking-from-the-vtx-gimbal-port-serialn_protocol-51)
+- **[OSD additions](#osd-additions)** — [New elements](#new-elements), [ADS-B traffic element (OSDx_ADSB)](#ads-b-traffic-element-osdx_adsb), [OSD options (OSD_OPTIONS bits)](#osd-options-osd_options-bits), [DisplayPort canvas clip (v2.1)](#displayport-canvas-clip-v21), [Tunables added](#tunables-added), [Display polish](#display-polish), [Setting up cell voltage on the OSD](#setting-up-cell-voltage-on-the-osd), [Stats grid](#stats-grid)
 - **[Peer-aircraft radar (iNav Radar / FormationFlight)](#peer-aircraft-radar-inav-radar--formationflight)** — [Setup](#setup-1), [OSD element](#osd-element), [Build gating](#build-gating), [Peer callsigns on the radar OSD](#peer-callsigns-on-the-radar-osd), [Limitations / scope](#limitations--scope)
 - **[Quadplane / VTOL](#quadplane--vtol)**
   - [Q_TRIM_PITCH is now knob-tunable](#q_trim_pitch-is-now-knob-tunable)
@@ -248,12 +249,12 @@ Built for throwing a wing off your hand safely:
 - **POI lock with head tracking** (`RCx_OPTION 186`) — lock the gimbal onto the spot
   you are looking at, look around freely, flip back to head tracking. Available on
   every board with gimbal support, including the light F4 boards.
-- **Walksnail Ascent goggles too** (v2.1) — the Ascent never sends head tracking over
-  MSP, so the FC reads it from the VTX's gimbal port instead (one extra wire,
-  `SERIALn_PROTOCOL 51`). Same switches, same gimbals.
+- **Goggles that don't send head tracking over MSP** (v2.1) — the FC can read it
+  from the VTX's gimbal port instead (one extra wire, `SERIALn_PROTOCOL 51`). Same
+  switches, same gimbals.
 
 → [Walksnail Headtracking via MSP and Serial Gimbal](#walksnail-headtracking-via-msp-and-serial-gimbal) ·
-[Walksnail Ascent](#walksnail-ascent-head-tracking-from-the-vtx-gimbal-port-serialn_protocol-51)
+[Head tracking from the gimbal port](#head-tracking-from-the-vtx-gimbal-port-serialn_protocol-51)
 
 ### 🆙 On the ArduPlane 4.7.1 base (v2.0)
 
@@ -2323,15 +2324,17 @@ gimbal stays on target, flip back to return to head tracking.
   and RAM is the F405's limit, so it is only on full-track boards (with terrain
   enabled).
 
-## Walksnail Ascent: head tracking from the VTX gimbal port (`SERIALn_PROTOCOL 51`)
+## Head tracking from the VTX gimbal port (`SERIALn_PROTOCOL 51`)
 
 *New in v2.1.*
 
-The **Walksnail Ascent** goggles never send head tracking over MSP. The MSP link
-from their VTX carries only status polls, and the VTX doesn't answer a head-tracker
-request either. The only place the Ascent's head angles leave the VTX is its
-**gimbal port** (the VTX's second UART), which normally drives a CADDX gimbal
-directly. This firmware listens to that port:
+Most Walksnail setups send head tracking to the FC over MSP: the Goggles X /
+Avatar, and the Ascent goggles with an Ascent Lite+ VTX. Use the MSP setup above
+for those. Some goggles don't: their head tracking reaches the VTX and moves a
+gimbal plugged into it, but the VTX's MSP link to the FC carries only status
+polls and doesn't answer a head-tracker request either. Then the only place the
+head angles leave the VTX is its **gimbal port** (the VTX's second UART), which
+normally drives a CADDX gimbal directly. This firmware can listen to that port:
 
     goggles ──air link──► VTX ──gimbal UART──► FC RX ──► FC ──serial/PWM──► gimbal
 
@@ -2348,7 +2351,7 @@ FC — the two TX lines would fight.
 
 | Param | Value | Purpose |
 |---|---|---|
-| `SERIALz_PROTOCOL` | `51` (CADDX HeadTracker) | Ascent VTX gimbal-port **input** (115200 baud is forced) |
+| `SERIALz_PROTOCOL` | `51` (CADDX HeadTracker) | VTX gimbal-port **input** (115200 baud is forced) |
 | `SERIALy_PROTOCOL` | `8` (Gimbal) | serial-gimbal output, if the gimbal is a CADDX |
 | everything else | as in [Setup](#setup) | mount type, limits, switches |
 
@@ -2356,7 +2359,7 @@ On boot, `CDXHT: head tracker stream up` appears in the messages once the
 first valid frame arrives, so you can confirm the wiring.
 
 **Differences from the MSP source:**
-- **Angles are 1:1.** The Ascent sends real degrees, applied directly and clamped
+- **Angles are 1:1.** The gimbal port carries real degrees, applied directly and clamped
   at the `MNT1_*` limits. (MSP instead stretches full head deflection across the
   limits.) With a CADDX gimbal this needs no tuning. On a servo pan/tilt, set the
   `MNT1_*_MIN/MAX` limits to the servos' **real travel** so 30° of head gives
@@ -2365,10 +2368,11 @@ first valid frame arrives, so you can confirm the wiring.
   axes. On a servo mount, if an axis runs backwards, set `SERVOn_REVERSED` for it.
 - **Recentre from the goggles** (back button ×3) works as normal. It arrives as
   re-zeroed angles.
-- **Goggles X keep working over MSP.** Both inputs are in the same firmware;
-  with the Goggles X, leave the gimbal-port wire off (or disconnected).
+- **MSP goggles keep working.** Both inputs are in the same firmware; with
+  goggles that send head tracking over MSP, leave the gimbal-port wire off (or
+  disconnected).
 
-Bench-verified with an Ascent and a CADDX GM3 v2, and with a servo pan/tilt.
+Bench-verified with an Ascent VTX and a CADDX GM3 v2, and with a servo pan/tilt.
 `51` is a fork-only protocol number; stock ArduPilot doesn't have it.
 
 ## Notes
