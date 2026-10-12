@@ -133,7 +133,9 @@
 #endif
 
 #ifndef AP_RCPROTOCOL_MAVLINK_RADIO_ENABLED
-#define AP_RCPROTOCOL_MAVLINK_RADIO_ENABLED AP_RCPROTOCOL_BACKEND_DEFAULT_ENABLED && HAL_PROGRAM_SIZE_LIMIT_KB > 1024 && HAL_GCS_ENABLED
+// Fork: built on every board, including 1 MB F4s and the light variant, so a
+// MAVLink receiver (mLRS) can deliver up to 32 channels everywhere.
+#define AP_RCPROTOCOL_MAVLINK_RADIO_ENABLED AP_RCPROTOCOL_ENABLED && HAL_GCS_ENABLED
 #endif
 
 #ifndef AP_RCPROTOCOL_UDP_ENABLED

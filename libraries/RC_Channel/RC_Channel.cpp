@@ -2174,7 +2174,8 @@ RC_Channel::AuxSwitchPos RC_Channel::get_stick_gesture_pos() const
 
 RC_Channel *RC_Channels::find_channel_for_option(const RC_Channel::AUX_FUNC option)
 {
-    for (uint8_t i=0; i<NUM_RC_CHANNELS; i++) {
+    const uint8_t active = num_active_channels();
+    for (uint8_t i=0; i<active; i++) {
         RC_Channel *c = channel(i);
         if (c == nullptr) {
             // odd?
@@ -2191,7 +2192,8 @@ RC_Channel *RC_Channels::find_channel_for_option(const RC_Channel::AUX_FUNC opti
 bool RC_Channels::duplicate_options_exist()
 {
     Bitmask<(uint16_t)RC_Channel::AUX_FUNC::AUX_FUNCTION_MAX> used_auxsw_options;
-    for (uint8_t i=0; i<NUM_RC_CHANNELS; i++) {
+    const uint8_t active = num_active_channels();
+    for (uint8_t i=0; i<active; i++) {
         const RC_Channel *c = channel(i);
         if (c == nullptr) {
             // odd?

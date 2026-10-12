@@ -16,6 +16,8 @@
   This scheme reduces code duplicate between the Vehicles, and avoids the chance of things getting out of sync.
 */
 
+static_assert(NUM_RC_CHANNELS == 16 || NUM_RC_CHANNELS == 32, "RC param table covers 16 or 32 channels");
+
 const AP_Param::GroupInfo RC_Channels::var_info[] = {
     // @Group: 1_
     // @Path: RC_Channel.cpp
@@ -81,6 +83,12 @@ const AP_Param::GroupInfo RC_Channels::var_info[] = {
     // @Path: RC_Channel.cpp
     AP_SUBGROUPINFO(obj_channels[15], "16_", 16, RC_CHANNELS_SUBCLASS, RC_CHANNEL_SUBCLASS),
 
+#if NUM_RC_CHANNELS > 16
+    // Fork: RC17_-RC32_ and their enable live in a separate table so the
+    // enable can hide them while 32 channels are off (the default)
+    AP_SUBGROUPEXTENSION("", 36, RC_CHANNELS_SUBCLASS, var_info_32ch),
+#endif
+
     // @Param: _OVERRIDE_TIME
     // @DisplayName: RC override timeout
     // @Description: Timeout after which RC overrides will no longer be used, and RC input will resume, 0 will disable RC overrides, -1 will never timeout, and continue using overrides until they are disabled
@@ -114,5 +122,84 @@ const AP_Param::GroupInfo RC_Channels::var_info[] = {
 
     AP_GROUPEND
 };
+
+#if NUM_RC_CHANNELS > 16
+// Fork: 32 RC channels, off by default
+const AP_Param::GroupInfo RC_Channels::var_info_32ch[] = {
+    // @Param: _32CH_ENABLE
+    // @DisplayName: Enable RC channels 17 to 32
+    // @Description: Accept RC input on channels 17 to 32 and show their RC17_ to RC32_ parameters. Needs a receiver link that carries more than 16 channels to the autopilot - such as mLRS in MAVLink mode (RADIO_RC_CHANNELS) or CRSF up to 24. Refresh the parameter list after enabling. When disabled the autopilot uses channels 1 to 16 exactly as before.
+    // @Values: 0:Disabled (16 channels),1:Enabled (32 channels)
+    // @User: Advanced
+    // @RebootRequired: True
+    AP_GROUPINFO_FLAGS("_32CH_ENABLE", 1, RC_CHANNELS_SUBCLASS, _enable_32ch, 0, AP_PARAM_FLAG_ENABLE),
+
+    // @Group: 17_
+    // @Path: RC_Channel.cpp
+    AP_SUBGROUPINFO(obj_channels[16], "17_", 2, RC_CHANNELS_SUBCLASS, RC_CHANNEL_SUBCLASS),
+
+    // @Group: 18_
+    // @Path: RC_Channel.cpp
+    AP_SUBGROUPINFO(obj_channels[17], "18_", 3, RC_CHANNELS_SUBCLASS, RC_CHANNEL_SUBCLASS),
+
+    // @Group: 19_
+    // @Path: RC_Channel.cpp
+    AP_SUBGROUPINFO(obj_channels[18], "19_", 4, RC_CHANNELS_SUBCLASS, RC_CHANNEL_SUBCLASS),
+
+    // @Group: 20_
+    // @Path: RC_Channel.cpp
+    AP_SUBGROUPINFO(obj_channels[19], "20_", 5, RC_CHANNELS_SUBCLASS, RC_CHANNEL_SUBCLASS),
+
+    // @Group: 21_
+    // @Path: RC_Channel.cpp
+    AP_SUBGROUPINFO(obj_channels[20], "21_", 6, RC_CHANNELS_SUBCLASS, RC_CHANNEL_SUBCLASS),
+
+    // @Group: 22_
+    // @Path: RC_Channel.cpp
+    AP_SUBGROUPINFO(obj_channels[21], "22_", 7, RC_CHANNELS_SUBCLASS, RC_CHANNEL_SUBCLASS),
+
+    // @Group: 23_
+    // @Path: RC_Channel.cpp
+    AP_SUBGROUPINFO(obj_channels[22], "23_", 8, RC_CHANNELS_SUBCLASS, RC_CHANNEL_SUBCLASS),
+
+    // @Group: 24_
+    // @Path: RC_Channel.cpp
+    AP_SUBGROUPINFO(obj_channels[23], "24_", 9, RC_CHANNELS_SUBCLASS, RC_CHANNEL_SUBCLASS),
+
+    // @Group: 25_
+    // @Path: RC_Channel.cpp
+    AP_SUBGROUPINFO(obj_channels[24], "25_", 10, RC_CHANNELS_SUBCLASS, RC_CHANNEL_SUBCLASS),
+
+    // @Group: 26_
+    // @Path: RC_Channel.cpp
+    AP_SUBGROUPINFO(obj_channels[25], "26_", 11, RC_CHANNELS_SUBCLASS, RC_CHANNEL_SUBCLASS),
+
+    // @Group: 27_
+    // @Path: RC_Channel.cpp
+    AP_SUBGROUPINFO(obj_channels[26], "27_", 12, RC_CHANNELS_SUBCLASS, RC_CHANNEL_SUBCLASS),
+
+    // @Group: 28_
+    // @Path: RC_Channel.cpp
+    AP_SUBGROUPINFO(obj_channels[27], "28_", 13, RC_CHANNELS_SUBCLASS, RC_CHANNEL_SUBCLASS),
+
+    // @Group: 29_
+    // @Path: RC_Channel.cpp
+    AP_SUBGROUPINFO(obj_channels[28], "29_", 14, RC_CHANNELS_SUBCLASS, RC_CHANNEL_SUBCLASS),
+
+    // @Group: 30_
+    // @Path: RC_Channel.cpp
+    AP_SUBGROUPINFO(obj_channels[29], "30_", 15, RC_CHANNELS_SUBCLASS, RC_CHANNEL_SUBCLASS),
+
+    // @Group: 31_
+    // @Path: RC_Channel.cpp
+    AP_SUBGROUPINFO(obj_channels[30], "31_", 16, RC_CHANNELS_SUBCLASS, RC_CHANNEL_SUBCLASS),
+
+    // @Group: 32_
+    // @Path: RC_Channel.cpp
+    AP_SUBGROUPINFO(obj_channels[31], "32_", 17, RC_CHANNELS_SUBCLASS, RC_CHANNEL_SUBCLASS),
+
+    AP_GROUPEND
+};
+#endif
 
 #endif  // AP_RC_CHANNEL_ENABLED

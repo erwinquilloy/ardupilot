@@ -281,8 +281,23 @@ struct PACKED log_RCI2 {
     uint64_t time_us;
     uint16_t chan15;
     uint16_t chan16;
-    uint16_t override_mask;
+    uint32_t override_mask;
     uint8_t flags;
+};
+
+// Fork: RC input channels 17-32 (NUM_RC_CHANNELS 32); a log format holds at
+// most 16 fields, so they are split 14 + 2
+struct PACKED log_RCI3 {
+    LOG_PACKET_HEADER;
+    uint64_t time_us;
+    uint16_t chan[14];
+};
+
+struct PACKED log_RCI4 {
+    LOG_PACKET_HEADER;
+    uint64_t time_us;
+    uint16_t chan31;
+    uint16_t chan32;
 };
 
 struct PACKED log_RCOUT {
@@ -966,6 +981,30 @@ struct PACKED log_VER {
 // @Field: Flags: bitmask of RC state flags
 // @FieldBitmaskEnum: Flags: AP_Logger::RCLoggingFlags
 
+// @LoggerMessage: RCI3
+// @Description: (More) RC input channels to vehicle, 17 to 30
+// @Field: TimeUS: Time since system startup
+// @Field: C17: channel 17 input
+// @Field: C18: channel 18 input
+// @Field: C19: channel 19 input
+// @Field: C20: channel 20 input
+// @Field: C21: channel 21 input
+// @Field: C22: channel 22 input
+// @Field: C23: channel 23 input
+// @Field: C24: channel 24 input
+// @Field: C25: channel 25 input
+// @Field: C26: channel 26 input
+// @Field: C27: channel 27 input
+// @Field: C28: channel 28 input
+// @Field: C29: channel 29 input
+// @Field: C30: channel 30 input
+
+// @LoggerMessage: RCI4
+// @Description: (More) RC input channels to vehicle, 31 and 32
+// @Field: TimeUS: Time since system startup
+// @Field: C31: channel 31 input
+// @Field: C32: channel 32 input
+
 // @LoggerMessage: RCIN
 // @Description: RC input channels to vehicle
 // @Field: TimeUS: Time since system startup
@@ -1198,7 +1237,7 @@ LOG_STRUCTURE_FROM_GPS \
     { LOG_RCIN_MSG, sizeof(log_RCIN), \
       "RCIN",  "QHHHHHHHHHHHHHH",     "TimeUS,C1,C2,C3,C4,C5,C6,C7,C8,C9,C10,C11,C12,C13,C14", "sYYYYYYYYYYYYYY", "F--------------", true }, \
     { LOG_RCI2_MSG, sizeof(log_RCI2), \
-      "RCI2",  "QHHHB",     "TimeUS,C15,C16,OMask,Flags", "sYY--", "F----", true }, \
+      "RCI2",  "QHHIB",     "TimeUS,C15,C16,OMask,Flags", "sYY--", "F----", true },     { LOG_RCI3_MSG, sizeof(log_RCI3),       "RCI3",  "QHHHHHHHHHHHHHH",     "TimeUS,C17,C18,C19,C20,C21,C22,C23,C24,C25,C26,C27,C28,C29,C30", "sYYYYYYYYYYYYYY", "F--------------", true },     { LOG_RCI4_MSG, sizeof(log_RCI4),       "RCI4",  "QHH",     "TimeUS,C31,C32", "sYY", "F--", true }, \
     { LOG_RCOUT_MSG, sizeof(log_RCOUT), \
       "RCOU",  "QHHHHHHHHHHHHHH",     "TimeUS,C1,C2,C3,C4,C5,C6,C7,C8,C9,C10,C11,C12,C13,C14", "sYYYYYYYYYYYYYY", "F--------------", true  }, \
     { LOG_RCOUT2_MSG, sizeof(log_RCOUT2), \
@@ -1394,6 +1433,8 @@ enum LogMessages : uint8_t {
     LOG_VER_MSG,
     LOG_RCOUT2_MSG,
     LOG_RCOUT3_MSG,
+    LOG_RCI3_MSG,
+    LOG_RCI4_MSG,
     LOG_IDS_FROM_FENCE,
     LOG_IDS_FROM_HAL,
 
