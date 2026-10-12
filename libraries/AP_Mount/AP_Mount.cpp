@@ -211,21 +211,6 @@ void AP_Mount::init()
     // fork: optional head tracker input on its own serial port
     _caddx_headtracker = AP_HeadTracker_CADDX::create();
 
-#if HAL_MOUNT_CADDX_ENABLED
-    // fork: with no SERIALn_PROTOCOL 51 port, also listen on the RX pin of the
-    // CADDX gimbal's own port (SERIALn_PROTOCOL 8). The CADDX mount only
-    // transmits, so that pin is free: frames arrive only if the VTX gimbal-port
-    // TX is wired to it, and nothing changes otherwise.
-    for (uint8_t instance=0; _caddx_headtracker == nullptr && instance<AP_MOUNT_MAX_INSTANCES; instance++) {
-        if (get_mount_type(instance) != Type::CADDX || _backends[instance] == nullptr) {
-            continue;
-        }
-        AP_HAL::UARTDriver *uart = ((AP_Mount_CADDX *)_backends[instance])->get_uart();
-        if (uart != nullptr) {
-            _caddx_headtracker = NEW_NOTHROW AP_HeadTracker_CADDX(uart);
-        }
-    }
-#endif
 #endif
 
     (void)serial_instance;
