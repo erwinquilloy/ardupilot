@@ -84,23 +84,23 @@ void AP_Mount_CADDX::send_target_angles(const MountAngleTarget& angle_target_rad
     set_attitude_cmd_buf[0] = SET_ATTITUDE_HEADER1;
     set_attitude_cmd_buf[1] = SET_ATTITUDE_HEADER2;
 
-    // byte 2's lower 3 bits are mode
-    // lower 5 bits are sensitivity but always left as zero
-    uint8_t mode = 0; //start with axes in bf
+    // byte 2's lower 3 bits are the gimbal mode, upper 5 bits sensitivity (left 0).
+    // Fork: the GM-series gimbals read these bits as a mode NUMBER (Caddx tool:
+    // M0 FPV, M1 Pitch-Stab, M2 Horizon), not as lock flags. Upstream ORs
+    // PITCH_LOCK (1) and ROLL_LOCK (2), so roll+pitch lock sent 3, which a GM3 v2
+    // (fw 2.2.59) ignores - RCx_OPTION 185 HIGH stayed in pitch-stab. The VTX's
+    // own head-tracking frames use 2 for Horizon. Yaw is never locked here: the
+    // FC already holds an earth-frame yaw through get_bf_yaw().
+    uint8_t mode = (uint8_t)GimbalMode::FPV;
     if (center_locked()) {
         // fork head-tracker center-lock (RCx_OPTION switch or stream-loss auto-lock):
         // FPV lock (no earth-frame stabilization) so the gimbal stays bolted to the
         // airframe at the neutral position on all three axes, rather than self-levelling
         // roll/pitch to the horizon.
-    } else {
-        // CADDX yaw lock is not required and is duplication since we get yaw via get_bf_yaw, the gimbal accs would be fighting our yaw target potentially
-        // but we need to reset roll and pitch locks to body frame if set by RP_LOCK aux switch or by FPV mnt option
-        if (angle_target_rad.pitch_is_ef) {
-            mode |= (uint8_t)LockMode::PITCH_LOCK;
-        }
-        if (angle_target_rad.roll_is_ef) {
-            mode |= (uint8_t)LockMode::ROLL_LOCK;
-        }
+    } else if (angle_target_rad.roll_is_ef) {
+        mode = (uint8_t)GimbalMode::HORIZON;
+    } else if (angle_target_rad.pitch_is_ef) {
+        mode = (uint8_t)GimbalMode::PITCH_STAB;
     }
     set_attitude_cmd_buf[2] = mode & 0x07;
 
