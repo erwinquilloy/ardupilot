@@ -2385,27 +2385,40 @@ angles, and feeds them into the same head-tracking path as MSP. So the enable
 switch (`252`), centre lock (`253`), POI lock (`186`), the stream-loss lock and
 every supported gimbal work the same as with the Goggles X.
 
-**Wiring:** VTX gimbal-port **TX** → an FC **RX** pad, plus ground. The gimbal
-moves from the VTX to the FC. A CADDX gimbal (`MNT1_TYPE 13`) can share that
-same UART: wire the gimbal's RX to the **TX** pad of the same port, so one UART
-listens to the VTX and drives the gimbal (the same idea as iNav's
-`gimbal_serial_single_uart`). Or use servos. Don't leave a gimbal wired to both
-the VTX and the FC — the two TX lines would fight.
+**Wiring with a CADDX gimbal — one UART, auto-detected.** Keep the gimbal on its
+usual serial port (`SERIALn_PROTOCOL 8`, `MNT1_TYPE 13`) and add one wire: VTX
+gimbal-port **TX** → that same port's **RX** pad. The gimbal moves from the VTX
+to the FC (its RX on the port's TX pad), and the FC listens for head tracking on
+the RX pin the CADDX gimbal never uses. Nothing to switch: with goggles that send
+head tracking over MSP, leave the extra wire off and the port behaves as before.
 
-    VTX gimbal-port TX ──► FC RXz ┐
-                                  ├── one UART, SERIALz_PROTOCOL 51
-    CADDX gimbal RX    ◄── FC TXz ┘
+    VTX gimbal-port TX ──► FC RXn ┐
+                                  ├── one UART, SERIALn_PROTOCOL 8, MNT1_TYPE 13
+    CADDX gimbal RX    ◄── FC TXn ┘
 
-| Param | Value | Purpose |
+**Without a CADDX gimbal** (servo pan/tilt), the FC only listens: set the port
+to `SERIALn_PROTOCOL 51` and wire VTX gimbal-port TX → its RX pad. Setting `51`
+also works with a CADDX gimbal: with no protocol-8 port, the gimbal is driven
+from the `51` port's TX instead.
+
+| Setup | Port setting | Wires |
 |---|---|---|
-| `SERIALz_PROTOCOL` | `51` (CADDX HeadTracker) | VTX gimbal-port **input**, and the CADDX gimbal **output** on the same port's TX (115200 baud is forced) |
-| `MNT1_TYPE` | `13` (CADDX) | or a servo mount type |
-| everything else | as in [Setup](#setup) | limits, switches |
+| CADDX gimbal, MSP head tracking | `SERIALn_PROTOCOL 8` | FC TX → gimbal RX |
+| CADDX gimbal, gimbal-port head tracking | `SERIALn_PROTOCOL 8` (same) | FC TX → gimbal RX, VTX gimbal TX → FC RX |
+| Servo pan/tilt, gimbal-port head tracking | `SERIALn_PROTOCOL 51` | VTX gimbal TX → FC RX |
 
-A CADDX gimbal on its own port (`SERIALy_PROTOCOL 8`) still works and takes
-priority; the shared port is used only when no `SERIALn_PROTOCOL 8` port exists.
-`Mount: CADDX gimbal on head tracker port TX` appears at boot when the shared
-port is in use.
+Rules:
+- **Connect only the gimbal's RX (signal) and ground to the FC.** The FC's RX
+  pin is the head tracker input; never connect the gimbal's TX to it.
+- **Don't leave a gimbal wired to both the VTX and the FC** — the two TX lines
+  would fight. Move the gimbal from the VTX to the FC.
+- **When both sources arrive** (e.g. Ascent goggles send MSP *and* the gimbal
+  port is wired), the gimbal-port stream wins while it is live; MSP takes over
+  again 0.5 s after it stops. The two are never mixed.
+- 115200 baud is forced on protocols `8` and `51`.
+
+`Mount: CADDX gimbal on head tracker port TX` appears at boot when a `51` port
+drives the gimbal.
 
 On boot, `CDXHT: head tracker stream up` appears in the messages once the
 first valid frame arrives, so you can confirm the wiring.
@@ -2421,8 +2434,7 @@ first valid frame arrives, so you can confirm the wiring.
 - **Recentre from the goggles** (back button ×3) works as normal. It arrives as
   re-zeroed angles.
 - **MSP goggles keep working.** Both inputs are in the same firmware; with
-  goggles that send head tracking over MSP, leave the gimbal-port wire off (or
-  disconnected).
+  goggles that send head tracking over MSP, the gimbal-port wire is optional.
 
 Bench-verified with an Ascent VTX and a CADDX GM3 v2, and with a servo pan/tilt.
 `51` is a fork-only protocol number; stock ArduPilot doesn't have it.
