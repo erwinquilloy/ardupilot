@@ -109,7 +109,7 @@ An outline of everything this fork adds and where it is documented. Each line li
   - [Aileron / elevator differential throws](#aileron--elevator-differential-throws)
   - [Throttle / flap → elevator PWM offset mixes](#throttle--flap--elevator-pwm-offset-mixes)
 - **[Walksnail Headtracking via MSP and Serial Gimbal](#walksnail-headtracking-via-msp-and-serial-gimbal)** — [How it flows](#how-it-flows), [Setup](#setup), [Controls](#controls), [POI lock with head tracking](#poi-lock-with-head-tracking), [Notes](#notes), [Head tracking from the VTX gimbal port (v2.1)](#head-tracking-from-the-vtx-gimbal-port-serialn_protocol-51)
-- **[OSD additions](#osd-additions)** — [New elements](#new-elements), [ADS-B traffic element (OSDx_ADSB)](#ads-b-traffic-element-osdx_adsb), [OSD options (OSD_OPTIONS bits)](#osd-options-osd_options-bits), [DisplayPort canvas clip (v2.1)](#displayport-canvas-clip-v21), [Tunables added](#tunables-added), [Display polish](#display-polish), [Setting up cell voltage on the OSD](#setting-up-cell-voltage-on-the-osd), [Stats grid](#stats-grid)
+- **[OSD additions](#osd-additions)** — [New elements](#new-elements), [ADS-B traffic element (OSDx_ADSB)](#ads-b-traffic-element-osdx_adsb), [OSD options (OSD_OPTIONS bits)](#osd-options-osd_options-bits), [Tunables added](#tunables-added), [Display polish](#display-polish), [Setting up cell voltage on the OSD](#setting-up-cell-voltage-on-the-osd), [Stats grid](#stats-grid)
 - **[Peer-aircraft radar (iNav Radar / FormationFlight)](#peer-aircraft-radar-inav-radar--formationflight)** — [Setup](#setup-1), [OSD element](#osd-element), [Build gating](#build-gating), [Peer callsigns on the radar OSD](#peer-callsigns-on-the-radar-osd), [Limitations / scope](#limitations--scope)
 - **[Quadplane / VTOL](#quadplane--vtol)**
   - [Q_TRIM_PITCH is now knob-tunable](#q_trim_pitch-is-now-knob-tunable)
@@ -2576,49 +2576,12 @@ reception or range.
 |----:|--------------------------------------------|-----------------------------------------------------|
 | 18  | `OPTION_TWO_DECIMALS_VERTICAL_SPEED`       | Vspeed shown to 2 decimals                          |
 | 21  | `OPTION_ONE_DECIMAL_ATTITUDE`              | Pitch / roll shown to 1 decimal (default ON)        |
-| 22  | `OPTION_DISPLAYPORT_STRICT_CANVAS`         | Clip MSP DisplayPort writes to the `OSDx_TXT_RES` grid instead of 53 × 20 — for HDZero and other goggles that draw the smaller grids (v2.1) — see [DisplayPort canvas clip](#displayport-canvas-clip-v21) |
 | 23  | `OPTION_SHORTEN_PLUSCODE`                  | Strip leading digits from plus codes when home is near |
 
 > **Plus code (OLC):** the `OSDx_PLUSCODE_*` Open Location Code panel is
 > compiled into **every** board, including the 1 MB F4s (~2–3 KB flash) —
 > upstream only builds it for boards with more than 1 MB of flash.
 > `OSD_OPTIONS` bit 23 shortens the code when the aircraft is near home.
-
-## DisplayPort canvas clip (v2.1)
-
-Before v2.1 the flight controller sent every OSD write to MSP DisplayPort
-goggles as it was, even one placed off the goggles' grid or a string running
-past the right edge. Such a write is the suspected cause of the Walksnail OSD
-freezing. From v2.1 a write that starts off the grid is dropped and text is cut
-at the right edge.
-
-The grid it clips to:
-
-| `OSDx_TXT_RES` | `OSD_OPTIONS` bit 22 **off** (default) | bit 22 **on** |
-|---|---|---|
-| `0` | 53 × 20 | 30 × 16 |
-| `1` | 53 × 20 | 50 × 18 |
-| `2` | 60 × 22 | 60 × 22 |
-
-- **Walksnail and DJI O3/O4: leave bit 22 off and keep your `TXT_RES`.**
-  `TXT_RES` is only a request to the goggles. These draw a 53 × 20 grid
-  whatever `0` or `1` asks for, and layouts place elements out to that edge
-  (columns up to 52, rows up to 19). The OSD looks exactly as before; only
-  writes beyond 53 × 20, which were off-screen anyway, stop being sent.
-- **HDZero and other goggles that draw the grid they are asked for: turn bit
-  22 on** and set `TXT_RES` to the grid they use (`1` for HDZero HD). The
-  clip then matches their real edge.
-- **Analog (MAX7456) and DJI stock goggles are not affected.** The analog
-  backend already clips to its own 30 × 16, and stock DJI goggles are not
-  driven over DisplayPort.
-- **Takes effect immediately.** The grid is re-read on every OSD redraw, so
-  flipping the bit or `TXT_RES` needs no reboot.
-
-**Upstream:** ArduPlane 4.8-dev has the same clip (`0201c44f1c`), always with
-the bit-on sizes. Taken verbatim it would hide elements on most Walksnail
-layouts that use `TXT_RES 0` (callsign, flight time and the battery rows past
-column 30 or row 16). The fork's version is that commit plus the 53 × 20
-default.
 
 ## Tunables added
 
