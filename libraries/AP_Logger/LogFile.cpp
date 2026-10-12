@@ -142,7 +142,7 @@ bool AP_Logger_Backend::Write_Parameter(const AP_Param *ap,
 // Write an RCIN packet
 void AP_Logger::Write_RCIN(void)
 {
-    uint16_t values[16] = {};
+    uint16_t values[NUM_RC_CHANNELS] = {};
     rc().get_radio_in(values, ARRAY_SIZE(values));
     const struct log_RCIN pkt{
         LOG_PACKET_HEADER_INIT(LOG_RCIN_MSG),
@@ -186,6 +186,26 @@ void AP_Logger::Write_RCIN(void)
         flags          : flags,
     };
     WriteBlock(&pkt2, sizeof(pkt2));
+
+#if NUM_RC_CHANNELS > 16
+    // Fork: channels 17-32, only when the receiver delivers them
+    if (rc().get_valid_channel_count() > 16) {
+        struct log_RCI3 pkt3{
+            LOG_PACKET_HEADER_INIT(LOG_RCI3_MSG),
+            time_us       : AP_HAL::micros64(),
+        };
+        memcpy(pkt3.chan, &values[16], sizeof(pkt3.chan));
+        WriteBlock(&pkt3, sizeof(pkt3));
+
+        const struct log_RCI4 pkt4{
+            LOG_PACKET_HEADER_INIT(LOG_RCI4_MSG),
+            time_us       : AP_HAL::micros64(),
+            chan31        : values[30],
+            chan32        : values[31],
+        };
+        WriteBlock(&pkt4, sizeof(pkt4));
+    }
+#endif
 }
 #endif  // AP_RC_CHANNEL_ENABLED
 

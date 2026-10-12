@@ -1160,7 +1160,9 @@ MSPCommandResult AP_MSP_Telem_Backend::msp_process_out_rc(sbuf_t *dst)
     // channel trim and deadzone, so a switch sitting at its physical midpoint
     // would not read 1500us.
     uint8_t count = rc().get_valid_channel_count();
-    count = constrain_int16(count, 4, NUM_RC_CHANNELS);
+    // Fork: capped at 18 - Betaflight's MSP_RC never exceeds 18 channels, so
+    // MSP peers may not expect more even with NUM_RC_CHANNELS 32
+    count = constrain_int16(count, 4, MIN(NUM_RC_CHANNELS, 18));
 
     // The first four slots are MSP's AERT. ArduPilot's native order is roll,
     // pitch, throttle, yaw, so throttle and yaw swap places here, and pitch is

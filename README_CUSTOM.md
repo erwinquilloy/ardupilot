@@ -99,6 +99,7 @@ An outline of everything this fork adds and where it is documented. Each line li
   - [Throttle voltage compensation in MANUAL mode](#throttle-voltage-compensation-in-manual-mode)
   - [Revert to MANUAL after disarming](#revert-to-manual-after-disarming)
   - [Smarter RC relays](#smarter-rc-relays)
+  - [32 RC channels (v2.1)](#32-rc-channels-v21)
   - [Steering assist supports reverse driving](#steering-assist-supports-reverse-driving)
   - [MAVFTP reliability on low-RAM F4 boards](#mavftp-reliability-on-low-ram-f4-boards)
   - [EKF3 allocation failed on 1 MB F4](#ekf3-allocation-failed-on-1-mb-f4--allocation-order-and-the-fix)
@@ -1885,6 +1886,47 @@ arrived (usually LOW). Now `RCx_REVERSED=0` → relay starts LOW on
 boot, `RCx_REVERSED=1` → starts HIGH. Solves the "VTX powered on
 at boot before the radio is turned on" problem on Matek FCs where
 the video-power pad is active-low.
+
+## 32 RC channels (v2.1)
+
+*New in v2.1. Off by default.*
+
+Stock ArduPilot reads at most 18 RC channels and gives only channels 1–16 an
+`RCx_OPTION`. Radio links that carry more now exist: mLRS 1.4.04 and later
+sends up to 32 channels, and FrSky ETHOS radios send 32 to it natively. This
+firmware can use all 32.
+
+| Param | Value | Effect |
+|---|---|---|
+| `RC_32CH_ENABLE` | `0` (default) | 16 channels, exactly as before; `RC17_`–`RC32_` are hidden |
+| `RC_32CH_ENABLE` | `1` | channels 17–32 take input and their `RC17_`–`RC32_` params appear (reboot, then refresh params) |
+
+**The receiver link must deliver more than 16 channels to the FC:**
+
+| Link to the FC | Channels it carries |
+|---|---|
+| MAVLink receiver (`RADIO_RC_CHANNELS`, e.g. mLRS in MAVLink mode) | up to 32 |
+| CRSF | up to 24 |
+| SBUS | 16 + 2 digital |
+| F.Port / FBUS | 16 |
+
+For mLRS in MAVLink mode, the receiver's serial port on the FC is a MAVLink port
+(`SERIALn_PROTOCOL 2`), and `RC_PROTOCOLS` must include MAVRadio (bit 16; the
+default `1` = all already does). The MAVLink receiver input is now built on
+every board, including the 1 MB F4 boards, where stock ArduPilot leaves it out.
+
+**Good to know:**
+- **Mission Planner's radio page shows channels 1–18 only.** That is the limit
+  of the MAVLink `RC_CHANNELS` message. Channels 19–32 still work for
+  `RCx_OPTION` and appear in logs.
+- **Logs:** `RCI3` (channels 17–30) and `RCI4` (31–32) are written when the
+  receiver delivers more than 16 channels. `RCI2.OMask` is now 32 bits.
+- **MSP goggles** still get at most 18 channels in `MSP_RC`, as on Betaflight.
+- **The cost is fixed:** about 1.1 KB of flash and 0.9 KB of RAM on an F405
+  whether `RC_32CH_ENABLE` is on or off, because the channel table is sized
+  when the firmware is built.
+
+Not yet tested with an mLRS receiver delivering more than 16 channels.
 
 ## Steering assist supports reverse driving
 

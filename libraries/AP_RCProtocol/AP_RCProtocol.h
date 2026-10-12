@@ -24,7 +24,9 @@
 #include <GCS_MAVLink/GCS_MAVLink.h>
 #endif
 
-#define MAX_RCIN_CHANNELS 18
+// Fork: 32 (upstream 18), matching NUM_RC_CHANNELS and the RADIO_RC_CHANNELS
+// message's 32-channel array.
+#define MAX_RCIN_CHANNELS 32
 #define MIN_RCIN_CHANNELS  5
 
 class AP_RCProtocol_Backend;

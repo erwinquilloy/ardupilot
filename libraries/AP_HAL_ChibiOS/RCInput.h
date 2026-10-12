@@ -30,7 +30,8 @@
 #endif
 
 #ifndef RC_INPUT_MAX_CHANNELS
-#define RC_INPUT_MAX_CHANNELS 18
+// Fork: 32 (upstream 18) - see MAX_RCIN_CHANNELS
+#define RC_INPUT_MAX_CHANNELS 32
 #endif
 
 class ChibiOS::RCInput : public AP_HAL::RCInput {

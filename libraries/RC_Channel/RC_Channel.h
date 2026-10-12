@@ -27,7 +27,12 @@
 #include <AP_Arming/AP_Arming_config.h>
 #include <AP_BattMonitor/AP_BattMonitor_config.h>
 
-#define NUM_RC_CHANNELS 16
+// Fork: 32 RC channels (upstream 16) so receivers that deliver more than 16
+// channels - mLRS 1.4.04+ over MAVLink RADIO_RC_CHANNELS, CRSF up to 24 - can
+// have RCx_OPTION etc. on every channel.
+#ifndef NUM_RC_CHANNELS
+#define NUM_RC_CHANNELS 32
+#endif
 
 /// @class	RC_Channel
 /// @brief	Object managing one RC channel
@@ -629,6 +634,10 @@ public:
     __INITFUNC__ void init(void);
 
     // get singleton instance
+#if NUM_RC_CHANNELS > 16
+    static const struct AP_Param::GroupInfo var_info_32ch[];
+#endif
+
     static RC_Channels *get_singleton() {
         return _singleton;
     }
@@ -661,6 +670,10 @@ public:
                                                                        // returns the number of valid channels
 
     static uint8_t get_valid_channel_count(void);                      // returns the number of valid channels in the last read
+
+    // fork: channels that take input and run RCx_OPTION - 16, or
+    // NUM_RC_CHANNELS when RC_32CH_ENABLE is set
+    static uint8_t num_active_channels(void);
     static int16_t get_receiver_rssi(void);                            // returns [0, 255] for receiver RSSI (0 is no link) if present, otherwise -1
     static int16_t get_receiver_link_quality(void);                         // returns 0-100 % of last 100 packets received at receiver are valid
     bool read_input(void);                                             // returns true if new input has been read in
@@ -670,7 +683,7 @@ public:
 
     // returns a mask indicating which channels have overrides.  Bit 0
     // is RC channel 1.  Beware this is not a cheap call.
-    uint16_t get_override_mask() const;
+    uint32_t get_override_mask() const;
 
     class RC_Channel *find_channel_for_option(const RC_Channel::AUX_FUNC option);
     bool duplicate_options_exist();
@@ -823,6 +836,9 @@ private:
     AP_Int32  _options;
     AP_Int32  _protocols;
     AP_Float _fs_timeout;
+#if NUM_RC_CHANNELS > 16
+    AP_Int8 _enable_32ch;
+#endif
 
     // set to true if we see overrides or other RC input
     bool _has_ever_seen_rc_input;

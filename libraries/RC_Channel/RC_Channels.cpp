@@ -43,6 +43,10 @@ RC_Channels::RC_Channels(void)
 {
     // set defaults from the parameter table
     AP_Param::setup_object_defaults(this, var_info);
+#if NUM_RC_CHANNELS > 16
+    // setup_object_defaults() does not descend into group extensions
+    AP_Param::setup_object_defaults(this, var_info_32ch);
+#endif
 
     if (_singleton != nullptr) {
         AP_HAL::panic("RC_Channels must be singleton");
@@ -100,7 +104,8 @@ bool RC_Channels::read_input(void)
     last_update_ms = AP_HAL::millis();
 
     bool success = false;
-    for (uint8_t i=0; i<NUM_RC_CHANNELS; i++) {
+    const uint8_t active = num_active_channels();
+    for (uint8_t i=0; i<active; i++) {
         success |= channel(i)->update();
     }
 
@@ -113,7 +118,17 @@ bool RC_Channels::read_input(void)
 
 uint8_t RC_Channels::get_valid_channel_count(void)
 {
-    return MIN(NUM_RC_CHANNELS, hal.rcin->num_channels());
+    return MIN(num_active_channels(), hal.rcin->num_channels());
+}
+
+uint8_t RC_Channels::num_active_channels(void)
+{
+#if NUM_RC_CHANNELS > 16
+    if (_singleton == nullptr || _singleton->_enable_32ch.get() == 0) {
+        return 16;
+    }
+#endif
+    return NUM_RC_CHANNELS;
 }
 
 int16_t RC_Channels::get_receiver_rssi(void)
@@ -135,9 +150,9 @@ void RC_Channels::clear_overrides(void)
     // copter and plane, RC_Channels needs to control failsafes to resolve this
 }
 
-uint16_t RC_Channels::get_override_mask(void) const
+uint32_t RC_Channels::get_override_mask(void) const
 {
-    uint16_t ret = 0;
+    uint32_t ret = 0;
     RC_Channels &_rc = rc();
     for (uint8_t i = 0; i < NUM_RC_CHANNELS; i++) {
         if (_rc.channel(i)->has_override()) {
@@ -178,7 +193,8 @@ void RC_Channels::read_aux_all()
     }
     bool need_log = false;
 
-    for (uint8_t i=0; i<NUM_RC_CHANNELS; i++) {
+    const uint8_t active = num_active_channels();
+    for (uint8_t i=0; i<active; i++) {
         RC_Channel *c = channel(i);
         if (c == nullptr) {
             continue;
@@ -195,7 +211,8 @@ void RC_Channels::read_aux_all()
 
 void RC_Channels::init_aux_all()
 {
-    for (uint8_t i=0; i<NUM_RC_CHANNELS; i++) {
+    const uint8_t active = num_active_channels();
+    for (uint8_t i=0; i<active; i++) {
         RC_Channel *c = channel(i);
         if (c == nullptr) {
             continue;
