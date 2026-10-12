@@ -4,6 +4,8 @@
 
 #include "AP_Mount_CADDX.h"
 #include <AP_HAL/AP_HAL.h>
+#include <AP_SerialManager/AP_SerialManager.h>
+#include <GCS_MAVLink/GCS.h>
 
 #define SET_ATTITUDE_HEADER1 0xA5
 #define SET_ATTITUDE_HEADER2 0x5A
@@ -11,6 +13,27 @@
 #define AXIS_MIN 0
 #define AXIS_MAX 4096
 #define LOCK_MODE_BOOT_HOLD_MS 5000 // send body-frame lock mode for this long after the first packet
+
+#if AP_MOUNT_CADDX_HEADTRACKER_ENABLED
+// Fork: single-UART mode, like iNav's gimbal_serial_single_uart. With no
+// SERIALn_PROTOCOL 8 port, the first CADDX mount sends its frames on the TX
+// line of the SERIALn_PROTOCOL 51 port, whose RX listens to the VTX gimbal
+// port. Both directions run the same 115200 CADDX frame, so one UART does both.
+void AP_Mount_CADDX::init()
+{
+    AP_Mount_Backend_Serial::init();
+    if (_uart != nullptr || _serial_instance != 0) {
+        return;
+    }
+    _uart = AP::serialmanager().find_serial(AP_SerialManager::SerialProtocol_CADDX_HeadTracker, 0);
+    if (_uart == nullptr) {
+        return;
+    }
+    _initialised = true;
+    AP_Mount_Backend::init();
+    GCS_SEND_TEXT(MAV_SEVERITY_INFO, "Mount: CADDX gimbal on head tracker port TX");
+}
+#endif
 
 // update mount position - should be called periodically
 void AP_Mount_CADDX::update()
