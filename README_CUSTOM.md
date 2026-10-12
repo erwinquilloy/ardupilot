@@ -2412,9 +2412,9 @@ Rules:
   pin is the head tracker input; never connect the gimbal's TX to it.
 - **Don't leave a gimbal wired to both the VTX and the FC** — the two TX lines
   would fight. Move the gimbal from the VTX to the FC.
-- **When both sources arrive** (e.g. Ascent goggles send MSP *and* the gimbal
-  port is wired), the gimbal-port stream wins while it is live; MSP takes over
-  again 0.5 s after it stops. The two are never mixed.
+- **When both sources arrive** (e.g. Ascent goggles send MSP *and* the RX pin
+  is wired), MSP wins while it is live; the gimbal-port stream is used only
+  when no MSP head tracking has arrived for 0.5 s. The two are never mixed.
 - 115200 baud is forced on protocols `8` and `51`.
 
 `Mount: CADDX gimbal on head tracker port TX` appears at boot when a `51` port
