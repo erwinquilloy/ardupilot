@@ -582,6 +582,12 @@ MSPCommandResult AP_MSP_Telem_Backend::msp_process_sensor_command(uint16_t cmd_m
 #endif
 #if HAL_MSP_HEADTRACKER_ENABLED
     case MSP2_SENSOR_HEADTRACKER: {
+        // Fork: drop frames too short to hold pan/tilt/roll rather than
+        // casting past the payload. No error reply - the VTX pushes these
+        // unsolicited at ~100 Hz and expects no answer.
+        if (sbuf_bytes_remaining(src) < offsetof(MSP::msp_headtracker_data_message_t, sensitivity)) {
+            break;
+        }
         const MSP::msp_headtracker_data_message_t *pkt = (const MSP::msp_headtracker_data_message_t *)src->ptr;
         msp_handle_headtracker(*pkt);
     }
