@@ -2385,39 +2385,38 @@ angles, and feeds them into the same head-tracking path as MSP. So the enable
 switch (`252`), centre lock (`253`), POI lock (`186`), the stream-loss lock and
 every supported gimbal work the same as with the Goggles X.
 
-**Wiring with a CADDX gimbal — one UART, auto-detected.** Keep the gimbal on its
-usual serial port (`SERIALn_PROTOCOL 8`, `MNT1_TYPE 13`) and add one wire: VTX
-gimbal-port **TX** → that same port's **RX** pad. The gimbal moves from the VTX
-to the FC (its RX on the port's TX pad), and the FC listens for head tracking on
-the RX pin the CADDX gimbal never uses. Nothing to switch: with goggles that send
-head tracking over MSP, leave the extra wire off and the port behaves as before.
+**Wiring — one UART for both.** Set a spare UART to `SERIALn_PROTOCOL 51`
+(CADDX HeadTracker). Its **RX** pad listens to the VTX gimbal port; with a CADDX
+gimbal (`MNT1_TYPE 13`) and no `SERIALn_PROTOCOL 8` port, its **TX** pad drives
+the gimbal too (the same idea as iNav's `gimbal_serial_single_uart`). Move the
+gimbal from the VTX to the FC.
 
     VTX gimbal-port TX ──► FC RXn ┐
-                                  ├── one UART, SERIALn_PROTOCOL 8, MNT1_TYPE 13
+                                  ├── one UART, SERIALn_PROTOCOL 51
     CADDX gimbal RX    ◄── FC TXn ┘
-
-**Without a CADDX gimbal** (servo pan/tilt), the FC only listens: set the port
-to `SERIALn_PROTOCOL 51` and wire VTX gimbal-port TX → its RX pad. Setting `51`
-also works with a CADDX gimbal: with no protocol-8 port, the gimbal is driven
-from the `51` port's TX instead.
 
 | Setup | Port setting | Wires |
 |---|---|---|
-| CADDX gimbal, MSP head tracking | `SERIALn_PROTOCOL 8` | FC TX → gimbal RX |
-| CADDX gimbal, gimbal-port head tracking | `SERIALn_PROTOCOL 8` (same) | FC TX → gimbal RX, VTX gimbal TX → FC RX |
+| CADDX gimbal, MSP head tracking (Goggles X / Avatar, Ascent goggles) | `SERIALn_PROTOCOL 8` | FC TX → gimbal RX (a 4-wire gimbal cable is fine) |
+| CADDX gimbal, gimbal-port head tracking | `SERIALn_PROTOCOL 51` (no protocol-8 port) | VTX gimbal TX → FC RX, FC TX → gimbal RX |
 | Servo pan/tilt, gimbal-port head tracking | `SERIALn_PROTOCOL 51` | VTX gimbal TX → FC RX |
 
 Rules:
-- **Connect only the gimbal's RX (signal) and ground to the FC.** The FC's RX
-  pin is the head tracker input; never connect the gimbal's TX to it.
+- **Gimbal-port head tracking is opt-in: only a `51` port listens.** A normal
+  gimbal port (`8`) never reads its RX pin, so a 4-wire gimbal cable with the
+  gimbal's TX on it changes nothing.
+- **On a `51` port, connect only the gimbal's RX (signal) and ground.** That
+  port's RX pin is the VTX head-tracking input.
+- **A `SERIALn_PROTOCOL 8` port takes priority for the gimbal.** With one set,
+  the gimbal is driven from it and the `51` port only listens.
 - **Don't leave a gimbal wired to both the VTX and the FC** — the two TX lines
-  would fight. Move the gimbal from the VTX to the FC.
-- **When both sources arrive** (e.g. Ascent goggles send MSP *and* the RX pin
-  is wired), MSP wins while it is live; the gimbal-port stream is used only
-  when no MSP head tracking has arrived for 0.5 s. The two are never mixed.
+  would fight.
+- **When both sources arrive** (e.g. Ascent goggles send MSP *and* a `51` port
+  is wired), MSP wins while it is live; the gimbal-port stream is used only when
+  no MSP head tracking has arrived for 0.5 s. The two are never mixed.
 - 115200 baud is forced on protocols `8` and `51`.
 
-`Mount: CADDX gimbal on head tracker port TX` appears at boot when a `51` port
+`Mount: CADDX gimbal on head tracker port TX` appears at boot when the `51` port
 drives the gimbal.
 
 On boot, `CDXHT: head tracker stream up` appears in the messages once the

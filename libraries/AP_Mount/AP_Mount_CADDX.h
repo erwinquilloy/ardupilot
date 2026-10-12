@@ -20,9 +20,6 @@ public:
 #if AP_MOUNT_CADDX_HEADTRACKER_ENABLED
     // fork: falls back to the head tracker port's TX when there is no gimbal port
     void init() override;
-
-    // fork: the gimbal's port, so the head tracker can also listen on its RX pin
-    AP_HAL::UARTDriver *get_uart() const { return _uart; }
 #endif
 
     // update mount position - should be called periodically
