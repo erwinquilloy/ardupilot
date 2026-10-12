@@ -634,10 +634,6 @@ public:
     __INITFUNC__ void init(void);
 
     // get singleton instance
-#if NUM_RC_CHANNELS > 16
-    static const struct AP_Param::GroupInfo var_info_32ch[];
-#endif
-
     static RC_Channels *get_singleton() {
         return _singleton;
     }

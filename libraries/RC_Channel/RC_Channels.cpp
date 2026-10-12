@@ -43,10 +43,6 @@ RC_Channels::RC_Channels(void)
 {
     // set defaults from the parameter table
     AP_Param::setup_object_defaults(this, var_info);
-#if NUM_RC_CHANNELS > 16
-    // setup_object_defaults() does not descend into group extensions
-    AP_Param::setup_object_defaults(this, var_info_32ch);
-#endif
 
     if (_singleton != nullptr) {
         AP_HAL::panic("RC_Channels must be singleton");
