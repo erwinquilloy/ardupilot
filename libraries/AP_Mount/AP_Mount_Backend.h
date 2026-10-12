@@ -421,6 +421,8 @@ protected:
     int16_t _ht_pan_prev = 0;       // previous raw pan value (for wrap detection)
     float _ht_pan_unwrapped = 0;    // continuous (unwrapped) pan used for yaw targeting
     uint32_t _ht_last_frame_ms = 0; // system time of the last head tracker frame (for stream-loss timeout)
+    uint32_t _ht_caddx_last_ms = 0; // system time of the last gimbal-port (CADDX) head tracker frame
+    uint8_t _ht_last_src = 0;       // source of the last frame (1 MSP, 2 gimbal port), to re-baseline on a switch
 #if AP_MOUNT_CADDX_HEADTRACKER_ENABLED
     float _ht_yaw_prev_deg = 0;     // previous raw yaw angle (for wrap detection)
     float _ht_yaw_unwrapped_deg = 0;// continuous (unwrapped) yaw used for targeting
