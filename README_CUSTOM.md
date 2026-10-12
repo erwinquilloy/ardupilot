@@ -2343,17 +2343,27 @@ angles, and feeds them into the same head-tracking path as MSP. So the enable
 switch (`252`), centre lock (`253`), POI lock (`186`), the stream-loss lock and
 every supported gimbal work the same as with the Goggles X.
 
-**Wiring:** VTX gimbal-port **TX** → a spare FC **RX** pad, plus ground. The FC
-only listens, so the FC's TX on that UART stays unconnected. The gimbal moves
-from the VTX to the FC: a CADDX gimbal goes to an FC TX pad (`SERIALy_PROTOCOL 8`,
-`MNT1_TYPE 13`), or use servos. Don't leave a gimbal wired to both the VTX and the
-FC — the two TX lines would fight.
+**Wiring:** VTX gimbal-port **TX** → an FC **RX** pad, plus ground. The gimbal
+moves from the VTX to the FC. A CADDX gimbal (`MNT1_TYPE 13`) can share that
+same UART: wire the gimbal's RX to the **TX** pad of the same port, so one UART
+listens to the VTX and drives the gimbal (the same idea as iNav's
+`gimbal_serial_single_uart`). Or use servos. Don't leave a gimbal wired to both
+the VTX and the FC — the two TX lines would fight.
+
+    VTX gimbal-port TX ──► FC RXz ┐
+                                  ├── one UART, SERIALz_PROTOCOL 51
+    CADDX gimbal RX    ◄── FC TXz ┘
 
 | Param | Value | Purpose |
 |---|---|---|
-| `SERIALz_PROTOCOL` | `51` (CADDX HeadTracker) | VTX gimbal-port **input** (115200 baud is forced) |
-| `SERIALy_PROTOCOL` | `8` (Gimbal) | serial-gimbal output, if the gimbal is a CADDX |
-| everything else | as in [Setup](#setup) | mount type, limits, switches |
+| `SERIALz_PROTOCOL` | `51` (CADDX HeadTracker) | VTX gimbal-port **input**, and the CADDX gimbal **output** on the same port's TX (115200 baud is forced) |
+| `MNT1_TYPE` | `13` (CADDX) | or a servo mount type |
+| everything else | as in [Setup](#setup) | limits, switches |
+
+A CADDX gimbal on its own port (`SERIALy_PROTOCOL 8`) still works and takes
+priority; the shared port is used only when no `SERIALn_PROTOCOL 8` port exists.
+`Mount: CADDX gimbal on head tracker port TX` appears at boot when the shared
+port is in use.
 
 On boot, `CDXHT: head tracker stream up` appears in the messages once the
 first valid frame arrives, so you can confirm the wiring.

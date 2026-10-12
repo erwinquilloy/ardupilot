@@ -17,6 +17,11 @@ public:
     // Constructor
     using AP_Mount_Backend_Serial::AP_Mount_Backend_Serial;
 
+#if AP_MOUNT_CADDX_HEADTRACKER_ENABLED
+    // fork: falls back to the head tracker port's TX when there is no gimbal port
+    void init() override;
+#endif
+
     // update mount position - should be called periodically
     void update() override;
 
