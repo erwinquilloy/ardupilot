@@ -10,10 +10,10 @@
   Fork feature: head tracker input from a Walksnail/CADDX VTX gimbal port.
 
   The VTX drives a CADDX gimbal (e.g. GM3 v2) directly from its second UART
-  using the same 10-byte set-attitude frame that AP_Mount_CADDX sends. Some
-  goggles (Walksnail Ascent) only ever put head tracking on that port and never
-  push MSP2_SENSOR_HEADTRACKER to the autopilot, so listening to it here is the
-  only way to get head tracking from them.
+  using the same 10-byte set-attitude frame that AP_Mount_CADDX sends. Most
+  Walksnail goggles also push MSP2_SENSOR_HEADTRACKER to the autopilot, but some
+  only ever put head tracking on that port, so listening to it here is the only
+  way to get head tracking from them.
 
   Wire the VTX gimbal port's TX to a free autopilot RX pad and set that port's
   SERIALn_PROTOCOL to 51. The decoded angles feed the same mount head-tracking
