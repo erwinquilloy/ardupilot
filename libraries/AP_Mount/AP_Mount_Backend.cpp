@@ -236,13 +236,7 @@ void AP_Mount_Backend::set_rate_target(float roll_degs, float pitch_degs, float 
 // follows the head continuously.
 void AP_Mount_Backend::handle_msp_headtracker(int16_t pan, int16_t tilt, int16_t roll)
 {
-#if AP_MOUNT_CADDX_HEADTRACKER_ENABLED
-    // fork: a live gimbal-port stream wins. With Ascent goggles both sources can
-    // arrive at once, and they scale differently, so never mix them.
-    if (_ht_caddx_last_ms != 0 && AP_HAL::millis() - _ht_caddx_last_ms < 500) {
-        return;
-    }
-#endif
+    _ht_msp_last_ms = AP_HAL::millis();
     if (_ht_last_src != 1) {
         _ht_last_src = 1;
         _ht_pan_valid = false;  // re-baseline the pan unwrap after a source switch
@@ -321,7 +315,12 @@ bool AP_Mount_Backend::headtracker_frame_accepted()
 // follows the head one-for-one; set_angle_target() clamps them to the MNTx limits.
 void AP_Mount_Backend::handle_caddx_headtracker(float roll_deg, float pitch_deg, float yaw_deg)
 {
-    _ht_caddx_last_ms = AP_HAL::millis();
+    // fork: a live MSP stream wins. The two sources scale differently, so never
+    // mix them, and a gimbal whose TX is wired to this RX pin can't override
+    // head tracking that goggles send over MSP.
+    if (_ht_msp_last_ms != 0 && AP_HAL::millis() - _ht_msp_last_ms < 500) {
+        return;
+    }
     if (_ht_last_src != 2) {
         _ht_last_src = 2;
         _ht_pan_valid = false;  // re-baseline the yaw unwrap after a source switch
