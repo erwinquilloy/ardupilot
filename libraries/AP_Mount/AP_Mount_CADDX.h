@@ -41,12 +41,11 @@ protected:
 
 private:
 
-    // gimbal mode number in byte 2's low 3 bits (fork: GM-series gimbals use a
-    // mode number, not lock flags; matches the Caddx tool's M0/M1/M2)
-    enum class GimbalMode : uint8_t {
-        FPV        = 0,
-        PITCH_STAB = 1,
-        HORIZON    = 2,
+    // lock mode enum
+    enum class LockMode {
+        PITCH_LOCK = (1<<0),
+        ROLL_LOCK  = (1<<1),
+        YAW_LOCK   = (1<<2),
     };
 
     // CADDX can only send angles
