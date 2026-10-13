@@ -50,11 +50,38 @@ plus a few additions originating in this fork.
 
 ---
 
+## What's new in v2.1 (draft)
+
+*Not released yet. The current releases are still `full-v2.0` / `light-v2.0`.
+Everything below is on both tracks unless it says "full only".*
+
+| Area | Change | Details |
+|---|---|---|
+| Flight | **Adaptive pitch trim** (`RCx_OPTION 254`, `PTCH_TRIM_SPD` / `PTCH_TRIM_OFS`): pitch trim scheduled on airspeed, learned in a few straight legs; `KFF_THR2PTCH` is ignored while the curve is active | [Adaptive pitch trim](#adaptive-pitch-trim--airspeed-schedule-learned-in-flight-rcx_option--254) |
+| Flight | **Servo auto-trim also runs in Course Hold** (`SERVO_AUTO_TRIM 2`) | [Auto-trim improvements](#auto-trim-improvements) |
+| Flight | `FLIGHT_OPTIONS` bit 21 handover message starts with "Takeoff complete", so Yaapu voices it | [Bit 21](#flight_options-bit-21--end-takeoff-in-fbwb-instead-of-loitering) |
+| RC | **32 RC channels** (`RC_32CH_ENABLE`, off by default), `RC17_`–`RC32_OPTION` | [32 RC channels](#32-rc-channels-v21) |
+| RC | **mLRS RC over MAVLink (`radio_rc_channels`) on every board**, light 1 MB F4 included; stock needs a 2 MB board. Channels 17–32 stay steady with mLRS 1.4.04's mixed 16/32-channel frames | [mLRS MAVLink RC](#mlrs-mavlink-rc-radio_rc_channels-on-every-board-v21) |
+| Head tracking | **Head tracking from the VTX gimbal port** (`SERIALn_PROTOCOL 51`) for goggles that don't send it over MSP; one UART can also drive a CADDX gimbal; MSP head tracking wins when both arrive | [Gimbal-port head tracking](#head-tracking-from-the-vtx-gimbal-port-serialn_protocol-51) |
+| Head tracking | Short or malformed MSP head-tracker frames are dropped | |
+| OSD | **ADS-B traffic warning**: the `OSDx_ADSB` element flashes inside `OSD_W_ADSB_DIST` (and optionally `OSD_W_ADSB_ALT`). **Full only** | [Traffic warning](#traffic-warning-v21) |
+| Radar | `RADAR_OSD_MODE 1` shows the nearest peer instead of cycling | [Radar OSD element](#osd-element) |
+
+**Tested so far:**
+- Bench: gimbal-port head tracking (SpeedyBee F405 Wing + GM3), and mLRS `radio_rc_channels` with CRSF telemetry to an ETHOS radio (light build).
+- SITL only: adaptive pitch trim, ADS-B warning, and 32 channels including mLRS 1.4.04's 16/32-channel frames.
+- Not yet tested: Course Hold auto-trim.
+
+**Not in v2.1:**
+- The DisplayPort canvas clip. Walksnail goggle firmware 18.21.15 fixed it.
+- Gimbal-port auto-detect on `SERIALn_PROTOCOL 8` ports.
+- The GM gimbal mode-number change (reverted after bench test).
+
 ## Contents
 
 An outline of everything this fork adds and where it is documented. Each line links to its section.
 
-- **Getting started** — [Why flash this instead of stock ArduPlane 4.7.1?](#why-flash-this-instead-of-stock-arduplane-471), [Building](#building), [Which file in the zip do I flash?](#which-file-in-the-zip-do-i-flash), [Release fleets (full-v2.0 / light-v2.0)](#release-fleets-full-v20--light-v20), [Tone-buzzer board variant (SpeedyBeeF405WING-Buzz)](#tone-buzzer-board-variant-speedybeef405wing-buzz)
+- **Getting started** — [What's new in v2.1 (draft)](#whats-new-in-v21-draft), [Why flash this instead of stock ArduPlane 4.7.1?](#why-flash-this-instead-of-stock-arduplane-471), [Building](#building), [Which file in the zip do I flash?](#which-file-in-the-zip-do-i-flash), [Release fleets (full-v2.0 / light-v2.0)](#release-fleets-full-v20--light-v20), [Tone-buzzer board variant (SpeedyBeeF405WING-Buzz)](#tone-buzzer-board-variant-speedybeef405wing-buzz)
 - **[What this fork adds](#what-this-fork-adds)**
   - [Flight modes](#flight-modes)
     - [Course Hold (mode 26)](#course-hold-mode-26)
@@ -160,6 +187,8 @@ aimed at efficiency and situational awareness:
 - **ADS-B traffic in the goggles** (full-track boards): the nearest aircraft
   from an ADS-B receiver, with direction arrow, distance and height relative
   to you — iNav-style. Upstream only shows ADS-B traffic on the GCS map.
+  From v2.1 it flashes when traffic comes inside a distance you set
+  (`OSD_W_ADSB_DIST`).
 
 → [OSD additions](#osd-additions)
 
