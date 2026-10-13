@@ -100,6 +100,7 @@ An outline of everything this fork adds and where it is documented. Each line li
   - [Revert to MANUAL after disarming](#revert-to-manual-after-disarming)
   - [Smarter RC relays](#smarter-rc-relays)
   - [32 RC channels (v2.1)](#32-rc-channels-v21)
+  - [mLRS MAVLink RC on every board (v2.1)](#mlrs-mavlink-rc-radio_rc_channels-on-every-board-v21)
   - [Steering assist supports reverse driving](#steering-assist-supports-reverse-driving)
   - [MAVFTP reliability on low-RAM F4 boards](#mavftp-reliability-on-low-ram-f4-boards)
   - [EKF3 allocation failed on 1 MB F4](#ekf3-allocation-failed-on-1-mb-f4--allocation-order-and-the-fix)
@@ -231,6 +232,9 @@ Built for throwing a wing off your hand safely:
   aircraft on your OSD.
 - **Richer telemetry**: CRSF relative altitude + link quality, MSP/DJI
   numeric-attitude fix, wind in km/h, vehicle UID.
+- **mLRS RC over MAVLink on every board** (v2.1) — `radio_rc_channels` works on
+  the light 1 MB F4 builds too; stock ArduPilot needs a 2 MB board or a custom
+  build. Up to 32 channels with `RC_32CH_ENABLE`.
 - **Expanded battery monitoring**: Wh accounting, cell count/voltage, and
   capacity-remaining plus low/critical thresholds feeding the OSD readouts.
 
@@ -1910,10 +1914,8 @@ firmware can use all 32.
 | SBUS | 16 + 2 digital |
 | F.Port / FBUS | 16 |
 
-For mLRS in MAVLink mode, the receiver's serial port on the FC is a MAVLink port
-(`SERIALn_PROTOCOL 2`), and `RC_PROTOCOLS` must include MAVRadio (bit 16; the
-default `1` = all already does). The MAVLink receiver input is now built on
-every board, including the 1 MB F4 boards, where stock ArduPilot leaves it out.
+For mLRS in MAVLink mode, see
+[mLRS MAVLink RC on every board](#mlrs-mavlink-rc-radio_rc_channels-on-every-board-v21) below.
 
 **Good to know:**
 - **Mission Planner's radio page shows channels 1–18 only.** That is the limit
@@ -1927,6 +1929,51 @@ every board, including the 1 MB F4 boards, where stock ArduPilot leaves it out.
   when the firmware is built.
 
 Not yet tested with an mLRS receiver delivering more than 16 channels.
+
+## mLRS MAVLink RC (`RADIO_RC_CHANNELS`) on every board (v2.1)
+
+*New in v2.1. Bench-tested on a SpeedyBee F405 Wing (light build) with mLRS.*
+
+mLRS can send the RC channels inside the MAVLink stream (`radio_rc_channels`),
+so one serial port carries both RC and telemetry, with no separate CRSF/SBUS
+wire. Stock ArduPilot builds this input only on 2 MB boards; the mLRS docs tell
+1 MB board owners to make a custom firmware for it. **This fork builds it on
+every board, including all light (1 MB F405) targets.**
+
+**FC side:**
+
+| Param | Value | Why |
+|---|---|---|
+| `SERIALn_PROTOCOL` | `2` (MAVLink2) | the port wired to the mLRS receiver |
+| `SERIALn_BAUD` | same as mLRS `Rx Ser Baudrate` | e.g. `57` or `115` |
+| `RC_PROTOCOLS` | `65536` (MAVRadio only), or `1` (all) | MAVRadio is **bit 16 = 65536**. The mLRS docs say "bit 17" because they count from 1 |
+| `MAVn_OPTIONS` | `4` (Ignore Streamrate), optional | stops a GCS from overriding the rates below. On 4.7 this replaces `SERIALn_OPTIONS 4096`, which the mLRS docs still list and which now **fails pre-arm** |
+| `MAVn_EXTRA1`, `_EXTRA2` | `4` | attitude, VFR_HUD, which feed the radio's telemetry sensors |
+| `MAVn_EXT_STAT`, `_EXTRA3`, `_POSITION` | `2` | battery, GPS, position |
+
+`MAVn` counts MAVLink ports in order, not `SERIALn` numbers: `MAV1` is usually
+USB (`SERIAL0`), so the mLRS port on `SERIAL1` is `MAV2`.
+
+**mLRS side:** `Rx Ser Link Mode` = `mavlinkX` (or `mavlink`),
+`Rx Snd RcChannel` = `radio_rc_channels`, `Rx Snd RadioStat` = `ardu_1`
+(flow control, and the RSSI the FC sees with `RSSI_TYPE 5`).
+
+**If the channels don't move:** ArduPilot locks onto the **first** RC protocol
+it detects until reboot. If an old CRSF/SBUS receiver, or the mLRS receiver's
+own CRSF/SBUS output, is wired to another port, that one wins and MAVRadio is
+ignored. Either set `RC_PROTOCOLS 65536` (MAVRadio only) or set `RC_OPTIONS`
+bit 10 (Multi-receiver support, +1024).
+
+**Telemetry on the radio (EdgeTX/ETHOS sensors, Yaapu):** this comes from the
+**mLRS Tx module**, which turns the MAVLink stream into CRSF sensors. The FC
+sends no CRSF in this setup. Needed:
+- the radio talks CRSF at 400k to the module, and `Tx Ch Source` = `crsf`
+- `Tx Ser Dest` = `serial`, `serial2` or `wbridge`, `Tx Snd RadioStat` = `1 Hz`
+- the `MAVn_*` rates above are above zero on the mLRS port
+- then **Telemetry → Delete all → Discover new** on the radio
+
+As the mLRS docs note, link statistics over MAVLink are thinner than over CRSF
+(RSSI or LQ only on the FC side).
 
 ## Steering assist supports reverse driving
 
