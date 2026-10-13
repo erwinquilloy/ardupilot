@@ -2507,6 +2507,8 @@ TT-SC1, …) on a serial port.
 | `ADSB_LIST_RADIUS` | default 10000 m | aircraft further away are ignored |
 | `ADSB_LIST_ALT` | default 0 (no limit) | ignore aircraft more than this many metres above or below you |
 | `OSDx_ADSB_EN` / `_X` / `_Y` | `1` / position | the element |
+| `OSD_W_ADSB_DIST` | default 0 (off) | the element flashes when the nearest aircraft is closer than this (metres, horizontal), v2.1 |
+| `OSD_W_ADSB_ALT` | default 0 (any height) | with `OSD_W_ADSB_DIST` set, only warn when the aircraft is also within this many metres above or below you, v2.1 |
 
 Upstream ArduPilot uses the same traffic for the GCS map and for collision
 avoidance (`AVD_*`), both unchanged. It has no OSD element for it.
@@ -2565,6 +2567,26 @@ further.
   aircraft within 1,000 m above or below you, so a jet at 6,000 ft above
   does not take the single slot.
 
+### Traffic warning (v2.1)
+
+Set `OSD_W_ADSB_DIST` to make the whole element (label, arrow, distance and
+height) flash while the nearest aircraft is inside that horizontal distance,
+the same way the battery or airspeed items flash at their warning levels.
+For example `OSD_W_ADSB_DIST 2000` flashes for anything within 2 km.
+
+Add `OSD_W_ADSB_ALT` to ignore traffic far above or below: with
+`OSD_W_ADSB_ALT 300`, an aircraft 1.5 km away but 1,800 m above shows
+steadily, while one 1.5 km away and 200 m above flashes. An aircraft that
+reports no altitude is treated as inside the band, so it still warns.
+
+- The warning follows the **nearest** aircraft only, the one the element is
+  showing.
+- It needs the element itself enabled on the screen (`OSDx_ADSB_EN 1`).
+- The height check uses the same relative height as the display, so it
+  carries the barometric offset described above; leave some margin.
+- `ADSB_LIST_RADIUS` / `ADSB_LIST_ALT` still decide what is tracked at all,
+  so keep the warn distance inside `ADSB_LIST_RADIUS`.
+
 **Checking it:** the Mission Planner map shows every aircraft the flight
 controller is tracking. An aircraft on the map within `ADSB_LIST_RADIUS` that
 is missing from the goggles is worth a log; gaps with nothing on the map are
@@ -2591,6 +2613,8 @@ reception or range.
 | `OSD_W_ASPD_LOW`  |   0     | Underspeed warning threshold (0 = off)              |
 | `OSD_W_ASPD_HIGH` |   0     | Overspeed warning threshold (0 = off)               |
 | `OSD_W_VERT_ACC`  |   0     | Vertical-G warning threshold (0 = off)              |
+| `OSD_W_ADSB_DIST` |   0     | ADS-B traffic warning distance, m (0 = off; full track, v2.1) |
+| `OSD_W_ADSB_ALT`  |   0     | ADS-B warning height band, m (0 = any height; v2.1) |
 | `OSD_TUNE_DTMOUT` |   4 s   | Tuned-param OSD display timeout                     |
 | `OSD_EFF_UNIT`    | Wh      | Default efficiency unit (Wh vs mAh — upstream is now also Wh-default) |
 
