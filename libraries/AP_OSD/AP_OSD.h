@@ -336,8 +336,8 @@ private:
     //helper functions
     void draw_speed(uint8_t x, uint8_t y, float magnitude);
     void draw_speed_with_arrow(uint8_t x, uint8_t y, float angle_rad, float magnitude);
-    void draw_vdistance(uint8_t x, uint8_t y, float distance);
-    void draw_distance(uint8_t x, uint8_t y, float distance, bool can_only_be_positive);
+    void draw_vdistance(uint8_t x, uint8_t y, float distance, bool blink = false);
+    void draw_distance(uint8_t x, uint8_t y, float distance, bool can_only_be_positive, bool blink = false);
     char get_arrow_font_index (int32_t angle_cd);
 #if HAL_WITH_ESC_TELEM
     void draw_esc_temp(uint8_t x, uint8_t y);
@@ -667,6 +667,10 @@ public:
     AP_Float warn_aspd_low;   // fork b10dc936be: underspeed warn threshold
     AP_Float warn_aspd_high;  // fork b10dc936be: overspeed warn threshold
     AP_Float warn_vert_acc;   // fork #46: vertical accel warn threshold (g)
+#if HAL_ADSB_ENABLED
+    AP_Int16 warn_adsb_dist;  // fork: ADSB item flashes when the nearest aircraft is closer (m)
+    AP_Int16 warn_adsb_alt;   // fork: ...and within this height band (m), 0 = any height
+#endif
     AP_Float peak_rate_timeout;
     AP_Float tune_display_timeout;
     AP_Int8 msgtime_s;

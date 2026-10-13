@@ -270,6 +270,24 @@ const AP_Param::GroupInfo AP_OSD::var_info[] = {
     // @User: Standard
     AP_GROUPINFO("_W_VERT_ACC", 60, AP_OSD, warn_vert_acc, 0),
 
+#if HAL_ADSB_ENABLED
+    // @Param: _W_ADSB_DIST
+    // @DisplayName: ADS-B traffic warn distance
+    // @Description: The ADSB OSD item flashes when the nearest ADS-B aircraft is closer than this horizontal distance. 0 disables. See also OSD_W_ADSB_ALT.
+    // @Range: 0 10000
+    // @Units: m
+    // @User: Standard
+    AP_GROUPINFO("_W_ADSB_DIST", 40, AP_OSD, warn_adsb_dist, 0),
+
+    // @Param: _W_ADSB_ALT
+    // @DisplayName: ADS-B traffic warn height band
+    // @Description: With OSD_W_ADSB_DIST set, the ADSB OSD item only flashes when the nearest aircraft is also within this height above or below this aircraft. 0 warns at any height. Traffic without a valid altitude counts as inside the band.
+    // @Range: 0 5000
+    // @Units: m
+    // @User: Standard
+    AP_GROUPINFO("_W_ADSB_ALT", 41, AP_OSD, warn_adsb_alt, 0),
+#endif
+
     // @Param: _BATBAR_TYPE
     // @DisplayName: DJI OSD battery bar type
     // @Description: Selects the data source the DJI OSD battery bar represents
