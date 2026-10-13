@@ -1928,7 +1928,14 @@ For mLRS in MAVLink mode, see
   whether `RC_32CH_ENABLE` is on or off, because the channel table is sized
   when the firmware is built.
 
-Not yet tested with an mLRS receiver delivering more than 16 channels.
+**mLRS 1.4.04 32-channel mode over MAVLink:** mLRS sends 16-channel
+`RADIO_RC_CHANNELS` frames at full rate and a 32-channel frame only at 5 Hz.
+Channels 17–32 keep their value from the last 32-channel frame, so they don't
+drop to zero between frames (switches, passthrough servos and gimbal inputs on
+17–32 stay steady). If 32-channel frames stop for 1 s, for example when
+32-channel mode is turned off in mLRS, channels 17–32 return to "no input".
+Tested in SITL; not yet flown with an mLRS receiver delivering more than 16
+channels.
 
 ## mLRS MAVLink RC (`RADIO_RC_CHANNELS`) on every board (v2.1)
 
