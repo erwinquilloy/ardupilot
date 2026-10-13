@@ -1482,7 +1482,7 @@ const AP_Param::GroupInfo AP_OSD_Screen::var_info2[] = {
 #if HAL_ADSB_ENABLED
     // @Param: ADSB_EN
     // @DisplayName: ADSB_EN
-    // @Description: Displays the nearest ADS-B aircraft: a bearing arrow and horizontal distance, with its altitude relative to this aircraft on the line below. Only aircraft within ADSB_LIST_RADIUS and ADSB_LIST_ALT are considered. Blank when none is tracked. Needs an ADS-B receiver (ADSB_TYPE).
+    // @Description: Displays the nearest ADS-B aircraft: a bearing arrow and horizontal distance, with its altitude relative to this aircraft on the line below. Only aircraft within ADSB_LIST_RADIUS and ADSB_LIST_ALT are considered. Blank when none is tracked. Flashes when the aircraft is inside OSD_W_ADSB_DIST (and OSD_W_ADSB_ALT). Needs an ADS-B receiver (ADSB_TYPE).
     // @Values: 0:Disabled,1:Enabled
 
     // @Param: ADSB_X
@@ -2116,7 +2116,7 @@ void AP_OSD_Screen::draw_horizon(uint8_t x, uint8_t y)
 
 }
 
-void AP_OSD_Screen::draw_distance(uint8_t x, uint8_t y, float distance, bool can_only_be_positive)
+void AP_OSD_Screen::draw_distance(uint8_t x, uint8_t y, float distance, bool can_only_be_positive, bool blink)
 {
     // Fork #117: per-magnitude format selection with leading-space alignment.
     //   can_only_be_positive=true frees the sign column (no minus possible).
@@ -2166,7 +2166,7 @@ void AP_OSD_Screen::draw_distance(uint8_t x, uint8_t y, float distance, bool can
         spaces -= 1;  // minimum input spaces is 1, so no uint8_t underflow
     }
 
-    backend->write(x + spaces, y, false, format, (double)distance_scaled, unit_icon);
+    backend->write(x + spaces, y, blink, format, (double)distance_scaled, unit_icon);
 }
 
 void AP_OSD_Screen::draw_home(uint8_t x, uint8_t y)
@@ -2290,11 +2290,16 @@ void AP_OSD_Screen::draw_adsb(uint8_t x, uint8_t y)
         // avoid a fast-rotating arrow at small distances
         angle_cd = 0;
     }
-    backend->write(x, y, false, "ADS%c", get_arrow_font_index(angle_cd));
-    draw_distance(x+4, y, distance, true);
     ftype vertical_distance;
-    if (alt_valid && target.get_height_above(loc, vertical_distance)) {
-        draw_vdistance(x+3, y+1, vertical_distance);
+    const bool have_vdist = alt_valid && target.get_height_above(loc, vertical_distance);
+    // flash the whole item when the traffic is inside the warn distance (and
+    // the height band, if set); traffic with no altitude counts as inside
+    const bool blink = osd->warn_adsb_dist > 0 && distance < osd->warn_adsb_dist &&
+        (osd->warn_adsb_alt <= 0 || !have_vdist || fabsF(vertical_distance) < osd->warn_adsb_alt);
+    backend->write(x, y, blink, "ADS%c", get_arrow_font_index(angle_cd));
+    draw_distance(x+4, y, distance, true, blink);
+    if (have_vdist) {
+        draw_vdistance(x+3, y+1, vertical_distance, blink);
     }
 }
 #endif  // HAL_ADSB_ENABLED
@@ -2529,7 +2534,7 @@ void AP_OSD_Screen::draw_vspeed(uint8_t x, uint8_t y)
     }
 }
 
-void AP_OSD_Screen::draw_vdistance(uint8_t x, uint8_t y, float distance)
+void AP_OSD_Screen::draw_vdistance(uint8_t x, uint8_t y, float distance, bool blink)
 {
     char sym;
     if (distance > 25.0f) {
@@ -2543,10 +2548,10 @@ void AP_OSD_Screen::draw_vdistance(uint8_t x, uint8_t y, float distance)
     }
     float distance_scaled = u_scale(ALTITUDE, fabsf(distance));
     if ((osd->units != AP_OSD::UNITS_AVIATION) && (distance_scaled < 9.95f)) {
-        backend->write(x, y, false, "%c%.1f%c", sym, (float)distance_scaled, u_icon(DISTANCE));
+        backend->write(x, y, blink, "%c%.1f%c", sym, (float)distance_scaled, u_icon(DISTANCE));
     } else {
         const char *fmt = osd->units == AP_OSD::UNITS_AVIATION ? "%c%4d%c" : "%c%2d%c";
-        backend->write(x, y, false, fmt, sym, (int)roundf(distance_scaled), u_icon(DISTANCE));
+        backend->write(x, y, blink, fmt, sym, (int)roundf(distance_scaled), u_icon(DISTANCE));
     }
 }
 
