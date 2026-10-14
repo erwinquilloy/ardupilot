@@ -1081,15 +1081,19 @@ assisted flight. It changes smoothly (about a 1 s time constant).
 fades to the *least nose-up* of the three offsets, so slowing towards the
 stall never raises the nose.
 
-![Adaptive Pitch Trim Explorer showing a sample curve: PTCH_TRIM_DEG -3.2, AIRSPEED_MIN 10 and offsets +0.08, -0.31 and -0.58 at 19.5, 25 and 30.5 m/s](docs/images/adaptive-pitch-trim-example.png)
+![Adaptive Pitch Trim Explorer showing a sample curve fitted from a flight log: PTCH_TRIM_DEG 2, AIRSPEED_MIN 16 and offsets +0.46, -0.31 and -1.08 at 19.5, 22 and 24.5 m/s, with the log's level-pitch points in blue](docs/images/adaptive-pitch-trim-example.png)
 
-*Sample only: these numbers are not a recommendation and will not suit
-your aircraft. The curve was learned in SITL on the simulated plane with a
-pitot (`PTCH_TRIM_DEG` −3.2, `AIRSPEED_MIN` 10). The solid line is the trim
-the firmware holds as level at each airspeed; the dashed line is
-`PTCH_TRIM_DEG` alone. Between the points the trim follows a straight line,
-above 30.5 m/s it stays at point 3, and in the shaded band (10–12.5 m/s) the
-stall taper drops it to the least nose-up offset (−0.57°). Your own curve
+*Sample only: these numbers are one aircraft's and are not a recommendation;
+they will not suit yours. The curve was fitted from a flight log
+(`PTCH_TRIM_DEG` 2, `AIRSPEED_MIN` 16). The blue dots are the pitch that log
+flew level at each airspeed; hollow dots had under 30 samples and were left
+out of the fit. The solid line is the trim the firmware holds as level; the
+dashed line is `PTCH_TRIM_DEG` alone. Between the points the trim follows a
+straight line, and above 24.5 m/s it stays at point 3. In the shaded band
+(16–20 m/s, `AIRSPEED_MIN` to 1.25 × `AIRSPEED_MIN`) the stall taper fades it
+to the least nose-up offset (−1.08°), so the nose drops slightly as the plane
+slows instead of rising. Point 1 (19.5 m/s) sits inside that band, so the
+taper overrides it there; the explorer flags this as CHECK. Your own curve
 comes from a learn flight, or from a log. To see it, load your `.param` or
 `.bin` into the
 [Adaptive Pitch Trim Explorer](https://erwinquilloy.github.io/ardupilot-tools/pitch-trim.html).*
