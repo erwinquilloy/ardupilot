@@ -1081,6 +1081,19 @@ assisted flight. It changes smoothly (about a 1 s time constant).
 fades to the *least nose-up* of the three offsets, so slowing towards the
 stall never raises the nose.
 
+![Adaptive Pitch Trim Explorer showing a sample curve: PTCH_TRIM_DEG -3.2, AIRSPEED_MIN 10 and offsets +0.08, -0.31 and -0.58 at 19.5, 25 and 30.5 m/s](docs/images/adaptive-pitch-trim-example.png)
+
+*Sample only: these numbers are not a recommendation and will not suit
+your aircraft. The curve was learned in SITL on the simulated plane with a
+pitot (`PTCH_TRIM_DEG` −3.2, `AIRSPEED_MIN` 10). The solid line is the trim
+the firmware holds as level at each airspeed; the dashed line is
+`PTCH_TRIM_DEG` alone. Between the points the trim follows a straight line,
+above 30.5 m/s it stays at point 3, and in the shaded band (10–12.5 m/s) the
+stall taper drops it to the least nose-up offset (−0.57°). Your own curve
+comes from a learn flight, or from a log. To see it, load your `.param` or
+`.bin` into the
+[Adaptive Pitch Trim Explorer](https://erwinquilloy.github.io/ardupilot-tools/pitch-trim.html).*
+
 **The switch** (`RCx_OPTION = 254`, 3-position):
 
 | Switch | Effect |
@@ -3854,7 +3867,7 @@ a link to the TECS tuning helper. Everything runs in your browser.
 
 | Tool | What it is for | Where |
 |---|---|---|
-| **ArduPilot Tools site** | The browser tools below plus the QRTL Planner (where a QRTL starts its glide and how low it gets) and the LAND_WIND_BIAS Explorer (which `DO_LAND_START` an autoland picks, and why) | [erwinquilloy.github.io/ardupilot-tools](https://erwinquilloy.github.io/ardupilot-tools/) |
+| **ArduPilot Tools site** | The browser tools below plus the QRTL Planner (where a QRTL starts its glide and how low it gets), the LAND_WIND_BIAS Explorer (which `DO_LAND_START` an autoland picks, and why) and the Adaptive Pitch Trim Explorer (plots a pitch-trim curve from a `.param` or `.bin`) | [erwinquilloy.github.io/ardupilot-tools](https://erwinquilloy.github.io/ardupilot-tools/) |
 | **Full parameter reference** | Every parameter this firmware exposes, with descriptions, units and ranges — your GCS ships upstream metadata and will not describe fork parameters | [below](#full-parameter-reference) |
 | **Bitmask calculator** | Tick bits, copy out the integer — or paste a value back to see which bits are set. Knows this fork's bits | [below](#bitmask-calculator) |
 | **TECS tuning helper** | Step-by-step TECS tuning from the transmitter, reading live telemetry — Ethos and EdgeTX | [below](#tecs-tuning-helper-ethos--edgetx) |
