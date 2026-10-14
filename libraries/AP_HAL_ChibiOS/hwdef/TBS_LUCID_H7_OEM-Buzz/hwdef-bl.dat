@@ -1,0 +1,4 @@
+# Bootloader for the TBS Lucid H7 OEM tone-buzzer variant. Identical to the
+# stock TBS_LUCID_H7_OEM bootloader (same board ID, flash layout and pins);
+# the tone-buzzer change only affects the application firmware.
+include ../TBS_LUCID_H7_OEM/hwdef-bl.dat

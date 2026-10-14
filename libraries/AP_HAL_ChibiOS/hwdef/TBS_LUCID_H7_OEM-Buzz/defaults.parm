@@ -1,0 +1,10 @@
+# TBS_LUCID_H7_OEM defaults, except output 13 (S13/LED) is the tone buzzer
+# here, not a WS2812 LED strip, so SERVO13_FUNCTION stays 0.
+# Default to CAM1
+RELAY3_DEFAULT 1
+# Default VTX power to on
+RELAY4_DEFAULT 1
+# Default VSW power to on
+RELAY2_DEFAULT 1
+# Support HD VTX in parallel with the on-board analog OSD
+OSD_TYPE2 5
