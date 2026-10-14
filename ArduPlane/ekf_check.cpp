@@ -23,6 +23,7 @@ static struct {
     bool bad_variance;          // true if ekf should be considered untrusted (fail_count has exceeded EKF_CHECK_ITERATIONS_MAX)
     uint32_t last_warn_time;    // system time of last warning in milliseconds.  Used to throttle text warnings sent to GCS
     bool failsafe_on;           // true when the loss of navigation failsafe is on
+    uint32_t last_fs_ms;        // fork Q_FS_EKF_HOLD: last time the failsafe was on or, after it, the variances were bad; 0 = no failsafe since arming
 } ekf_check_state;
 
 // ekf_check - detects if ekf variance are out of tolerance and triggers failsafe
@@ -31,6 +32,18 @@ void Plane::ekf_check()
 {
     // ensure EKF_CHECK_ITERATIONS_MAX is at least 7
     static_assert(EKF_CHECK_ITERATIONS_MAX >= 7, "EKF_CHECK_ITERATIONS_MAX must be at least 7");
+
+    // fork Q_FS_EKF_HOLD: remember when the failsafe was last on, or, once
+    // it has fired, when the variances were last over the threshold.
+    // Upstream stops checking (and clears the failsafe) as soon as the
+    // vehicle leaves a VTOL position mode, and the failsafe itself switches
+    // to QHOVER, so the hold has to keep watching the EKF on its own.
+    if (!plane.arming.is_armed()) {
+        ekf_check_state.last_fs_ms = 0;
+    } else if (ekf_check_state.failsafe_on ||
+               (ekf_check_state.last_fs_ms != 0 && ekf_over_threshold())) {
+        ekf_check_state.last_fs_ms = AP_HAL::millis();
+    }
 
     // exit immediately if ekf has no origin yet - this assumes the origin can never become unset
     Location temp_loc;
@@ -155,6 +168,7 @@ void Plane::failsafe_ekf_event()
 
     // EKF failsafe event has occurred
     ekf_check_state.failsafe_on = true;
+    ekf_check_state.last_fs_ms = AP_HAL::millis();
     LOGGER_WRITE_ERROR(LogErrorSubsystem::FAILSAFE_EKFINAV, LogErrorCode::FAILSAFE_OCCURRED);
 
     // if not in a VTOL mode requiring position, then nothing needs to be done
@@ -183,4 +197,42 @@ void Plane::failsafe_ekf_off_event(void)
 
     ekf_check_state.failsafe_on = false;
     LOGGER_WRITE_ERROR(LogErrorSubsystem::FAILSAFE_EKFINAV, LogErrorCode::FAILSAFE_RESOLVED);
+}
+
+// fork Q_FS_EKF_HOLD: true if a pilot or GCS change from a VTOL mode to a
+// fixed-wing mode must be refused because, after an EKF failsafe, the EKF
+// was still over FS_EKF_THRESH within the last Q_FS_EKF_HOLD seconds. A forward transition then runs on the same
+// suspect height and velocity estimate, at full forward throttle, low down.
+bool Plane::ekf_fs_hold_denies(const Mode &new_mode, ModeReason reason)
+{
+#if HAL_QUADPLANE_ENABLED
+    if (!quadplane.available() || !is_positive(quadplane.fs_ekf_hold_s)) {
+        return false;
+    }
+    if (reason != ModeReason::RC_COMMAND &&
+        reason != ModeReason::GCS_COMMAND &&
+        reason != ModeReason::AUX_FUNCTION) {
+        return false;
+    }
+    if (!control_mode->is_vtol_mode() || new_mode.is_vtol_mode()) {
+        return false;
+    }
+    if (!arming.is_armed() || ekf_check_state.last_fs_ms == 0) {
+        return false;
+    }
+    const uint32_t hold_ms = uint32_t(quadplane.fs_ekf_hold_s * 1000);
+    const uint32_t since_ms = AP_HAL::millis() - ekf_check_state.last_fs_ms;
+    if (since_ms >= hold_ms) {
+        return false;
+    }
+    if (quadplane.assist.alt > 0 &&
+        relative_ground_altitude(RangeFinderUse::ASSIST) >= quadplane.assist.alt) {
+        return false;
+    }
+    gcs().send_text(MAV_SEVERITY_WARNING, "EKF failsafe: %s denied for %us",
+                    new_mode.name(), unsigned((hold_ms - since_ms + 999) / 1000));
+    return true;
+#else
+    return false;
+#endif
 }
