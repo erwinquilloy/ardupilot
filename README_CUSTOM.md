@@ -2625,6 +2625,15 @@ angles, and feeds them into the same head-tracking path as MSP. So the enable
 switch (`252`), centre lock (`253`), POI lock (`186`), the stream-loss lock and
 every supported gimbal work the same as with the Goggles X.
 
+> **Servo pan/tilt works too.** Gimbal-port head tracking is not limited to a
+> CADDX gimbal: the head angles can move an ordinary servo pan/tilt (or
+> pan/tilt/roll) camera mount on the FC's PWM outputs. Set `MNT1_TYPE 1`
+> (Servo) and give the servo outputs `SERVOn_FUNCTION` `6` (pan), `7` (tilt)
+> and `8` (roll, if fitted). Only the `51` port's **RX** is wired (VTX gimbal
+> TX → FC RX); its TX pad stays free. Set `MNT1_*_MIN/MAX` to the servos' real
+> travel (see *Differences from the MSP source* below). Bench-verified with a
+> servo pan/tilt.
+
 **Wiring — one UART for both.** Set a spare UART to `SERIALn_PROTOCOL 51`
 (CADDX HeadTracker). Its **RX** pad listens to the VTX gimbal port; with a CADDX
 gimbal (`MNT1_TYPE 13`) and no `SERIALn_PROTOCOL 8` port, its **TX** pad drives
