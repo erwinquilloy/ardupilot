@@ -2709,7 +2709,7 @@ reception or range.
   `RNGFNDx_GNDCLEAR` subtracted (so the OSD shows altitude above ground,
   not above the sensor mount)
 - **Pitch / roll numeric fix** — VTOL-aware via
-  `AP::vehicle()->get_osd_roll_pitch_rad()` and proper level-symbol
+  `AP::vehicle()->get_osd_attitude_rad()` and proper level-symbol
   thresholds
 - **RSSI clamp** — `MIN(99, …)` prevents 3-char widening at value=1.0
 - **Home placeholder** — `<HOME>- 0.0m` rendered before GPS fix as a
@@ -2720,7 +2720,7 @@ reception or range.
 - **Speed/arrow split** — `draw_speed` can render magnitude only;
   arrow-direction variant available for wind/groundspeed
 - **DJI FPV / HDZero numeric attitude** — uses
-  `get_osd_roll_pitch_rad()` so the goggles match the horizon
+  `get_osd_attitude_rad()` so the goggles match the horizon
 - **Extended CRSF link-stats elements on by default** —
   `AP_OSD_LINK_STATS_EXTENSIONS_ENABLED` flipped 0 → 1 so
   `OSDx_LINK_Q`, `OSDx_RC_PWR`, `OSDx_RSSIDBM`, `OSDx_RC_SNR`,

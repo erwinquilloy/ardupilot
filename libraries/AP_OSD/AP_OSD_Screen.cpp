@@ -2245,7 +2245,10 @@ void AP_OSD_Screen::draw_radar(uint8_t x, uint8_t y)
         if (!peer_loc.get_height_above(loc, vertical_distance)) {
             vertical_distance = 0.0f;
         }
-        int32_t angle_cd = wrap_360_cd(loc.get_bearing_to(peer_loc) - ahrs.yaw_sensor);
+        // same yaw as upstream's home arrow (VTOL view in VTOL flight)
+        float osd_roll, osd_pitch, osd_yaw;
+        AP::vehicle()->get_osd_attitude_rad(osd_roll, osd_pitch, osd_yaw);
+        int32_t angle_cd = wrap_360_cd(loc.get_bearing_to(peer_loc) - int32_t(degrees(osd_yaw) * 100));
         if (distance < 2.0f) {
             //avoid fast rotating arrow at small distances
             angle_cd = 0;
@@ -2285,7 +2288,10 @@ void AP_OSD_Screen::draw_adsb(uint8_t x, uint8_t y)
         return;
     }
     const float distance = loc.get_distance(target);
-    int32_t angle_cd = wrap_360_cd(loc.get_bearing_to(target) - ahrs.yaw_sensor);
+    // same yaw as upstream's home arrow (VTOL view in VTOL flight)
+    float osd_roll, osd_pitch, osd_yaw;
+    AP::vehicle()->get_osd_attitude_rad(osd_roll, osd_pitch, osd_yaw);
+    int32_t angle_cd = wrap_360_cd(loc.get_bearing_to(target) - int32_t(degrees(osd_yaw) * 100));
     if (distance < 2.0f) {
         // avoid a fast-rotating arrow at small distances
         angle_cd = 0;
@@ -2767,13 +2773,8 @@ void AP_OSD_Screen::draw_gps_longitude(uint8_t x, uint8_t y)
 
 void AP_OSD_Screen::draw_roll_angle(uint8_t x, uint8_t y)
 {
-    float roll;
-    float pitch;
-    {
-        AP_AHRS &ahrs = AP::ahrs();
-        WITH_SEMAPHORE(ahrs.get_semaphore());
-        AP::vehicle()->get_osd_roll_pitch_rad(roll, pitch);
-    }
+    float roll, pitch, yaw;
+    AP::vehicle()->get_osd_attitude_rad(roll, pitch, yaw);
     roll = degrees(roll);
     const bool one_decimal = osd->options & AP_OSD::OPTION_ONE_DECIMAL_ATTITUDE;
     const float level_symbol_max_angle = one_decimal ? 0.049f : 0.45f;
@@ -2815,13 +2816,8 @@ void AP_OSD_Screen::draw_pitch(uint8_t x, uint8_t y, float pitch)
 
 void AP_OSD_Screen::draw_pitch_angle(uint8_t x, uint8_t y)
 {
-    float roll;
-    float pitch;
-    {
-        AP_AHRS &ahrs = AP::ahrs();
-        WITH_SEMAPHORE(ahrs.get_semaphore());
-        AP::vehicle()->get_osd_roll_pitch_rad(roll, pitch);
-    }
+    float roll, pitch, yaw;
+    AP::vehicle()->get_osd_attitude_rad(roll, pitch, yaw);
     draw_pitch(x, y, degrees(pitch));
 }
 
