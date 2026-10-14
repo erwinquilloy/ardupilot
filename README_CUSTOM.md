@@ -955,34 +955,46 @@ in horizon-relative terms.
 
 *New in v2.1.*
 
-`PTCH_TRIM_DEG` is only right at one airspeed. A wing trimmed level at
-cruise flies nose-high when slow and nose-low when fast, so FBWA drifts off
-level and CRUISE / FBWB carry a standing pitch correction. Adaptive pitch
-trim adds an **airspeed-dependent offset** on top of `PTCH_TRIM_DEG`, and the
-aircraft can learn the curve by itself.
+**Why it matters.** A plane needs a different pitch attitude to fly level at
+each speed: nose higher when slow, lower when fast. `PTCH_TRIM_DEG` is a
+single number, so it is right at one speed only. At every other speed the
+flight controller holds the wrong attitude as "level":
 
-It does not measure or control angle of attack. There is no AOA vane or AOA
-estimate involved: it is pitch trim scheduled on airspeed. "Adaptive Pitch
-Trim" is the name used everywhere in the firmware (the `RCx_OPTION 254`
-switch, the `Adaptive trim …` messages and the `PTCH_TRIM_*` parameters).
+- In **FBWA, Course Hold and Auto Trim**, hands-off flight climbs when you
+  add throttle and sinks when you slow down, so you keep correcting with the
+  pitch stick.
+- In **FBWB, CRUISE, AUTO** and the other TECS modes, TECS has to carry a
+  standing pitch correction to hold height, and find it again after every
+  speed change.
 
-**What it does.** The offset is added to the pitch demand after the flight
-mode has computed it, the same place `PTCH_TRIM_DEG` goes, so the trim
-matches the level-flight pitch at every speed instead of at one. It is off
-during takeoff, landing and VTOL, and `KFF_THR2PTCH` is ignored while it is
-active (see below).
+Adaptive pitch trim replaces the single number with a curve: three airspeeds
+(`PTCH_TRIM_SPD1..3`), each with its own extra trim (`PTCH_TRIM_OFS1..3`) on
+top of `PTCH_TRIM_DEG`. The aircraft can learn the curve itself from a few
+straight legs, or you can set it by hand or from a log. The offset is added
+where `PTCH_TRIM_DEG` goes, after the flight mode has computed its pitch
+demand. It is off during takeoff, landing and VTOL.
 
-**What it gains, by mode and setup** (SITL, v2.1 `974622f338`, no wind;
-FBWB speed changes are a 10 m/s stick step, 10 runs each with a pitot,
-6 without):
+It does not measure or control angle of attack: there is no AOA vane or AOA
+estimate, only pitch trim scheduled on airspeed. "Adaptive Pitch Trim" is the
+name used everywhere in the firmware (the `RCx_OPTION 254` switch, the
+`Adaptive trim …` messages and the `PTCH_TRIM_*` parameters).
 
-| Mode | With a pitot | Without a pitot |
+**What you gain.** Measured in SITL on the v2.1 build, no wind. FBWB speed
+changes are a 10 m/s step, 10 runs with a pitot and 6 without.
+
+| Where | With a pitot | Without a pitot |
 |---|---|---|
-| **FBWA, STABILIZE** (no TECS) | **Gain.** Hands-off climb with speed roughly halved: +0.35…+0.74 → +0.27…+0.36 m/s | **Gain.** Cut by about two thirds: +0.34…+0.71 → +0.14…+0.23 m/s |
-| **FBWB, CRUISE, AUTO, RTL, LOITER** — steady | No flight-path change: TECS already holds height and speed. Its pitch correction moves into the trim (−0.87° → −0.21° at full speed) | Same: −0.80° → −0.07° |
-| Same modes — speed changes | **Small cost.** 0.1–0.2 m more height change: up 5.48 → 5.61 m, down 3.25 → 3.46 m (2–6 %) | **Gain.** About 20 % less: up 1.00 → 0.83 m, down 0.86 → 0.66 m |
-| Near the stall, TECS modes | No change: TECS holds `AIRSPEED_MIN` the same | Not tested; the taper then rests on synthetic airspeed |
+| **FBWA** hands-off, throttle changed (Course Hold and Auto Trim use the same pitch path) | **Clear gain.** Height gained over an 80 s throttle sweep: 31.7 → 18.4 m (42 % less). Climb at 50–100 % throttle: 21–44 → 16–22 m/min | **Clear gain.** 23.7 → 10.8 m (54 % less). Climb: 20–43 → 8–14 m/min |
+| **FBWB, CRUISE, AUTO, LOITER, RTL**, steady | Height hold unchanged: TECS already holds it. Its standing pitch correction shrinks from −0.87° to −0.21° at full speed | Same: −0.80° → −0.07° |
+| Same modes, after a speed change | **Small cost**, not noticeable: 0.1–0.2 m more height change (up 5.48 → 5.61 m, down 3.25 → 3.46 m) | **Gain:** about 20 % less (up 1.00 → 0.83 m, down 0.86 → 0.66 m) |
 | Takeoff, landing, VTOL | Off | Off |
+
+The simulated plane's level pitch changes by only about 0.9° across its speed
+range. On four real flight logs it changed by 2.5–3.7°, so expect larger
+effects, both gains and costs, on a real airframe. On those four logs the
+curve matched the real level-flight pitch to within 0.30–0.39° (RMS). Stock
+ArduPlane's `KFF_THR2PTCH` managed 0.42–1.38° at best, and only with values of
+−12 to −17, far outside its documented ±5.
 
 Why the two setups differ: with a pitot TECS ignores the trim, so it simply
 cancels the offset in its own pitch demand, slightly late as the speed
@@ -1000,10 +1012,30 @@ likely reason speed changes improve there.
 | Pitot, flies FBWA | Use the curve, `PTCH_TRIM_SPD1` = `AIRSPEED_CRUISE` |
 | No pitot | Use it in all modes, `PTCH_TRIM_SPD1` not below the trim-throttle speed (see *Without a pitot*) |
 
-The SITL plane's level pitch changes by only about 0.9° across its speed
-range; on four real logs it changed by 2.5–3.7°, so expect both the gains and
-the pitot speed-change cost to be larger on a real airframe. Not yet
-flight-tested.
+**Caveats:**
+
+- **The curve belongs to one weight and balance.** Level pitch at a given
+  speed depends on wing loading and CG. Learn at your normal take-off weight;
+  after a big change in payload, battery or CG, learn again or check
+  hands-off FBWA at a few speeds.
+- **Set the basics first.** The offsets are measured against
+  `PTCH_TRIM_DEG`, so get that right at cruise first. Tune TECS before
+  learning, and run any transmitter TECS helper with the switch LOW (see
+  below).
+- **Gusty air.** In SITL turbulence (10 m/s wind, `SIM_WIND_TURB` 2), steady
+  height hold was slightly looser with the curve: 0.87 → 0.95 m RMS with a
+  pitot, 0.97 → 1.06 m without (8 and 9 of 12 runs). Small, but in the wrong
+  direction. Learning also goes slowly in gusts.
+- **Without a pitot it runs on the wind estimate.** Synthetic airspeed is GPS
+  speed corrected by the wind estimate; an error there shifts the whole curve
+  along the speed axis, and the stall taper uses the same estimate.
+- **No new stall protection.** The taper only stops the curve from raising
+  the nose near `AIRSPEED_MIN`. FBWA still lets you slow into a stall exactly
+  as before.
+- **`KFF_THR2PTCH` is ignored while the curve is active**, since both do the
+  same job (details below).
+- **The numbers above are from a simulated plane.** They show the direction
+  and rough size of the effects, not what your airframe will do.
 
 `TECS_INTEG_GAIN`, `TECS_PTCH_DAMP` and `TECS_TIME_CONST` only change how fast
 TECS reaches the level pitch; `TECS_PTCH_FF_K` looks similar but only applies
@@ -1200,7 +1232,7 @@ circles first, and fly each speed both upwind and downwind.
 Without a pitot, TECS also sets throttle from the pitch measured against the
 trim, so in FBWB, CRUISE and AUTO the curve changes throttle as well: with an
 accurate curve level flight reads as trim at every speed and throttle stays
-near `TRIM_THROTTLE`. This combination has not been flight-tested yet.
+near `TRIM_THROTTLE`.
 For the learn legs this also means the throttle stick does not set a target
 airspeed: with `THROTTLE_NUDGE` on, the stick above mid only adds throttle
 on top of `TRIM_THROTTLE` (toward `THR_MAX`), and below mid it does
