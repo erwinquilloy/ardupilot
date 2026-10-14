@@ -313,6 +313,12 @@ bool Plane::set_mode(Mode &new_mode, const ModeReason reason)
         return false;
     }
 
+    // fork Q_FS_EKF_HOLD: no forward transition right after an EKF failsafe
+    if (ekf_fs_hold_denies(new_mode, reason)) {
+        AP_Notify::events.user_mode_change_failed = 1;
+        return false;
+    }
+
     // backup current control_mode and previous_mode
     Mode &old_previous_mode = *previous_mode;
     Mode &old_mode = *control_mode;

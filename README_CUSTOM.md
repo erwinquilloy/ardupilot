@@ -60,6 +60,7 @@ Everything below is on both tracks unless it says "full only".*
 | Flight | **Adaptive pitch trim** (`RCx_OPTION 254`, `PTCH_TRIM_SPD` / `PTCH_TRIM_OFS`): pitch trim scheduled on airspeed, learned in a few straight legs; `KFF_THR2PTCH` is ignored while the curve is active | [Adaptive pitch trim](#adaptive-pitch-trim--airspeed-schedule-learned-in-flight-rcx_option--254) |
 | Flight | **Servo auto-trim also runs in Course Hold** (`SERVO_AUTO_TRIM 2`) | [Auto-trim improvements](#auto-trim-improvements) |
 | Flight | `FLIGHT_OPTIONS` bit 21 handover message starts with "Takeoff complete", so Yaapu voices it | [Bit 21](#flight_options-bit-21--end-takeoff-in-fbwb-instead-of-loitering) |
+| VTOL | **`Q_FS_EKF_HOLD`** (off by default): after an EKF failsafe, refuse switching from a VTOL mode to a fixed-wing mode for N seconds, so a forward transition can't start on a bad height estimate | [Q_FS_EKF_HOLD](#q_fs_ekf_hold--no-forward-transition-right-after-an-ekf-failsafe-v21) |
 | RC | **32 RC channels** (`RC_32CH_ENABLE`, off by default), `RC17_`–`RC32_OPTION` | [32 RC channels](#32-rc-channels-v21) |
 | RC | **mLRS RC over MAVLink (`radio_rc_channels`) on every board**, light 1 MB F4 included; stock needs a 2 MB board. Channels 17–32 stay steady with mLRS 1.4.04's mixed 16/32-channel frames | [mLRS MAVLink RC](#mlrs-mavlink-rc-radio_rc_channels-on-every-board-v21) |
 | Head tracking | **Head tracking from the VTX gimbal port** (`SERIALn_PROTOCOL 51`) for goggles that don't send it over MSP; one UART can also drive a CADDX gimbal; MSP head tracking wins when both arrive | [Gimbal-port head tracking](#head-tracking-from-the-vtx-gimbal-port-serialn_protocol-51) |
@@ -98,6 +99,7 @@ An outline of everything this fork adds and where it is documented. Each line li
     - [FLIGHT_OPTIONS bit 21: end TAKEOFF in FBWB](#flight_options-bit-21--end-takeoff-in-fbwb-instead-of-loitering)
   - [VTOL transition](#vtol-transition)
     - [FLIGHT_OPTIONS bit 18: end a VTOL transition in FBWB](#flight_options-bit-18--end-a-vtol-transition-in-fbwb-instead-of-fbwa)
+    - [Q_FS_EKF_HOLD: no forward transition right after an EKF failsafe](#q_fs_ekf_hold--no-forward-transition-right-after-an-ekf-failsafe-v21)
   - [Pitch trim & tuning knob](#pitch-trim--tuning-knob)
     - [PTCH_TRIM_DEG is now knob-tunable](#ptch_trim_deg-is-now-knob-tunable)
     - [Adaptive pitch trim: airspeed schedule learned in flight (RCx_OPTION 254, v2.1)](#adaptive-pitch-trim--airspeed-schedule-learned-in-flight-rcx_option--254)
@@ -836,6 +838,56 @@ differs.
 
 Flight-tested on a KakuteH7-Wing VTOL: QHOVER → FBWA, and FBWB was
 announced as the transition completed.
+
+### `Q_FS_EKF_HOLD` — no forward transition right after an EKF failsafe (v2.1)
+
+**Why:** in a VTOL position mode (QLOITER, QHOVER, QRTL…) an EKF failsafe
+("EKF variance") switches to QHOVER, or QLAND in AUTO. Upstream then lets
+the pilot switch straight to a fixed-wing mode. That starts a forward
+transition: forward motor at full throttle, low down, while the lift motors
+hold height on the same estimate that just failed. On a tester's quad-X
+VTOL the failsafe fired at 9 m, the pilot switched QHOVER → FBWB half a
+second later, and under the acceleration the GPS vertical speed read a
+15 m/s climb. The EKF believed it was above its target height, the lift
+motors throttled down to near zero and it flew into the ground.
+
+**What it does:** for `Q_FS_EKF_HOLD` seconds after the EKF failsafe was
+last active, a change **from a VTOL mode to a fixed-wing mode** requested by
+the RC mode switch, an RC aux switch or the GCS is refused with
+`EKF failsafe: FBWB denied for 7s` (the time left if the EKF stays good). Everything else
+still works:
+
+- **Changes between VTOL modes are allowed.** QSTABILIZE in particular is
+  the bail-out when the EKF height is wrong, because you control the lift
+  throttle directly.
+- **Failsafe actions are not blocked** (RC, battery, GCS failsafe).
+- The time counts from when the EKF is **last bad**, not from when the
+  failsafe fired: once it has fired, the hold keeps watching the EKF in
+  every mode and restarts the count while it is still over
+  `FS_EKF_THRESH`. That matters because upstream stops checking as soon as
+  the aircraft is out of a VTOL position mode, and the failsafe itself
+  switches to QHOVER, which isn't one. Disarming resets it.
+- If `Q_ASSIST_ALT` is set, the hold applies only below that height (the
+  same height source as the assist). With `Q_ASSIST_ALT 0` it applies at
+  any height.
+- A refused RC mode switch is not retried. Move the switch again once the
+  hold is over.
+
+| Parameter | Default | Meaning |
+|---|---|---|
+| `Q_FS_EKF_HOLD` | 0 (off, stock behaviour) | Seconds, 0–60. Suggested 10 |
+
+It does not help when the EKF is wrong but **confident**. In the crash
+above the EKF's own error scores went back to normal 1 s into the
+transition and stayed there while it descended. The fix for that is in the
+setup: `EK3_SRC1_VELZ 0` (don't use GPS vertical speed), `GPS_AUTO_CONFIG 1`,
+and transitions from at least 20 m.
+
+Tested in SITL only (quadplane, EKF failsafe forced in a QLOITER hover):
+FBWB refused from the GCS and from the RC mode switch, QSTABILIZE allowed,
+FBWB still refused 40 s later while the EKF stayed bad, and allowed once it
+had been healthy for the hold time. Above `Q_ASSIST_ALT`, and with the
+parameter at 0, FBWB was accepted as in stock.
 
 ## Pitch trim & tuning knob
 

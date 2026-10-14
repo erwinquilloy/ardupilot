@@ -1454,6 +1454,7 @@ private:
     // These are specific to VTOL operation
     void ekf_check();
     bool ekf_over_threshold();
+    bool ekf_fs_hold_denies(const Mode &new_mode, ModeReason reason);
     void failsafe_ekf_event();
     void failsafe_ekf_off_event(void);
 

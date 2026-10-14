@@ -340,6 +340,10 @@ private:
     AP_Float ahrs_trim_roll;
     float _last_ahrs_trim_roll;
 
+    // fork: seconds after an EKF failsafe during which pilot/GCS changes
+    // from a VTOL mode to a fixed-wing mode are refused (Q_FS_EKF_HOLD)
+    AP_Float fs_ekf_hold_s;
+
     // fork: in-flight VTOL auto-trim (RCx_OPTION 182). Nudges Q_TRIM_ROLL /
     // Q_TRIM_PITCH toward the attitude the pilot holds to stop hover drift.
     struct {

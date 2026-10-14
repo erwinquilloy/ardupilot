@@ -572,6 +572,15 @@ const AP_Param::GroupInfo QuadPlane::var_info2[] = {
     // @Bitmask: 1: Disable thrust loss detection in transtions and fixed wing modes. Thrust loss detection will only run in VTOL modes.
     AP_GROUPINFO("THRST_LOSS_OPT", 42, QuadPlane, thrust_loss.options, 0),
 
+    // @Param: FS_EKF_HOLD
+    // @DisplayName: Quadplane EKF failsafe transition hold
+    // @Description: After an EKF failsafe in a VTOL mode, refuse pilot and GCS mode changes from a VTOL mode to a fixed-wing mode (which would start a forward transition) for this many seconds. The time counts from when the EKF is last over FS_EKF_THRESH, in any mode, so the hold lasts while the EKF stays bad. Changes between VTOL modes such as QSTABILIZE and QLAND stay allowed, and failsafe actions are not affected. If Q_ASSIST_ALT is set the hold applies only below that height, otherwise at any height. A refused RC mode switch must be moved again once the hold ends. 0 disables.
+    // @Units: s
+    // @Range: 0 60
+    // @Increment: 1
+    // @User: Standard
+    AP_GROUPINFO("FS_EKF_HOLD", 62, QuadPlane, fs_ekf_hold_s, 0),
+
     // @Param: TRIM_ROLL
     // @DisplayName: Quadplane AHRS trim roll
     // @Description: Hover-only roll trim: the roll angle the VTOL attitude controller holds as level, relative to calibrated AHRS level. Positive values make the vehicle roll right in VTOL flight. Forward flight is not affected. Set by the VTOL AutoTrim switch (RCx_OPTION 182) or by hand. Not applied on tailsitters.
