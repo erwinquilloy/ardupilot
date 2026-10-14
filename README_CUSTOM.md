@@ -1003,6 +1003,29 @@ estimate, only pitch trim scheduled on airspeed. "Adaptive Pitch Trim" is the
 name used everywhere in the firmware (the `RCx_OPTION 254` switch, the
 `Adaptive trim …` messages and the `PTCH_TRIM_*` parameters).
 
+**How it compares with `PTCH_TRIM_DEG` alone and with `KFF_THR2PTCH`.** All
+three are added to the same pitch target, after the flight mode has computed
+its demand (`ArduPlane/Attitude.cpp`):
+
+    pitch target = mode demand + PTCH_TRIM_DEG + curve offset (airspeed)
+                               + KFF_THR2PTCH × throttle % / 100
+
+| | `PTCH_TRIM_DEG` only | `KFF_THR2PTCH` (stock ArduPlane) | Adaptive pitch trim (this fork) |
+|---|---|---|---|
+| **What it adds** | One fixed angle | An angle in proportion to throttle: 100 % throttle adds `KFF_THR2PTCH` degrees | An angle read from a 3-point curve against airspeed, on top of `PTCH_TRIM_DEG` |
+| **What it follows** | Nothing | Throttle | Airspeed (synthetic airspeed without a pitot) |
+| **Right at** | One speed, the one it was trimmed at | Steady level flight, where throttle tracks speed. In a climb or a glide the throttle is different at the same speed, so the trim shifts although the speed hasn't changed | Every speed on the curve, whatever the throttle is doing |
+| **Shape** | Flat | A straight line in throttle | Three points, straight lines between them, so it can bend |
+| **How you set it** | By hand, at cruise | By hand, trial and error; documented range ±5° | Learned in flight from a few straight legs, by hand, or from a log |
+| **Near the stall** | No change | Low throttle changes it, whatever the speed | Stall taper: never raises the nose below 1.25 × `AIRSPEED_MIN` |
+| **Fit on four real flight logs** (against the pitch each log flew level) | Level pitch changed by 2.5–3.7° across each log's speed range; a single trim can be off by up to that much | 0.42–1.38° RMS at best, and only with values of −12 to −17, far outside its ±5 range | 0.30–0.39° RMS |
+
+They work together like this: `PTCH_TRIM_DEG` stays the base and should be
+right at cruise; the curve adds its offset on top. `KFF_THR2PTCH` is faded out
+while the curve is active, since both do the same job, and applies again
+whenever the curve is off (see *`KFF_THR2PTCH` is ignored while the curve is
+active* further down).
+
 **What you gain.** Measured in SITL on the v2.1 build, no wind. FBWB speed
 changes are a 10 m/s step, 10 runs with a pitot and 6 without.
 
