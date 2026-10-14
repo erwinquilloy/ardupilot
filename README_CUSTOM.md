@@ -15,9 +15,9 @@
 > [**Releases** page](https://github.com/erwinquilloy/ardupilot/releases)
 > (every version, newest first — the current releases are `full-v2.0` and `light-v2.0`).
 
-A curated fork of ArduPlane, rebased onto upstream **ArduPlane 4.7.1**
-(tag `Plane-4.7.1`, commit `dbe792162d`). This branch carries a set of
-additions and behaviour changes on top of stock 4.7.1, mostly ported
+A curated fork of ArduPlane, rebased onto upstream **ArduPlane 4.7.2**
+(tag `Plane-4.7.2`, commit `fb77356789`). This branch carries a set of
+additions and behaviour changes on top of stock 4.7.2, mostly ported
 from [shellixyz's classic 2022 fork](https://github.com/shellixyz/ardupilot)
 and the maintained successor at [ArduCustom/ardupilot](https://github.com/ArduCustom/ardupilot),
 plus a few additions originating in this fork.
@@ -57,6 +57,7 @@ Everything below is on both tracks unless it says "full only".*
 
 | Area | Change | Details |
 |---|---|---|
+| Base | **Rebased onto ArduPlane 4.7.2** (v2.0 was on 4.7.1). A bug-fix release: no parameter renames. Most visible fix: a flight controller mounted upside down or rotated (`AHRS_ORIENTATION` not 0) no longer waits minutes for "Roll/Pitch inconsistent" after power-up | [On the ArduPlane 4.7 base](#-on-the-arduplane-47-base) |
 | Flight | **Adaptive pitch trim** (`RCx_OPTION 254`, `PTCH_TRIM_SPD` / `PTCH_TRIM_OFS`): pitch trim scheduled on airspeed, learned in a few straight legs; `KFF_THR2PTCH` is ignored while the curve is active | [Adaptive pitch trim](#adaptive-pitch-trim--airspeed-schedule-learned-in-flight-rcx_option--254) |
 | Flight | **Servo auto-trim also runs in Course Hold** (`SERVO_AUTO_TRIM 2`) | [Auto-trim improvements](#auto-trim-improvements) |
 | Flight | `FLIGHT_OPTIONS` bit 21 handover message starts with "Takeoff complete", so Yaapu voices it | [Bit 21](#flight_options-bit-21--end-takeoff-in-fbwb-instead-of-loitering) |
@@ -68,11 +69,6 @@ Everything below is on both tracks unless it says "full only".*
 | OSD | **ADS-B traffic warning**: the `OSDx_ADSB` element flashes inside `OSD_W_ADSB_DIST` (and optionally `OSD_W_ADSB_ALT`). **Full only** | [Traffic warning](#traffic-warning-v21) |
 | Radar | `RADAR_OSD_MODE 1` shows the nearest peer instead of cycling | [Radar OSD element](#osd-element) |
 
-**Tested so far:**
-- Bench: gimbal-port head tracking (SpeedyBee F405 Wing + GM3), and mLRS `radio_rc_channels` with CRSF telemetry to an ETHOS radio (light build).
-- SITL only: adaptive pitch trim, ADS-B warning, and 32 channels including mLRS 1.4.04's 16/32-channel frames.
-- Not yet tested: Course Hold auto-trim.
-
 **Not in v2.1:**
 - The DisplayPort canvas clip. Walksnail goggle firmware 18.21.15 fixed it.
 - Gimbal-port auto-detect on `SERIALn_PROTOCOL 8` ports.
@@ -82,7 +78,7 @@ Everything below is on both tracks unless it says "full only".*
 
 An outline of everything this fork adds and where it is documented. Each line links to its section.
 
-- **Getting started** — [What's new in v2.1 (draft)](#whats-new-in-v21-draft), [Why flash this instead of stock ArduPlane 4.7.1?](#why-flash-this-instead-of-stock-arduplane-471), [Building](#building), [Which file in the zip do I flash?](#which-file-in-the-zip-do-i-flash), [Release fleets (full-v2.0 / light-v2.0)](#release-fleets-full-v20--light-v20), [Tone-buzzer board variant (SpeedyBeeF405WING-Buzz)](#tone-buzzer-board-variant-speedybeef405wing-buzz)
+- **Getting started** — [What's new in v2.1 (draft)](#whats-new-in-v21-draft), [Why flash this instead of stock ArduPlane 4.7.2?](#why-flash-this-instead-of-stock-arduplane-472), [Building](#building), [Which file in the zip do I flash?](#which-file-in-the-zip-do-i-flash), [Release fleets (full-v2.0 / light-v2.0)](#release-fleets-full-v20--light-v20), [Tone-buzzer board variant (SpeedyBeeF405WING-Buzz)](#tone-buzzer-board-variant-speedybeef405wing-buzz)
 - **[What this fork adds](#what-this-fork-adds)**
   - [Flight modes](#flight-modes)
     - [Course Hold (mode 26)](#course-hold-mode-26)
@@ -163,9 +159,9 @@ An outline of everything this fork adds and where it is documented. Each line li
 
 ---
 
-## Why flash this instead of stock ArduPlane 4.7.1?
+## Why flash this instead of stock ArduPlane 4.7.2?
 
-Everything stock ArduPlane 4.7.1 does still works underneath — this fork
+Everything stock ArduPlane 4.7.2 does still works underneath — this fork
 only **adds** on top (both variants carry the identical feature set; they
 differ only in which hardware backends are compiled in). If you fly
 long-range or FPV fixed-wing, these are the additions most worth flashing
@@ -292,13 +288,16 @@ Built for throwing a wing off your hand safely:
 → [Walksnail Headtracking via MSP and Serial Gimbal](#walksnail-headtracking-via-msp-and-serial-gimbal) ·
 [Head tracking from the gimbal port](#head-tracking-from-the-vtx-gimbal-port-serialn_protocol-51)
 
-### 🆙 On the ArduPlane 4.7.1 base (v2.0)
+### 🆙 On the ArduPlane 4.7 base
 
-From v2.0 the fork sits on **ArduPlane 4.7.1** instead of 4.6.3, so everything
+From v2.0 the fork sits on **ArduPlane 4.7** instead of 4.6.3 (v2.0 on 4.7.1,
+v2.1 on 4.7.2), so everything
 4.7 brings is underneath too — a leaner EKF3, fence margin warnings, EKF lane
 switching, gimbal lock switches, MAVLink signing and many driver fixes. 4.7 also
 **renamed and rescaled a number of upstream parameters**; saved values are
-converted on first boot, but hand-loaded `.parm` files are not.
+converted on first boot, but hand-loaded `.parm` files are not. 4.7.2 adds
+bug fixes only (no renames), most visibly for boards mounted upside down or
+rotated.
 
 → [Upgrading from v1.1 (ArduPlane 4.6.3 base)](#upgrading-from-v11-arduplane-463-base)
 
@@ -348,14 +347,14 @@ ArduPlane V<x.y.z> Custom <FORK_VERSION>[ Light] (<git-hash>)
 For example:
 
 ```
-ArduPlane V4.7.1 Custom v2.0 (1a2b3c4)        # 2 MB board (full track)
-ArduPlane V4.7.1 Custom v2.0 Light (1a2b3c4)  # 1 MB board (light track)
+ArduPlane V4.7.2 Custom v2.1 (1a2b3c4)        # 2 MB board (full track)
+ArduPlane V4.7.2 Custom v2.1 Light (1a2b3c4)  # 1 MB board (light track)
 ```
 
 The hash is the commit the release was built from; the release notes
-print it, and the `full-v2.0` / `light-v2.0` tags point at it.
+print it, and the release tags (`full-v2.1` / `light-v2.1`) point at it.
 
-The upstream `ArduPlane V4.7.1` prefix is kept so GCS tools that parse
+The upstream `ArduPlane V4.7.2` prefix is kept so GCS tools that parse
 the upstream version string (MissionPlanner, MAVProxy, autotest
 scripts) keep working. `FORK_VERSION` lives in
 `libraries/AP_Common/AP_FWVersionDefine.h` — bump it on each release.
@@ -451,7 +450,7 @@ adjustments. Exiting the mode stops the loop.
 - The mode shares Course Hold's `CRUISE_YAW_RATE` + `FLIGHT_OPTIONS`
   bit 20 (yaw-stick steers locked heading) behaviour because it
   inherits from `ModeCourseHold`.
-- Upstream ArduPlane 4.7.1 does not use mode number 27. As with Course Hold,
+- Upstream ArduPlane 4.7.2 does not use mode number 27. As with Course Hold,
   GCSs that read `AVAILABLE_MODES` show it by name (**AUTO TRIM**).
 - **Yaapu:** install the fork's `plane.lua` first — stock Yaapu has no
   entry for mode 27 and its script stops when you switch into Auto Trim.
@@ -3615,7 +3614,7 @@ have safe defaults — set them only if you actually need them.
 
 Upstream already defaults `HAL_NAVEKF2_AVAILABLE` to 0 (in
 `AP_AHRS_config.h`, "EKF2 slated compiled out by default in 4.5, slated to
-be removed"), and ArduPlane 4.7.1 still does. This fork honours that default
+be removed"), and ArduPlane 4.7.2 still does. This fork honours that default
 on every board it targets — neither the firmware binary nor the param
 list contains any EKF2 surface. Set `AHRS_EKF_TYPE = 3` for normal
 operation (already the default).
@@ -3692,7 +3691,7 @@ reads its 16-bit cm distance format.
 # Behaviour changes vs upstream — migration notes
 
 These are the user-visible differences if you save params from a
-stock 4.7.1 build and then load this firmware:
+stock 4.7.2 build and then load this firmware:
 
 | Default change                                                                                  | Effect                                                                       |
 |-------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------|
@@ -3955,9 +3954,10 @@ EdgeTX widget sound path, which is not the one you would guess — are in
 
 # Branch / repository layout
 
-- `master_custom_4.7.1` — mainline (this branch), on ArduPlane 4.7.1. Builds
-  **both** release tracks: 1 MB boards get the light configuration
-  automatically. All ongoing work goes here.
+- `master_custom_4.7.2` — mainline (this branch), on ArduPlane 4.7.2, from
+  v2.1. Builds **both** release tracks: 1 MB boards get the light
+  configuration automatically. All ongoing work goes here.
+- `master_custom_4.7.1` — the ArduPlane 4.7.1 base (v2.0). Frozen reference.
 - `master_custom_4.6.3` / `master_custom_4.6.3_light` — the previous
   ArduPlane 4.6.3 base (full and light variants, releases up to v1.1).
   Frozen reference.
@@ -3980,7 +3980,7 @@ asset is `<board>_plane_bin_<track>-<tag>_.zip` with the 4 build products
   `shellixyz/ardupilot` and the maintained successor at
   [github.com/ArduCustom/ardupilot](https://github.com/ArduCustom/ardupilot).
   This branch re-ports a curated subset of that work onto a modern
-  4.7.1 base. Recent additions sourced from him include `OSD_BATBAR_TYPE`
+  4.7.2 base. Recent additions sourced from him include `OSD_BATBAR_TYPE`
   (DJI battery-bar Wh source, co-authored with Stavros, originally
   `93c530cdb2`), `MatekH743` ADSB+EFI strip (`26597c8805`), the
   `COURSE_HOLD` flight mode (mode 26) and the `AUTO_TRIM` flight
