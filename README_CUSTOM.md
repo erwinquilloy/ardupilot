@@ -66,6 +66,7 @@ Everything below is on both tracks unless it says "full only".*
 | RC | **mLRS RC over MAVLink (`radio_rc_channels`) on every board**, light 1 MB F4 included; stock needs a 2 MB board. Channels 17–32 stay steady with mLRS 1.4.04's mixed 16/32-channel frames | [mLRS MAVLink RC](#mlrs-mavlink-rc-radio_rc_channels-on-every-board-v21) |
 | Head tracking | **Head tracking from the VTX gimbal port** (`SERIALn_PROTOCOL 51`) for goggles that don't send it over MSP; one UART can also drive a CADDX gimbal; MSP head tracking wins when both arrive | [Gimbal-port head tracking](#head-tracking-from-the-vtx-gimbal-port-serialn_protocol-51) |
 | Head tracking | Short or malformed MSP head-tracker frames are dropped | |
+| Telemetry | **`MSP_RC` reports every RC channel** (up to 16, or 18 with `RC_32CH_ENABLE`), not just the first four, so goggles and other MSP peers see the AUX switches; upstream issue #28276 | [MSP / DJI](#msp--dji) |
 | OSD | **ADS-B traffic warning**: the `OSDx_ADSB` element flashes inside `OSD_W_ADSB_DIST` (and optionally `OSD_W_ADSB_ALT`). **Full only** | [Traffic warning](#traffic-warning-v21) |
 | Radar | `RADAR_OSD_MODE 1` shows the nearest peer instead of cycling | [Radar OSD element](#osd-element) |
 
@@ -3734,8 +3735,9 @@ reads its 16-bit cm distance format.
   the artificial horizon
 - MSP wind reported in km/h (was m/s)
 - Optional Link Quality output instead of raw RSSI
-- **`MSP_RC` reports every RC channel** the receiver delivers (up to 16),
-  not just the first four. Goggles and other MSP peers that display or act
+- **`MSP_RC` reports every RC channel** the receiver delivers (v2.1): up to
+  16, or up to 18 with [`RC_32CH_ENABLE`](#32-rc-channels-v21) on (the
+  Betaflight limit), not just the first four. Goggles and other MSP peers that display or act
   on AUX channels (switch positions, camera zoom) now see them, as they do
   on Betaflight; upstream issue #28276. The first four slots keep MSP's AERT
   order and their existing scaling. AUX channels are sent as received, with
