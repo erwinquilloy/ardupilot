@@ -1,0 +1,4 @@
+# Bootloader for the AtomRC F405 NAVI tone-buzzer variant. Identical to the
+# stock AtomRCF405NAVI bootloader (same board ID, flash layout and pins); the
+# tone-buzzer change only affects the application firmware.
+include ../AtomRCF405NAVI/hwdef-bl.dat

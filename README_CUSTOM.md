@@ -3232,6 +3232,21 @@ onboard status LED. Board ID is inherited (`Holybro-KakuteF4-Wing`).
 For `KakuteF4-Wing-Buzz`, wire a *passive* buzzer to the LED pad — see the
 board's `Readme.md`.
 
+Two more variants (v2.1) use the same LED-pad trick on boards whose buzzer
+output has no free timer, so stock can only beep at one pitch:
+
+| Variant | Track | Tone pad | Timer | Gives up |
+|---|---|---|---|---|
+| **`AtomRCF405NAVI-Buzz`** | light | LED pad next to SBUS (`PB7`) | TIM4 | LED strip (output 9) |
+| **`TBS_LUCID_H7_OEM-Buzz`** | full | S13/LED (`PA8`) | TIM1 | LED strip (output 13) |
+
+Motor and servo outputs are unchanged and the board IDs are inherited, so the
+`.apj` flashes as a normal update. Wire a passive piezo from the pad to GND.
+The stock buzzer output still works too; set `NTF_BUZZ_PIN -1` if an active
+buzzer on it beeps over the tunes. On the Lucid, an existing setup keeps
+`SERVO13_FUNCTION 120` from stock: set it to 0 (output 13 no longer exists,
+so it does nothing either way).
+
 The comparable stock-upstream H7 board **`MatekH743-bdshot`** (Matek
 **H743-WING**, bidirectional DShot) is *not* a fork `*-Buzz` variant: it
 already carries an onboard buzzer (GPIO single-tone on `PA15`, since

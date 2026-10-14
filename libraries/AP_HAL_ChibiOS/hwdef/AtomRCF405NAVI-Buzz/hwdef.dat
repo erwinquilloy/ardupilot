@@ -1,0 +1,22 @@
+# hw definition for a custom AtomRC F405 NAVI variant that adds a hardware
+# ToneAlarm (pitched-tone) buzzer on the WS2812 "LED" pad.
+#
+# The stock board's buzzer output (PC5) is a plain GPIO with no timer, so
+# ArduPilot tunes only come out as single-pitch on/off beeps. This variant
+# repurposes the LED-strip pad - PB7, the board's servo output 9 - as a
+# hardware tone output: PB7 is marked ALARM on TIM4_CH2, which defines
+# HAL_PWM_ALARM so AP_ToneAlarm plays the full pitched tunes on a passive
+# buzzer wired to the LED pad. TIM4 is used by nothing else on this board
+# (outputs 1-8 use TIM1/2/3/8, the system timer is TIM5, RC input TIM9).
+#
+# Cost: the addressable LED-strip output (servo output 9). Outputs 1-8 are
+# unchanged. The onboard PC5 buzzer output stays; set NTF_BUZZ_PIN -1 to
+# silence an active buzzer on it.
+#
+# Board ID is inherited (AP_HW_ATOMRCF405), so the .apj flashes over the
+# stock bootloader as a normal firmware update. See Readme.md.
+
+include ../AtomRCF405NAVI/hwdef.dat
+
+undef PB7
+PB7 TIM4_CH2 TIM4 GPIO(58) ALARM

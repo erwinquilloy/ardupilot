@@ -1,0 +1,23 @@
+# hw definition for a custom TBS Lucid H7 OEM variant that adds a hardware
+# ToneAlarm (pitched-tone) buzzer on the "S13/LED" pad.
+#
+# The stock buzzer output (PA15) is a plain GPIO; its only timer channel,
+# TIM2_CH1, is already taken by motor output 1, so ArduPilot tunes only
+# come out as single-pitch on/off beeps. This variant repurposes the
+# WS2812 LED pad - PA8, servo output 13 - as a hardware tone output: PA8
+# is marked ALARM on TIM1_CH1, which defines HAL_PWM_ALARM so AP_ToneAlarm
+# plays the full pitched tunes on a passive buzzer wired to S13/LED. TIM1
+# drives nothing else on this board (outputs 1-12 use TIM2/3/4/5/15, the
+# system timer is TIM12).
+#
+# Cost: the addressable LED-strip output (servo output 13). Outputs 1-12
+# are unchanged. The onboard PA15 buzzer output stays; set NTF_BUZZ_PIN -1
+# to silence an active buzzer on it.
+#
+# Board ID is inherited (AP_HW_TBS_LUCID_H7_OEM), so the .apj flashes over
+# the stock bootloader as a normal firmware update. See Readme.md.
+
+include ../TBS_LUCID_H7_OEM/hwdef.dat
+
+undef PA8
+PA8 TIM1_CH1 TIM1 GPIO(62) ALARM
