@@ -2076,7 +2076,8 @@ For mLRS in MAVLink mode, see
   `RCx_OPTION` and appear in logs.
 - **Logs:** `RCI3` (channels 17–30) and `RCI4` (31–32) are written when the
   receiver delivers more than 16 channels. `RCI2.OMask` is now 32 bits.
-- **MSP goggles** still get at most 18 channels in `MSP_RC`, as on Betaflight.
+- **MSP goggles** get at most 18 channels in `MSP_RC`, as on Betaflight. See
+  [32 RC channels and the 16-channel MSP output](#32-rc-channels-and-the-16-channel-msp-output).
 - **The cost is fixed:** about 1.1 KB of flash and 0.9 KB of RAM on an F405
   whether `RC_32CH_ENABLE` is on or off, because the channel table is sized
   when the firmware is built.
@@ -2089,6 +2090,38 @@ drop to zero between frames (switches, passthrough servos and gimbal inputs on
 32-channel mode is turned off in mLRS, channels 17–32 return to "no input".
 Tested in SITL; not yet flown with an mLRS receiver delivering more than 16
 channels.
+
+### 32 RC channels and the 16-channel MSP output
+
+These are two separate features that are easy to mix up. They work on
+channels going in **opposite directions**:
+
+| | 16-channel MSP output (since v2.0) | 32 RC channels (v2.1) |
+|---|---|---|
+| **Direction** | FC → goggles / other MSP device | Receiver → FC |
+| **What it does** | Sends your stick and AUX channel values to the goggles in `MSP_RC`, so they can show switch positions or use a switch (camera zoom, for example). Stock ArduPilot sends only the four sticks | Lets the FC read channels 17–32 and use them: `RC17_`–`RC32_OPTION`, logs, MAVLink |
+| **Turned on by** | Always on, nothing to set | `RC_32CH_ENABLE 1` |
+| **Channel limit** | 16; 18 when `RC_32CH_ENABLE` is on | 32 |
+| **Setup** | Any MSP port (`SERIALn_PROTOCOL` 32, 33 or 42), usually the goggle OSD port | A receiver link that carries more than 16 channels (table above) |
+
+What the goggles receive in `MSP_RC`:
+
+| `RC_32CH_ENABLE` | Receiver sends | Goggles get |
+|---|---|---|
+| `0` (default) | any number | channels 1–16, exactly as in v2.0 |
+| `1` | 16 or fewer | the same channels as with `0` |
+| `1` | more than 16 | channels 1–18; 19–32 work on the FC but are not sent over MSP |
+
+The 18 cap matches Betaflight, whose `MSP_RC` never sends more than 18, so
+goggle firmware may not expect a longer message. In every case the first four
+slots are the sticks in MSP's AERT order, and AUX channels are sent as the
+receiver delivers them (no trim or deadzone). Channels from mLRS over MAVLink
+are sent the same way as any other receiver's.
+
+**In short:** if you only need the goggles to see your switches on channels
+1–16, you need nothing from v2.1; leave `RC_32CH_ENABLE` at 0. Turn it on
+when the FC itself has to act on channels above 16. The goggles then also see
+channels 17 and 18.
 
 ## mLRS MAVLink RC (`RADIO_RC_CHANNELS`) on every board (v2.1)
 
@@ -3735,8 +3768,9 @@ reads its 16-bit cm distance format.
 - MSP wind reported in km/h (was m/s)
 - Optional Link Quality output instead of raw RSSI
 - **`MSP_RC` reports every RC channel** the receiver delivers (up to 16),
-  not just the first four. Since v2.1, with
-  [`RC_32CH_ENABLE`](#32-rc-channels-v21) on, up to 18 (the Betaflight limit). Goggles and other MSP peers that display or act
+  not just the first four. Since v2.1, with `RC_32CH_ENABLE` on, up to 18
+  (the Betaflight limit); see
+  [32 RC channels and the 16-channel MSP output](#32-rc-channels-and-the-16-channel-msp-output). Goggles and other MSP peers that display or act
   on AUX channels (switch positions, camera zoom) now see them, as they do
   on Betaflight; upstream issue #28276. The first four slots keep MSP's AERT
   order and their existing scaling. AUX channels are sent as received, with
