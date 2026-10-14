@@ -3971,6 +3971,11 @@ EdgeTX widget sound path, which is not the one you would guess — are in
 asset is `<board>_plane_bin_<track>-<tag>_.zip` with the 4 build products
 (`arduplane`, `.apj`, `.bin`, `_with_bl.hex`).
 
+**This README as a web page:** `python3 Tools/scripts/build_readme_html.py README_CUSTOM.html`
+writes a single-file HTML copy with the outline in a side panel (needs
+`pip install markdown`). It is published on the
+[ArduPilot Tools](https://erwinquilloy.github.io/ardupilot-tools/) site with each release.
+
 ---
 
 # Credits
