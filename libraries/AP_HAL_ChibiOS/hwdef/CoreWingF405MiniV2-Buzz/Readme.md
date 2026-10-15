@@ -1,4 +1,4 @@
-# CoreWingF405WMiniV2-Buzz (fork tone-buzzer variant)
+# CoreWingF405MiniV2-Buzz (fork tone-buzzer variant)
 
 A fork-only variant of `CoreWingF405WMiniV2` that plays ArduPilot's full pitched
 tunes (arming, GPS lock, launch cues, failsafe) on a **passive** buzzer. The
@@ -29,3 +29,6 @@ An **active** (self-oscillating) buzzer won't play pitches.
 
 Everything else (ports, sensors, OSD, DShot) is as on the stock board; see
 [its README](../CoreWingF405WMiniV2/README.md).
+
+> The board name is shortened from `CoreWingF405WMiniV2` because ArduPilot
+> limits board names to 23 characters.
