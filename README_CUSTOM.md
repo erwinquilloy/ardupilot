@@ -70,11 +70,6 @@ Everything below is on both tracks unless it says "full only".*
 | Radar | `RADAR_OSD_MODE 1` shows the nearest peer instead of cycling | [Radar OSD element](#osd-element) |
 | Boards | **Two new tone-buzzer variants**: `AtomRCF405NAVI-Buzz` (light) and `TBS_LUCID_H7_OEM-Buzz` (full) play the full pitched tunes on a passive buzzer wired to the LED pad, instead of the single-pitch beeps of the stock buzzer output. They give up only the LED-strip output | [Tone-buzzer variants](#tone-buzzer-board-variant-speedybeef405wing-buzz) |
 
-**Not in v2.1:**
-- The DisplayPort canvas clip. Walksnail goggle firmware 18.21.15 fixed it.
-- Gimbal-port auto-detect on `SERIALn_PROTOCOL 8` ports.
-- The GM gimbal mode-number change (reverted after bench test).
-
 ## Contents
 
 An outline of everything this fork adds and where it is documented. Each line links to its section.
