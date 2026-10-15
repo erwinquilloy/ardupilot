@@ -1,0 +1,4 @@
+# Bootloader for the CoreWing F405 Wing V2 tone-buzzer variant. Identical to the stock
+# CoreWingF405WingV2 bootloader (same board ID, flash layout and pins); the
+# tone-buzzer change only affects the application firmware.
+include ../CoreWingF405WingV2/hwdef-bl.dat
