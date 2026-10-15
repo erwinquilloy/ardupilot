@@ -20,3 +20,8 @@ DMA_NOSHARE TIM3_UP
 # and this is the tightest board of the light fleet. Without it the RC17_-RC32_
 # and RC_32CH_ENABLE parameters don't exist; mLRS channels above 16 are ignored.
 define NUM_RC_CHANNELS 16
+
+# Fork: no head tracking from the VTX gimbal port (SERIALn_PROTOCOL 51) on this
+# board, also to save flash. Head tracking over MSP from the goggles and the
+# CADDX gimbal backend itself are unaffected.
+define AP_MOUNT_CADDX_HEADTRACKER_ENABLED 0
