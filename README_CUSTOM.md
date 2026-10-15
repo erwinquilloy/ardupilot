@@ -68,6 +68,7 @@ Everything below is on both tracks unless it says "full only".*
 | Head tracking | Short or malformed MSP head-tracker frames are dropped | |
 | OSD | **ADS-B traffic warning**: the `OSDx_ADSB` element flashes inside `OSD_W_ADSB_DIST` (and optionally `OSD_W_ADSB_ALT`). **Full only** | [Traffic warning](#traffic-warning-v21) |
 | Radar | `RADAR_OSD_MODE 1` shows the nearest peer instead of cycling | [Radar OSD element](#osd-element) |
+| Boards | **Two new tone-buzzer variants**: `AtomRCF405NAVI-Buzz` (light) and `TBS_LUCID_H7_OEM-Buzz` (full) play the full pitched tunes on a passive buzzer wired to the LED pad, instead of the single-pitch beeps of the stock buzzer output. They give up only the LED-strip output | [Tone-buzzer variants](#tone-buzzer-board-variant-speedybeef405wing-buzz) |
 
 **Not in v2.1:**
 - The DisplayPort canvas clip. Walksnail goggle firmware 18.21.15 fixed it.
@@ -78,7 +79,7 @@ Everything below is on both tracks unless it says "full only".*
 
 An outline of everything this fork adds and where it is documented. Each line links to its section.
 
-- **Getting started** — [What's new in v2.1 (draft)](#whats-new-in-v21-draft), [Why flash this instead of stock ArduPlane 4.7.2?](#why-flash-this-instead-of-stock-arduplane-472), [Building](#building), [Which file in the zip do I flash?](#which-file-in-the-zip-do-i-flash), [Release fleets (full-v2.0 / light-v2.0)](#release-fleets-full-v20--light-v20), [Tone-buzzer board variant (SpeedyBeeF405WING-Buzz)](#tone-buzzer-board-variant-speedybeef405wing-buzz)
+- **Getting started** — [What's new in v2.1 (draft)](#whats-new-in-v21-draft), [Why flash this instead of stock ArduPlane 4.7.2?](#why-flash-this-instead-of-stock-arduplane-472), [Building](#building), [Which file in the zip do I flash?](#which-file-in-the-zip-do-i-flash), [Release fleets (full-v2.1 / light-v2.1)](#release-fleets-full-v21--light-v21), [Tone-buzzer board variant (SpeedyBeeF405WING-Buzz)](#tone-buzzer-board-variant-speedybeef405wing-buzz)
 - **[What this fork adds](#what-this-fork-adds)**
   - [Flight modes](#flight-modes)
     - [Course Hold (mode 26)](#course-hold-mode-26)
@@ -340,7 +341,7 @@ Identical to upstream. From a configured WSL / Linux toolchain:
 ```
 
 The branch builds clean for every board in the
-[release fleets](#release-fleets-full-v20--light-v20); SITL builds and runs cleanly.
+[release fleets](#release-fleets-full-v21--light-v21); SITL builds and runs cleanly.
 
 ### Full or light is picked by the board's flash size
 
@@ -3234,37 +3235,38 @@ can actually flash.
 > first try. Boards that shipped with Betaflight, or that have been
 > flashed across firmware families, are the usual candidates.
 
-## Release fleets (`full-v2.0` / `light-v2.0`)
+## Release fleets (`full-v2.1` / `light-v2.1`)
 
 Every release ships two per-board tracks built from **the same commit**:
-`full-v2.0` for F7 / H7 / 2 MB boards and `light-v2.0` for 1 MB F4 boards.
+`full-v2.1` for F7 / H7 / 2 MB boards and `light-v2.1` for 1 MB F4 boards.
 Both carry the **identical fork feature set**; they differ only in which
 hardware backends are compiled in. A board's version string tells you which you
-flashed: the light build appends ` Light` (`... Custom v2.0 Light (…)`), the
+flashed: the light build appends ` Light` (`... Custom v2.1 Light (…)`), the
 full build has no suffix.
 
 Since v1.1 the two tracks don't overlap — a given board appears on exactly one
 of them, so there is no choice to get wrong.
 
-### Full track — 7 boards (F7 / H7, 2 MB)
+### Full track — 8 boards (F7 / H7, 2 MB)
 
-Measured at **v2.0**:
+Measured at **v2.1**:
 
-| Board | MCU / Flash | Free after fork features | vs v1.1 | Status |
+| Board | MCU / Flash | Free after fork features | vs v2.0 | Status |
 |---|---|---:|---:|---|
-| MatekF765-Wing | F7 / 2 MB | **556.9 KB** | +37.5 | Ships — Matek F765-WING (most flash headroom in the fleet) |
-| MatekH7A3-Wing | H7 / 2 MB | **496.7 KB** | new | **New in v2.0** — Matek H7A3-WING (bidirectional DShot); most room of any H7 |
-| KakuteH7-Wing | H7 / 2 MB | **146.2 KB** | +42.7 | Ships — Holybro Kakute H743 Wing |
-| TBS_LUCID_H7_WING_AIO | H7 / 2 MB | **136.4 KB** | new | **New in v2.0** — TBS Lucid H7 Wing AIO (added after release, same `ea34a7d` build) |
-| TBS_LUCID_H7_OEM | H7 / 2 MB | **130.8 KB** | new | **New in v2.0** — TBS Lucid H7 OEM |
-| MatekH743-bdshot | H7 / 2 MB | **128.7 KB** | +29.7 | Ships — Matek H743-WING (bidirectional DShot) |
-| XFLY-H743-bdshot | H7 / 2 MB | **117.3 KB** | new | **New in v2.0** — XFly VTOL kit FC (bidirectional DShot); tightest of the full fleet |
+| MatekF765-Wing | F7 / 2 MB | **550.1 KB** | −6.8 | Ships — Matek F765-WING (most flash headroom in the fleet) |
+| MatekH7A3-Wing | H7 / 2 MB | **489.3 KB** | −7.4 | Ships — Matek H7A3-WING (bidirectional DShot); most room of any H7 |
+| KakuteH7-Wing | H7 / 2 MB | **140.9 KB** | −5.4 | Ships — Holybro Kakute H743 Wing |
+| TBS_LUCID_H7_WING_AIO | H7 / 2 MB | **130.6 KB** | −5.8 | Ships — TBS Lucid H7 Wing AIO |
+| TBS_LUCID_H7_OEM | H7 / 2 MB | **125.5 KB** | −5.4 | Ships — TBS Lucid H7 OEM |
+| TBS_LUCID_H7_OEM-Buzz | H7 / 2 MB | **125.3 KB** | new | **New in v2.1** — TBS Lucid H7 OEM + tone buzzer on S13/LED (see below) |
+| MatekH743-bdshot | H7 / 2 MB | **123.4 KB** | −5.4 | Ships — Matek H743-WING (bidirectional DShot) |
+| XFLY-H743-bdshot | H7 / 2 MB | **111.6 KB** | −5.7 | Ships — XFly VTOL kit FC (bidirectional DShot); tightest of the full fleet |
 
-Every returning board gained 30–43 KB over v1.1, mostly from ArduPlane 4.7's smaller EKF3
-and from backends 4.7 no longer builds for 2 MB boards (External AHRS,
-generators, KDECAN, Robotis and Volz servos). `MatekF765-Wing` still has several
-times the room of any H743, because the H743 hwdefs reserve more flash; the
-H7A3 in `MatekH7A3-Wing` comes close to it.
+Every board gave up 5–8 KB to v2.1 (the ArduPlane 4.7.2 base plus the v2.1
+fork additions). The `-Buzz` variant costs essentially nothing (0.1 KB)
+against its stock board.
+`MatekF765-Wing` still has several times the room of any H743, because the
+H743 hwdefs reserve more flash; the H7A3 in `MatekH7A3-Wing` comes close to it.
 
 **`MatekH743-bdshot` is the full track's canary**, the way
 `MatekF405-Wing-bdshot` is light's — the first board a future upstream rebase or
@@ -3302,9 +3304,8 @@ feature add will push against.
 > plugging in USB). See
 > [the board README](libraries/AP_HAL_ChibiOS/hwdef/MatekH7A3-Wing/README.md).
 
-> **`TBS_LUCID_H7_WING_AIO`** (STM32H743, 2 MB, board ID 5254) was added to
-> the `full-v2.0` release after it shipped, built from the same `ea34a7d`
-> commit as the rest of the fleet, so its version string matches. It ships on
+> **`TBS_LUCID_H7_WING_AIO`** (STM32H743, 2 MB, board ID 5254) joined in
+> v2.0 (added to the `full-v2.0` release after it shipped). It ships on
 > upstream's own board definition, unchanged, and like `TBS_LUCID_H7_OEM` it
 > is a genuine STM32H7, not the AT32 "Lucid Pro". Serial ports already follow
 > `SERIALn` = chip UART `n` (`SERIAL5` is an `EMPTY` placeholder): `SERIAL1`
@@ -3314,25 +3315,27 @@ feature add will push against.
 > `arduplane_with_bl.hex` over DFU first. Not flown on this firmware yet. See
 > [the board README](libraries/AP_HAL_ChibiOS/hwdef/TBS_LUCID_H7_WING_AIO/README.md).
 
-### Light track — 9 boards (all 1 MB F4)
+### Light track — 10 boards (all 1 MB F4)
 
-Measured at **v2.0** with radar, `LAND_WIND_DIST` and `LAND_WIND_STRICT` on:
+Measured at **v2.1** with radar, `LAND_WIND_DIST` and `LAND_WIND_STRICT` on:
 
-| Board | Flash | Free after fork features | vs v1.1 | Status |
+| Board | Flash | Free after fork features | vs v2.0 | Status |
 |---|---:|---:|---:|---|
-| KakuteF4-Wing-Buzz | 1 MB | **81.7 KB** | +2.1 | Ships — Kakute F4 Wing + tone buzzer (see below) |
-| speedybeef4v3 | 1 MB | **50.4 KB** | 0.0 | Ships — most F4 headroom with gimbal support |
-| MatekF405-STD | 1 MB | **47.1 KB** | +2.2 | Ships |
-| omnibusf4pro | 1 MB | **42.1 KB** | +2.3 | Ships — Omnibus F4 Pro FPV FC |
-| MatekF405-TE-bdshot | 1 MB | **35.2 KB** | −4.6 | Ships — RunCam camera control now compiled in |
-| AtomRCF405NAVI | 1 MB | **32.2 KB** | +1.3 | Ships — AtomRC F405 Navi FPV FC |
-| SpeedyBeeF405WING | 1 MB | **26.8 KB** | −0.3 | Ships |
-| SpeedyBeeF405WING-Buzz | 1 MB | **26.5 KB** | −0.3 | Ships — SpeedyBee F405 WING + tone buzzer (see below) |
-| MatekF405-Wing-bdshot | 1 MB | **20.9 KB** | −3.8 | Ships — tightest of the F4 fleet; RunCam camera control now compiled in |
+| KakuteF4-Wing-Buzz | 1 MB | **76.6 KB** | −5.2 | Ships — Kakute F4 Wing + tone buzzer (see below) |
+| speedybeef4v3 | 1 MB | **44.1 KB** | −6.3 | Ships — most F4 headroom with gimbal support |
+| MatekF405-STD | 1 MB | **41.5 KB** | −5.6 | Ships |
+| omnibusf4pro | 1 MB | **35.7 KB** | −6.3 | Ships — Omnibus F4 Pro FPV FC |
+| MatekF405-TE-bdshot | 1 MB | **28.8 KB** | −6.5 | Ships — RunCam camera control compiled in |
+| AtomRCF405NAVI | 1 MB | **25.8 KB** | −6.3 | Ships — AtomRC F405 Navi FPV FC |
+| AtomRCF405NAVI-Buzz | 1 MB | **25.8 KB** | new | **New in v2.1** — AtomRC F405 Navi + tone buzzer on the LED pad (see below) |
+| SpeedyBeeF405WING | 1 MB | **20.7 KB** | −6.1 | Ships |
+| SpeedyBeeF405WING-Buzz | 1 MB | **20.4 KB** | −6.1 | Ships — SpeedyBee F405 WING + tone buzzer (see below) |
+| MatekF405-Wing-bdshot | 1 MB | **13.8 KB** | −7.1 | Ships — tightest of the F4 fleet; RunCam camera control compiled in |
 
-ArduPlane 4.7's smaller EKF3 roughly pays for the new upstream features and the
-fork additions, so every board stays within a few KB of v1.1. The six boards
-with gimbal support also carry the POI lock switch (about 1.2 KB).
+Every board gave up 5–7 KB to v2.1 (the ArduPlane 4.7.2 base plus the v2.1
+fork additions); `AtomRCF405NAVI-Buzz` costs 40 bytes against stock
+`AtomRCF405NAVI`. The six boards with gimbal support also carry the POI lock
+switch (about 1.2 KB).
 
 Gimbal mount support is switched back on in these F4 hwdefs. Upstream's
 `minimize_common.inc` turns `HAL_MOUNT_ENABLED` off on flash-constrained
@@ -3356,7 +3359,7 @@ routing them through the DShot ESCs. Cost is one servo output (S11 /
 channel 11); outputs 1-10 and 12 (WS2812 LED) are unchanged. Board ID
 is inherited (1106) so the `.apj` flashes over the stock SpeedyBee
 bootloader as a normal update. Flash footprint is essentially identical
-to stock `SpeedyBeeF405WING` (26.5 KB vs 26.8 KB free at v2.0 —
+to stock `SpeedyBeeF405WING` (20.4 KB vs 20.7 KB free at v2.1 —
 a 0.3 KB difference). Shipped as an extra
 asset on the light release alongside the other boards above.
 
