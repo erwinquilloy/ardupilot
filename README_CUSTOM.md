@@ -69,6 +69,7 @@ Everything below is on both tracks unless it says "full only".*
 | OSD | **ADS-B traffic warning**: the `OSDx_ADSB` element flashes inside `OSD_W_ADSB_DIST` (and optionally `OSD_W_ADSB_ALT`). **Full only** | [Traffic warning](#traffic-warning-v21) |
 | Radar | `RADAR_OSD_MODE 1` shows the nearest peer instead of cycling | [Radar OSD element](#osd-element) |
 | Boards | **Two new tone-buzzer variants**: `AtomRCF405NAVI-Buzz` (light) and `TBS_LUCID_H7_OEM-Buzz` (full) play the full pitched tunes on a passive buzzer wired to the LED pad, instead of the single-pitch beeps of the stock buzzer output. They give up only the LED-strip output | [Tone-buzzer variants](#tone-buzzer-board-variant-speedybeef405wing-buzz) |
+| Boards | **CoreWing F405 Wing V2 and Wing Mini V2** (`CoreWingF405WingV2`, `CoreWingF405WMiniV2`, light): new in ArduPlane 4.7.2, shipped on upstream's own board definitions | [CoreWing F405 Wing V2 / Wing Mini V2](#light-track--12-boards-all-1-mb-f4) |
 
 ## Contents
 
@@ -311,7 +312,7 @@ build tools are left out of this list.
 | **Harmonic notch, quintuple option** (`INS_HNTCH_OPTS` bit 6): the filter always has room for whole harmonics | Quintuple-notch users | All boards |
 | **EKF3 drag fusion with GPS yaw** no longer waits for compass alignment | Dual-GPS (moving-baseline) yaw | All boards |
 | **Optical flow:** the sign of the terrain height used for flow scaling is fixed | Optical flow over terrain | Where optical flow is built |
-| **Compasses:** QMC5883P is now on 1 MB boards; IIS2MDC fixed and enabled | Those compasses | All 18 fleet boards include both |
+| **Compasses:** QMC5883P is now on 1 MB boards; IIS2MDC fixed and enabled | Those compasses | All 20 fleet boards include both |
 | **Barometers:** BMP581 reads corrected data; BMP390 is reset at start-up to clear an old configuration | Boards or modules with these baros | Full builds only: the light builds don't include these two drivers |
 | **LSM6DSV IMUs:** KakuteH7 / KakuteH7 Mini and Pixhawk6X support them, and the LSM6DSV heater is now driven | Those boards | All boards where the IMU is used |
 | **MAVLink:** long status messages sent in several parts by another component (gimbal, companion computer) are put back together again | GCS logs and messages | All boards |
@@ -3310,7 +3311,7 @@ feature add will push against.
 > `arduplane_with_bl.hex` over DFU first. Not flown on this firmware yet. See
 > [the board README](libraries/AP_HAL_ChibiOS/hwdef/TBS_LUCID_H7_WING_AIO/README.md).
 
-### Light track — 10 boards (all 1 MB F4)
+### Light track — 12 boards (all 1 MB F4)
 
 Measured at **v2.1** with radar, `LAND_WIND_DIST` and `LAND_WIND_STRICT` on:
 
@@ -3321,15 +3322,17 @@ Measured at **v2.1** with radar, `LAND_WIND_DIST` and `LAND_WIND_STRICT` on:
 | MatekF405-STD | 1 MB | **41.5 KB** | −5.6 | Ships |
 | omnibusf4pro | 1 MB | **35.7 KB** | −6.3 | Ships — Omnibus F4 Pro FPV FC |
 | MatekF405-TE-bdshot | 1 MB | **28.8 KB** | −6.5 | Ships — RunCam camera control compiled in |
+| CoreWingF405WMiniV2 | 1 MB | **27.1 KB** | new | **New in v2.1** — CoreWing F405 Wing Mini V2 (see below) |
 | AtomRCF405NAVI | 1 MB | **25.8 KB** | −6.3 | Ships — AtomRC F405 Navi FPV FC |
 | AtomRCF405NAVI-Buzz | 1 MB | **25.8 KB** | new | **New in v2.1** — AtomRC F405 Navi + tone buzzer on the LED pad (see below) |
+| CoreWingF405WingV2 | 1 MB | **22.9 KB** | new | **New in v2.1** — CoreWing F405 Wing V2 (see below) |
 | SpeedyBeeF405WING | 1 MB | **20.7 KB** | −6.1 | Ships |
 | SpeedyBeeF405WING-Buzz | 1 MB | **20.4 KB** | −6.1 | Ships — SpeedyBee F405 WING + tone buzzer (see below) |
 | MatekF405-Wing-bdshot | 1 MB | **13.8 KB** | −7.1 | Ships — tightest of the F4 fleet; RunCam camera control compiled in |
 
 Every board gave up 5–7 KB to v2.1 (the ArduPlane 4.7.2 base plus the v2.1
 fork additions); `AtomRCF405NAVI-Buzz` costs 40 bytes against stock
-`AtomRCF405NAVI`. The six boards with gimbal support also carry the POI lock
+`AtomRCF405NAVI`. The eight boards with gimbal support also carry the POI lock
 switch (about 1.2 KB).
 
 Gimbal mount support is switched back on in these F4 hwdefs. Upstream's
@@ -3337,6 +3340,18 @@ Gimbal mount support is switched back on in these F4 hwdefs. Upstream's
 boards, which leaves Mission Planner reporting "Invalid channel option" for
 `RCx_OPTION` 212/213/214 (mount roll/pitch/yaw). The fork re-enables it
 with only the servo and CADDX mount backends to save flash.
+
+> **`CoreWingF405WingV2` / `CoreWingF405WMiniV2`** (STM32F405, 1 MB) are new
+> in ArduPlane 4.7.2 and ship on upstream's own board definitions, unchanged.
+> Serial ports already follow `SERIALn` = chip UART `n`: `SERIAL1` MAVLink2
+> (USB extender / wireless module, 115200), `SERIAL2` shares its RX with the
+> SBUS input, `SERIAL3` VTX, `SERIAL4` telemetry, `SERIAL5` GPS, `SERIAL6` RC
+> input. Outputs: Wing V2 S1–S11 plus the `LED` pad, bidirectional DShot on
+> 1–4; Wing Mini V2 S1–S9, no bidirectional DShot. CoreWing's definitions
+> already re-enable the gimbal mount (servo + CADDX), and also landing gear and
+> QAUTOTUNE; the fork adds nothing to them. Not flown on this firmware yet. See
+> [Wing V2](libraries/AP_HAL_ChibiOS/hwdef/CoreWingF405WingV2/README.md) and
+> [Wing Mini V2](libraries/AP_HAL_ChibiOS/hwdef/CoreWingF405WMiniV2/README.md).
 
 `MatekF405-Wing-bdshot` is the canary board — first to bump the
 1 MB ceiling in any future upstream rebase or feature add. Every board on
