@@ -68,8 +68,8 @@ Everything below is on both tracks unless it says "full only".*
 | Head tracking | Short or malformed MSP head-tracker frames are dropped | |
 | OSD | **ADS-B traffic warning**: the `OSDx_ADSB` element flashes inside `OSD_W_ADSB_DIST` (and optionally `OSD_W_ADSB_ALT`). **Full only** | [Traffic warning](#traffic-warning-v21) |
 | Radar | `RADAR_OSD_MODE 1` shows the nearest peer instead of cycling | [Radar OSD element](#osd-element) |
-| Boards | **Two new tone-buzzer variants**: `AtomRCF405NAVI-Buzz` (light) and `TBS_LUCID_H7_OEM-Buzz` (full) play the full pitched tunes on a passive buzzer wired to the LED pad, instead of the single-pitch beeps of the stock buzzer output. They give up only the LED-strip output | [Tone-buzzer variants](#tone-buzzer-board-variant-speedybeef405wing-buzz) |
-| Boards | **CoreWing F405 Wing V2 and Wing Mini V2** (`CoreWingF405WingV2`, `CoreWingF405WMiniV2`, light): new in ArduPlane 4.7.2, shipped on upstream's own board definitions | [CoreWing F405 Wing V2 / Wing Mini V2](#light-track--12-boards-all-1-mb-f4) |
+| Boards | **Four new tone-buzzer variants**: `AtomRCF405NAVI-Buzz`, `CoreWingF405WingV2-Buzz`, `CoreWingF405MiniV2-Buzz` (light) and `TBS_LUCID_H7_OEM-Buzz` (full) play the full pitched tunes on a passive buzzer wired to the LED pad, instead of the single-pitch beeps of the stock buzzer output. They give up only the LED pad's own output; the stock boards still ship alongside for anyone who wants it | [Tone-buzzer variants](#tone-buzzer-board-variant-speedybeef405wing-buzz) |
+| Boards | **CoreWing F405 Wing V2 and Wing Mini V2** (`CoreWingF405WingV2`, `CoreWingF405WMiniV2`, light): new in ArduPlane 4.7.2, shipped on upstream's own board definitions | [CoreWing F405 Wing V2 / Wing Mini V2](#light-track--14-boards-all-1-mb-f4) |
 
 ## Contents
 
@@ -312,7 +312,7 @@ build tools are left out of this list.
 | **Harmonic notch, quintuple option** (`INS_HNTCH_OPTS` bit 6): the filter always has room for whole harmonics | Quintuple-notch users | All boards |
 | **EKF3 drag fusion with GPS yaw** no longer waits for compass alignment | Dual-GPS (moving-baseline) yaw | All boards |
 | **Optical flow:** the sign of the terrain height used for flow scaling is fixed | Optical flow over terrain | Where optical flow is built |
-| **Compasses:** QMC5883P is now on 1 MB boards; IIS2MDC fixed and enabled | Those compasses | All 20 fleet boards include both |
+| **Compasses:** QMC5883P is now on 1 MB boards; IIS2MDC fixed and enabled | Those compasses | All 22 fleet boards include both |
 | **Barometers:** BMP581 reads corrected data; BMP390 is reset at start-up to clear an old configuration | Boards or modules with these baros | Full builds only: the light builds don't include these two drivers |
 | **LSM6DSV IMUs:** KakuteH7 / KakuteH7 Mini and Pixhawk6X support them, and the LSM6DSV heater is now driven | Those boards | All boards where the IMU is used |
 | **MAVLink:** long status messages sent in several parts by another component (gimbal, companion computer) are put back together again | GCS logs and messages | All boards |
@@ -3311,7 +3311,7 @@ feature add will push against.
 > `arduplane_with_bl.hex` over DFU first. Not flown on this firmware yet. See
 > [the board README](libraries/AP_HAL_ChibiOS/hwdef/TBS_LUCID_H7_WING_AIO/README.md).
 
-### Light track — 12 boards (all 1 MB F4)
+### Light track — 14 boards (all 1 MB F4)
 
 Measured at **v2.1** with radar, `LAND_WIND_DIST` and `LAND_WIND_STRICT` on:
 
@@ -3323,16 +3323,18 @@ Measured at **v2.1** with radar, `LAND_WIND_DIST` and `LAND_WIND_STRICT` on:
 | omnibusf4pro | 1 MB | **35.7 KB** | −6.3 | Ships — Omnibus F4 Pro FPV FC |
 | MatekF405-TE-bdshot | 1 MB | **28.8 KB** | −6.5 | Ships — RunCam camera control compiled in |
 | CoreWingF405WMiniV2 | 1 MB | **27.1 KB** | new | **New in v2.1** — CoreWing F405 Wing Mini V2 (see below) |
+| CoreWingF405MiniV2-Buzz | 1 MB | **26.9 KB** | new | **New in v2.1** — Wing Mini V2 + tone buzzer on the LED pad (see below) |
 | AtomRCF405NAVI | 1 MB | **25.8 KB** | −6.3 | Ships — AtomRC F405 Navi FPV FC |
 | AtomRCF405NAVI-Buzz | 1 MB | **25.8 KB** | new | **New in v2.1** — AtomRC F405 Navi + tone buzzer on the LED pad (see below) |
 | CoreWingF405WingV2 | 1 MB | **22.9 KB** | new | **New in v2.1** — CoreWing F405 Wing V2 (see below) |
+| CoreWingF405WingV2-Buzz | 1 MB | **22.6 KB** | new | **New in v2.1** — Wing V2 + tone buzzer on the LED pad (see below) |
 | SpeedyBeeF405WING | 1 MB | **20.7 KB** | −6.1 | Ships |
 | SpeedyBeeF405WING-Buzz | 1 MB | **20.4 KB** | −6.1 | Ships — SpeedyBee F405 WING + tone buzzer (see below) |
 | MatekF405-Wing-bdshot | 1 MB | **13.8 KB** | −7.1 | Ships — tightest of the F4 fleet; RunCam camera control compiled in |
 
 Every board gave up 5–7 KB to v2.1 (the ArduPlane 4.7.2 base plus the v2.1
 fork additions); `AtomRCF405NAVI-Buzz` costs 40 bytes against stock
-`AtomRCF405NAVI`. The eight boards with gimbal support also carry the POI lock
+`AtomRCF405NAVI`. The ten boards with gimbal support also carry the POI lock
 switch (about 1.2 KB).
 
 Gimbal mount support is switched back on in these F4 hwdefs. Upstream's
@@ -3382,20 +3384,30 @@ onboard status LED. Board ID is inherited (`Holybro-KakuteF4-Wing`).
 For `KakuteF4-Wing-Buzz`, wire a *passive* buzzer to the LED pad — see the
 board's `Readme.md`.
 
-Two more variants (v2.1) use the same LED-pad trick on boards whose buzzer
+Four more variants (v2.1) use the same LED-pad trick on boards whose buzzer
 output has no free timer, so stock can only beep at one pitch:
 
 | Variant | Track | Tone pad | Timer | Gives up |
 |---|---|---|---|---|
 | **`AtomRCF405NAVI-Buzz`** | light | LED pad next to SBUS (`PB7`) | TIM4 | LED strip (output 9) |
 | **`TBS_LUCID_H7_OEM-Buzz`** | full | S13/LED (`PA8`) | TIM1 | LED strip (output 13) |
+| **`CoreWingF405WingV2-Buzz`** | light | LED pad (`PA8`) | TIM1 | output 12 (plain PWM; output 11 moves to TIM12) |
+| **`CoreWingF405MiniV2-Buzz`** | light | LED pad (`PA8`) | TIM1 | output 12 (plain PWM; output 11 moves to TIM12) |
 
 Motor and servo outputs are unchanged and the board IDs are inherited, so the
 `.apj` flashes as a normal update. Wire a passive piezo from the pad to GND.
 The stock buzzer output still works too; set `NTF_BUZZ_PIN -1` if an active
 buzzer on it beeps over the tunes. On the Lucid, an existing setup keeps
 `SERVO13_FUNCTION 120` from stock: set it to 0 (output 13 no longer exists,
-so it does nothing either way).
+so it does nothing either way). On the CoreWings the LED pad never ran an LED
+strip in ArduPilot (no DMA stream is left for TIM1), so the variants lose only
+a spare PWM output. `CoreWingF405MiniV2-Buzz` drops the `W` from the stock
+name because ArduPilot limits board names to 23 characters.
+
+Every `-Buzz` board ships **next to its stock board** in the same release, so
+anyone who wants the LED pad (for an LED strip or an output) flashes the plain
+one: `AtomRCF405NAVI`, `TBS_LUCID_H7_OEM`, `CoreWingF405WingV2`,
+`CoreWingF405WMiniV2`.
 
 The comparable stock-upstream H7 board **`MatekH743-bdshot`** (Matek
 **H743-WING**, bidirectional DShot) is *not* a fork `*-Buzz` variant: it
