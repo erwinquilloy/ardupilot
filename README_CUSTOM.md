@@ -1,5 +1,7 @@
 # ArduPlane Custom Build
 
+📖 **Easier to read:** [this README as a page with an outline](https://erwinquilloy.github.io/ardupilot-tools/readme.html) on the ArduPilot Tools site, with every section one click away.
+
 > 🛠️ **One firmware, two release tracks.** Every release is built from this
 > branch for two groups of boards:
 >
