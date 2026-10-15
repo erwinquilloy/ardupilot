@@ -62,9 +62,9 @@ Everything below is on both tracks unless it says "full only".*
 | Flight | **Servo auto-trim also runs in Course Hold** (`SERVO_AUTO_TRIM 2`) | [Auto-trim improvements](#auto-trim-improvements) |
 | Flight | `FLIGHT_OPTIONS` bit 21 handover message starts with "Takeoff complete", so Yaapu voices it | [Bit 21](#flight_options-bit-21--end-takeoff-in-fbwb-instead-of-loitering) |
 | VTOL | **`Q_FS_EKF_HOLD`** (off by default): after an EKF failsafe, refuse switching from a VTOL mode to a fixed-wing mode for N seconds, so a forward transition can't start on a bad height estimate | [Q_FS_EKF_HOLD](#q_fs_ekf_hold--no-forward-transition-right-after-an-ekf-failsafe-v21) |
-| RC | **32 RC channels** (`RC_32CH_ENABLE`, off by default), `RC17_`–`RC32_OPTION` | [32 RC channels](#32-rc-channels-v21) |
+| RC | **32 RC channels** (`RC_32CH_ENABLE`, off by default), `RC17_`–`RC32_OPTION`. Not on `MatekF405-Wing-bdshot` (16 channels, to save flash) | [32 RC channels](#32-rc-channels-v21) |
 | RC | **mLRS RC over MAVLink (`radio_rc_channels`) on every board**, light 1 MB F4 included; stock needs a 2 MB board. Channels 17–32 stay steady with mLRS 1.4.04's mixed 16/32-channel frames | [mLRS MAVLink RC](#mlrs-mavlink-rc-radio_rc_channels-on-every-board-v21) |
-| Head tracking | **Head tracking from the VTX gimbal port** (`SERIALn_PROTOCOL 51`) for goggles that don't send it over MSP; one UART can also drive a CADDX gimbal; MSP head tracking wins when both arrive | [Gimbal-port head tracking](#head-tracking-from-the-vtx-gimbal-port-serialn_protocol-51) |
+| Head tracking | **Head tracking from the VTX gimbal port** (`SERIALn_PROTOCOL 51`) for goggles that don't send it over MSP; one UART can also drive a CADDX gimbal; MSP head tracking wins when both arrive. Not on `MatekF405-Wing-bdshot` (to save flash) | [Gimbal-port head tracking](#head-tracking-from-the-vtx-gimbal-port-serialn_protocol-51) |
 | Head tracking | Short or malformed MSP head-tracker frames are dropped | |
 | OSD | **ADS-B traffic warning**: the `OSDx_ADSB` element flashes inside `OSD_W_ADSB_DIST` (and optionally `OSD_W_ADSB_ALT`). **Full only** | [Traffic warning](#traffic-warning-v21) |
 | Radar | `RADAR_OSD_MODE 1` shows the nearest peer instead of cycling | [Radar OSD element](#osd-element) |
@@ -2070,7 +2070,9 @@ the video-power pad is active-low.
 
 ## 32 RC channels (v2.1)
 
-*New in v2.1. Off by default.*
+*New in v2.1. Off by default.* Every board except `MatekF405-Wing-bdshot`,
+the tightest light board: it is built with 16 channels to save about 1 KB, so
+it has no `RC_32CH_ENABLE` or `RC17_`–`RC32_` parameters.
 
 Stock ArduPilot reads at most 18 RC channels and gives only channels 1–16 an
 `RCx_OPTION`. Radio links that carry more now exist: mLRS 1.4.04 and later
@@ -2632,7 +2634,8 @@ gimbal stays on target, flip back to return to head tracking.
 
 ## Head tracking from the VTX gimbal port (`SERIALn_PROTOCOL 51`)
 
-*New in v2.1.*
+*New in v2.1.* Every board with gimbal support except `MatekF405-Wing-bdshot`,
+where it is left out to save flash. Head tracking over MSP still works there.
 
 Most Walksnail setups send head tracking to the FC over MSP: the Goggles X /
 Avatar, and the Ascent goggles with an Ascent Lite+ VTX. Use the MSP setup above
@@ -2719,8 +2722,9 @@ Bench-verified with an Ascent VTX and a CADDX GM3 v2, and with a servo pan/tilt.
 - Head-forward always maps to gimbal-forward, even with asymmetric limits.
 - **Which boards have it.** Every **full-track** board is F7/H7 and
   mount-capable. On the **light** track it runs on the mount-enabled F4 boards —
-  `AtomRCF405NAVI`, `MatekF405-TE-bdshot`, `MatekF405-Wing-bdshot`,
-  `SpeedyBeeF405WING`, `SpeedyBeeF405WING-Buzz` and `speedybeef4v3`.
+  `AtomRCF405NAVI`, `AtomRCF405NAVI-Buzz`, the four `CoreWingF405*` boards,
+  `MatekF405-TE-bdshot`, `MatekF405-Wing-bdshot`, `SpeedyBeeF405WING`,
+  `SpeedyBeeF405WING-Buzz` and `speedybeef4v3`.
   `KakuteF4-Wing-Buzz`, `MatekF405-STD` and `omnibusf4pro` ship exactly as
   upstream with the mount subsystem off to save flash, so they carry no gimbal
   support. Running a gimbal on one of those? Turning it on is a small hwdef
@@ -3330,7 +3334,7 @@ Measured at **v2.1** with radar, `LAND_WIND_DIST` and `LAND_WIND_STRICT` on:
 | CoreWingF405WingV2-Buzz | 1 MB | **22.6 KB** | new | **New in v2.1** — Wing V2 + tone buzzer on the LED pad (see below) |
 | SpeedyBeeF405WING | 1 MB | **20.7 KB** | −6.1 | Ships |
 | SpeedyBeeF405WING-Buzz | 1 MB | **20.4 KB** | −6.1 | Ships — SpeedyBee F405 WING + tone buzzer (see below) |
-| MatekF405-Wing-bdshot | 1 MB | **13.8 KB** | −7.1 | Ships — tightest of the F4 fleet; RunCam camera control compiled in |
+| MatekF405-Wing-bdshot | 1 MB | **15.1 KB** | −5.8 | Ships — tightest of the F4 fleet; RunCam camera control compiled in. Built without 32 RC channels and gimbal-port head tracking |
 
 Every board gave up 5–7 KB to v2.1 (the ArduPlane 4.7.2 base plus the v2.1
 fork additions); `AtomRCF405NAVI-Buzz` costs 40 bytes against stock
