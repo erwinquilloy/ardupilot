@@ -14,3 +14,9 @@ PC8  TIM8_CH3  TIM8 PWM(5) GPIO(54) NODMA
 PC9  TIM8_CH4  TIM8 PWM(6) GPIO(55) NODMA
 
 DMA_NOSHARE TIM3_UP
+
+# Fork: RC channels 1-16 only on this board. The fork's 32-channel option
+# (RC_32CH_ENABLE, RC17_-RC32_) costs ~1.1 KB of flash even when switched off,
+# and this is the tightest board of the light fleet. Without it the RC17_-RC32_
+# and RC_32CH_ENABLE parameters don't exist; mLRS channels above 16 are ignored.
+define NUM_RC_CHANNELS 16
