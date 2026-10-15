@@ -1,0 +1,27 @@
+# hw definition for a custom CoreWing F405 Wing Mini V2 variant that adds a hardware
+# ToneAlarm (pitched-tone) buzzer on the "LED" pad.
+#
+# The stock buzzer output (PC15) is a plain GPIO with no timer, so ArduPilot
+# tunes only come out as single-pitch on/off beeps. This variant repurposes
+# the LED pad - PA8, the board's output 12 - as a hardware tone output: PA8 is
+# marked ALARM on TIM1_CH1, which defines HAL_PWM_ALARM so AP_ToneAlarm plays
+# the full pitched tunes on a passive buzzer wired to the LED pad.
+#
+# A tone timer can drive nothing else, and TIM1 also carried output 11 (PB15,
+# TIM1_CH3N), so output 11 moves to TIM12_CH2, which nothing else on this board
+# uses (outputs 1-10 are on TIM2/3/4/8, the system timer is TIM5, RC input is
+# TIM9). Output 11 was PWM-only before as well, so it loses nothing.
+#
+# Cost: output 12 (the LED pad). The stock board can't run an LED strip on it
+# anyway (no DMA stream is left for TIM1), so it was a plain PWM pad. The
+# onboard PC15 buzzer output stays; set NTF_BUZZ_PIN -1 to silence an active
+# buzzer on it.
+#
+# Board ID is inherited, so the .apj flashes over the stock bootloader as a
+# normal firmware update. See Readme.md.
+
+include ../CoreWingF405WMiniV2/hwdef.dat
+
+undef PB15 PA8
+PB15 TIM12_CH2 TIM12 PWM(11) GPIO(60) NODMA
+PA8  TIM1_CH1  TIM1  GPIO(61) ALARM
