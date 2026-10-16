@@ -5,7 +5,11 @@
 # GPIO, which leaves 9 outputs. This variant restores upstream's
 # PA15 TIM2_CH1 PWM(10). TIM2 drives nothing else on this board (system timer
 # is TIM5, RC input TIM9), so output 10 is its own group and can run a
-# different PWM rate or DShot from 1-9.
+# different PWM rate from 1-9.
+#
+# NODMA: TIM2_UP's only DMA stream (DMA1 stream 1) is USART3_RX's, which the
+# bdshot base keeps free for full-DMA UART3 (use it for the RC receiver). So
+# output 10 is PWM only - no DShot on it.
 #
 # Cost: relay 1 no longer has a default pin (RELAY1_PIN -1). Point RELAY1_PIN
 # at a spare output's GPIO (50-59, with that SERVOn_FUNCTION -1) to keep one.
@@ -17,4 +21,4 @@
 include ../MatekF405-Wing-bdshot/hwdef.dat
 
 undef PA15 RELAY1_PIN_DEFAULT
-PA15 TIM2_CH1 TIM2 PWM(10) GPIO(59)
+PA15 TIM2_CH1 TIM2 PWM(10) GPIO(59) NODMA
