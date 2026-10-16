@@ -1,0 +1,20 @@
+# hw definition for a MatekF405-Wing-bdshot variant with the "LED" pad back as
+# PWM output 10, as in upstream ArduPilot.
+#
+# The fork's MatekF405-Wing hwdef turns the LED pad (PA15) into a RELAY_1
+# GPIO, which leaves 9 outputs. This variant restores upstream's
+# PA15 TIM2_CH1 PWM(10). TIM2 drives nothing else on this board (system timer
+# is TIM5, RC input TIM9), so output 10 is its own group and can run a
+# different PWM rate or DShot from 1-9.
+#
+# Cost: relay 1 no longer has a default pin (RELAY1_PIN -1). Point RELAY1_PIN
+# at a spare output's GPIO (50-59, with that SERVOn_FUNCTION -1) to keep one.
+#
+# Name is not MatekF405-Wing-bdshot-LED because board names are capped at
+# 23 characters. Board ID is inherited, so the .apj flashes over the stock
+# bootloader as a normal firmware update.
+
+include ../MatekF405-Wing-bdshot/hwdef.dat
+
+undef PA15 RELAY1_PIN_DEFAULT
+PA15 TIM2_CH1 TIM2 PWM(10) GPIO(59)
