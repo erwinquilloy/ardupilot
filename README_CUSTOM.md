@@ -69,7 +69,7 @@ Everything below is on both tracks unless it says "full only".*
 | OSD | **ADS-B traffic warning**: the `OSDx_ADSB` element flashes inside `OSD_W_ADSB_DIST` (and optionally `OSD_W_ADSB_ALT`). **Full only** | [Traffic warning](#traffic-warning-v21) |
 | Radar | `RADAR_OSD_MODE 1` shows the nearest peer instead of cycling | [Radar OSD element](#osd-element) |
 | Boards | **Four new tone-buzzer variants**: `AtomRCF405NAVI-Buzz`, `CoreWingF405WingV2-Buzz`, `CoreWingF405MiniV2-Buzz` (light) and `TBS_LUCID_H7_OEM-Buzz` (full) play the full pitched tunes on a passive buzzer wired to the LED pad, instead of the single-pitch beeps of the stock buzzer output. They give up only the LED pad's own output; the stock boards still ship alongside for anyone who wants it | [Tone-buzzer variants](#tone-buzzer-board-variant-speedybeef405wing-buzz) |
-| Boards | **CoreWing F405 Wing V2 and Wing Mini V2** (`CoreWingF405WingV2`, `CoreWingF405WMiniV2`, light): new in ArduPlane 4.7.2, shipped on upstream's own board definitions | [CoreWing F405 Wing V2 / Wing Mini V2](#light-track--14-boards-all-1-mb-f4) |
+| Boards | **CoreWing F405 Wing V2 and Wing Mini V2** (`CoreWingF405WingV2`, `CoreWingF405WMiniV2`, light): new in ArduPlane 4.7.2, shipped on upstream's own board definitions | [CoreWing F405 Wing V2 / Wing Mini V2](#light-track--15-boards-all-1-mb-f4) |
 
 ## Contents
 
@@ -2720,7 +2720,7 @@ Bench-verified with an Ascent VTX and a CADDX GM3 v2, and with a servo pan/tilt.
 - **Which boards have it.** Every **full-track** board is F7/H7 and
   mount-capable. On the **light** track it runs on the mount-enabled F4 boards —
   `AtomRCF405NAVI`, `AtomRCF405NAVI-Buzz`, the four `CoreWingF405*` boards,
-  `MatekF405-TE-bdshot`, `MatekF405-Wing-bdshot`, `SpeedyBeeF405WING`,
+  `MatekF405-TE-bdshot`, `MatekF405-Wing-bdshot`, `MatekF405-Wing-PWM10`, `SpeedyBeeF405WING`,
   `SpeedyBeeF405WING-Buzz` and `speedybeef4v3`.
   `KakuteF4-Wing-Buzz`, `MatekF405-STD` and `omnibusf4pro` ship exactly as
   upstream with the mount subsystem off to save flash, so they carry no gimbal
@@ -3312,7 +3312,7 @@ feature add will push against.
 > `arduplane_with_bl.hex` over DFU first. Not flown on this firmware yet. See
 > [the board README](libraries/AP_HAL_ChibiOS/hwdef/TBS_LUCID_H7_WING_AIO/README.md).
 
-### Light track — 14 boards (all 1 MB F4)
+### Light track — 15 boards (all 1 MB F4)
 
 Measured at **v2.1** with radar, `LAND_WIND_DIST` and `LAND_WIND_STRICT` on:
 
@@ -3331,7 +3331,8 @@ Measured at **v2.1** with radar, `LAND_WIND_DIST` and `LAND_WIND_STRICT` on:
 | CoreWingF405WingV2-Buzz | 1 MB | **22.6 KB** | new | **New in v2.1** — Wing V2 + tone buzzer on the LED pad (see below) |
 | SpeedyBeeF405WING | 1 MB | **20.7 KB** | −6.1 | Ships |
 | SpeedyBeeF405WING-Buzz | 1 MB | **20.4 KB** | −6.1 | Ships — SpeedyBee F405 WING + tone buzzer (see below) |
-| MatekF405-Wing-bdshot | 1 MB | **13.8 KB** | −7.1 | Ships — tightest of the F4 fleet; RunCam camera control compiled in |
+| MatekF405-Wing-bdshot | 1 MB | **13.8 KB** | −7.1 | Ships — RunCam camera control compiled in |
+| MatekF405-Wing-PWM10 | 1 MB | **13.5 KB** | new | **New in v2.1** — Matek F405-Wing with the `LED` pad as PWM output 10 (see below); tightest of the F4 fleet |
 
 Every board gave up 5–7 KB to v2.1 (the ArduPlane 4.7.2 base plus the v2.1
 fork additions); `AtomRCF405NAVI-Buzz` costs 40 bytes against stock
@@ -3356,7 +3357,19 @@ with only the servo and CADDX mount backends to save flash.
 > [Wing V2](libraries/AP_HAL_ChibiOS/hwdef/CoreWingF405WingV2/README.md) and
 > [Wing Mini V2](libraries/AP_HAL_ChibiOS/hwdef/CoreWingF405WMiniV2/README.md).
 
-`MatekF405-Wing-bdshot` is the canary board — first to bump the
+> **`MatekF405-Wing-PWM10`** is `MatekF405-Wing-bdshot` with the `LED` pad
+> (PA15) back as **PWM output 10**, as in upstream ArduPilot. The fork's
+> Matek F405-Wing definition uses that pad as the relay 1 pin, which leaves
+> 9 outputs (S9 is the bare solder pad). Output 10 runs on its own timer, so
+> it can use a different PWM rate from 1–9, but it is **PWM only — no
+> DShot**: its timer's only DMA stream is the one UART3 receive needs, and
+> UART3 (with UART1) is the full-DMA port to use for an ELRS/CRSF receiver.
+> Relay 1 has no default pin on this build (`RELAY1_PIN -1`); to keep a
+> relay, point `RELAY1_PIN` at a spare output's GPIO (50–59) and set that
+> `SERVOn_FUNCTION` to -1. Same board ID, so the `.apj` flashes over the
+> stock bootloader. Built and DMA-checked; not flown.
+
+`MatekF405-Wing-bdshot` and `-PWM10` are the canary boards — first to bump the
 1 MB ceiling in any future upstream rebase or feature add. Every board on
 this track is flash-constrained, so nothing here has spare headroom to
 absorb a regression.
