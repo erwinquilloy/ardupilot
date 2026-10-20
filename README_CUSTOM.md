@@ -1315,7 +1315,7 @@ Costs about 2.9 KB of flash on a 1 MB F4 board.
 ### `RTL_LVL_RLL_LMT` — separate roll limit for the initial climb
 During RTL's initial climb to `RTL_CLIMB_MIN`, the roll limit is
 reduced to this value (deg) to keep the plane stable as it gains
-altitude. After the climb phase the normal `LIM_ROLL_CD` applies.
+altitude. After the climb phase the normal `ROLL_LIMIT_DEG` applies.
 
 ### `FLIGHT_OPTIONS` bit 22 — `RTL_CLIMB_FIRST_ONLY_IN_FS`
 Without this bit, RTL always climbs to `RTL_CLIMB_MIN` first before
@@ -2872,6 +2872,7 @@ reception or range.
 | Bit | Name                                       | Effect                                              |
 |----:|--------------------------------------------|-----------------------------------------------------|
 | 18  | `OPTION_TWO_DECIMALS_VERTICAL_SPEED`       | Vspeed shown to 2 decimals                          |
+| 19  | `OPTION_RIGHT_JUSTIFY_TUNED_PN`            | Tuned-parameter name right-justified on the OSD     |
 | 21  | `OPTION_ONE_DECIMAL_ATTITUDE`              | Pitch / roll shown to 1 decimal (default ON)        |
 | 23  | `OPTION_SHORTEN_PLUSCODE`                  | Strip leading digits from plus codes when home is near |
 
@@ -2898,7 +2899,7 @@ reception or range.
 - **Vspeed LPF** (alpha 0.33) — smoothed display
 - **Efficiency LPF** (alpha 0.2) — smoothed ground / air / climb efficiency
 - **Rangefinder altitude** — attitude-corrected to vertical, with
-  `RNGFNDx_GNDCLEAR` subtracted (so the OSD shows altitude above ground,
+  `RNGFNDx_GNDCLR` subtracted (so the OSD shows altitude above ground,
   not above the sensor mount)
 - **Pitch / roll numeric fix** — VTOL-aware via
   `AP::vehicle()->get_osd_attitude_rad()` and proper level-symbol
@@ -2940,7 +2941,7 @@ reception or range.
 - **DJI OSD battery-bar data source — `OSD_BATBAR_TYPE`** —
   default `0` keeps the goggle's battery bar driven by mAh used
   vs `BATT_CAPACITY` (stock behaviour). Set `1` to drive the bar
-  by Wh used vs `BATT_CAPACITY_WH` instead. The DJI Air Unit only
+  by Wh used vs `BATT_CAPA_WH` instead. The DJI Air Unit only
   consumes mAh + capacity_mah in `MSP_BATTERY_STATE`, so when set
   to Wh we rescale the reported capacity to make the resulting
   percentage equal `consumed_wh / capacity_wh`. Useful on packs
@@ -3758,14 +3759,14 @@ have safe defaults — set them only if you actually need them.
 
 | Param            | Default | Purpose                                                                 |
 |------------------|--------:|-------------------------------------------------------------------------|
-| `THR_FF_FILT`    | 1.0     | Throttle feed-forward low-pass-filter alpha (1.0 = no filter)           |
-| `THR_FF_DAMP`    | 1.0     | Throttle FF dampening multiplier (1.0 = full FF)                        |
+| `TECS_THR_FF_FILT` | 1.0   | Throttle feed-forward low-pass-filter alpha (1.0 = no filter)           |
+| `TECS_THR_FF_DAMP` | 1.0   | Throttle FF dampening multiplier (1.0 = full FF)                        |
 | `RTL_SINK_MAX`   | 0       | Max sink rate in RTL (m/s, 0 = use `TECS_SINK_MAX`)                     |
 | `RTL_CLIMB_MAX`  | 0       | Max climb rate in RTL                                                   |
 | `AUTO_SINK_MAX`  | 0       | Max sink rate in AUTO                                                   |
 | `AUTO_CLIMB_MAX` | 0       | Max climb rate in AUTO                                                  |
 
-`THR_FF_FILT` / `THR_FF_DAMP` are also exposed as a tuning set —
+`TECS_THR_FF_FILT` / `TECS_THR_FF_DAMP` are also exposed as a tuning set —
 `TUNE_PARAM = 114` (`TUNING_SET_TECS_THR_FF`) sweeps both at once.
 
 > ⚠️ **This was 111 up to v1.1.** ArduPlane 4.7 uses 111–113 for its own
