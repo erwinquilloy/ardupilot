@@ -1405,7 +1405,7 @@ const AP_Param::GroupInfo ParametersG2::var_info[] = {
     // @DisplayName: Max sink rate in RTL mode
     // @Description: Max sink rate in RTL mode. Set to 0 to use TECS_SINK_MAX.
     // @Units: m/s
-    // @Range: 1 20
+    // @Range: 0 20
     // @Increment: 0.5
     // @User: Standard
     AP_GROUPINFO("RTL_SINK_MAX", 48, ParametersG2, rtl_sink_max, 0),
@@ -1414,7 +1414,7 @@ const AP_Param::GroupInfo ParametersG2::var_info[] = {
     // @DisplayName: Max climb rate in RTL mode
     // @Description: Max climb rate in RTL mode. Set to 0 to use TECS_CLMB_MAX.
     // @Units: m/s
-    // @Range: 1 20
+    // @Range: 0 20
     // @Increment: 0.5
     // @User: Standard
     AP_GROUPINFO("RTL_CLIMB_MAX", 49, ParametersG2, rtl_climb_max, 0),
@@ -1423,7 +1423,7 @@ const AP_Param::GroupInfo ParametersG2::var_info[] = {
     // @DisplayName: Max sink rate in auto mode
     // @Description: Max sink rate in auto mode. Set to 0 to use TECS_SINK_MAX.
     // @Units: m/s
-    // @Range: 1 20
+    // @Range: 0 20
     // @Increment: 0.5
     // @User: Standard
     AP_GROUPINFO("AUTO_SINK_MAX", 50, ParametersG2, auto_sink_max, 0),
@@ -1432,7 +1432,7 @@ const AP_Param::GroupInfo ParametersG2::var_info[] = {
     // @DisplayName: Max climb rate in auto mode
     // @Description: Max climb rate in auto mode. Set to 0 to use TECS_CLMB_MAX.
     // @Units: m/s
-    // @Range: 1 20
+    // @Range: 0 20
     // @Increment: 0.5
     // @User: Standard
     AP_GROUPINFO("AUTO_CLIMB_MAX", 51, ParametersG2, auto_climb_max, 0),
