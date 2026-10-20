@@ -263,6 +263,7 @@ const AP_Param::GroupInfo RC_Channel::var_info[] = {
     // @Values{Copter, Rover, Plane, Blimp, Sub}:  218:Loweheiser throttle
     // @Values{Copter}: 219:Transmitter Tuning
     // @Values{Plane}: 200:Servos Auto Trim
+    // @Values{Plane}: 250:Tuning Set Select
     // @Values{Plane}: 251:RTL Autoland Commit
     // @Values{Plane}: 252:Mount1 Head Track Enable
     // @Values{Plane}: 253:Mount1 Head Track Center Lock
