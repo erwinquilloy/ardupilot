@@ -67,9 +67,10 @@ Everything below is on both tracks unless it says "full only".*
 | Head tracking | **Head tracking from the VTX gimbal port** (`SERIALn_PROTOCOL 51`) for goggles that don't send it over MSP; one UART can also drive a CADDX gimbal; MSP head tracking wins when both arrive | [Gimbal-port head tracking](#head-tracking-from-the-vtx-gimbal-port-serialn_protocol-51) |
 | Head tracking | Short or malformed MSP head-tracker frames are dropped | |
 | OSD | **ADS-B traffic warning**: the `OSDx_ADSB` element flashes inside `OSD_W_ADSB_DIST` (and optionally `OSD_W_ADSB_ALT`). **Full only** | [Traffic warning](#traffic-warning-v21) |
-| Radar | `RADAR_OSD_MODE 1` shows the nearest peer instead of cycling | [Radar OSD element](#osd-element) |
+| Radar | `RADAR_OSD_MODE 1` shows the nearest peer instead of cycling. A peer without a GPS fix (sending 0,0) is no longer drawn with a distance to 0,0 | [Radar OSD element](#osd-element) |
 | Boards | **Four new tone-buzzer variants**: `AtomRCF405NAVI-Buzz`, `CoreWingF405WingV2-Buzz`, `CoreWingF405MiniV2-Buzz` (light) and `TBS_LUCID_H7_OEM-Buzz` (full) play the full pitched tunes on a passive buzzer wired to the LED pad, instead of the single-pitch beeps of the stock buzzer output. They give up only the LED pad's own output; the stock boards still ship alongside for anyone who wants it | [Tone-buzzer variants](#tone-buzzer-board-variant-speedybeef405wing-buzz) |
 | Boards | **CoreWing F405 Wing V2 and Wing Mini V2** (`CoreWingF405WingV2`, `CoreWingF405WMiniV2`, light): new in ArduPlane 4.7.2, shipped on upstream's own board definitions | [CoreWing F405 Wing V2 / Wing Mini V2](#light-track--15-boards-all-1-mb-f4) |
+| Boards | **`MatekF405-Wing-PWM10`** (light): `MatekF405-Wing-bdshot` with the `LED` pad back as PWM output 10 instead of relay 1 | [Light track](#light-track--15-boards-all-1-mb-f4) |
 
 ## Contents
 
