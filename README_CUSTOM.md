@@ -59,6 +59,7 @@ Everything below is on both tracks unless it says "full only".*
 |---|---|---|
 | Base | **Rebased onto ArduPlane 4.7.2** (v2.0 was on 4.7.1). A bug-fix release: no parameter renames. Most visible fix: a flight controller mounted upside down or rotated (`AHRS_ORIENTATION` not 0) no longer waits minutes for "Roll/Pitch inconsistent" after power-up | [What ArduPlane 4.7.2 brought in](#what-arduplane-472-brought-in) |
 | Flight | **Adaptive pitch trim** (`RCx_OPTION 254`, `PTCH_TRIM_SPD` / `PTCH_TRIM_OFS`): pitch trim scheduled on airspeed, learned in a few straight legs; `KFF_THR2PTCH` is ignored while the curve is active | [Adaptive pitch trim](#adaptive-pitch-trim--airspeed-schedule-learned-in-flight-rcx_option--254) |
+| Flight | **Servo auto-trim also works in Course Hold**, under the same rules as FBWA: `SERVO_AUTO_TRIM 1` (once), `2` (continuous) or the `RCx_OPTION 200` switch. With 0 and the switch low, Course Hold never trims | [Auto-trim improvements](#auto-trim-improvements) |
 | Flight | `FLIGHT_OPTIONS` bit 21 handover message starts with "Takeoff complete", so Yaapu voices it | [Bit 21](#flight_options-bit-21--end-takeoff-in-fbwb-instead-of-loitering) |
 | VTOL | **`Q_FS_EKF_HOLD`** (off by default): after an EKF failsafe, refuse switching from a VTOL mode to a fixed-wing mode for N seconds, so a forward transition can't start on a bad height estimate | [Q_FS_EKF_HOLD](#q_fs_ekf_hold--no-forward-transition-right-after-an-ekf-failsafe-v21) |
 | RC | **32 RC channels** (`RC_32CH_ENABLE`, off by default), `RC17_`–`RC32_OPTION` | [32 RC channels](#32-rc-channels-v21) |
@@ -1809,11 +1810,11 @@ integrators drain toward zero. There are three ways to run it:
 | `SERVO_AUTO_TRIM = 2` (permanent) | in every eligible mode, every flight | never — it keeps correcting for the whole flight |
 | Auto Trim mode (27) or `RCx_OPTION = 200` | on demand, even with `SERVO_AUTO_TRIM = 0` | when you leave the mode or flip the switch low (or on settling, if `SERVO_AUTO_TRIM = 1`) |
 
-- **Eligible modes:** FBWA, Auto Trim, and the modes that manage the
-  throttle themselves — FBWB, CRUISE, LOITER, RTL, GUIDED, CIRCLE,
-  THERMAL. Never MANUAL, STABILIZE, ACRO, Course Hold, AUTO or TAKEOFF,
-  nor with VTOL motors running. The `RCx_OPTION = 200` switch does
-  nothing in a non-eligible mode.
+- **Eligible modes:** FBWA, Course Hold (new in v2.1), Auto Trim, and
+  the modes that manage the throttle themselves — FBWB, CRUISE, LOITER,
+  RTL, GUIDED, CIRCLE, THERMAL. Never MANUAL, STABILIZE, ACRO, AUTO or
+  TAKEOFF, nor with VTOL motors running. The `RCx_OPTION = 200` switch
+  does nothing in a non-eligible mode.
 - **Conditions:** armed and flying, roll and pitch demands within ±7°,
   ground and air speed both 8 m/s or more.
 - **Rate and limits:** each surface moves at most about 2 µs per second,
@@ -1830,6 +1831,10 @@ integrators drain toward zero. There are three ways to run it:
   higher = more lenient. Default raised from a hardcoded 4 to match
   ArduCustom, so users with mechanical slop or noisy inputs see
   autotrim settle faster.
+- **Course Hold (new in v2.1):** trims under the same rules as FBWA —
+  only when `SERVO_AUTO_TRIM` is 1 or 2, or while the `RCx_OPTION = 200`
+  switch is high. Being in Course Hold does not start trimming by
+  itself. Before v2.1 Course Hold never trimmed.
 
 ## Move sticks to cancel auto launch
 
