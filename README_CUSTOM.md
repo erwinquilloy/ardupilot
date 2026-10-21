@@ -1,4 +1,6 @@
-# ArduPlane Custom Build
+# ArduPlane Stratos
+
+*Formerly **ArduPlane Custom**. Same firmware and release tracks; v2.1 is the first release under the new name.*
 
 > 🛠️ **One firmware, two release tracks.** Every release is built from this
 > branch for two groups of boards:
@@ -57,6 +59,7 @@ Everything below is on both tracks unless it says "full only".*
 
 | Area | Change | Details |
 |---|---|---|
+| Name | **ArduPlane Custom is now ArduPlane Stratos.** The boot banner reads `ArduPlane V4.7.2 Stratos v2.1`; parameters, release tracks and branch names are unchanged | [Firmware version string](#firmware-version-string) |
 | Base | **Rebased onto ArduPlane 4.7.2** (v2.0 was on 4.7.1). A bug-fix release: no parameter renames. Most visible fix: a flight controller mounted upside down or rotated (`AHRS_ORIENTATION` not 0) no longer waits minutes for "Roll/Pitch inconsistent" after power-up | [What ArduPlane 4.7.2 brought in](#what-arduplane-472-brought-in) |
 | Flight | **Adaptive pitch trim** (`RCx_OPTION 254`, `PTCH_TRIM_SPD` / `PTCH_TRIM_OFS`): pitch trim scheduled on airspeed, learned in a few straight legs; `KFF_THR2PTCH` is ignored while the curve is active | [Adaptive pitch trim](#adaptive-pitch-trim--airspeed-schedule-learned-in-flight-rcx_option--254) |
 | Flight | **Servo auto-trim also works in Course Hold**, under the same rules as FBWA: `SERVO_AUTO_TRIM 1` (once), `2` (continuous) or the `RCx_OPTION 200` switch. With 0 and the switch low, Course Hold never trims | [Auto-trim improvements](#auto-trim-improvements) |
@@ -305,11 +308,11 @@ v2.1 carries every 4.7.2 change; nothing was dropped. These are the ones that
 matter for planes and VTOLs. Changes for Copter, Sub, Linux boards and the
 build tools are left out of this list.
 
-| What changed in 4.7.2 | Who notices | In Custom v2.1 |
+| What changed in 4.7.2 | Who notices | In Stratos v2.1 |
 |---|---|---|
 | **Upside-down or rotated flight controllers** (`AHRS_ORIENTATION` not 0): the gyro calibration at boot no longer strips the board rotation from the accelerometer. On 4.7.1 the backup attitude estimate could start up to 180° off and block arming with "Roll/Pitch inconsistent" for minutes | Boards mounted inverted or sideways | All boards |
 | **Dead reckoning without a pitot:** when EKF3 starts treating the wind as fixed (GPS lost, no airspeed sensor) it no longer flags itself unhealthy for a moment, which could hand navigation to DCM and show a jump in position | No-pitot planes that lose GPS | All boards |
-| **OSD heading, home and wind arrows** use the VTOL-view heading | Tailsitters | All boards. Custom keeps its own rounding of roll and pitch on the OSD, and its radar and ADS-B arrows use the same heading |
+| **OSD heading, home and wind arrows** use the VTOL-view heading | Tailsitters | All boards. Stratos keeps its own rounding of roll and pitch on the OSD, and its radar and ADS-B arrows use the same heading |
 | **Harmonic notch, quintuple option** (`INS_HNTCH_OPTS` bit 6): the filter always has room for whole harmonics | Quintuple-notch users | All boards |
 | **EKF3 drag fusion with GPS yaw** no longer waits for compass alignment | Dual-GPS (moving-baseline) yaw | All boards |
 | **Optical flow:** the sign of the terrain height used for flow scaling is fixed | Optical flow over terrain | Where optical flow is built |
@@ -318,7 +321,7 @@ build tools are left out of this list.
 | **LSM6DSV IMUs:** KakuteH7 / KakuteH7 Mini and Pixhawk6X support them, and the LSM6DSV heater is now driven | Those boards | All boards where the IMU is used |
 | **MAVLink:** long status messages sent in several parts by another component (gimbal, companion computer) are put back together again | GCS logs and messages | All boards |
 | **Follow** (`FOLL_*`, used by the plane follow script): the target is dropped when `FOLL_SYSID` changes, and the automatic target detection is gone | Plane follow script users | Full builds (light builds have no scripting) |
-| **New boards upstream:** CoreWing F405 Wing V2 and Wing Mini V2, CUAV-X25-MEGA, GPilot P1, Lectron Pi5, NWBLUE_PROH757 | Owners of those boards | In the source and buildable, but not in the Custom release fleet |
+| **New boards upstream:** CoreWing F405 Wing V2 and Wing Mini V2, CUAV-X25-MEGA, GPilot P1, Lectron Pi5, NWBLUE_PROH757 | Owners of those boards | In the source and buildable, but not in the Stratos release fleet |
 
 The full upstream list is in
 [ArduPlane's release notes](https://github.com/ArduPilot/ardupilot/blob/Plane-4.7.2/ArduPlane/ReleaseNotes.txt).
@@ -363,14 +366,14 @@ Mavlink `AUTOPILOT_VERSION` (the banner that shows up in MissionPlanner
 on connect, and in `arduplane --help`) is built up as:
 
 ```
-ArduPlane V<x.y.z> Custom <FORK_VERSION>[ Light] (<git-hash>)
+ArduPlane V<x.y.z> Stratos <FORK_VERSION>[ Light] (<git-hash>)
 ```
 
 For example:
 
 ```
-ArduPlane V4.7.2 Custom v2.1 (1a2b3c4)        # 2 MB board (full track)
-ArduPlane V4.7.2 Custom v2.1 Light (1a2b3c4)  # 1 MB board (light track)
+ArduPlane V4.7.2 Stratos v2.1 (1a2b3c4)        # 2 MB board (full track)
+ArduPlane V4.7.2 Stratos v2.1 Light (1a2b3c4)  # 1 MB board (light track)
 ```
 
 The hash is the commit the release was built from; the release notes
@@ -383,7 +386,7 @@ scripts) keep working. `FORK_VERSION` lives in
 The `Light` suffix is added automatically on 1 MB boards
 (`AP_CUSTOM_LIGHT`, see above). Both tracks of a release are built from
 the same commit, so they show the same hash. Up to v1.1 the brand in the
-string was `ArduCustom`.
+string was `ArduCustom`, and v2.0 used `Custom`.
 
 ---
 
@@ -3240,7 +3243,7 @@ Every release ships two per-board tracks built from **the same commit**:
 `full-v2.1` for F7 / H7 / 2 MB boards and `light-v2.1` for 1 MB F4 boards.
 Both carry the **identical fork feature set**; they differ only in which
 hardware backends are compiled in. A board's version string tells you which you
-flashed: the light build appends ` Light` (`... Custom v2.1 Light (…)`), the
+flashed: the light build appends ` Light` (`... Stratos v2.1 Light (…)`), the
 full build has no suffix.
 
 Since v1.1 the two tracks don't overlap — a given board appears on exactly one
