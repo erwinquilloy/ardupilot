@@ -59,7 +59,7 @@ Everything below is on both tracks unless it says "full only".*
 |---|---|---|
 | Base | **Rebased onto ArduPlane 4.7.2** (v2.0 was on 4.7.1). A bug-fix release: no parameter renames. Most visible fix: a flight controller mounted upside down or rotated (`AHRS_ORIENTATION` not 0) no longer waits minutes for "Roll/Pitch inconsistent" after power-up | [What ArduPlane 4.7.2 brought in](#what-arduplane-472-brought-in) |
 | Flight | **Adaptive pitch trim** (`RCx_OPTION 254`, `PTCH_TRIM_SPD` / `PTCH_TRIM_OFS`): pitch trim scheduled on airspeed, learned in a few straight legs; `KFF_THR2PTCH` is ignored while the curve is active | [Adaptive pitch trim](#adaptive-pitch-trim--airspeed-schedule-learned-in-flight-rcx_option--254) |
-| Flight | **Servo auto-trim also runs in Course Hold** (`SERVO_AUTO_TRIM 2`) | [Auto-trim improvements](#auto-trim-improvements) |
+| Flight | **Servo auto-trim now also runs in Course Hold**, so continuous trim (`SERVO_AUTO_TRIM 2`) covers almost the whole manual-throttle flight | [Auto-trim improvements](#auto-trim-improvements) |
 | Flight | `FLIGHT_OPTIONS` bit 21 handover message starts with "Takeoff complete", so Yaapu voices it | [Bit 21](#flight_options-bit-21--end-takeoff-in-fbwb-instead-of-loitering) |
 | VTOL | **`Q_FS_EKF_HOLD`** (off by default): after an EKF failsafe, refuse switching from a VTOL mode to a fixed-wing mode for N seconds, so a forward transition can't start on a bad height estimate | [Q_FS_EKF_HOLD](#q_fs_ekf_hold--no-forward-transition-right-after-an-ekf-failsafe-v21) |
 | RC | **32 RC channels** (`RC_32CH_ENABLE`, off by default), `RC17_`–`RC32_OPTION` | [32 RC channels](#32-rc-channels-v21) |
@@ -1831,10 +1831,11 @@ integrators drain toward zero. There are three ways to run it:
   higher = more lenient. Default raised from a hardcoded 4 to match
   ArduCustom, so users with mechanical slop or noisy inputs see
   autotrim settle faster.
-- **Continuous trim in Course Hold (new in v2.1):** `SERVO_AUTO_TRIM = 2`
-  now also trims in Course Hold, so with the modes above it runs for
-  practically the whole manual-throttle flight, like iNav's continuous
-  servo autotrim. Before v2.1 Course Hold was excluded.
+- **Course Hold is an auto-trim mode (new in v2.1):** all three ways
+  (once, permanent, and the Auto Trim mode/switch) now also trim in
+  Course Hold. With `SERVO_AUTO_TRIM = 2` it runs for practically the
+  whole manual-throttle flight, like iNav's continuous servo autotrim.
+  Before v2.1 Course Hold was excluded.
 
 ## Move sticks to cancel auto launch
 
