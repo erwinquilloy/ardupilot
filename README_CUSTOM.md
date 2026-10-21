@@ -1,6 +1,6 @@
 # ArduPlane Stratos
 
-*Formerly **ArduPlane Custom**. Same firmware and release tracks; v2.1 is the first release under the new name.*
+*Formerly ArduPlane Custom. Same firmware and release tracks; v2.1 is the first release under the new name.*
 
 > 🛠️ **One firmware, two release tracks.** Every release is built from this
 > branch for two groups of boards:
