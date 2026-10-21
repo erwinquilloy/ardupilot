@@ -908,12 +908,6 @@ transition and stayed there while it descended. The fix for that is in the
 setup: `EK3_SRC1_VELZ 0` (don't use GPS vertical speed), `GPS_AUTO_CONFIG 1`,
 and transitions from at least 20 m.
 
-Tested in SITL only (quadplane, EKF failsafe forced in a QLOITER hover):
-FBWB refused from the GCS and from the RC mode switch, QSTABILIZE allowed,
-FBWB still refused 40 s later while the EKF stayed bad, and allowed once it
-had been healthy for the hold time. Above `Q_ASSIST_ALT`, and with the
-parameter at 0, FBWB was accepted as in stock.
-
 ## Pitch trim & tuning knob
 
 ### `PTCH_TRIM_DEG` is now knob-tunable
@@ -2117,8 +2111,6 @@ Channels 17–32 keep their value from the last 32-channel frame, so they don't
 drop to zero between frames (switches, passthrough servos and gimbal inputs on
 17–32 stay steady). If 32-channel frames stop for 1 s, for example when
 32-channel mode is turned off in mLRS, channels 17–32 return to "no input".
-Tested in SITL; not yet flown with an mLRS receiver delivering more than 16
-channels.
 
 ### 32 RC channels and the 16-channel MSP output
 
@@ -2154,7 +2146,7 @@ channels 17 and 18.
 
 ## mLRS MAVLink RC (`RADIO_RC_CHANNELS`) on every board (v2.1)
 
-*New in v2.1. Bench-tested on a SpeedyBee F405 Wing (light build) with mLRS.*
+*New in v2.1.*
 
 mLRS can send the RC channels inside the MAVLink stream (`radio_rc_channels`),
 so one serial port carries both RC and telemetry, with no separate CRSF/SBUS
@@ -2660,8 +2652,7 @@ every supported gimbal work the same as with the Goggles X.
 > (Servo) and give the servo outputs `SERVOn_FUNCTION` `6` (pan), `7` (tilt)
 > and `8` (roll, if fitted). Only the `51` port's **RX** is wired (VTX gimbal
 > TX → FC RX); its TX pad stays free. Set `MNT1_*_MIN/MAX` to the servos' real
-> travel (see *Differences from the MSP source* below). Bench-verified with a
-> servo pan/tilt.
+> travel (see *Differences from the MSP source* below).
 
 **Wiring — one UART for both.** Set a spare UART to `SERIALn_PROTOCOL 51`
 (CADDX HeadTracker). Its **RX** pad listens to the VTX gimbal port; with a CADDX
@@ -2713,7 +2704,6 @@ first valid frame arrives, so you can confirm the wiring.
 - **MSP goggles keep working.** Both inputs are in the same firmware; with
   goggles that send head tracking over MSP, the gimbal-port wire is optional.
 
-Bench-verified with an Ascent VTX and a CADDX GM3 v2, and with a servo pan/tilt.
 `51` is a fork-only protocol number; stock ArduPilot doesn't have it.
 
 ## Notes
@@ -3315,7 +3305,7 @@ feature add will push against.
 > SBUS on the HD VTX connector, `SERIAL3` DisplayPort, `SERIAL4` RC input,
 > `SERIAL6` GPS, `SERIAL7` ESC telemetry (RX only), `SERIAL8` MAVLink2. Outputs
 > 1–7 plus 13 (LED strip by default). Coming from INAV or Betaflight, flash
-> `arduplane_with_bl.hex` over DFU first. Not flown on this firmware yet. See
+> `arduplane_with_bl.hex` over DFU first. See
 > [the board README](libraries/AP_HAL_ChibiOS/hwdef/TBS_LUCID_H7_WING_AIO/README.md).
 
 ### Light track — 15 boards (all 1 MB F4)
@@ -3359,7 +3349,7 @@ with only the servo and CADDX mount backends to save flash.
 > input. Outputs: Wing V2 S1–S11 plus the `LED` pad, bidirectional DShot on
 > 1–4; Wing Mini V2 S1–S9, no bidirectional DShot. CoreWing's definitions
 > already re-enable the gimbal mount (servo + CADDX), and also landing gear and
-> QAUTOTUNE; the fork adds nothing to them. Not flown on this firmware yet. See
+> QAUTOTUNE; the fork adds nothing to them. See
 > [Wing V2](libraries/AP_HAL_ChibiOS/hwdef/CoreWingF405WingV2/README.md) and
 > [Wing Mini V2](libraries/AP_HAL_ChibiOS/hwdef/CoreWingF405WMiniV2/README.md).
 
@@ -3373,7 +3363,7 @@ with only the servo and CADDX mount backends to save flash.
 > Relay 1 has no default pin on this build (`RELAY1_PIN -1`); to keep a
 > relay, point `RELAY1_PIN` at a spare output's GPIO (50–59) and set that
 > `SERVOn_FUNCTION` to -1. Same board ID, so the `.apj` flashes over the
-> stock bootloader. Built and DMA-checked; not flown.
+> stock bootloader.
 
 `MatekF405-Wing-bdshot` and `-PWM10` are the canary boards — first to bump the
 1 MB ceiling in any future upstream rebase or feature add. Every board on
@@ -3494,8 +3484,7 @@ notes and wiring photos live in the board's `Readme.md`.
 **v0.2-beta fleet change vs v0.1-beta:**
 - **Added:** `MatekF405-STD` — a standard (non-bdshot) alternative
   in the F4 lineup, comfortable ~47 KB free headroom.
-- **Dropped:** `LongBowF405WING` (was unmeasured in v0.1-beta and
-  no bench-verified data yet) and `KakuteH7-Wing` (2 MB H7 board,
+- **Dropped:** `LongBowF405WING` (was unmeasured in v0.1-beta) and `KakuteH7-Wing` (2 MB H7 board,
   outside the "tight 1 MB F4" focus of the light variant).
 
 **Post-v0.2-beta fleet addition:**
@@ -3559,11 +3548,8 @@ If a 1 MB F4 board overflows, the cheapest first trim is
 `define HAL_SOARING_ENABLED 0` in that board's hwdef (Plane soaring
 is on by default and unused on twin-motor FPV wings; buys ~8–12 KB).
 
-**Bench-tested end-to-end** on a SpeedyBee F405 WING with a
-FormationFlight ESP32 module — peer detection works in the
-FormationFlight web UI, OSD element draws correctly once both planes
-have GPS lock (the element stays blank without lock by design — see
-"Limitations" below).
+The OSD element draws once both planes have GPS lock; without lock it
+stays blank by design (see "Limitations" below).
 
 ## Limitations / scope
 
@@ -3647,10 +3633,7 @@ VTOL AutoTrim learns the correction in flight and stores it in the
 `Q_TRIM_ROLL` can also be set by hand: positive rolls the aircraft right in
 VTOL flight, matching `Q_TRIM_PITCH`'s positive = nose up.
 
-Validated in SITL with a deliberately tilted hover: a 2.86° roll / 2.01°
-pitch error was learned as −2.91° / −2.04°, and a −4.01° / −2.86° error as
-+3.90° / +2.84°; hands-off drift fell from 2.41 to 0.21 m/s and from 9.19 to
-0.52 m/s. Costs about 0.7 KB of flash.
+Costs about 0.7 KB of flash.
 
 Flight-tested on a KakuteH7-Wing quad-X VTOL: a full learn-and-save run in
 QHOVER. It refused to start in QLOITER, ran about 85 s in QHOVER and saved
