@@ -3235,7 +3235,7 @@ Max sink rate in RTL mode\. Set to 0 to use TECS\_SINK\_MAX\.
 +-----------+---------+-------------------+
 | Increment | Range   | Units             |
 +===========+=========+===================+
-| 0.5       | 1 to 20 | meters per second |
+| 0.5       | 0 to 20 | meters per second |
 +-----------+---------+-------------------+
 
 
@@ -3253,7 +3253,7 @@ Max climb rate in RTL mode\. Set to 0 to use TECS\_CLMB\_MAX\.
 +-----------+---------+-------------------+
 | Increment | Range   | Units             |
 +===========+=========+===================+
-| 0.5       | 1 to 20 | meters per second |
+| 0.5       | 0 to 20 | meters per second |
 +-----------+---------+-------------------+
 
 
@@ -3271,7 +3271,7 @@ Max sink rate in auto mode\. Set to 0 to use TECS\_SINK\_MAX\.
 +-----------+---------+-------------------+
 | Increment | Range   | Units             |
 +===========+=========+===================+
-| 0.5       | 1 to 20 | meters per second |
+| 0.5       | 0 to 20 | meters per second |
 +-----------+---------+-------------------+
 
 
@@ -3289,7 +3289,7 @@ Max climb rate in auto mode\. Set to 0 to use TECS\_CLMB\_MAX\.
 +-----------+---------+-------------------+
 | Increment | Range   | Units             |
 +===========+=========+===================+
-| 0.5       | 1 to 20 | meters per second |
+| 0.5       | 0 to 20 | meters per second |
 +-----------+---------+-------------------+
 
 
@@ -33015,6 +33015,8 @@ Auxiliary RC Options function executed on pin change
 | +-------+-----------------------------------------------------+ |
 | | 200   | Servos Auto Trim                                    | |
 | +-------+-----------------------------------------------------+ |
+| | 250   | Tuning Set Select                                   | |
+| +-------+-----------------------------------------------------+ |
 | | 251   | RTL Autoland Commit                                 | |
 | +-------+-----------------------------------------------------+ |
 | | 252   | Mount1 Head Track Enable                            | |
@@ -33283,6 +33285,8 @@ Auxiliary RC Options function executed on pin change
 | | 218   | Loweheiser throttle                                 | |
 | +-------+-----------------------------------------------------+ |
 | | 200   | Servos Auto Trim                                    | |
+| +-------+-----------------------------------------------------+ |
+| | 250   | Tuning Set Select                                   | |
 | +-------+-----------------------------------------------------+ |
 | | 251   | RTL Autoland Commit                                 | |
 | +-------+-----------------------------------------------------+ |
@@ -33553,6 +33557,8 @@ Auxiliary RC Options function executed on pin change
 | +-------+-----------------------------------------------------+ |
 | | 200   | Servos Auto Trim                                    | |
 | +-------+-----------------------------------------------------+ |
+| | 250   | Tuning Set Select                                   | |
+| +-------+-----------------------------------------------------+ |
 | | 251   | RTL Autoland Commit                                 | |
 | +-------+-----------------------------------------------------+ |
 | | 252   | Mount1 Head Track Enable                            | |
@@ -33821,6 +33827,8 @@ Auxiliary RC Options function executed on pin change
 | | 218   | Loweheiser throttle                                 | |
 | +-------+-----------------------------------------------------+ |
 | | 200   | Servos Auto Trim                                    | |
+| +-------+-----------------------------------------------------+ |
+| | 250   | Tuning Set Select                                   | |
 | +-------+-----------------------------------------------------+ |
 | | 251   | RTL Autoland Commit                                 | |
 | +-------+-----------------------------------------------------+ |
@@ -47523,7 +47531,7 @@ FOLL\_SYSID: Follow target\'s mavlink system id
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
-Follow target\'s mavlink system id
+Follow target\'s mavlink system id\. Zero means no target has been selected and following is inactive\.
 
 
 +----------+
@@ -67530,8 +67538,6 @@ This sets options that change the display
 | +-----+----------------------------------------------------+ |
 | | 21  | OneDecimalAttitude                                 | |
 | +-----+----------------------------------------------------+ |
-| | 22  | DisplayPortStrictCanvas                            | |
-| +-----+----------------------------------------------------+ |
 | | 23  | ShortenPluscode                                    | |
 | +-----+----------------------------------------------------+ |
 |                                                              |
@@ -67957,6 +67963,42 @@ ACC\_VERT OSD item flashes when \|vertical acceleration\| exceeds this value\. 0
 +=========+======================================+
 | 0 to 20 | standard acceleration due to gravity |
 +---------+--------------------------------------+
+
+
+
+
+.. _OSD_W_ADSB_DIST:
+
+OSD\_W\_ADSB\_DIST: ADS\-B traffic warn distance
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+The ADSB OSD item flashes when the nearest ADS\-B aircraft is closer than this horizontal distance\. 0 disables\. See also OSD\_W\_ADSB\_ALT\.
+
+
++------------+--------+
+| Range      | Units  |
++============+========+
+| 0 to 10000 | meters |
++------------+--------+
+
+
+
+
+.. _OSD_W_ADSB_ALT:
+
+OSD\_W\_ADSB\_ALT: ADS\-B traffic warn height band
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+With OSD\_W\_ADSB\_DIST set\, the ADSB OSD item only flashes when the nearest aircraft is also within this height above or below this aircraft\. 0 warns at any height\. Traffic without a valid altitude counts as inside the band\.
+
+
++-----------+--------+
+| Range     | Units  |
++===========+========+
+| 0 to 5000 | meters |
++-----------+--------+
 
 
 
@@ -73317,7 +73359,7 @@ OSD1\_ADSB\_EN: ADSB\_EN
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
 
-Displays the nearest ADS\-B aircraft\: a bearing arrow and horizontal distance\, with its altitude relative to this aircraft on the line below\. Only aircraft within ADSB\_LIST\_RADIUS and ADSB\_LIST\_ALT are considered\. Blank when none is tracked\. Needs an ADS\-B receiver \(ADSB\_TYPE\)\.
+Displays the nearest ADS\-B aircraft\: a bearing arrow and horizontal distance\, with its altitude relative to this aircraft on the line below\. Only aircraft within ADSB\_LIST\_RADIUS and ADSB\_LIST\_ALT are considered\. Blank when none is tracked\. Flashes when the aircraft is inside OSD\_W\_ADSB\_DIST \(and OSD\_W\_ADSB\_ALT\)\. Needs an ADS\-B receiver \(ADSB\_TYPE\)\.
 
 
 +----------------------+
@@ -78572,7 +78614,7 @@ OSD2\_ADSB\_EN: ADSB\_EN
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
 
-Displays the nearest ADS\-B aircraft\: a bearing arrow and horizontal distance\, with its altitude relative to this aircraft on the line below\. Only aircraft within ADSB\_LIST\_RADIUS and ADSB\_LIST\_ALT are considered\. Blank when none is tracked\. Needs an ADS\-B receiver \(ADSB\_TYPE\)\.
+Displays the nearest ADS\-B aircraft\: a bearing arrow and horizontal distance\, with its altitude relative to this aircraft on the line below\. Only aircraft within ADSB\_LIST\_RADIUS and ADSB\_LIST\_ALT are considered\. Blank when none is tracked\. Flashes when the aircraft is inside OSD\_W\_ADSB\_DIST \(and OSD\_W\_ADSB\_ALT\)\. Needs an ADS\-B receiver \(ADSB\_TYPE\)\.
 
 
 +----------------------+
@@ -83827,7 +83869,7 @@ OSD3\_ADSB\_EN: ADSB\_EN
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
 
-Displays the nearest ADS\-B aircraft\: a bearing arrow and horizontal distance\, with its altitude relative to this aircraft on the line below\. Only aircraft within ADSB\_LIST\_RADIUS and ADSB\_LIST\_ALT are considered\. Blank when none is tracked\. Needs an ADS\-B receiver \(ADSB\_TYPE\)\.
+Displays the nearest ADS\-B aircraft\: a bearing arrow and horizontal distance\, with its altitude relative to this aircraft on the line below\. Only aircraft within ADSB\_LIST\_RADIUS and ADSB\_LIST\_ALT are considered\. Blank when none is tracked\. Flashes when the aircraft is inside OSD\_W\_ADSB\_DIST \(and OSD\_W\_ADSB\_ALT\)\. Needs an ADS\-B receiver \(ADSB\_TYPE\)\.
 
 
 +----------------------+
@@ -89082,7 +89124,7 @@ OSD4\_ADSB\_EN: ADSB\_EN
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
 
-Displays the nearest ADS\-B aircraft\: a bearing arrow and horizontal distance\, with its altitude relative to this aircraft on the line below\. Only aircraft within ADSB\_LIST\_RADIUS and ADSB\_LIST\_ALT are considered\. Blank when none is tracked\. Needs an ADS\-B receiver \(ADSB\_TYPE\)\.
+Displays the nearest ADS\-B aircraft\: a bearing arrow and horizontal distance\, with its altitude relative to this aircraft on the line below\. Only aircraft within ADSB\_LIST\_RADIUS and ADSB\_LIST\_ALT are considered\. Blank when none is tracked\. Flashes when the aircraft is inside OSD\_W\_ADSB\_DIST \(and OSD\_W\_ADSB\_ALT\)\. Needs an ADS\-B receiver \(ADSB\_TYPE\)\.
 
 
 +----------------------+
@@ -94337,7 +94379,7 @@ OSD5\_ADSB\_EN: ADSB\_EN
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
 
-Displays the nearest ADS\-B aircraft\: a bearing arrow and horizontal distance\, with its altitude relative to this aircraft on the line below\. Only aircraft within ADSB\_LIST\_RADIUS and ADSB\_LIST\_ALT are considered\. Blank when none is tracked\. Needs an ADS\-B receiver \(ADSB\_TYPE\)\.
+Displays the nearest ADS\-B aircraft\: a bearing arrow and horizontal distance\, with its altitude relative to this aircraft on the line below\. Only aircraft within ADSB\_LIST\_RADIUS and ADSB\_LIST\_ALT are considered\. Blank when none is tracked\. Flashes when the aircraft is inside OSD\_W\_ADSB\_DIST \(and OSD\_W\_ADSB\_ALT\)\. Needs an ADS\-B receiver \(ADSB\_TYPE\)\.
 
 
 +----------------------+
@@ -99499,6 +99541,24 @@ Configuration for thrust loss detection detection\, this results in \"Potential 
 
 
 
+.. _Q_FS_EKF_HOLD:
+
+Q\_FS\_EKF\_HOLD: Quadplane EKF failsafe transition hold
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+After an EKF failsafe in a VTOL mode\, refuse pilot and GCS mode changes from a VTOL mode to a fixed\-wing mode \(which would start a forward transition\) for this many seconds\. The time counts from when the EKF is last over FS\_EKF\_THRESH\, in any mode\, so the hold lasts while the EKF stays bad\. Changes between VTOL modes such as QSTABILIZE and QLAND stay allowed\, and failsafe actions are not affected\. If Q\_ASSIST\_ALT is set the hold applies only below that height\, otherwise at any height\. A refused RC mode switch must be moved again once the hold ends\. 0 disables\.
+
+
++-----------+---------+---------+
+| Increment | Range   | Units   |
++===========+=========+=========+
+| 1         | 0 to 60 | seconds |
++-----------+---------+---------+
+
+
+
+
 .. _Q_TRIM_ROLL:
 
 Q\_TRIM\_ROLL: Quadplane AHRS trim roll
@@ -100737,11 +100797,11 @@ Q\_A\_RAT\_YAW\_NTF: Yaw Target notch filter index
 Yaw Target notch filter index
 
 
-+--------+-------+
-| Range  | Units |
-+========+=======+
-| 1 to 8 | hertz |
-+--------+-------+
++--------+
+| Range  |
++========+
+| 1 to 8 |
++--------+
 
 
 
@@ -103510,6 +103570,33 @@ RC failsafe will trigger this many seconds after loss of RC
 
 
 
+.. _RC_32CH_ENABLE:
+
+RC\_32CH\_ENABLE: Enable RC channels 17 to 32
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+| *Note: This parameter is for advanced users*
+| *Note: Reboot required after change*
+
+Accept RC input on channels 17 to 32 and show their RC17\_ to RC32\_ parameters\. Needs a receiver link that carries more than 16 channels to the autopilot \- such as mLRS in MAVLink mode \(RADIO\_RC\_CHANNELS\) or CRSF up to 24\. Refresh the parameter list after enabling\. When disabled the autopilot uses channels 1 to 16 exactly as before\.
+
+
++------------------------------------+
+| Values                             |
++====================================+
+| +-------+------------------------+ |
+| | Value | Meaning                | |
+| +=======+========================+ |
+| | 0     | Disabled (16 channels) | |
+| +-------+------------------------+ |
+| | 1     | Enabled (32 channels)  | |
+| +-------+------------------------+ |
+|                                    |
++------------------------------------+
+
+
+
+
 
 .. _parameters_RC1_:
 
@@ -103839,6 +103926,8 @@ Function assigned to this RC channel
 | | 218   | Loweheiser throttle                                 | |
 | +-------+-----------------------------------------------------+ |
 | | 200   | Servos Auto Trim                                    | |
+| +-------+-----------------------------------------------------+ |
+| | 250   | Tuning Set Select                                   | |
 | +-------+-----------------------------------------------------+ |
 | | 251   | RTL Autoland Commit                                 | |
 | +-------+-----------------------------------------------------+ |
@@ -104218,6 +104307,8 @@ Function assigned to this RC channel
 | +-------+-----------------------------------------------------+ |
 | | 200   | Servos Auto Trim                                    | |
 | +-------+-----------------------------------------------------+ |
+| | 250   | Tuning Set Select                                   | |
+| +-------+-----------------------------------------------------+ |
 | | 251   | RTL Autoland Commit                                 | |
 | +-------+-----------------------------------------------------+ |
 | | 252   | Mount1 Head Track Enable                            | |
@@ -104595,6 +104686,8 @@ Function assigned to this RC channel
 | | 218   | Loweheiser throttle                                 | |
 | +-------+-----------------------------------------------------+ |
 | | 200   | Servos Auto Trim                                    | |
+| +-------+-----------------------------------------------------+ |
+| | 250   | Tuning Set Select                                   | |
 | +-------+-----------------------------------------------------+ |
 | | 251   | RTL Autoland Commit                                 | |
 | +-------+-----------------------------------------------------+ |
@@ -104974,6 +105067,8 @@ Function assigned to this RC channel
 | +-------+-----------------------------------------------------+ |
 | | 200   | Servos Auto Trim                                    | |
 | +-------+-----------------------------------------------------+ |
+| | 250   | Tuning Set Select                                   | |
+| +-------+-----------------------------------------------------+ |
 | | 251   | RTL Autoland Commit                                 | |
 | +-------+-----------------------------------------------------+ |
 | | 252   | Mount1 Head Track Enable                            | |
@@ -105351,6 +105446,8 @@ Function assigned to this RC channel
 | | 218   | Loweheiser throttle                                 | |
 | +-------+-----------------------------------------------------+ |
 | | 200   | Servos Auto Trim                                    | |
+| +-------+-----------------------------------------------------+ |
+| | 250   | Tuning Set Select                                   | |
 | +-------+-----------------------------------------------------+ |
 | | 251   | RTL Autoland Commit                                 | |
 | +-------+-----------------------------------------------------+ |
@@ -105730,6 +105827,8 @@ Function assigned to this RC channel
 | +-------+-----------------------------------------------------+ |
 | | 200   | Servos Auto Trim                                    | |
 | +-------+-----------------------------------------------------+ |
+| | 250   | Tuning Set Select                                   | |
+| +-------+-----------------------------------------------------+ |
 | | 251   | RTL Autoland Commit                                 | |
 | +-------+-----------------------------------------------------+ |
 | | 252   | Mount1 Head Track Enable                            | |
@@ -106107,6 +106206,8 @@ Function assigned to this RC channel
 | | 218   | Loweheiser throttle                                 | |
 | +-------+-----------------------------------------------------+ |
 | | 200   | Servos Auto Trim                                    | |
+| +-------+-----------------------------------------------------+ |
+| | 250   | Tuning Set Select                                   | |
 | +-------+-----------------------------------------------------+ |
 | | 251   | RTL Autoland Commit                                 | |
 | +-------+-----------------------------------------------------+ |
@@ -106486,6 +106587,8 @@ Function assigned to this RC channel
 | +-------+-----------------------------------------------------+ |
 | | 200   | Servos Auto Trim                                    | |
 | +-------+-----------------------------------------------------+ |
+| | 250   | Tuning Set Select                                   | |
+| +-------+-----------------------------------------------------+ |
 | | 251   | RTL Autoland Commit                                 | |
 | +-------+-----------------------------------------------------+ |
 | | 252   | Mount1 Head Track Enable                            | |
@@ -106863,6 +106966,8 @@ Function assigned to this RC channel
 | | 218   | Loweheiser throttle                                 | |
 | +-------+-----------------------------------------------------+ |
 | | 200   | Servos Auto Trim                                    | |
+| +-------+-----------------------------------------------------+ |
+| | 250   | Tuning Set Select                                   | |
 | +-------+-----------------------------------------------------+ |
 | | 251   | RTL Autoland Commit                                 | |
 | +-------+-----------------------------------------------------+ |
@@ -107242,6 +107347,8 @@ Function assigned to this RC channel
 | +-------+-----------------------------------------------------+ |
 | | 200   | Servos Auto Trim                                    | |
 | +-------+-----------------------------------------------------+ |
+| | 250   | Tuning Set Select                                   | |
+| +-------+-----------------------------------------------------+ |
 | | 251   | RTL Autoland Commit                                 | |
 | +-------+-----------------------------------------------------+ |
 | | 252   | Mount1 Head Track Enable                            | |
@@ -107619,6 +107726,8 @@ Function assigned to this RC channel
 | | 218   | Loweheiser throttle                                 | |
 | +-------+-----------------------------------------------------+ |
 | | 200   | Servos Auto Trim                                    | |
+| +-------+-----------------------------------------------------+ |
+| | 250   | Tuning Set Select                                   | |
 | +-------+-----------------------------------------------------+ |
 | | 251   | RTL Autoland Commit                                 | |
 | +-------+-----------------------------------------------------+ |
@@ -107998,6 +108107,8 @@ Function assigned to this RC channel
 | +-------+-----------------------------------------------------+ |
 | | 200   | Servos Auto Trim                                    | |
 | +-------+-----------------------------------------------------+ |
+| | 250   | Tuning Set Select                                   | |
+| +-------+-----------------------------------------------------+ |
 | | 251   | RTL Autoland Commit                                 | |
 | +-------+-----------------------------------------------------+ |
 | | 252   | Mount1 Head Track Enable                            | |
@@ -108375,6 +108486,8 @@ Function assigned to this RC channel
 | | 218   | Loweheiser throttle                                 | |
 | +-------+-----------------------------------------------------+ |
 | | 200   | Servos Auto Trim                                    | |
+| +-------+-----------------------------------------------------+ |
+| | 250   | Tuning Set Select                                   | |
 | +-------+-----------------------------------------------------+ |
 | | 251   | RTL Autoland Commit                                 | |
 | +-------+-----------------------------------------------------+ |
@@ -108754,6 +108867,8 @@ Function assigned to this RC channel
 | +-------+-----------------------------------------------------+ |
 | | 200   | Servos Auto Trim                                    | |
 | +-------+-----------------------------------------------------+ |
+| | 250   | Tuning Set Select                                   | |
+| +-------+-----------------------------------------------------+ |
 | | 251   | RTL Autoland Commit                                 | |
 | +-------+-----------------------------------------------------+ |
 | | 252   | Mount1 Head Track Enable                            | |
@@ -109132,6 +109247,8 @@ Function assigned to this RC channel
 | +-------+-----------------------------------------------------+ |
 | | 200   | Servos Auto Trim                                    | |
 | +-------+-----------------------------------------------------+ |
+| | 250   | Tuning Set Select                                   | |
+| +-------+-----------------------------------------------------+ |
 | | 251   | RTL Autoland Commit                                 | |
 | +-------+-----------------------------------------------------+ |
 | | 252   | Mount1 Head Track Enable                            | |
@@ -109509,6 +109626,6088 @@ Function assigned to this RC channel
 | | 218   | Loweheiser throttle                                 | |
 | +-------+-----------------------------------------------------+ |
 | | 200   | Servos Auto Trim                                    | |
+| +-------+-----------------------------------------------------+ |
+| | 250   | Tuning Set Select                                   | |
+| +-------+-----------------------------------------------------+ |
+| | 251   | RTL Autoland Commit                                 | |
+| +-------+-----------------------------------------------------+ |
+| | 252   | Mount1 Head Track Enable                            | |
+| +-------+-----------------------------------------------------+ |
+| | 253   | Mount1 Head Track Center Lock                       | |
+| +-------+-----------------------------------------------------+ |
+| | 254   | Adaptive Pitch Trim                                 | |
+| +-------+-----------------------------------------------------+ |
+| | 300   | Scripting1                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 301   | Scripting2                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 302   | Scripting3                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 303   | Scripting4                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 304   | Scripting5                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 305   | Scripting6                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 306   | Scripting7                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 307   | Scripting8                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 308   | Scripting9                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 309   | Scripting10                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 310   | Scripting11                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 311   | Scripting12                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 312   | Scripting13                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 313   | Scripting14                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 314   | Scripting15                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 315   | Scripting16                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 316   | Stop-Restart Scripting                              | |
+| +-------+-----------------------------------------------------+ |
+|                                                                 |
++-----------------------------------------------------------------+
+
+
+
+
+
+.. _parameters_RC17_:
+
+RC17\_ Parameters
+-----------------
+
+
+.. _RC17_MIN:
+
+RC17\_MIN: RC min PWM
+~~~~~~~~~~~~~~~~~~~~~
+
+| *Note: This parameter is for advanced users*
+
+RC minimum PWM pulse width in microseconds\. Typically 1000 is lower limit\, 1500 is neutral and 2000 is upper limit\.
+
+
++-----------+-------------+---------------------+
+| Increment | Range       | Units               |
++===========+=============+=====================+
+| 1         | 800 to 2200 | PWM in microseconds |
++-----------+-------------+---------------------+
+
+
+
+
+.. _RC17_TRIM:
+
+RC17\_TRIM: RC trim PWM
+~~~~~~~~~~~~~~~~~~~~~~~
+
+| *Note: This parameter is for advanced users*
+
+RC trim \(neutral\) PWM pulse width in microseconds\. Typically 1000 is lower limit\, 1500 is neutral and 2000 is upper limit\.
+
+
++-----------+-------------+---------------------+
+| Increment | Range       | Units               |
++===========+=============+=====================+
+| 1         | 800 to 2200 | PWM in microseconds |
++-----------+-------------+---------------------+
+
+
+
+
+.. _RC17_MAX:
+
+RC17\_MAX: RC max PWM
+~~~~~~~~~~~~~~~~~~~~~
+
+| *Note: This parameter is for advanced users*
+
+RC maximum PWM pulse width in microseconds\. Typically 1000 is lower limit\, 1500 is neutral and 2000 is upper limit\.
+
+
++-----------+-------------+---------------------+
+| Increment | Range       | Units               |
++===========+=============+=====================+
+| 1         | 800 to 2200 | PWM in microseconds |
++-----------+-------------+---------------------+
+
+
+
+
+.. _RC17_REVERSED:
+
+RC17\_REVERSED: RC reversed
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+| *Note: This parameter is for advanced users*
+
+Reverse channel input\. Set to 0 for normal operation\. Set to 1 to reverse this input channel\.
+
+
++----------------------+
+| Values               |
++======================+
+| +-------+----------+ |
+| | Value | Meaning  | |
+| +=======+==========+ |
+| | 0     | Normal   | |
+| +-------+----------+ |
+| | 1     | Reversed | |
+| +-------+----------+ |
+|                      |
++----------------------+
+
+
+
+
+.. _RC17_DZ:
+
+RC17\_DZ: RC dead\-zone
+~~~~~~~~~~~~~~~~~~~~~~~
+
+| *Note: This parameter is for advanced users*
+
+PWM dead zone in microseconds around trim or bottom
+
+
++----------+---------------------+
+| Range    | Units               |
++==========+=====================+
+| 0 to 200 | PWM in microseconds |
++----------+---------------------+
+
+
+
+
+.. _RC17_OPTION:
+
+RC17\_OPTION: RC input option
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+Function assigned to this RC channel
+
+
++-----------------------------------------------------------------+
+| Values                                                          |
++=================================================================+
+| +-------+-----------------------------------------------------+ |
+| | Value | Meaning                                             | |
+| +=======+=====================================================+ |
+| | 0     | Do Nothing                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 4     | RTL                                                 | |
+| +-------+-----------------------------------------------------+ |
+| | 9     | Camera Trigger                                      | |
+| +-------+-----------------------------------------------------+ |
+| | 11    | Fence Enable                                        | |
+| +-------+-----------------------------------------------------+ |
+| | 16    | AUTO Mode                                           | |
+| +-------+-----------------------------------------------------+ |
+| | 17    | AUTOTUNE Mode                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 22    | Parachute Release                                   | |
+| +-------+-----------------------------------------------------+ |
+| | 24    | Auto Mission Reset                                  | |
+| +-------+-----------------------------------------------------+ |
+| | 27    | Retract Mount1                                      | |
+| +-------+-----------------------------------------------------+ |
+| | 28    | Relay1 On/Off                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 29    | Landing Gear                                        | |
+| +-------+-----------------------------------------------------+ |
+| | 30    | Lost Plane Sound                                    | |
+| +-------+-----------------------------------------------------+ |
+| | 31    | Motor Emergency Stop                                | |
+| +-------+-----------------------------------------------------+ |
+| | 34    | Relay2 On/Off                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 35    | Relay3 On/Off                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 36    | Relay4 On/Off                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 38    | ADSB Avoidance Enable                               | |
+| +-------+-----------------------------------------------------+ |
+| | 41    | ArmDisarm (4.1 and lower)                           | |
+| +-------+-----------------------------------------------------+ |
+| | 43    | InvertedFlight Enable                               | |
+| +-------+-----------------------------------------------------+ |
+| | 46    | RC Override Enable                                  | |
+| +-------+-----------------------------------------------------+ |
+| | 51    | MANUAL Mode                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 52    | ACRO Mode                                           | |
+| +-------+-----------------------------------------------------+ |
+| | 55    | GUIDED Mode                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 56    | LOITER Mode                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 58    | Clear Waypoints                                     | |
+| +-------+-----------------------------------------------------+ |
+| | 62    | Compass Learn                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 64    | Reverse Throttle                                    | |
+| +-------+-----------------------------------------------------+ |
+| | 65    | GPS Disable                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 66    | Relay5 On/Off                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 67    | Relay6 On/Off                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 72    | CIRCLE Mode                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 77    | TAKEOFF Mode                                        | |
+| +-------+-----------------------------------------------------+ |
+| | 78    | RunCam Control                                      | |
+| +-------+-----------------------------------------------------+ |
+| | 79    | RunCam OSD Control                                  | |
+| +-------+-----------------------------------------------------+ |
+| | 81    | Disarm                                              | |
+| +-------+-----------------------------------------------------+ |
+| | 82    | QAssist 3pos                                        | |
+| +-------+-----------------------------------------------------+ |
+| | 84    | AirMode                                             | |
+| +-------+-----------------------------------------------------+ |
+| | 85    | Generator                                           | |
+| +-------+-----------------------------------------------------+ |
+| | 86    | Non Auto Terrain Follow Disable                     | |
+| +-------+-----------------------------------------------------+ |
+| | 87    | Crow Select                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 88    | Soaring Enable                                      | |
+| +-------+-----------------------------------------------------+ |
+| | 89    | Landing Flare                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 90    | EKF Source Set                                      | |
+| +-------+-----------------------------------------------------+ |
+| | 91    | Airspeed Ratio Calibration                          | |
+| +-------+-----------------------------------------------------+ |
+| | 92    | FBWA Mode                                           | |
+| +-------+-----------------------------------------------------+ |
+| | 94    | VTX Power                                           | |
+| +-------+-----------------------------------------------------+ |
+| | 95    | FBWA taildragger takeoff mode                       | |
+| +-------+-----------------------------------------------------+ |
+| | 96    | Trigger re-reading of mode switch                   | |
+| +-------+-----------------------------------------------------+ |
+| | 98    | TRAINING Mode                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 100   | KillIMU1                                            | |
+| +-------+-----------------------------------------------------+ |
+| | 101   | KillIMU2                                            | |
+| +-------+-----------------------------------------------------+ |
+| | 102   | Camera Mode Toggle                                  | |
+| +-------+-----------------------------------------------------+ |
+| | 103   | EKF lane switch attempt                             | |
+| +-------+-----------------------------------------------------+ |
+| | 104   | EKF yaw reset                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 105   | GPS Disable Yaw                                     | |
+| +-------+-----------------------------------------------------+ |
+| | 106   | Disable Airspeed Use                                | |
+| +-------+-----------------------------------------------------+ |
+| | 107   | Enable FW Autotune                                  | |
+| +-------+-----------------------------------------------------+ |
+| | 108   | QRTL Mode                                           | |
+| +-------+-----------------------------------------------------+ |
+| | 110   | KillIMU3                                            | |
+| +-------+-----------------------------------------------------+ |
+| | 111   | Loweheiser starter                                  | |
+| +-------+-----------------------------------------------------+ |
+| | 112   | SwitchExternalAHRS                                  | |
+| +-------+-----------------------------------------------------+ |
+| | 113   | Retract Mount2                                      | |
+| +-------+-----------------------------------------------------+ |
+| | 150   | CRUISE Mode                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 153   | ArmDisarm (4.2 and higher)                          | |
+| +-------+-----------------------------------------------------+ |
+| | 154   | ArmDisarm with Quadplane AirMode (4.2 and higher)   | |
+| +-------+-----------------------------------------------------+ |
+| | 155   | Set roll pitch and yaw trim to current servo and RC | |
+| +-------+-----------------------------------------------------+ |
+| | 157   | Force FS Action to FBWA                             | |
+| +-------+-----------------------------------------------------+ |
+| | 158   | Optflow Calibration                                 | |
+| +-------+-----------------------------------------------------+ |
+| | 160   | Weathervane Enable                                  | |
+| +-------+-----------------------------------------------------+ |
+| | 162   | FFT Tune                                            | |
+| +-------+-----------------------------------------------------+ |
+| | 163   | Mount Yaw Lock                                      | |
+| +-------+-----------------------------------------------------+ |
+| | 164   | Pause Stream Logging                                | |
+| +-------+-----------------------------------------------------+ |
+| | 165   | Arm/Emergency Motor Stop                            | |
+| +-------+-----------------------------------------------------+ |
+| | 166   | Camera Record Video                                 | |
+| +-------+-----------------------------------------------------+ |
+| | 167   | Camera Zoom                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 168   | Camera Manual Focus                                 | |
+| +-------+-----------------------------------------------------+ |
+| | 169   | Camera Auto Focus                                   | |
+| +-------+-----------------------------------------------------+ |
+| | 170   | QSTABILIZE Mode                                     | |
+| +-------+-----------------------------------------------------+ |
+| | 171   | Calibrate Compasses                                 | |
+| +-------+-----------------------------------------------------+ |
+| | 172   | Battery MPPT Enable                                 | |
+| +-------+-----------------------------------------------------+ |
+| | 173   | Plane AUTO Mode Landing Abort                       | |
+| +-------+-----------------------------------------------------+ |
+| | 174   | Camera Image Tracking                               | |
+| +-------+-----------------------------------------------------+ |
+| | 175   | Camera Lens                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 176   | Quadplane Fwd Throttle Override enable              | |
+| +-------+-----------------------------------------------------+ |
+| | 177   | Mount LRF enable                                    | |
+| +-------+-----------------------------------------------------+ |
+| | 179   | ICEngine start / stop                               | |
+| +-------+-----------------------------------------------------+ |
+| | 180   | Test autotuned gains after tune is complete         | |
+| +-------+-----------------------------------------------------+ |
+| | 181   | QuickTune                                           | |
+| +-------+-----------------------------------------------------+ |
+| | 182   | VTOL AutoTrim                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 184   | System ID Chirp                                     | |
+| +-------+-----------------------------------------------------+ |
+| | 185   | Mount Roll/Pitch Lock                               | |
+| +-------+-----------------------------------------------------+ |
+| | 186   | Mount POI Lock                                      | |
+| +-------+-----------------------------------------------------+ |
+| | 208   | Flap                                                | |
+| +-------+-----------------------------------------------------+ |
+| | 209   | VTOL Forward Throttle                               | |
+| +-------+-----------------------------------------------------+ |
+| | 210   | Airbrakes                                           | |
+| +-------+-----------------------------------------------------+ |
+| | 212   | Mount1 Roll                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 213   | Mount1 Pitch                                        | |
+| +-------+-----------------------------------------------------+ |
+| | 214   | Mount1 Yaw                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 215   | Mount2 Roll                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 216   | Mount2 Pitch                                        | |
+| +-------+-----------------------------------------------------+ |
+| | 217   | Mount2 Yaw                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 218   | Loweheiser throttle                                 | |
+| +-------+-----------------------------------------------------+ |
+| | 200   | Servos Auto Trim                                    | |
+| +-------+-----------------------------------------------------+ |
+| | 250   | Tuning Set Select                                   | |
+| +-------+-----------------------------------------------------+ |
+| | 251   | RTL Autoland Commit                                 | |
+| +-------+-----------------------------------------------------+ |
+| | 252   | Mount1 Head Track Enable                            | |
+| +-------+-----------------------------------------------------+ |
+| | 253   | Mount1 Head Track Center Lock                       | |
+| +-------+-----------------------------------------------------+ |
+| | 254   | Adaptive Pitch Trim                                 | |
+| +-------+-----------------------------------------------------+ |
+| | 300   | Scripting1                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 301   | Scripting2                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 302   | Scripting3                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 303   | Scripting4                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 304   | Scripting5                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 305   | Scripting6                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 306   | Scripting7                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 307   | Scripting8                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 308   | Scripting9                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 309   | Scripting10                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 310   | Scripting11                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 311   | Scripting12                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 312   | Scripting13                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 313   | Scripting14                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 314   | Scripting15                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 315   | Scripting16                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 316   | Stop-Restart Scripting                              | |
+| +-------+-----------------------------------------------------+ |
+|                                                                 |
++-----------------------------------------------------------------+
+
+
+
+
+
+.. _parameters_RC18_:
+
+RC18\_ Parameters
+-----------------
+
+
+.. _RC18_MIN:
+
+RC18\_MIN: RC min PWM
+~~~~~~~~~~~~~~~~~~~~~
+
+| *Note: This parameter is for advanced users*
+
+RC minimum PWM pulse width in microseconds\. Typically 1000 is lower limit\, 1500 is neutral and 2000 is upper limit\.
+
+
++-----------+-------------+---------------------+
+| Increment | Range       | Units               |
++===========+=============+=====================+
+| 1         | 800 to 2200 | PWM in microseconds |
++-----------+-------------+---------------------+
+
+
+
+
+.. _RC18_TRIM:
+
+RC18\_TRIM: RC trim PWM
+~~~~~~~~~~~~~~~~~~~~~~~
+
+| *Note: This parameter is for advanced users*
+
+RC trim \(neutral\) PWM pulse width in microseconds\. Typically 1000 is lower limit\, 1500 is neutral and 2000 is upper limit\.
+
+
++-----------+-------------+---------------------+
+| Increment | Range       | Units               |
++===========+=============+=====================+
+| 1         | 800 to 2200 | PWM in microseconds |
++-----------+-------------+---------------------+
+
+
+
+
+.. _RC18_MAX:
+
+RC18\_MAX: RC max PWM
+~~~~~~~~~~~~~~~~~~~~~
+
+| *Note: This parameter is for advanced users*
+
+RC maximum PWM pulse width in microseconds\. Typically 1000 is lower limit\, 1500 is neutral and 2000 is upper limit\.
+
+
++-----------+-------------+---------------------+
+| Increment | Range       | Units               |
++===========+=============+=====================+
+| 1         | 800 to 2200 | PWM in microseconds |
++-----------+-------------+---------------------+
+
+
+
+
+.. _RC18_REVERSED:
+
+RC18\_REVERSED: RC reversed
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+| *Note: This parameter is for advanced users*
+
+Reverse channel input\. Set to 0 for normal operation\. Set to 1 to reverse this input channel\.
+
+
++----------------------+
+| Values               |
++======================+
+| +-------+----------+ |
+| | Value | Meaning  | |
+| +=======+==========+ |
+| | 0     | Normal   | |
+| +-------+----------+ |
+| | 1     | Reversed | |
+| +-------+----------+ |
+|                      |
++----------------------+
+
+
+
+
+.. _RC18_DZ:
+
+RC18\_DZ: RC dead\-zone
+~~~~~~~~~~~~~~~~~~~~~~~
+
+| *Note: This parameter is for advanced users*
+
+PWM dead zone in microseconds around trim or bottom
+
+
++----------+---------------------+
+| Range    | Units               |
++==========+=====================+
+| 0 to 200 | PWM in microseconds |
++----------+---------------------+
+
+
+
+
+.. _RC18_OPTION:
+
+RC18\_OPTION: RC input option
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+Function assigned to this RC channel
+
+
++-----------------------------------------------------------------+
+| Values                                                          |
++=================================================================+
+| +-------+-----------------------------------------------------+ |
+| | Value | Meaning                                             | |
+| +=======+=====================================================+ |
+| | 0     | Do Nothing                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 4     | RTL                                                 | |
+| +-------+-----------------------------------------------------+ |
+| | 9     | Camera Trigger                                      | |
+| +-------+-----------------------------------------------------+ |
+| | 11    | Fence Enable                                        | |
+| +-------+-----------------------------------------------------+ |
+| | 16    | AUTO Mode                                           | |
+| +-------+-----------------------------------------------------+ |
+| | 17    | AUTOTUNE Mode                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 22    | Parachute Release                                   | |
+| +-------+-----------------------------------------------------+ |
+| | 24    | Auto Mission Reset                                  | |
+| +-------+-----------------------------------------------------+ |
+| | 27    | Retract Mount1                                      | |
+| +-------+-----------------------------------------------------+ |
+| | 28    | Relay1 On/Off                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 29    | Landing Gear                                        | |
+| +-------+-----------------------------------------------------+ |
+| | 30    | Lost Plane Sound                                    | |
+| +-------+-----------------------------------------------------+ |
+| | 31    | Motor Emergency Stop                                | |
+| +-------+-----------------------------------------------------+ |
+| | 34    | Relay2 On/Off                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 35    | Relay3 On/Off                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 36    | Relay4 On/Off                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 38    | ADSB Avoidance Enable                               | |
+| +-------+-----------------------------------------------------+ |
+| | 41    | ArmDisarm (4.1 and lower)                           | |
+| +-------+-----------------------------------------------------+ |
+| | 43    | InvertedFlight Enable                               | |
+| +-------+-----------------------------------------------------+ |
+| | 46    | RC Override Enable                                  | |
+| +-------+-----------------------------------------------------+ |
+| | 51    | MANUAL Mode                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 52    | ACRO Mode                                           | |
+| +-------+-----------------------------------------------------+ |
+| | 55    | GUIDED Mode                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 56    | LOITER Mode                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 58    | Clear Waypoints                                     | |
+| +-------+-----------------------------------------------------+ |
+| | 62    | Compass Learn                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 64    | Reverse Throttle                                    | |
+| +-------+-----------------------------------------------------+ |
+| | 65    | GPS Disable                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 66    | Relay5 On/Off                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 67    | Relay6 On/Off                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 72    | CIRCLE Mode                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 77    | TAKEOFF Mode                                        | |
+| +-------+-----------------------------------------------------+ |
+| | 78    | RunCam Control                                      | |
+| +-------+-----------------------------------------------------+ |
+| | 79    | RunCam OSD Control                                  | |
+| +-------+-----------------------------------------------------+ |
+| | 81    | Disarm                                              | |
+| +-------+-----------------------------------------------------+ |
+| | 82    | QAssist 3pos                                        | |
+| +-------+-----------------------------------------------------+ |
+| | 84    | AirMode                                             | |
+| +-------+-----------------------------------------------------+ |
+| | 85    | Generator                                           | |
+| +-------+-----------------------------------------------------+ |
+| | 86    | Non Auto Terrain Follow Disable                     | |
+| +-------+-----------------------------------------------------+ |
+| | 87    | Crow Select                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 88    | Soaring Enable                                      | |
+| +-------+-----------------------------------------------------+ |
+| | 89    | Landing Flare                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 90    | EKF Source Set                                      | |
+| +-------+-----------------------------------------------------+ |
+| | 91    | Airspeed Ratio Calibration                          | |
+| +-------+-----------------------------------------------------+ |
+| | 92    | FBWA Mode                                           | |
+| +-------+-----------------------------------------------------+ |
+| | 94    | VTX Power                                           | |
+| +-------+-----------------------------------------------------+ |
+| | 95    | FBWA taildragger takeoff mode                       | |
+| +-------+-----------------------------------------------------+ |
+| | 96    | Trigger re-reading of mode switch                   | |
+| +-------+-----------------------------------------------------+ |
+| | 98    | TRAINING Mode                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 100   | KillIMU1                                            | |
+| +-------+-----------------------------------------------------+ |
+| | 101   | KillIMU2                                            | |
+| +-------+-----------------------------------------------------+ |
+| | 102   | Camera Mode Toggle                                  | |
+| +-------+-----------------------------------------------------+ |
+| | 103   | EKF lane switch attempt                             | |
+| +-------+-----------------------------------------------------+ |
+| | 104   | EKF yaw reset                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 105   | GPS Disable Yaw                                     | |
+| +-------+-----------------------------------------------------+ |
+| | 106   | Disable Airspeed Use                                | |
+| +-------+-----------------------------------------------------+ |
+| | 107   | Enable FW Autotune                                  | |
+| +-------+-----------------------------------------------------+ |
+| | 108   | QRTL Mode                                           | |
+| +-------+-----------------------------------------------------+ |
+| | 110   | KillIMU3                                            | |
+| +-------+-----------------------------------------------------+ |
+| | 111   | Loweheiser starter                                  | |
+| +-------+-----------------------------------------------------+ |
+| | 112   | SwitchExternalAHRS                                  | |
+| +-------+-----------------------------------------------------+ |
+| | 113   | Retract Mount2                                      | |
+| +-------+-----------------------------------------------------+ |
+| | 150   | CRUISE Mode                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 153   | ArmDisarm (4.2 and higher)                          | |
+| +-------+-----------------------------------------------------+ |
+| | 154   | ArmDisarm with Quadplane AirMode (4.2 and higher)   | |
+| +-------+-----------------------------------------------------+ |
+| | 155   | Set roll pitch and yaw trim to current servo and RC | |
+| +-------+-----------------------------------------------------+ |
+| | 157   | Force FS Action to FBWA                             | |
+| +-------+-----------------------------------------------------+ |
+| | 158   | Optflow Calibration                                 | |
+| +-------+-----------------------------------------------------+ |
+| | 160   | Weathervane Enable                                  | |
+| +-------+-----------------------------------------------------+ |
+| | 162   | FFT Tune                                            | |
+| +-------+-----------------------------------------------------+ |
+| | 163   | Mount Yaw Lock                                      | |
+| +-------+-----------------------------------------------------+ |
+| | 164   | Pause Stream Logging                                | |
+| +-------+-----------------------------------------------------+ |
+| | 165   | Arm/Emergency Motor Stop                            | |
+| +-------+-----------------------------------------------------+ |
+| | 166   | Camera Record Video                                 | |
+| +-------+-----------------------------------------------------+ |
+| | 167   | Camera Zoom                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 168   | Camera Manual Focus                                 | |
+| +-------+-----------------------------------------------------+ |
+| | 169   | Camera Auto Focus                                   | |
+| +-------+-----------------------------------------------------+ |
+| | 170   | QSTABILIZE Mode                                     | |
+| +-------+-----------------------------------------------------+ |
+| | 171   | Calibrate Compasses                                 | |
+| +-------+-----------------------------------------------------+ |
+| | 172   | Battery MPPT Enable                                 | |
+| +-------+-----------------------------------------------------+ |
+| | 173   | Plane AUTO Mode Landing Abort                       | |
+| +-------+-----------------------------------------------------+ |
+| | 174   | Camera Image Tracking                               | |
+| +-------+-----------------------------------------------------+ |
+| | 175   | Camera Lens                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 176   | Quadplane Fwd Throttle Override enable              | |
+| +-------+-----------------------------------------------------+ |
+| | 177   | Mount LRF enable                                    | |
+| +-------+-----------------------------------------------------+ |
+| | 179   | ICEngine start / stop                               | |
+| +-------+-----------------------------------------------------+ |
+| | 180   | Test autotuned gains after tune is complete         | |
+| +-------+-----------------------------------------------------+ |
+| | 181   | QuickTune                                           | |
+| +-------+-----------------------------------------------------+ |
+| | 182   | VTOL AutoTrim                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 184   | System ID Chirp                                     | |
+| +-------+-----------------------------------------------------+ |
+| | 185   | Mount Roll/Pitch Lock                               | |
+| +-------+-----------------------------------------------------+ |
+| | 186   | Mount POI Lock                                      | |
+| +-------+-----------------------------------------------------+ |
+| | 208   | Flap                                                | |
+| +-------+-----------------------------------------------------+ |
+| | 209   | VTOL Forward Throttle                               | |
+| +-------+-----------------------------------------------------+ |
+| | 210   | Airbrakes                                           | |
+| +-------+-----------------------------------------------------+ |
+| | 212   | Mount1 Roll                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 213   | Mount1 Pitch                                        | |
+| +-------+-----------------------------------------------------+ |
+| | 214   | Mount1 Yaw                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 215   | Mount2 Roll                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 216   | Mount2 Pitch                                        | |
+| +-------+-----------------------------------------------------+ |
+| | 217   | Mount2 Yaw                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 218   | Loweheiser throttle                                 | |
+| +-------+-----------------------------------------------------+ |
+| | 200   | Servos Auto Trim                                    | |
+| +-------+-----------------------------------------------------+ |
+| | 250   | Tuning Set Select                                   | |
+| +-------+-----------------------------------------------------+ |
+| | 251   | RTL Autoland Commit                                 | |
+| +-------+-----------------------------------------------------+ |
+| | 252   | Mount1 Head Track Enable                            | |
+| +-------+-----------------------------------------------------+ |
+| | 253   | Mount1 Head Track Center Lock                       | |
+| +-------+-----------------------------------------------------+ |
+| | 254   | Adaptive Pitch Trim                                 | |
+| +-------+-----------------------------------------------------+ |
+| | 300   | Scripting1                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 301   | Scripting2                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 302   | Scripting3                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 303   | Scripting4                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 304   | Scripting5                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 305   | Scripting6                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 306   | Scripting7                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 307   | Scripting8                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 308   | Scripting9                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 309   | Scripting10                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 310   | Scripting11                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 311   | Scripting12                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 312   | Scripting13                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 313   | Scripting14                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 314   | Scripting15                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 315   | Scripting16                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 316   | Stop-Restart Scripting                              | |
+| +-------+-----------------------------------------------------+ |
+|                                                                 |
++-----------------------------------------------------------------+
+
+
+
+
+
+.. _parameters_RC19_:
+
+RC19\_ Parameters
+-----------------
+
+
+.. _RC19_MIN:
+
+RC19\_MIN: RC min PWM
+~~~~~~~~~~~~~~~~~~~~~
+
+| *Note: This parameter is for advanced users*
+
+RC minimum PWM pulse width in microseconds\. Typically 1000 is lower limit\, 1500 is neutral and 2000 is upper limit\.
+
+
++-----------+-------------+---------------------+
+| Increment | Range       | Units               |
++===========+=============+=====================+
+| 1         | 800 to 2200 | PWM in microseconds |
++-----------+-------------+---------------------+
+
+
+
+
+.. _RC19_TRIM:
+
+RC19\_TRIM: RC trim PWM
+~~~~~~~~~~~~~~~~~~~~~~~
+
+| *Note: This parameter is for advanced users*
+
+RC trim \(neutral\) PWM pulse width in microseconds\. Typically 1000 is lower limit\, 1500 is neutral and 2000 is upper limit\.
+
+
++-----------+-------------+---------------------+
+| Increment | Range       | Units               |
++===========+=============+=====================+
+| 1         | 800 to 2200 | PWM in microseconds |
++-----------+-------------+---------------------+
+
+
+
+
+.. _RC19_MAX:
+
+RC19\_MAX: RC max PWM
+~~~~~~~~~~~~~~~~~~~~~
+
+| *Note: This parameter is for advanced users*
+
+RC maximum PWM pulse width in microseconds\. Typically 1000 is lower limit\, 1500 is neutral and 2000 is upper limit\.
+
+
++-----------+-------------+---------------------+
+| Increment | Range       | Units               |
++===========+=============+=====================+
+| 1         | 800 to 2200 | PWM in microseconds |
++-----------+-------------+---------------------+
+
+
+
+
+.. _RC19_REVERSED:
+
+RC19\_REVERSED: RC reversed
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+| *Note: This parameter is for advanced users*
+
+Reverse channel input\. Set to 0 for normal operation\. Set to 1 to reverse this input channel\.
+
+
++----------------------+
+| Values               |
++======================+
+| +-------+----------+ |
+| | Value | Meaning  | |
+| +=======+==========+ |
+| | 0     | Normal   | |
+| +-------+----------+ |
+| | 1     | Reversed | |
+| +-------+----------+ |
+|                      |
++----------------------+
+
+
+
+
+.. _RC19_DZ:
+
+RC19\_DZ: RC dead\-zone
+~~~~~~~~~~~~~~~~~~~~~~~
+
+| *Note: This parameter is for advanced users*
+
+PWM dead zone in microseconds around trim or bottom
+
+
++----------+---------------------+
+| Range    | Units               |
++==========+=====================+
+| 0 to 200 | PWM in microseconds |
++----------+---------------------+
+
+
+
+
+.. _RC19_OPTION:
+
+RC19\_OPTION: RC input option
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+Function assigned to this RC channel
+
+
++-----------------------------------------------------------------+
+| Values                                                          |
++=================================================================+
+| +-------+-----------------------------------------------------+ |
+| | Value | Meaning                                             | |
+| +=======+=====================================================+ |
+| | 0     | Do Nothing                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 4     | RTL                                                 | |
+| +-------+-----------------------------------------------------+ |
+| | 9     | Camera Trigger                                      | |
+| +-------+-----------------------------------------------------+ |
+| | 11    | Fence Enable                                        | |
+| +-------+-----------------------------------------------------+ |
+| | 16    | AUTO Mode                                           | |
+| +-------+-----------------------------------------------------+ |
+| | 17    | AUTOTUNE Mode                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 22    | Parachute Release                                   | |
+| +-------+-----------------------------------------------------+ |
+| | 24    | Auto Mission Reset                                  | |
+| +-------+-----------------------------------------------------+ |
+| | 27    | Retract Mount1                                      | |
+| +-------+-----------------------------------------------------+ |
+| | 28    | Relay1 On/Off                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 29    | Landing Gear                                        | |
+| +-------+-----------------------------------------------------+ |
+| | 30    | Lost Plane Sound                                    | |
+| +-------+-----------------------------------------------------+ |
+| | 31    | Motor Emergency Stop                                | |
+| +-------+-----------------------------------------------------+ |
+| | 34    | Relay2 On/Off                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 35    | Relay3 On/Off                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 36    | Relay4 On/Off                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 38    | ADSB Avoidance Enable                               | |
+| +-------+-----------------------------------------------------+ |
+| | 41    | ArmDisarm (4.1 and lower)                           | |
+| +-------+-----------------------------------------------------+ |
+| | 43    | InvertedFlight Enable                               | |
+| +-------+-----------------------------------------------------+ |
+| | 46    | RC Override Enable                                  | |
+| +-------+-----------------------------------------------------+ |
+| | 51    | MANUAL Mode                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 52    | ACRO Mode                                           | |
+| +-------+-----------------------------------------------------+ |
+| | 55    | GUIDED Mode                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 56    | LOITER Mode                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 58    | Clear Waypoints                                     | |
+| +-------+-----------------------------------------------------+ |
+| | 62    | Compass Learn                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 64    | Reverse Throttle                                    | |
+| +-------+-----------------------------------------------------+ |
+| | 65    | GPS Disable                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 66    | Relay5 On/Off                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 67    | Relay6 On/Off                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 72    | CIRCLE Mode                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 77    | TAKEOFF Mode                                        | |
+| +-------+-----------------------------------------------------+ |
+| | 78    | RunCam Control                                      | |
+| +-------+-----------------------------------------------------+ |
+| | 79    | RunCam OSD Control                                  | |
+| +-------+-----------------------------------------------------+ |
+| | 81    | Disarm                                              | |
+| +-------+-----------------------------------------------------+ |
+| | 82    | QAssist 3pos                                        | |
+| +-------+-----------------------------------------------------+ |
+| | 84    | AirMode                                             | |
+| +-------+-----------------------------------------------------+ |
+| | 85    | Generator                                           | |
+| +-------+-----------------------------------------------------+ |
+| | 86    | Non Auto Terrain Follow Disable                     | |
+| +-------+-----------------------------------------------------+ |
+| | 87    | Crow Select                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 88    | Soaring Enable                                      | |
+| +-------+-----------------------------------------------------+ |
+| | 89    | Landing Flare                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 90    | EKF Source Set                                      | |
+| +-------+-----------------------------------------------------+ |
+| | 91    | Airspeed Ratio Calibration                          | |
+| +-------+-----------------------------------------------------+ |
+| | 92    | FBWA Mode                                           | |
+| +-------+-----------------------------------------------------+ |
+| | 94    | VTX Power                                           | |
+| +-------+-----------------------------------------------------+ |
+| | 95    | FBWA taildragger takeoff mode                       | |
+| +-------+-----------------------------------------------------+ |
+| | 96    | Trigger re-reading of mode switch                   | |
+| +-------+-----------------------------------------------------+ |
+| | 98    | TRAINING Mode                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 100   | KillIMU1                                            | |
+| +-------+-----------------------------------------------------+ |
+| | 101   | KillIMU2                                            | |
+| +-------+-----------------------------------------------------+ |
+| | 102   | Camera Mode Toggle                                  | |
+| +-------+-----------------------------------------------------+ |
+| | 103   | EKF lane switch attempt                             | |
+| +-------+-----------------------------------------------------+ |
+| | 104   | EKF yaw reset                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 105   | GPS Disable Yaw                                     | |
+| +-------+-----------------------------------------------------+ |
+| | 106   | Disable Airspeed Use                                | |
+| +-------+-----------------------------------------------------+ |
+| | 107   | Enable FW Autotune                                  | |
+| +-------+-----------------------------------------------------+ |
+| | 108   | QRTL Mode                                           | |
+| +-------+-----------------------------------------------------+ |
+| | 110   | KillIMU3                                            | |
+| +-------+-----------------------------------------------------+ |
+| | 111   | Loweheiser starter                                  | |
+| +-------+-----------------------------------------------------+ |
+| | 112   | SwitchExternalAHRS                                  | |
+| +-------+-----------------------------------------------------+ |
+| | 113   | Retract Mount2                                      | |
+| +-------+-----------------------------------------------------+ |
+| | 150   | CRUISE Mode                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 153   | ArmDisarm (4.2 and higher)                          | |
+| +-------+-----------------------------------------------------+ |
+| | 154   | ArmDisarm with Quadplane AirMode (4.2 and higher)   | |
+| +-------+-----------------------------------------------------+ |
+| | 155   | Set roll pitch and yaw trim to current servo and RC | |
+| +-------+-----------------------------------------------------+ |
+| | 157   | Force FS Action to FBWA                             | |
+| +-------+-----------------------------------------------------+ |
+| | 158   | Optflow Calibration                                 | |
+| +-------+-----------------------------------------------------+ |
+| | 160   | Weathervane Enable                                  | |
+| +-------+-----------------------------------------------------+ |
+| | 162   | FFT Tune                                            | |
+| +-------+-----------------------------------------------------+ |
+| | 163   | Mount Yaw Lock                                      | |
+| +-------+-----------------------------------------------------+ |
+| | 164   | Pause Stream Logging                                | |
+| +-------+-----------------------------------------------------+ |
+| | 165   | Arm/Emergency Motor Stop                            | |
+| +-------+-----------------------------------------------------+ |
+| | 166   | Camera Record Video                                 | |
+| +-------+-----------------------------------------------------+ |
+| | 167   | Camera Zoom                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 168   | Camera Manual Focus                                 | |
+| +-------+-----------------------------------------------------+ |
+| | 169   | Camera Auto Focus                                   | |
+| +-------+-----------------------------------------------------+ |
+| | 170   | QSTABILIZE Mode                                     | |
+| +-------+-----------------------------------------------------+ |
+| | 171   | Calibrate Compasses                                 | |
+| +-------+-----------------------------------------------------+ |
+| | 172   | Battery MPPT Enable                                 | |
+| +-------+-----------------------------------------------------+ |
+| | 173   | Plane AUTO Mode Landing Abort                       | |
+| +-------+-----------------------------------------------------+ |
+| | 174   | Camera Image Tracking                               | |
+| +-------+-----------------------------------------------------+ |
+| | 175   | Camera Lens                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 176   | Quadplane Fwd Throttle Override enable              | |
+| +-------+-----------------------------------------------------+ |
+| | 177   | Mount LRF enable                                    | |
+| +-------+-----------------------------------------------------+ |
+| | 179   | ICEngine start / stop                               | |
+| +-------+-----------------------------------------------------+ |
+| | 180   | Test autotuned gains after tune is complete         | |
+| +-------+-----------------------------------------------------+ |
+| | 181   | QuickTune                                           | |
+| +-------+-----------------------------------------------------+ |
+| | 182   | VTOL AutoTrim                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 184   | System ID Chirp                                     | |
+| +-------+-----------------------------------------------------+ |
+| | 185   | Mount Roll/Pitch Lock                               | |
+| +-------+-----------------------------------------------------+ |
+| | 186   | Mount POI Lock                                      | |
+| +-------+-----------------------------------------------------+ |
+| | 208   | Flap                                                | |
+| +-------+-----------------------------------------------------+ |
+| | 209   | VTOL Forward Throttle                               | |
+| +-------+-----------------------------------------------------+ |
+| | 210   | Airbrakes                                           | |
+| +-------+-----------------------------------------------------+ |
+| | 212   | Mount1 Roll                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 213   | Mount1 Pitch                                        | |
+| +-------+-----------------------------------------------------+ |
+| | 214   | Mount1 Yaw                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 215   | Mount2 Roll                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 216   | Mount2 Pitch                                        | |
+| +-------+-----------------------------------------------------+ |
+| | 217   | Mount2 Yaw                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 218   | Loweheiser throttle                                 | |
+| +-------+-----------------------------------------------------+ |
+| | 200   | Servos Auto Trim                                    | |
+| +-------+-----------------------------------------------------+ |
+| | 250   | Tuning Set Select                                   | |
+| +-------+-----------------------------------------------------+ |
+| | 251   | RTL Autoland Commit                                 | |
+| +-------+-----------------------------------------------------+ |
+| | 252   | Mount1 Head Track Enable                            | |
+| +-------+-----------------------------------------------------+ |
+| | 253   | Mount1 Head Track Center Lock                       | |
+| +-------+-----------------------------------------------------+ |
+| | 254   | Adaptive Pitch Trim                                 | |
+| +-------+-----------------------------------------------------+ |
+| | 300   | Scripting1                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 301   | Scripting2                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 302   | Scripting3                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 303   | Scripting4                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 304   | Scripting5                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 305   | Scripting6                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 306   | Scripting7                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 307   | Scripting8                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 308   | Scripting9                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 309   | Scripting10                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 310   | Scripting11                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 311   | Scripting12                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 312   | Scripting13                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 313   | Scripting14                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 314   | Scripting15                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 315   | Scripting16                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 316   | Stop-Restart Scripting                              | |
+| +-------+-----------------------------------------------------+ |
+|                                                                 |
++-----------------------------------------------------------------+
+
+
+
+
+
+.. _parameters_RC20_:
+
+RC20\_ Parameters
+-----------------
+
+
+.. _RC20_MIN:
+
+RC20\_MIN: RC min PWM
+~~~~~~~~~~~~~~~~~~~~~
+
+| *Note: This parameter is for advanced users*
+
+RC minimum PWM pulse width in microseconds\. Typically 1000 is lower limit\, 1500 is neutral and 2000 is upper limit\.
+
+
++-----------+-------------+---------------------+
+| Increment | Range       | Units               |
++===========+=============+=====================+
+| 1         | 800 to 2200 | PWM in microseconds |
++-----------+-------------+---------------------+
+
+
+
+
+.. _RC20_TRIM:
+
+RC20\_TRIM: RC trim PWM
+~~~~~~~~~~~~~~~~~~~~~~~
+
+| *Note: This parameter is for advanced users*
+
+RC trim \(neutral\) PWM pulse width in microseconds\. Typically 1000 is lower limit\, 1500 is neutral and 2000 is upper limit\.
+
+
++-----------+-------------+---------------------+
+| Increment | Range       | Units               |
++===========+=============+=====================+
+| 1         | 800 to 2200 | PWM in microseconds |
++-----------+-------------+---------------------+
+
+
+
+
+.. _RC20_MAX:
+
+RC20\_MAX: RC max PWM
+~~~~~~~~~~~~~~~~~~~~~
+
+| *Note: This parameter is for advanced users*
+
+RC maximum PWM pulse width in microseconds\. Typically 1000 is lower limit\, 1500 is neutral and 2000 is upper limit\.
+
+
++-----------+-------------+---------------------+
+| Increment | Range       | Units               |
++===========+=============+=====================+
+| 1         | 800 to 2200 | PWM in microseconds |
++-----------+-------------+---------------------+
+
+
+
+
+.. _RC20_REVERSED:
+
+RC20\_REVERSED: RC reversed
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+| *Note: This parameter is for advanced users*
+
+Reverse channel input\. Set to 0 for normal operation\. Set to 1 to reverse this input channel\.
+
+
++----------------------+
+| Values               |
++======================+
+| +-------+----------+ |
+| | Value | Meaning  | |
+| +=======+==========+ |
+| | 0     | Normal   | |
+| +-------+----------+ |
+| | 1     | Reversed | |
+| +-------+----------+ |
+|                      |
++----------------------+
+
+
+
+
+.. _RC20_DZ:
+
+RC20\_DZ: RC dead\-zone
+~~~~~~~~~~~~~~~~~~~~~~~
+
+| *Note: This parameter is for advanced users*
+
+PWM dead zone in microseconds around trim or bottom
+
+
++----------+---------------------+
+| Range    | Units               |
++==========+=====================+
+| 0 to 200 | PWM in microseconds |
++----------+---------------------+
+
+
+
+
+.. _RC20_OPTION:
+
+RC20\_OPTION: RC input option
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+Function assigned to this RC channel
+
+
++-----------------------------------------------------------------+
+| Values                                                          |
++=================================================================+
+| +-------+-----------------------------------------------------+ |
+| | Value | Meaning                                             | |
+| +=======+=====================================================+ |
+| | 0     | Do Nothing                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 4     | RTL                                                 | |
+| +-------+-----------------------------------------------------+ |
+| | 9     | Camera Trigger                                      | |
+| +-------+-----------------------------------------------------+ |
+| | 11    | Fence Enable                                        | |
+| +-------+-----------------------------------------------------+ |
+| | 16    | AUTO Mode                                           | |
+| +-------+-----------------------------------------------------+ |
+| | 17    | AUTOTUNE Mode                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 22    | Parachute Release                                   | |
+| +-------+-----------------------------------------------------+ |
+| | 24    | Auto Mission Reset                                  | |
+| +-------+-----------------------------------------------------+ |
+| | 27    | Retract Mount1                                      | |
+| +-------+-----------------------------------------------------+ |
+| | 28    | Relay1 On/Off                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 29    | Landing Gear                                        | |
+| +-------+-----------------------------------------------------+ |
+| | 30    | Lost Plane Sound                                    | |
+| +-------+-----------------------------------------------------+ |
+| | 31    | Motor Emergency Stop                                | |
+| +-------+-----------------------------------------------------+ |
+| | 34    | Relay2 On/Off                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 35    | Relay3 On/Off                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 36    | Relay4 On/Off                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 38    | ADSB Avoidance Enable                               | |
+| +-------+-----------------------------------------------------+ |
+| | 41    | ArmDisarm (4.1 and lower)                           | |
+| +-------+-----------------------------------------------------+ |
+| | 43    | InvertedFlight Enable                               | |
+| +-------+-----------------------------------------------------+ |
+| | 46    | RC Override Enable                                  | |
+| +-------+-----------------------------------------------------+ |
+| | 51    | MANUAL Mode                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 52    | ACRO Mode                                           | |
+| +-------+-----------------------------------------------------+ |
+| | 55    | GUIDED Mode                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 56    | LOITER Mode                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 58    | Clear Waypoints                                     | |
+| +-------+-----------------------------------------------------+ |
+| | 62    | Compass Learn                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 64    | Reverse Throttle                                    | |
+| +-------+-----------------------------------------------------+ |
+| | 65    | GPS Disable                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 66    | Relay5 On/Off                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 67    | Relay6 On/Off                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 72    | CIRCLE Mode                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 77    | TAKEOFF Mode                                        | |
+| +-------+-----------------------------------------------------+ |
+| | 78    | RunCam Control                                      | |
+| +-------+-----------------------------------------------------+ |
+| | 79    | RunCam OSD Control                                  | |
+| +-------+-----------------------------------------------------+ |
+| | 81    | Disarm                                              | |
+| +-------+-----------------------------------------------------+ |
+| | 82    | QAssist 3pos                                        | |
+| +-------+-----------------------------------------------------+ |
+| | 84    | AirMode                                             | |
+| +-------+-----------------------------------------------------+ |
+| | 85    | Generator                                           | |
+| +-------+-----------------------------------------------------+ |
+| | 86    | Non Auto Terrain Follow Disable                     | |
+| +-------+-----------------------------------------------------+ |
+| | 87    | Crow Select                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 88    | Soaring Enable                                      | |
+| +-------+-----------------------------------------------------+ |
+| | 89    | Landing Flare                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 90    | EKF Source Set                                      | |
+| +-------+-----------------------------------------------------+ |
+| | 91    | Airspeed Ratio Calibration                          | |
+| +-------+-----------------------------------------------------+ |
+| | 92    | FBWA Mode                                           | |
+| +-------+-----------------------------------------------------+ |
+| | 94    | VTX Power                                           | |
+| +-------+-----------------------------------------------------+ |
+| | 95    | FBWA taildragger takeoff mode                       | |
+| +-------+-----------------------------------------------------+ |
+| | 96    | Trigger re-reading of mode switch                   | |
+| +-------+-----------------------------------------------------+ |
+| | 98    | TRAINING Mode                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 100   | KillIMU1                                            | |
+| +-------+-----------------------------------------------------+ |
+| | 101   | KillIMU2                                            | |
+| +-------+-----------------------------------------------------+ |
+| | 102   | Camera Mode Toggle                                  | |
+| +-------+-----------------------------------------------------+ |
+| | 103   | EKF lane switch attempt                             | |
+| +-------+-----------------------------------------------------+ |
+| | 104   | EKF yaw reset                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 105   | GPS Disable Yaw                                     | |
+| +-------+-----------------------------------------------------+ |
+| | 106   | Disable Airspeed Use                                | |
+| +-------+-----------------------------------------------------+ |
+| | 107   | Enable FW Autotune                                  | |
+| +-------+-----------------------------------------------------+ |
+| | 108   | QRTL Mode                                           | |
+| +-------+-----------------------------------------------------+ |
+| | 110   | KillIMU3                                            | |
+| +-------+-----------------------------------------------------+ |
+| | 111   | Loweheiser starter                                  | |
+| +-------+-----------------------------------------------------+ |
+| | 112   | SwitchExternalAHRS                                  | |
+| +-------+-----------------------------------------------------+ |
+| | 113   | Retract Mount2                                      | |
+| +-------+-----------------------------------------------------+ |
+| | 150   | CRUISE Mode                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 153   | ArmDisarm (4.2 and higher)                          | |
+| +-------+-----------------------------------------------------+ |
+| | 154   | ArmDisarm with Quadplane AirMode (4.2 and higher)   | |
+| +-------+-----------------------------------------------------+ |
+| | 155   | Set roll pitch and yaw trim to current servo and RC | |
+| +-------+-----------------------------------------------------+ |
+| | 157   | Force FS Action to FBWA                             | |
+| +-------+-----------------------------------------------------+ |
+| | 158   | Optflow Calibration                                 | |
+| +-------+-----------------------------------------------------+ |
+| | 160   | Weathervane Enable                                  | |
+| +-------+-----------------------------------------------------+ |
+| | 162   | FFT Tune                                            | |
+| +-------+-----------------------------------------------------+ |
+| | 163   | Mount Yaw Lock                                      | |
+| +-------+-----------------------------------------------------+ |
+| | 164   | Pause Stream Logging                                | |
+| +-------+-----------------------------------------------------+ |
+| | 165   | Arm/Emergency Motor Stop                            | |
+| +-------+-----------------------------------------------------+ |
+| | 166   | Camera Record Video                                 | |
+| +-------+-----------------------------------------------------+ |
+| | 167   | Camera Zoom                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 168   | Camera Manual Focus                                 | |
+| +-------+-----------------------------------------------------+ |
+| | 169   | Camera Auto Focus                                   | |
+| +-------+-----------------------------------------------------+ |
+| | 170   | QSTABILIZE Mode                                     | |
+| +-------+-----------------------------------------------------+ |
+| | 171   | Calibrate Compasses                                 | |
+| +-------+-----------------------------------------------------+ |
+| | 172   | Battery MPPT Enable                                 | |
+| +-------+-----------------------------------------------------+ |
+| | 173   | Plane AUTO Mode Landing Abort                       | |
+| +-------+-----------------------------------------------------+ |
+| | 174   | Camera Image Tracking                               | |
+| +-------+-----------------------------------------------------+ |
+| | 175   | Camera Lens                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 176   | Quadplane Fwd Throttle Override enable              | |
+| +-------+-----------------------------------------------------+ |
+| | 177   | Mount LRF enable                                    | |
+| +-------+-----------------------------------------------------+ |
+| | 179   | ICEngine start / stop                               | |
+| +-------+-----------------------------------------------------+ |
+| | 180   | Test autotuned gains after tune is complete         | |
+| +-------+-----------------------------------------------------+ |
+| | 181   | QuickTune                                           | |
+| +-------+-----------------------------------------------------+ |
+| | 182   | VTOL AutoTrim                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 184   | System ID Chirp                                     | |
+| +-------+-----------------------------------------------------+ |
+| | 185   | Mount Roll/Pitch Lock                               | |
+| +-------+-----------------------------------------------------+ |
+| | 186   | Mount POI Lock                                      | |
+| +-------+-----------------------------------------------------+ |
+| | 208   | Flap                                                | |
+| +-------+-----------------------------------------------------+ |
+| | 209   | VTOL Forward Throttle                               | |
+| +-------+-----------------------------------------------------+ |
+| | 210   | Airbrakes                                           | |
+| +-------+-----------------------------------------------------+ |
+| | 212   | Mount1 Roll                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 213   | Mount1 Pitch                                        | |
+| +-------+-----------------------------------------------------+ |
+| | 214   | Mount1 Yaw                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 215   | Mount2 Roll                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 216   | Mount2 Pitch                                        | |
+| +-------+-----------------------------------------------------+ |
+| | 217   | Mount2 Yaw                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 218   | Loweheiser throttle                                 | |
+| +-------+-----------------------------------------------------+ |
+| | 200   | Servos Auto Trim                                    | |
+| +-------+-----------------------------------------------------+ |
+| | 250   | Tuning Set Select                                   | |
+| +-------+-----------------------------------------------------+ |
+| | 251   | RTL Autoland Commit                                 | |
+| +-------+-----------------------------------------------------+ |
+| | 252   | Mount1 Head Track Enable                            | |
+| +-------+-----------------------------------------------------+ |
+| | 253   | Mount1 Head Track Center Lock                       | |
+| +-------+-----------------------------------------------------+ |
+| | 254   | Adaptive Pitch Trim                                 | |
+| +-------+-----------------------------------------------------+ |
+| | 300   | Scripting1                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 301   | Scripting2                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 302   | Scripting3                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 303   | Scripting4                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 304   | Scripting5                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 305   | Scripting6                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 306   | Scripting7                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 307   | Scripting8                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 308   | Scripting9                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 309   | Scripting10                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 310   | Scripting11                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 311   | Scripting12                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 312   | Scripting13                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 313   | Scripting14                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 314   | Scripting15                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 315   | Scripting16                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 316   | Stop-Restart Scripting                              | |
+| +-------+-----------------------------------------------------+ |
+|                                                                 |
++-----------------------------------------------------------------+
+
+
+
+
+
+.. _parameters_RC21_:
+
+RC21\_ Parameters
+-----------------
+
+
+.. _RC21_MIN:
+
+RC21\_MIN: RC min PWM
+~~~~~~~~~~~~~~~~~~~~~
+
+| *Note: This parameter is for advanced users*
+
+RC minimum PWM pulse width in microseconds\. Typically 1000 is lower limit\, 1500 is neutral and 2000 is upper limit\.
+
+
++-----------+-------------+---------------------+
+| Increment | Range       | Units               |
++===========+=============+=====================+
+| 1         | 800 to 2200 | PWM in microseconds |
++-----------+-------------+---------------------+
+
+
+
+
+.. _RC21_TRIM:
+
+RC21\_TRIM: RC trim PWM
+~~~~~~~~~~~~~~~~~~~~~~~
+
+| *Note: This parameter is for advanced users*
+
+RC trim \(neutral\) PWM pulse width in microseconds\. Typically 1000 is lower limit\, 1500 is neutral and 2000 is upper limit\.
+
+
++-----------+-------------+---------------------+
+| Increment | Range       | Units               |
++===========+=============+=====================+
+| 1         | 800 to 2200 | PWM in microseconds |
++-----------+-------------+---------------------+
+
+
+
+
+.. _RC21_MAX:
+
+RC21\_MAX: RC max PWM
+~~~~~~~~~~~~~~~~~~~~~
+
+| *Note: This parameter is for advanced users*
+
+RC maximum PWM pulse width in microseconds\. Typically 1000 is lower limit\, 1500 is neutral and 2000 is upper limit\.
+
+
++-----------+-------------+---------------------+
+| Increment | Range       | Units               |
++===========+=============+=====================+
+| 1         | 800 to 2200 | PWM in microseconds |
++-----------+-------------+---------------------+
+
+
+
+
+.. _RC21_REVERSED:
+
+RC21\_REVERSED: RC reversed
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+| *Note: This parameter is for advanced users*
+
+Reverse channel input\. Set to 0 for normal operation\. Set to 1 to reverse this input channel\.
+
+
++----------------------+
+| Values               |
++======================+
+| +-------+----------+ |
+| | Value | Meaning  | |
+| +=======+==========+ |
+| | 0     | Normal   | |
+| +-------+----------+ |
+| | 1     | Reversed | |
+| +-------+----------+ |
+|                      |
++----------------------+
+
+
+
+
+.. _RC21_DZ:
+
+RC21\_DZ: RC dead\-zone
+~~~~~~~~~~~~~~~~~~~~~~~
+
+| *Note: This parameter is for advanced users*
+
+PWM dead zone in microseconds around trim or bottom
+
+
++----------+---------------------+
+| Range    | Units               |
++==========+=====================+
+| 0 to 200 | PWM in microseconds |
++----------+---------------------+
+
+
+
+
+.. _RC21_OPTION:
+
+RC21\_OPTION: RC input option
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+Function assigned to this RC channel
+
+
++-----------------------------------------------------------------+
+| Values                                                          |
++=================================================================+
+| +-------+-----------------------------------------------------+ |
+| | Value | Meaning                                             | |
+| +=======+=====================================================+ |
+| | 0     | Do Nothing                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 4     | RTL                                                 | |
+| +-------+-----------------------------------------------------+ |
+| | 9     | Camera Trigger                                      | |
+| +-------+-----------------------------------------------------+ |
+| | 11    | Fence Enable                                        | |
+| +-------+-----------------------------------------------------+ |
+| | 16    | AUTO Mode                                           | |
+| +-------+-----------------------------------------------------+ |
+| | 17    | AUTOTUNE Mode                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 22    | Parachute Release                                   | |
+| +-------+-----------------------------------------------------+ |
+| | 24    | Auto Mission Reset                                  | |
+| +-------+-----------------------------------------------------+ |
+| | 27    | Retract Mount1                                      | |
+| +-------+-----------------------------------------------------+ |
+| | 28    | Relay1 On/Off                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 29    | Landing Gear                                        | |
+| +-------+-----------------------------------------------------+ |
+| | 30    | Lost Plane Sound                                    | |
+| +-------+-----------------------------------------------------+ |
+| | 31    | Motor Emergency Stop                                | |
+| +-------+-----------------------------------------------------+ |
+| | 34    | Relay2 On/Off                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 35    | Relay3 On/Off                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 36    | Relay4 On/Off                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 38    | ADSB Avoidance Enable                               | |
+| +-------+-----------------------------------------------------+ |
+| | 41    | ArmDisarm (4.1 and lower)                           | |
+| +-------+-----------------------------------------------------+ |
+| | 43    | InvertedFlight Enable                               | |
+| +-------+-----------------------------------------------------+ |
+| | 46    | RC Override Enable                                  | |
+| +-------+-----------------------------------------------------+ |
+| | 51    | MANUAL Mode                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 52    | ACRO Mode                                           | |
+| +-------+-----------------------------------------------------+ |
+| | 55    | GUIDED Mode                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 56    | LOITER Mode                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 58    | Clear Waypoints                                     | |
+| +-------+-----------------------------------------------------+ |
+| | 62    | Compass Learn                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 64    | Reverse Throttle                                    | |
+| +-------+-----------------------------------------------------+ |
+| | 65    | GPS Disable                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 66    | Relay5 On/Off                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 67    | Relay6 On/Off                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 72    | CIRCLE Mode                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 77    | TAKEOFF Mode                                        | |
+| +-------+-----------------------------------------------------+ |
+| | 78    | RunCam Control                                      | |
+| +-------+-----------------------------------------------------+ |
+| | 79    | RunCam OSD Control                                  | |
+| +-------+-----------------------------------------------------+ |
+| | 81    | Disarm                                              | |
+| +-------+-----------------------------------------------------+ |
+| | 82    | QAssist 3pos                                        | |
+| +-------+-----------------------------------------------------+ |
+| | 84    | AirMode                                             | |
+| +-------+-----------------------------------------------------+ |
+| | 85    | Generator                                           | |
+| +-------+-----------------------------------------------------+ |
+| | 86    | Non Auto Terrain Follow Disable                     | |
+| +-------+-----------------------------------------------------+ |
+| | 87    | Crow Select                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 88    | Soaring Enable                                      | |
+| +-------+-----------------------------------------------------+ |
+| | 89    | Landing Flare                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 90    | EKF Source Set                                      | |
+| +-------+-----------------------------------------------------+ |
+| | 91    | Airspeed Ratio Calibration                          | |
+| +-------+-----------------------------------------------------+ |
+| | 92    | FBWA Mode                                           | |
+| +-------+-----------------------------------------------------+ |
+| | 94    | VTX Power                                           | |
+| +-------+-----------------------------------------------------+ |
+| | 95    | FBWA taildragger takeoff mode                       | |
+| +-------+-----------------------------------------------------+ |
+| | 96    | Trigger re-reading of mode switch                   | |
+| +-------+-----------------------------------------------------+ |
+| | 98    | TRAINING Mode                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 100   | KillIMU1                                            | |
+| +-------+-----------------------------------------------------+ |
+| | 101   | KillIMU2                                            | |
+| +-------+-----------------------------------------------------+ |
+| | 102   | Camera Mode Toggle                                  | |
+| +-------+-----------------------------------------------------+ |
+| | 103   | EKF lane switch attempt                             | |
+| +-------+-----------------------------------------------------+ |
+| | 104   | EKF yaw reset                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 105   | GPS Disable Yaw                                     | |
+| +-------+-----------------------------------------------------+ |
+| | 106   | Disable Airspeed Use                                | |
+| +-------+-----------------------------------------------------+ |
+| | 107   | Enable FW Autotune                                  | |
+| +-------+-----------------------------------------------------+ |
+| | 108   | QRTL Mode                                           | |
+| +-------+-----------------------------------------------------+ |
+| | 110   | KillIMU3                                            | |
+| +-------+-----------------------------------------------------+ |
+| | 111   | Loweheiser starter                                  | |
+| +-------+-----------------------------------------------------+ |
+| | 112   | SwitchExternalAHRS                                  | |
+| +-------+-----------------------------------------------------+ |
+| | 113   | Retract Mount2                                      | |
+| +-------+-----------------------------------------------------+ |
+| | 150   | CRUISE Mode                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 153   | ArmDisarm (4.2 and higher)                          | |
+| +-------+-----------------------------------------------------+ |
+| | 154   | ArmDisarm with Quadplane AirMode (4.2 and higher)   | |
+| +-------+-----------------------------------------------------+ |
+| | 155   | Set roll pitch and yaw trim to current servo and RC | |
+| +-------+-----------------------------------------------------+ |
+| | 157   | Force FS Action to FBWA                             | |
+| +-------+-----------------------------------------------------+ |
+| | 158   | Optflow Calibration                                 | |
+| +-------+-----------------------------------------------------+ |
+| | 160   | Weathervane Enable                                  | |
+| +-------+-----------------------------------------------------+ |
+| | 162   | FFT Tune                                            | |
+| +-------+-----------------------------------------------------+ |
+| | 163   | Mount Yaw Lock                                      | |
+| +-------+-----------------------------------------------------+ |
+| | 164   | Pause Stream Logging                                | |
+| +-------+-----------------------------------------------------+ |
+| | 165   | Arm/Emergency Motor Stop                            | |
+| +-------+-----------------------------------------------------+ |
+| | 166   | Camera Record Video                                 | |
+| +-------+-----------------------------------------------------+ |
+| | 167   | Camera Zoom                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 168   | Camera Manual Focus                                 | |
+| +-------+-----------------------------------------------------+ |
+| | 169   | Camera Auto Focus                                   | |
+| +-------+-----------------------------------------------------+ |
+| | 170   | QSTABILIZE Mode                                     | |
+| +-------+-----------------------------------------------------+ |
+| | 171   | Calibrate Compasses                                 | |
+| +-------+-----------------------------------------------------+ |
+| | 172   | Battery MPPT Enable                                 | |
+| +-------+-----------------------------------------------------+ |
+| | 173   | Plane AUTO Mode Landing Abort                       | |
+| +-------+-----------------------------------------------------+ |
+| | 174   | Camera Image Tracking                               | |
+| +-------+-----------------------------------------------------+ |
+| | 175   | Camera Lens                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 176   | Quadplane Fwd Throttle Override enable              | |
+| +-------+-----------------------------------------------------+ |
+| | 177   | Mount LRF enable                                    | |
+| +-------+-----------------------------------------------------+ |
+| | 179   | ICEngine start / stop                               | |
+| +-------+-----------------------------------------------------+ |
+| | 180   | Test autotuned gains after tune is complete         | |
+| +-------+-----------------------------------------------------+ |
+| | 181   | QuickTune                                           | |
+| +-------+-----------------------------------------------------+ |
+| | 182   | VTOL AutoTrim                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 184   | System ID Chirp                                     | |
+| +-------+-----------------------------------------------------+ |
+| | 185   | Mount Roll/Pitch Lock                               | |
+| +-------+-----------------------------------------------------+ |
+| | 186   | Mount POI Lock                                      | |
+| +-------+-----------------------------------------------------+ |
+| | 208   | Flap                                                | |
+| +-------+-----------------------------------------------------+ |
+| | 209   | VTOL Forward Throttle                               | |
+| +-------+-----------------------------------------------------+ |
+| | 210   | Airbrakes                                           | |
+| +-------+-----------------------------------------------------+ |
+| | 212   | Mount1 Roll                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 213   | Mount1 Pitch                                        | |
+| +-------+-----------------------------------------------------+ |
+| | 214   | Mount1 Yaw                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 215   | Mount2 Roll                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 216   | Mount2 Pitch                                        | |
+| +-------+-----------------------------------------------------+ |
+| | 217   | Mount2 Yaw                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 218   | Loweheiser throttle                                 | |
+| +-------+-----------------------------------------------------+ |
+| | 200   | Servos Auto Trim                                    | |
+| +-------+-----------------------------------------------------+ |
+| | 250   | Tuning Set Select                                   | |
+| +-------+-----------------------------------------------------+ |
+| | 251   | RTL Autoland Commit                                 | |
+| +-------+-----------------------------------------------------+ |
+| | 252   | Mount1 Head Track Enable                            | |
+| +-------+-----------------------------------------------------+ |
+| | 253   | Mount1 Head Track Center Lock                       | |
+| +-------+-----------------------------------------------------+ |
+| | 254   | Adaptive Pitch Trim                                 | |
+| +-------+-----------------------------------------------------+ |
+| | 300   | Scripting1                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 301   | Scripting2                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 302   | Scripting3                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 303   | Scripting4                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 304   | Scripting5                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 305   | Scripting6                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 306   | Scripting7                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 307   | Scripting8                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 308   | Scripting9                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 309   | Scripting10                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 310   | Scripting11                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 311   | Scripting12                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 312   | Scripting13                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 313   | Scripting14                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 314   | Scripting15                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 315   | Scripting16                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 316   | Stop-Restart Scripting                              | |
+| +-------+-----------------------------------------------------+ |
+|                                                                 |
++-----------------------------------------------------------------+
+
+
+
+
+
+.. _parameters_RC22_:
+
+RC22\_ Parameters
+-----------------
+
+
+.. _RC22_MIN:
+
+RC22\_MIN: RC min PWM
+~~~~~~~~~~~~~~~~~~~~~
+
+| *Note: This parameter is for advanced users*
+
+RC minimum PWM pulse width in microseconds\. Typically 1000 is lower limit\, 1500 is neutral and 2000 is upper limit\.
+
+
++-----------+-------------+---------------------+
+| Increment | Range       | Units               |
++===========+=============+=====================+
+| 1         | 800 to 2200 | PWM in microseconds |
++-----------+-------------+---------------------+
+
+
+
+
+.. _RC22_TRIM:
+
+RC22\_TRIM: RC trim PWM
+~~~~~~~~~~~~~~~~~~~~~~~
+
+| *Note: This parameter is for advanced users*
+
+RC trim \(neutral\) PWM pulse width in microseconds\. Typically 1000 is lower limit\, 1500 is neutral and 2000 is upper limit\.
+
+
++-----------+-------------+---------------------+
+| Increment | Range       | Units               |
++===========+=============+=====================+
+| 1         | 800 to 2200 | PWM in microseconds |
++-----------+-------------+---------------------+
+
+
+
+
+.. _RC22_MAX:
+
+RC22\_MAX: RC max PWM
+~~~~~~~~~~~~~~~~~~~~~
+
+| *Note: This parameter is for advanced users*
+
+RC maximum PWM pulse width in microseconds\. Typically 1000 is lower limit\, 1500 is neutral and 2000 is upper limit\.
+
+
++-----------+-------------+---------------------+
+| Increment | Range       | Units               |
++===========+=============+=====================+
+| 1         | 800 to 2200 | PWM in microseconds |
++-----------+-------------+---------------------+
+
+
+
+
+.. _RC22_REVERSED:
+
+RC22\_REVERSED: RC reversed
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+| *Note: This parameter is for advanced users*
+
+Reverse channel input\. Set to 0 for normal operation\. Set to 1 to reverse this input channel\.
+
+
++----------------------+
+| Values               |
++======================+
+| +-------+----------+ |
+| | Value | Meaning  | |
+| +=======+==========+ |
+| | 0     | Normal   | |
+| +-------+----------+ |
+| | 1     | Reversed | |
+| +-------+----------+ |
+|                      |
++----------------------+
+
+
+
+
+.. _RC22_DZ:
+
+RC22\_DZ: RC dead\-zone
+~~~~~~~~~~~~~~~~~~~~~~~
+
+| *Note: This parameter is for advanced users*
+
+PWM dead zone in microseconds around trim or bottom
+
+
++----------+---------------------+
+| Range    | Units               |
++==========+=====================+
+| 0 to 200 | PWM in microseconds |
++----------+---------------------+
+
+
+
+
+.. _RC22_OPTION:
+
+RC22\_OPTION: RC input option
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+Function assigned to this RC channel
+
+
++-----------------------------------------------------------------+
+| Values                                                          |
++=================================================================+
+| +-------+-----------------------------------------------------+ |
+| | Value | Meaning                                             | |
+| +=======+=====================================================+ |
+| | 0     | Do Nothing                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 4     | RTL                                                 | |
+| +-------+-----------------------------------------------------+ |
+| | 9     | Camera Trigger                                      | |
+| +-------+-----------------------------------------------------+ |
+| | 11    | Fence Enable                                        | |
+| +-------+-----------------------------------------------------+ |
+| | 16    | AUTO Mode                                           | |
+| +-------+-----------------------------------------------------+ |
+| | 17    | AUTOTUNE Mode                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 22    | Parachute Release                                   | |
+| +-------+-----------------------------------------------------+ |
+| | 24    | Auto Mission Reset                                  | |
+| +-------+-----------------------------------------------------+ |
+| | 27    | Retract Mount1                                      | |
+| +-------+-----------------------------------------------------+ |
+| | 28    | Relay1 On/Off                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 29    | Landing Gear                                        | |
+| +-------+-----------------------------------------------------+ |
+| | 30    | Lost Plane Sound                                    | |
+| +-------+-----------------------------------------------------+ |
+| | 31    | Motor Emergency Stop                                | |
+| +-------+-----------------------------------------------------+ |
+| | 34    | Relay2 On/Off                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 35    | Relay3 On/Off                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 36    | Relay4 On/Off                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 38    | ADSB Avoidance Enable                               | |
+| +-------+-----------------------------------------------------+ |
+| | 41    | ArmDisarm (4.1 and lower)                           | |
+| +-------+-----------------------------------------------------+ |
+| | 43    | InvertedFlight Enable                               | |
+| +-------+-----------------------------------------------------+ |
+| | 46    | RC Override Enable                                  | |
+| +-------+-----------------------------------------------------+ |
+| | 51    | MANUAL Mode                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 52    | ACRO Mode                                           | |
+| +-------+-----------------------------------------------------+ |
+| | 55    | GUIDED Mode                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 56    | LOITER Mode                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 58    | Clear Waypoints                                     | |
+| +-------+-----------------------------------------------------+ |
+| | 62    | Compass Learn                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 64    | Reverse Throttle                                    | |
+| +-------+-----------------------------------------------------+ |
+| | 65    | GPS Disable                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 66    | Relay5 On/Off                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 67    | Relay6 On/Off                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 72    | CIRCLE Mode                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 77    | TAKEOFF Mode                                        | |
+| +-------+-----------------------------------------------------+ |
+| | 78    | RunCam Control                                      | |
+| +-------+-----------------------------------------------------+ |
+| | 79    | RunCam OSD Control                                  | |
+| +-------+-----------------------------------------------------+ |
+| | 81    | Disarm                                              | |
+| +-------+-----------------------------------------------------+ |
+| | 82    | QAssist 3pos                                        | |
+| +-------+-----------------------------------------------------+ |
+| | 84    | AirMode                                             | |
+| +-------+-----------------------------------------------------+ |
+| | 85    | Generator                                           | |
+| +-------+-----------------------------------------------------+ |
+| | 86    | Non Auto Terrain Follow Disable                     | |
+| +-------+-----------------------------------------------------+ |
+| | 87    | Crow Select                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 88    | Soaring Enable                                      | |
+| +-------+-----------------------------------------------------+ |
+| | 89    | Landing Flare                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 90    | EKF Source Set                                      | |
+| +-------+-----------------------------------------------------+ |
+| | 91    | Airspeed Ratio Calibration                          | |
+| +-------+-----------------------------------------------------+ |
+| | 92    | FBWA Mode                                           | |
+| +-------+-----------------------------------------------------+ |
+| | 94    | VTX Power                                           | |
+| +-------+-----------------------------------------------------+ |
+| | 95    | FBWA taildragger takeoff mode                       | |
+| +-------+-----------------------------------------------------+ |
+| | 96    | Trigger re-reading of mode switch                   | |
+| +-------+-----------------------------------------------------+ |
+| | 98    | TRAINING Mode                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 100   | KillIMU1                                            | |
+| +-------+-----------------------------------------------------+ |
+| | 101   | KillIMU2                                            | |
+| +-------+-----------------------------------------------------+ |
+| | 102   | Camera Mode Toggle                                  | |
+| +-------+-----------------------------------------------------+ |
+| | 103   | EKF lane switch attempt                             | |
+| +-------+-----------------------------------------------------+ |
+| | 104   | EKF yaw reset                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 105   | GPS Disable Yaw                                     | |
+| +-------+-----------------------------------------------------+ |
+| | 106   | Disable Airspeed Use                                | |
+| +-------+-----------------------------------------------------+ |
+| | 107   | Enable FW Autotune                                  | |
+| +-------+-----------------------------------------------------+ |
+| | 108   | QRTL Mode                                           | |
+| +-------+-----------------------------------------------------+ |
+| | 110   | KillIMU3                                            | |
+| +-------+-----------------------------------------------------+ |
+| | 111   | Loweheiser starter                                  | |
+| +-------+-----------------------------------------------------+ |
+| | 112   | SwitchExternalAHRS                                  | |
+| +-------+-----------------------------------------------------+ |
+| | 113   | Retract Mount2                                      | |
+| +-------+-----------------------------------------------------+ |
+| | 150   | CRUISE Mode                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 153   | ArmDisarm (4.2 and higher)                          | |
+| +-------+-----------------------------------------------------+ |
+| | 154   | ArmDisarm with Quadplane AirMode (4.2 and higher)   | |
+| +-------+-----------------------------------------------------+ |
+| | 155   | Set roll pitch and yaw trim to current servo and RC | |
+| +-------+-----------------------------------------------------+ |
+| | 157   | Force FS Action to FBWA                             | |
+| +-------+-----------------------------------------------------+ |
+| | 158   | Optflow Calibration                                 | |
+| +-------+-----------------------------------------------------+ |
+| | 160   | Weathervane Enable                                  | |
+| +-------+-----------------------------------------------------+ |
+| | 162   | FFT Tune                                            | |
+| +-------+-----------------------------------------------------+ |
+| | 163   | Mount Yaw Lock                                      | |
+| +-------+-----------------------------------------------------+ |
+| | 164   | Pause Stream Logging                                | |
+| +-------+-----------------------------------------------------+ |
+| | 165   | Arm/Emergency Motor Stop                            | |
+| +-------+-----------------------------------------------------+ |
+| | 166   | Camera Record Video                                 | |
+| +-------+-----------------------------------------------------+ |
+| | 167   | Camera Zoom                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 168   | Camera Manual Focus                                 | |
+| +-------+-----------------------------------------------------+ |
+| | 169   | Camera Auto Focus                                   | |
+| +-------+-----------------------------------------------------+ |
+| | 170   | QSTABILIZE Mode                                     | |
+| +-------+-----------------------------------------------------+ |
+| | 171   | Calibrate Compasses                                 | |
+| +-------+-----------------------------------------------------+ |
+| | 172   | Battery MPPT Enable                                 | |
+| +-------+-----------------------------------------------------+ |
+| | 173   | Plane AUTO Mode Landing Abort                       | |
+| +-------+-----------------------------------------------------+ |
+| | 174   | Camera Image Tracking                               | |
+| +-------+-----------------------------------------------------+ |
+| | 175   | Camera Lens                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 176   | Quadplane Fwd Throttle Override enable              | |
+| +-------+-----------------------------------------------------+ |
+| | 177   | Mount LRF enable                                    | |
+| +-------+-----------------------------------------------------+ |
+| | 179   | ICEngine start / stop                               | |
+| +-------+-----------------------------------------------------+ |
+| | 180   | Test autotuned gains after tune is complete         | |
+| +-------+-----------------------------------------------------+ |
+| | 181   | QuickTune                                           | |
+| +-------+-----------------------------------------------------+ |
+| | 182   | VTOL AutoTrim                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 184   | System ID Chirp                                     | |
+| +-------+-----------------------------------------------------+ |
+| | 185   | Mount Roll/Pitch Lock                               | |
+| +-------+-----------------------------------------------------+ |
+| | 186   | Mount POI Lock                                      | |
+| +-------+-----------------------------------------------------+ |
+| | 208   | Flap                                                | |
+| +-------+-----------------------------------------------------+ |
+| | 209   | VTOL Forward Throttle                               | |
+| +-------+-----------------------------------------------------+ |
+| | 210   | Airbrakes                                           | |
+| +-------+-----------------------------------------------------+ |
+| | 212   | Mount1 Roll                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 213   | Mount1 Pitch                                        | |
+| +-------+-----------------------------------------------------+ |
+| | 214   | Mount1 Yaw                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 215   | Mount2 Roll                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 216   | Mount2 Pitch                                        | |
+| +-------+-----------------------------------------------------+ |
+| | 217   | Mount2 Yaw                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 218   | Loweheiser throttle                                 | |
+| +-------+-----------------------------------------------------+ |
+| | 200   | Servos Auto Trim                                    | |
+| +-------+-----------------------------------------------------+ |
+| | 250   | Tuning Set Select                                   | |
+| +-------+-----------------------------------------------------+ |
+| | 251   | RTL Autoland Commit                                 | |
+| +-------+-----------------------------------------------------+ |
+| | 252   | Mount1 Head Track Enable                            | |
+| +-------+-----------------------------------------------------+ |
+| | 253   | Mount1 Head Track Center Lock                       | |
+| +-------+-----------------------------------------------------+ |
+| | 254   | Adaptive Pitch Trim                                 | |
+| +-------+-----------------------------------------------------+ |
+| | 300   | Scripting1                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 301   | Scripting2                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 302   | Scripting3                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 303   | Scripting4                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 304   | Scripting5                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 305   | Scripting6                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 306   | Scripting7                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 307   | Scripting8                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 308   | Scripting9                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 309   | Scripting10                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 310   | Scripting11                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 311   | Scripting12                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 312   | Scripting13                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 313   | Scripting14                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 314   | Scripting15                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 315   | Scripting16                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 316   | Stop-Restart Scripting                              | |
+| +-------+-----------------------------------------------------+ |
+|                                                                 |
++-----------------------------------------------------------------+
+
+
+
+
+
+.. _parameters_RC23_:
+
+RC23\_ Parameters
+-----------------
+
+
+.. _RC23_MIN:
+
+RC23\_MIN: RC min PWM
+~~~~~~~~~~~~~~~~~~~~~
+
+| *Note: This parameter is for advanced users*
+
+RC minimum PWM pulse width in microseconds\. Typically 1000 is lower limit\, 1500 is neutral and 2000 is upper limit\.
+
+
++-----------+-------------+---------------------+
+| Increment | Range       | Units               |
++===========+=============+=====================+
+| 1         | 800 to 2200 | PWM in microseconds |
++-----------+-------------+---------------------+
+
+
+
+
+.. _RC23_TRIM:
+
+RC23\_TRIM: RC trim PWM
+~~~~~~~~~~~~~~~~~~~~~~~
+
+| *Note: This parameter is for advanced users*
+
+RC trim \(neutral\) PWM pulse width in microseconds\. Typically 1000 is lower limit\, 1500 is neutral and 2000 is upper limit\.
+
+
++-----------+-------------+---------------------+
+| Increment | Range       | Units               |
++===========+=============+=====================+
+| 1         | 800 to 2200 | PWM in microseconds |
++-----------+-------------+---------------------+
+
+
+
+
+.. _RC23_MAX:
+
+RC23\_MAX: RC max PWM
+~~~~~~~~~~~~~~~~~~~~~
+
+| *Note: This parameter is for advanced users*
+
+RC maximum PWM pulse width in microseconds\. Typically 1000 is lower limit\, 1500 is neutral and 2000 is upper limit\.
+
+
++-----------+-------------+---------------------+
+| Increment | Range       | Units               |
++===========+=============+=====================+
+| 1         | 800 to 2200 | PWM in microseconds |
++-----------+-------------+---------------------+
+
+
+
+
+.. _RC23_REVERSED:
+
+RC23\_REVERSED: RC reversed
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+| *Note: This parameter is for advanced users*
+
+Reverse channel input\. Set to 0 for normal operation\. Set to 1 to reverse this input channel\.
+
+
++----------------------+
+| Values               |
++======================+
+| +-------+----------+ |
+| | Value | Meaning  | |
+| +=======+==========+ |
+| | 0     | Normal   | |
+| +-------+----------+ |
+| | 1     | Reversed | |
+| +-------+----------+ |
+|                      |
++----------------------+
+
+
+
+
+.. _RC23_DZ:
+
+RC23\_DZ: RC dead\-zone
+~~~~~~~~~~~~~~~~~~~~~~~
+
+| *Note: This parameter is for advanced users*
+
+PWM dead zone in microseconds around trim or bottom
+
+
++----------+---------------------+
+| Range    | Units               |
++==========+=====================+
+| 0 to 200 | PWM in microseconds |
++----------+---------------------+
+
+
+
+
+.. _RC23_OPTION:
+
+RC23\_OPTION: RC input option
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+Function assigned to this RC channel
+
+
++-----------------------------------------------------------------+
+| Values                                                          |
++=================================================================+
+| +-------+-----------------------------------------------------+ |
+| | Value | Meaning                                             | |
+| +=======+=====================================================+ |
+| | 0     | Do Nothing                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 4     | RTL                                                 | |
+| +-------+-----------------------------------------------------+ |
+| | 9     | Camera Trigger                                      | |
+| +-------+-----------------------------------------------------+ |
+| | 11    | Fence Enable                                        | |
+| +-------+-----------------------------------------------------+ |
+| | 16    | AUTO Mode                                           | |
+| +-------+-----------------------------------------------------+ |
+| | 17    | AUTOTUNE Mode                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 22    | Parachute Release                                   | |
+| +-------+-----------------------------------------------------+ |
+| | 24    | Auto Mission Reset                                  | |
+| +-------+-----------------------------------------------------+ |
+| | 27    | Retract Mount1                                      | |
+| +-------+-----------------------------------------------------+ |
+| | 28    | Relay1 On/Off                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 29    | Landing Gear                                        | |
+| +-------+-----------------------------------------------------+ |
+| | 30    | Lost Plane Sound                                    | |
+| +-------+-----------------------------------------------------+ |
+| | 31    | Motor Emergency Stop                                | |
+| +-------+-----------------------------------------------------+ |
+| | 34    | Relay2 On/Off                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 35    | Relay3 On/Off                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 36    | Relay4 On/Off                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 38    | ADSB Avoidance Enable                               | |
+| +-------+-----------------------------------------------------+ |
+| | 41    | ArmDisarm (4.1 and lower)                           | |
+| +-------+-----------------------------------------------------+ |
+| | 43    | InvertedFlight Enable                               | |
+| +-------+-----------------------------------------------------+ |
+| | 46    | RC Override Enable                                  | |
+| +-------+-----------------------------------------------------+ |
+| | 51    | MANUAL Mode                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 52    | ACRO Mode                                           | |
+| +-------+-----------------------------------------------------+ |
+| | 55    | GUIDED Mode                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 56    | LOITER Mode                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 58    | Clear Waypoints                                     | |
+| +-------+-----------------------------------------------------+ |
+| | 62    | Compass Learn                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 64    | Reverse Throttle                                    | |
+| +-------+-----------------------------------------------------+ |
+| | 65    | GPS Disable                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 66    | Relay5 On/Off                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 67    | Relay6 On/Off                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 72    | CIRCLE Mode                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 77    | TAKEOFF Mode                                        | |
+| +-------+-----------------------------------------------------+ |
+| | 78    | RunCam Control                                      | |
+| +-------+-----------------------------------------------------+ |
+| | 79    | RunCam OSD Control                                  | |
+| +-------+-----------------------------------------------------+ |
+| | 81    | Disarm                                              | |
+| +-------+-----------------------------------------------------+ |
+| | 82    | QAssist 3pos                                        | |
+| +-------+-----------------------------------------------------+ |
+| | 84    | AirMode                                             | |
+| +-------+-----------------------------------------------------+ |
+| | 85    | Generator                                           | |
+| +-------+-----------------------------------------------------+ |
+| | 86    | Non Auto Terrain Follow Disable                     | |
+| +-------+-----------------------------------------------------+ |
+| | 87    | Crow Select                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 88    | Soaring Enable                                      | |
+| +-------+-----------------------------------------------------+ |
+| | 89    | Landing Flare                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 90    | EKF Source Set                                      | |
+| +-------+-----------------------------------------------------+ |
+| | 91    | Airspeed Ratio Calibration                          | |
+| +-------+-----------------------------------------------------+ |
+| | 92    | FBWA Mode                                           | |
+| +-------+-----------------------------------------------------+ |
+| | 94    | VTX Power                                           | |
+| +-------+-----------------------------------------------------+ |
+| | 95    | FBWA taildragger takeoff mode                       | |
+| +-------+-----------------------------------------------------+ |
+| | 96    | Trigger re-reading of mode switch                   | |
+| +-------+-----------------------------------------------------+ |
+| | 98    | TRAINING Mode                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 100   | KillIMU1                                            | |
+| +-------+-----------------------------------------------------+ |
+| | 101   | KillIMU2                                            | |
+| +-------+-----------------------------------------------------+ |
+| | 102   | Camera Mode Toggle                                  | |
+| +-------+-----------------------------------------------------+ |
+| | 103   | EKF lane switch attempt                             | |
+| +-------+-----------------------------------------------------+ |
+| | 104   | EKF yaw reset                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 105   | GPS Disable Yaw                                     | |
+| +-------+-----------------------------------------------------+ |
+| | 106   | Disable Airspeed Use                                | |
+| +-------+-----------------------------------------------------+ |
+| | 107   | Enable FW Autotune                                  | |
+| +-------+-----------------------------------------------------+ |
+| | 108   | QRTL Mode                                           | |
+| +-------+-----------------------------------------------------+ |
+| | 110   | KillIMU3                                            | |
+| +-------+-----------------------------------------------------+ |
+| | 111   | Loweheiser starter                                  | |
+| +-------+-----------------------------------------------------+ |
+| | 112   | SwitchExternalAHRS                                  | |
+| +-------+-----------------------------------------------------+ |
+| | 113   | Retract Mount2                                      | |
+| +-------+-----------------------------------------------------+ |
+| | 150   | CRUISE Mode                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 153   | ArmDisarm (4.2 and higher)                          | |
+| +-------+-----------------------------------------------------+ |
+| | 154   | ArmDisarm with Quadplane AirMode (4.2 and higher)   | |
+| +-------+-----------------------------------------------------+ |
+| | 155   | Set roll pitch and yaw trim to current servo and RC | |
+| +-------+-----------------------------------------------------+ |
+| | 157   | Force FS Action to FBWA                             | |
+| +-------+-----------------------------------------------------+ |
+| | 158   | Optflow Calibration                                 | |
+| +-------+-----------------------------------------------------+ |
+| | 160   | Weathervane Enable                                  | |
+| +-------+-----------------------------------------------------+ |
+| | 162   | FFT Tune                                            | |
+| +-------+-----------------------------------------------------+ |
+| | 163   | Mount Yaw Lock                                      | |
+| +-------+-----------------------------------------------------+ |
+| | 164   | Pause Stream Logging                                | |
+| +-------+-----------------------------------------------------+ |
+| | 165   | Arm/Emergency Motor Stop                            | |
+| +-------+-----------------------------------------------------+ |
+| | 166   | Camera Record Video                                 | |
+| +-------+-----------------------------------------------------+ |
+| | 167   | Camera Zoom                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 168   | Camera Manual Focus                                 | |
+| +-------+-----------------------------------------------------+ |
+| | 169   | Camera Auto Focus                                   | |
+| +-------+-----------------------------------------------------+ |
+| | 170   | QSTABILIZE Mode                                     | |
+| +-------+-----------------------------------------------------+ |
+| | 171   | Calibrate Compasses                                 | |
+| +-------+-----------------------------------------------------+ |
+| | 172   | Battery MPPT Enable                                 | |
+| +-------+-----------------------------------------------------+ |
+| | 173   | Plane AUTO Mode Landing Abort                       | |
+| +-------+-----------------------------------------------------+ |
+| | 174   | Camera Image Tracking                               | |
+| +-------+-----------------------------------------------------+ |
+| | 175   | Camera Lens                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 176   | Quadplane Fwd Throttle Override enable              | |
+| +-------+-----------------------------------------------------+ |
+| | 177   | Mount LRF enable                                    | |
+| +-------+-----------------------------------------------------+ |
+| | 179   | ICEngine start / stop                               | |
+| +-------+-----------------------------------------------------+ |
+| | 180   | Test autotuned gains after tune is complete         | |
+| +-------+-----------------------------------------------------+ |
+| | 181   | QuickTune                                           | |
+| +-------+-----------------------------------------------------+ |
+| | 182   | VTOL AutoTrim                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 184   | System ID Chirp                                     | |
+| +-------+-----------------------------------------------------+ |
+| | 185   | Mount Roll/Pitch Lock                               | |
+| +-------+-----------------------------------------------------+ |
+| | 186   | Mount POI Lock                                      | |
+| +-------+-----------------------------------------------------+ |
+| | 208   | Flap                                                | |
+| +-------+-----------------------------------------------------+ |
+| | 209   | VTOL Forward Throttle                               | |
+| +-------+-----------------------------------------------------+ |
+| | 210   | Airbrakes                                           | |
+| +-------+-----------------------------------------------------+ |
+| | 212   | Mount1 Roll                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 213   | Mount1 Pitch                                        | |
+| +-------+-----------------------------------------------------+ |
+| | 214   | Mount1 Yaw                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 215   | Mount2 Roll                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 216   | Mount2 Pitch                                        | |
+| +-------+-----------------------------------------------------+ |
+| | 217   | Mount2 Yaw                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 218   | Loweheiser throttle                                 | |
+| +-------+-----------------------------------------------------+ |
+| | 200   | Servos Auto Trim                                    | |
+| +-------+-----------------------------------------------------+ |
+| | 250   | Tuning Set Select                                   | |
+| +-------+-----------------------------------------------------+ |
+| | 251   | RTL Autoland Commit                                 | |
+| +-------+-----------------------------------------------------+ |
+| | 252   | Mount1 Head Track Enable                            | |
+| +-------+-----------------------------------------------------+ |
+| | 253   | Mount1 Head Track Center Lock                       | |
+| +-------+-----------------------------------------------------+ |
+| | 254   | Adaptive Pitch Trim                                 | |
+| +-------+-----------------------------------------------------+ |
+| | 300   | Scripting1                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 301   | Scripting2                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 302   | Scripting3                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 303   | Scripting4                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 304   | Scripting5                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 305   | Scripting6                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 306   | Scripting7                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 307   | Scripting8                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 308   | Scripting9                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 309   | Scripting10                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 310   | Scripting11                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 311   | Scripting12                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 312   | Scripting13                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 313   | Scripting14                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 314   | Scripting15                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 315   | Scripting16                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 316   | Stop-Restart Scripting                              | |
+| +-------+-----------------------------------------------------+ |
+|                                                                 |
++-----------------------------------------------------------------+
+
+
+
+
+
+.. _parameters_RC24_:
+
+RC24\_ Parameters
+-----------------
+
+
+.. _RC24_MIN:
+
+RC24\_MIN: RC min PWM
+~~~~~~~~~~~~~~~~~~~~~
+
+| *Note: This parameter is for advanced users*
+
+RC minimum PWM pulse width in microseconds\. Typically 1000 is lower limit\, 1500 is neutral and 2000 is upper limit\.
+
+
++-----------+-------------+---------------------+
+| Increment | Range       | Units               |
++===========+=============+=====================+
+| 1         | 800 to 2200 | PWM in microseconds |
++-----------+-------------+---------------------+
+
+
+
+
+.. _RC24_TRIM:
+
+RC24\_TRIM: RC trim PWM
+~~~~~~~~~~~~~~~~~~~~~~~
+
+| *Note: This parameter is for advanced users*
+
+RC trim \(neutral\) PWM pulse width in microseconds\. Typically 1000 is lower limit\, 1500 is neutral and 2000 is upper limit\.
+
+
++-----------+-------------+---------------------+
+| Increment | Range       | Units               |
++===========+=============+=====================+
+| 1         | 800 to 2200 | PWM in microseconds |
++-----------+-------------+---------------------+
+
+
+
+
+.. _RC24_MAX:
+
+RC24\_MAX: RC max PWM
+~~~~~~~~~~~~~~~~~~~~~
+
+| *Note: This parameter is for advanced users*
+
+RC maximum PWM pulse width in microseconds\. Typically 1000 is lower limit\, 1500 is neutral and 2000 is upper limit\.
+
+
++-----------+-------------+---------------------+
+| Increment | Range       | Units               |
++===========+=============+=====================+
+| 1         | 800 to 2200 | PWM in microseconds |
++-----------+-------------+---------------------+
+
+
+
+
+.. _RC24_REVERSED:
+
+RC24\_REVERSED: RC reversed
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+| *Note: This parameter is for advanced users*
+
+Reverse channel input\. Set to 0 for normal operation\. Set to 1 to reverse this input channel\.
+
+
++----------------------+
+| Values               |
++======================+
+| +-------+----------+ |
+| | Value | Meaning  | |
+| +=======+==========+ |
+| | 0     | Normal   | |
+| +-------+----------+ |
+| | 1     | Reversed | |
+| +-------+----------+ |
+|                      |
++----------------------+
+
+
+
+
+.. _RC24_DZ:
+
+RC24\_DZ: RC dead\-zone
+~~~~~~~~~~~~~~~~~~~~~~~
+
+| *Note: This parameter is for advanced users*
+
+PWM dead zone in microseconds around trim or bottom
+
+
++----------+---------------------+
+| Range    | Units               |
++==========+=====================+
+| 0 to 200 | PWM in microseconds |
++----------+---------------------+
+
+
+
+
+.. _RC24_OPTION:
+
+RC24\_OPTION: RC input option
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+Function assigned to this RC channel
+
+
++-----------------------------------------------------------------+
+| Values                                                          |
++=================================================================+
+| +-------+-----------------------------------------------------+ |
+| | Value | Meaning                                             | |
+| +=======+=====================================================+ |
+| | 0     | Do Nothing                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 4     | RTL                                                 | |
+| +-------+-----------------------------------------------------+ |
+| | 9     | Camera Trigger                                      | |
+| +-------+-----------------------------------------------------+ |
+| | 11    | Fence Enable                                        | |
+| +-------+-----------------------------------------------------+ |
+| | 16    | AUTO Mode                                           | |
+| +-------+-----------------------------------------------------+ |
+| | 17    | AUTOTUNE Mode                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 22    | Parachute Release                                   | |
+| +-------+-----------------------------------------------------+ |
+| | 24    | Auto Mission Reset                                  | |
+| +-------+-----------------------------------------------------+ |
+| | 27    | Retract Mount1                                      | |
+| +-------+-----------------------------------------------------+ |
+| | 28    | Relay1 On/Off                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 29    | Landing Gear                                        | |
+| +-------+-----------------------------------------------------+ |
+| | 30    | Lost Plane Sound                                    | |
+| +-------+-----------------------------------------------------+ |
+| | 31    | Motor Emergency Stop                                | |
+| +-------+-----------------------------------------------------+ |
+| | 34    | Relay2 On/Off                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 35    | Relay3 On/Off                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 36    | Relay4 On/Off                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 38    | ADSB Avoidance Enable                               | |
+| +-------+-----------------------------------------------------+ |
+| | 41    | ArmDisarm (4.1 and lower)                           | |
+| +-------+-----------------------------------------------------+ |
+| | 43    | InvertedFlight Enable                               | |
+| +-------+-----------------------------------------------------+ |
+| | 46    | RC Override Enable                                  | |
+| +-------+-----------------------------------------------------+ |
+| | 51    | MANUAL Mode                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 52    | ACRO Mode                                           | |
+| +-------+-----------------------------------------------------+ |
+| | 55    | GUIDED Mode                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 56    | LOITER Mode                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 58    | Clear Waypoints                                     | |
+| +-------+-----------------------------------------------------+ |
+| | 62    | Compass Learn                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 64    | Reverse Throttle                                    | |
+| +-------+-----------------------------------------------------+ |
+| | 65    | GPS Disable                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 66    | Relay5 On/Off                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 67    | Relay6 On/Off                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 72    | CIRCLE Mode                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 77    | TAKEOFF Mode                                        | |
+| +-------+-----------------------------------------------------+ |
+| | 78    | RunCam Control                                      | |
+| +-------+-----------------------------------------------------+ |
+| | 79    | RunCam OSD Control                                  | |
+| +-------+-----------------------------------------------------+ |
+| | 81    | Disarm                                              | |
+| +-------+-----------------------------------------------------+ |
+| | 82    | QAssist 3pos                                        | |
+| +-------+-----------------------------------------------------+ |
+| | 84    | AirMode                                             | |
+| +-------+-----------------------------------------------------+ |
+| | 85    | Generator                                           | |
+| +-------+-----------------------------------------------------+ |
+| | 86    | Non Auto Terrain Follow Disable                     | |
+| +-------+-----------------------------------------------------+ |
+| | 87    | Crow Select                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 88    | Soaring Enable                                      | |
+| +-------+-----------------------------------------------------+ |
+| | 89    | Landing Flare                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 90    | EKF Source Set                                      | |
+| +-------+-----------------------------------------------------+ |
+| | 91    | Airspeed Ratio Calibration                          | |
+| +-------+-----------------------------------------------------+ |
+| | 92    | FBWA Mode                                           | |
+| +-------+-----------------------------------------------------+ |
+| | 94    | VTX Power                                           | |
+| +-------+-----------------------------------------------------+ |
+| | 95    | FBWA taildragger takeoff mode                       | |
+| +-------+-----------------------------------------------------+ |
+| | 96    | Trigger re-reading of mode switch                   | |
+| +-------+-----------------------------------------------------+ |
+| | 98    | TRAINING Mode                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 100   | KillIMU1                                            | |
+| +-------+-----------------------------------------------------+ |
+| | 101   | KillIMU2                                            | |
+| +-------+-----------------------------------------------------+ |
+| | 102   | Camera Mode Toggle                                  | |
+| +-------+-----------------------------------------------------+ |
+| | 103   | EKF lane switch attempt                             | |
+| +-------+-----------------------------------------------------+ |
+| | 104   | EKF yaw reset                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 105   | GPS Disable Yaw                                     | |
+| +-------+-----------------------------------------------------+ |
+| | 106   | Disable Airspeed Use                                | |
+| +-------+-----------------------------------------------------+ |
+| | 107   | Enable FW Autotune                                  | |
+| +-------+-----------------------------------------------------+ |
+| | 108   | QRTL Mode                                           | |
+| +-------+-----------------------------------------------------+ |
+| | 110   | KillIMU3                                            | |
+| +-------+-----------------------------------------------------+ |
+| | 111   | Loweheiser starter                                  | |
+| +-------+-----------------------------------------------------+ |
+| | 112   | SwitchExternalAHRS                                  | |
+| +-------+-----------------------------------------------------+ |
+| | 113   | Retract Mount2                                      | |
+| +-------+-----------------------------------------------------+ |
+| | 150   | CRUISE Mode                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 153   | ArmDisarm (4.2 and higher)                          | |
+| +-------+-----------------------------------------------------+ |
+| | 154   | ArmDisarm with Quadplane AirMode (4.2 and higher)   | |
+| +-------+-----------------------------------------------------+ |
+| | 155   | Set roll pitch and yaw trim to current servo and RC | |
+| +-------+-----------------------------------------------------+ |
+| | 157   | Force FS Action to FBWA                             | |
+| +-------+-----------------------------------------------------+ |
+| | 158   | Optflow Calibration                                 | |
+| +-------+-----------------------------------------------------+ |
+| | 160   | Weathervane Enable                                  | |
+| +-------+-----------------------------------------------------+ |
+| | 162   | FFT Tune                                            | |
+| +-------+-----------------------------------------------------+ |
+| | 163   | Mount Yaw Lock                                      | |
+| +-------+-----------------------------------------------------+ |
+| | 164   | Pause Stream Logging                                | |
+| +-------+-----------------------------------------------------+ |
+| | 165   | Arm/Emergency Motor Stop                            | |
+| +-------+-----------------------------------------------------+ |
+| | 166   | Camera Record Video                                 | |
+| +-------+-----------------------------------------------------+ |
+| | 167   | Camera Zoom                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 168   | Camera Manual Focus                                 | |
+| +-------+-----------------------------------------------------+ |
+| | 169   | Camera Auto Focus                                   | |
+| +-------+-----------------------------------------------------+ |
+| | 170   | QSTABILIZE Mode                                     | |
+| +-------+-----------------------------------------------------+ |
+| | 171   | Calibrate Compasses                                 | |
+| +-------+-----------------------------------------------------+ |
+| | 172   | Battery MPPT Enable                                 | |
+| +-------+-----------------------------------------------------+ |
+| | 173   | Plane AUTO Mode Landing Abort                       | |
+| +-------+-----------------------------------------------------+ |
+| | 174   | Camera Image Tracking                               | |
+| +-------+-----------------------------------------------------+ |
+| | 175   | Camera Lens                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 176   | Quadplane Fwd Throttle Override enable              | |
+| +-------+-----------------------------------------------------+ |
+| | 177   | Mount LRF enable                                    | |
+| +-------+-----------------------------------------------------+ |
+| | 179   | ICEngine start / stop                               | |
+| +-------+-----------------------------------------------------+ |
+| | 180   | Test autotuned gains after tune is complete         | |
+| +-------+-----------------------------------------------------+ |
+| | 181   | QuickTune                                           | |
+| +-------+-----------------------------------------------------+ |
+| | 182   | VTOL AutoTrim                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 184   | System ID Chirp                                     | |
+| +-------+-----------------------------------------------------+ |
+| | 185   | Mount Roll/Pitch Lock                               | |
+| +-------+-----------------------------------------------------+ |
+| | 186   | Mount POI Lock                                      | |
+| +-------+-----------------------------------------------------+ |
+| | 208   | Flap                                                | |
+| +-------+-----------------------------------------------------+ |
+| | 209   | VTOL Forward Throttle                               | |
+| +-------+-----------------------------------------------------+ |
+| | 210   | Airbrakes                                           | |
+| +-------+-----------------------------------------------------+ |
+| | 212   | Mount1 Roll                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 213   | Mount1 Pitch                                        | |
+| +-------+-----------------------------------------------------+ |
+| | 214   | Mount1 Yaw                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 215   | Mount2 Roll                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 216   | Mount2 Pitch                                        | |
+| +-------+-----------------------------------------------------+ |
+| | 217   | Mount2 Yaw                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 218   | Loweheiser throttle                                 | |
+| +-------+-----------------------------------------------------+ |
+| | 200   | Servos Auto Trim                                    | |
+| +-------+-----------------------------------------------------+ |
+| | 250   | Tuning Set Select                                   | |
+| +-------+-----------------------------------------------------+ |
+| | 251   | RTL Autoland Commit                                 | |
+| +-------+-----------------------------------------------------+ |
+| | 252   | Mount1 Head Track Enable                            | |
+| +-------+-----------------------------------------------------+ |
+| | 253   | Mount1 Head Track Center Lock                       | |
+| +-------+-----------------------------------------------------+ |
+| | 254   | Adaptive Pitch Trim                                 | |
+| +-------+-----------------------------------------------------+ |
+| | 300   | Scripting1                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 301   | Scripting2                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 302   | Scripting3                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 303   | Scripting4                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 304   | Scripting5                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 305   | Scripting6                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 306   | Scripting7                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 307   | Scripting8                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 308   | Scripting9                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 309   | Scripting10                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 310   | Scripting11                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 311   | Scripting12                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 312   | Scripting13                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 313   | Scripting14                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 314   | Scripting15                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 315   | Scripting16                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 316   | Stop-Restart Scripting                              | |
+| +-------+-----------------------------------------------------+ |
+|                                                                 |
++-----------------------------------------------------------------+
+
+
+
+
+
+.. _parameters_RC25_:
+
+RC25\_ Parameters
+-----------------
+
+
+.. _RC25_MIN:
+
+RC25\_MIN: RC min PWM
+~~~~~~~~~~~~~~~~~~~~~
+
+| *Note: This parameter is for advanced users*
+
+RC minimum PWM pulse width in microseconds\. Typically 1000 is lower limit\, 1500 is neutral and 2000 is upper limit\.
+
+
++-----------+-------------+---------------------+
+| Increment | Range       | Units               |
++===========+=============+=====================+
+| 1         | 800 to 2200 | PWM in microseconds |
++-----------+-------------+---------------------+
+
+
+
+
+.. _RC25_TRIM:
+
+RC25\_TRIM: RC trim PWM
+~~~~~~~~~~~~~~~~~~~~~~~
+
+| *Note: This parameter is for advanced users*
+
+RC trim \(neutral\) PWM pulse width in microseconds\. Typically 1000 is lower limit\, 1500 is neutral and 2000 is upper limit\.
+
+
++-----------+-------------+---------------------+
+| Increment | Range       | Units               |
++===========+=============+=====================+
+| 1         | 800 to 2200 | PWM in microseconds |
++-----------+-------------+---------------------+
+
+
+
+
+.. _RC25_MAX:
+
+RC25\_MAX: RC max PWM
+~~~~~~~~~~~~~~~~~~~~~
+
+| *Note: This parameter is for advanced users*
+
+RC maximum PWM pulse width in microseconds\. Typically 1000 is lower limit\, 1500 is neutral and 2000 is upper limit\.
+
+
++-----------+-------------+---------------------+
+| Increment | Range       | Units               |
++===========+=============+=====================+
+| 1         | 800 to 2200 | PWM in microseconds |
++-----------+-------------+---------------------+
+
+
+
+
+.. _RC25_REVERSED:
+
+RC25\_REVERSED: RC reversed
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+| *Note: This parameter is for advanced users*
+
+Reverse channel input\. Set to 0 for normal operation\. Set to 1 to reverse this input channel\.
+
+
++----------------------+
+| Values               |
++======================+
+| +-------+----------+ |
+| | Value | Meaning  | |
+| +=======+==========+ |
+| | 0     | Normal   | |
+| +-------+----------+ |
+| | 1     | Reversed | |
+| +-------+----------+ |
+|                      |
++----------------------+
+
+
+
+
+.. _RC25_DZ:
+
+RC25\_DZ: RC dead\-zone
+~~~~~~~~~~~~~~~~~~~~~~~
+
+| *Note: This parameter is for advanced users*
+
+PWM dead zone in microseconds around trim or bottom
+
+
++----------+---------------------+
+| Range    | Units               |
++==========+=====================+
+| 0 to 200 | PWM in microseconds |
++----------+---------------------+
+
+
+
+
+.. _RC25_OPTION:
+
+RC25\_OPTION: RC input option
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+Function assigned to this RC channel
+
+
++-----------------------------------------------------------------+
+| Values                                                          |
++=================================================================+
+| +-------+-----------------------------------------------------+ |
+| | Value | Meaning                                             | |
+| +=======+=====================================================+ |
+| | 0     | Do Nothing                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 4     | RTL                                                 | |
+| +-------+-----------------------------------------------------+ |
+| | 9     | Camera Trigger                                      | |
+| +-------+-----------------------------------------------------+ |
+| | 11    | Fence Enable                                        | |
+| +-------+-----------------------------------------------------+ |
+| | 16    | AUTO Mode                                           | |
+| +-------+-----------------------------------------------------+ |
+| | 17    | AUTOTUNE Mode                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 22    | Parachute Release                                   | |
+| +-------+-----------------------------------------------------+ |
+| | 24    | Auto Mission Reset                                  | |
+| +-------+-----------------------------------------------------+ |
+| | 27    | Retract Mount1                                      | |
+| +-------+-----------------------------------------------------+ |
+| | 28    | Relay1 On/Off                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 29    | Landing Gear                                        | |
+| +-------+-----------------------------------------------------+ |
+| | 30    | Lost Plane Sound                                    | |
+| +-------+-----------------------------------------------------+ |
+| | 31    | Motor Emergency Stop                                | |
+| +-------+-----------------------------------------------------+ |
+| | 34    | Relay2 On/Off                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 35    | Relay3 On/Off                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 36    | Relay4 On/Off                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 38    | ADSB Avoidance Enable                               | |
+| +-------+-----------------------------------------------------+ |
+| | 41    | ArmDisarm (4.1 and lower)                           | |
+| +-------+-----------------------------------------------------+ |
+| | 43    | InvertedFlight Enable                               | |
+| +-------+-----------------------------------------------------+ |
+| | 46    | RC Override Enable                                  | |
+| +-------+-----------------------------------------------------+ |
+| | 51    | MANUAL Mode                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 52    | ACRO Mode                                           | |
+| +-------+-----------------------------------------------------+ |
+| | 55    | GUIDED Mode                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 56    | LOITER Mode                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 58    | Clear Waypoints                                     | |
+| +-------+-----------------------------------------------------+ |
+| | 62    | Compass Learn                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 64    | Reverse Throttle                                    | |
+| +-------+-----------------------------------------------------+ |
+| | 65    | GPS Disable                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 66    | Relay5 On/Off                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 67    | Relay6 On/Off                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 72    | CIRCLE Mode                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 77    | TAKEOFF Mode                                        | |
+| +-------+-----------------------------------------------------+ |
+| | 78    | RunCam Control                                      | |
+| +-------+-----------------------------------------------------+ |
+| | 79    | RunCam OSD Control                                  | |
+| +-------+-----------------------------------------------------+ |
+| | 81    | Disarm                                              | |
+| +-------+-----------------------------------------------------+ |
+| | 82    | QAssist 3pos                                        | |
+| +-------+-----------------------------------------------------+ |
+| | 84    | AirMode                                             | |
+| +-------+-----------------------------------------------------+ |
+| | 85    | Generator                                           | |
+| +-------+-----------------------------------------------------+ |
+| | 86    | Non Auto Terrain Follow Disable                     | |
+| +-------+-----------------------------------------------------+ |
+| | 87    | Crow Select                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 88    | Soaring Enable                                      | |
+| +-------+-----------------------------------------------------+ |
+| | 89    | Landing Flare                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 90    | EKF Source Set                                      | |
+| +-------+-----------------------------------------------------+ |
+| | 91    | Airspeed Ratio Calibration                          | |
+| +-------+-----------------------------------------------------+ |
+| | 92    | FBWA Mode                                           | |
+| +-------+-----------------------------------------------------+ |
+| | 94    | VTX Power                                           | |
+| +-------+-----------------------------------------------------+ |
+| | 95    | FBWA taildragger takeoff mode                       | |
+| +-------+-----------------------------------------------------+ |
+| | 96    | Trigger re-reading of mode switch                   | |
+| +-------+-----------------------------------------------------+ |
+| | 98    | TRAINING Mode                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 100   | KillIMU1                                            | |
+| +-------+-----------------------------------------------------+ |
+| | 101   | KillIMU2                                            | |
+| +-------+-----------------------------------------------------+ |
+| | 102   | Camera Mode Toggle                                  | |
+| +-------+-----------------------------------------------------+ |
+| | 103   | EKF lane switch attempt                             | |
+| +-------+-----------------------------------------------------+ |
+| | 104   | EKF yaw reset                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 105   | GPS Disable Yaw                                     | |
+| +-------+-----------------------------------------------------+ |
+| | 106   | Disable Airspeed Use                                | |
+| +-------+-----------------------------------------------------+ |
+| | 107   | Enable FW Autotune                                  | |
+| +-------+-----------------------------------------------------+ |
+| | 108   | QRTL Mode                                           | |
+| +-------+-----------------------------------------------------+ |
+| | 110   | KillIMU3                                            | |
+| +-------+-----------------------------------------------------+ |
+| | 111   | Loweheiser starter                                  | |
+| +-------+-----------------------------------------------------+ |
+| | 112   | SwitchExternalAHRS                                  | |
+| +-------+-----------------------------------------------------+ |
+| | 113   | Retract Mount2                                      | |
+| +-------+-----------------------------------------------------+ |
+| | 150   | CRUISE Mode                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 153   | ArmDisarm (4.2 and higher)                          | |
+| +-------+-----------------------------------------------------+ |
+| | 154   | ArmDisarm with Quadplane AirMode (4.2 and higher)   | |
+| +-------+-----------------------------------------------------+ |
+| | 155   | Set roll pitch and yaw trim to current servo and RC | |
+| +-------+-----------------------------------------------------+ |
+| | 157   | Force FS Action to FBWA                             | |
+| +-------+-----------------------------------------------------+ |
+| | 158   | Optflow Calibration                                 | |
+| +-------+-----------------------------------------------------+ |
+| | 160   | Weathervane Enable                                  | |
+| +-------+-----------------------------------------------------+ |
+| | 162   | FFT Tune                                            | |
+| +-------+-----------------------------------------------------+ |
+| | 163   | Mount Yaw Lock                                      | |
+| +-------+-----------------------------------------------------+ |
+| | 164   | Pause Stream Logging                                | |
+| +-------+-----------------------------------------------------+ |
+| | 165   | Arm/Emergency Motor Stop                            | |
+| +-------+-----------------------------------------------------+ |
+| | 166   | Camera Record Video                                 | |
+| +-------+-----------------------------------------------------+ |
+| | 167   | Camera Zoom                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 168   | Camera Manual Focus                                 | |
+| +-------+-----------------------------------------------------+ |
+| | 169   | Camera Auto Focus                                   | |
+| +-------+-----------------------------------------------------+ |
+| | 170   | QSTABILIZE Mode                                     | |
+| +-------+-----------------------------------------------------+ |
+| | 171   | Calibrate Compasses                                 | |
+| +-------+-----------------------------------------------------+ |
+| | 172   | Battery MPPT Enable                                 | |
+| +-------+-----------------------------------------------------+ |
+| | 173   | Plane AUTO Mode Landing Abort                       | |
+| +-------+-----------------------------------------------------+ |
+| | 174   | Camera Image Tracking                               | |
+| +-------+-----------------------------------------------------+ |
+| | 175   | Camera Lens                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 176   | Quadplane Fwd Throttle Override enable              | |
+| +-------+-----------------------------------------------------+ |
+| | 177   | Mount LRF enable                                    | |
+| +-------+-----------------------------------------------------+ |
+| | 179   | ICEngine start / stop                               | |
+| +-------+-----------------------------------------------------+ |
+| | 180   | Test autotuned gains after tune is complete         | |
+| +-------+-----------------------------------------------------+ |
+| | 181   | QuickTune                                           | |
+| +-------+-----------------------------------------------------+ |
+| | 182   | VTOL AutoTrim                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 184   | System ID Chirp                                     | |
+| +-------+-----------------------------------------------------+ |
+| | 185   | Mount Roll/Pitch Lock                               | |
+| +-------+-----------------------------------------------------+ |
+| | 186   | Mount POI Lock                                      | |
+| +-------+-----------------------------------------------------+ |
+| | 208   | Flap                                                | |
+| +-------+-----------------------------------------------------+ |
+| | 209   | VTOL Forward Throttle                               | |
+| +-------+-----------------------------------------------------+ |
+| | 210   | Airbrakes                                           | |
+| +-------+-----------------------------------------------------+ |
+| | 212   | Mount1 Roll                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 213   | Mount1 Pitch                                        | |
+| +-------+-----------------------------------------------------+ |
+| | 214   | Mount1 Yaw                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 215   | Mount2 Roll                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 216   | Mount2 Pitch                                        | |
+| +-------+-----------------------------------------------------+ |
+| | 217   | Mount2 Yaw                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 218   | Loweheiser throttle                                 | |
+| +-------+-----------------------------------------------------+ |
+| | 200   | Servos Auto Trim                                    | |
+| +-------+-----------------------------------------------------+ |
+| | 250   | Tuning Set Select                                   | |
+| +-------+-----------------------------------------------------+ |
+| | 251   | RTL Autoland Commit                                 | |
+| +-------+-----------------------------------------------------+ |
+| | 252   | Mount1 Head Track Enable                            | |
+| +-------+-----------------------------------------------------+ |
+| | 253   | Mount1 Head Track Center Lock                       | |
+| +-------+-----------------------------------------------------+ |
+| | 254   | Adaptive Pitch Trim                                 | |
+| +-------+-----------------------------------------------------+ |
+| | 300   | Scripting1                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 301   | Scripting2                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 302   | Scripting3                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 303   | Scripting4                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 304   | Scripting5                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 305   | Scripting6                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 306   | Scripting7                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 307   | Scripting8                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 308   | Scripting9                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 309   | Scripting10                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 310   | Scripting11                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 311   | Scripting12                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 312   | Scripting13                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 313   | Scripting14                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 314   | Scripting15                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 315   | Scripting16                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 316   | Stop-Restart Scripting                              | |
+| +-------+-----------------------------------------------------+ |
+|                                                                 |
++-----------------------------------------------------------------+
+
+
+
+
+
+.. _parameters_RC26_:
+
+RC26\_ Parameters
+-----------------
+
+
+.. _RC26_MIN:
+
+RC26\_MIN: RC min PWM
+~~~~~~~~~~~~~~~~~~~~~
+
+| *Note: This parameter is for advanced users*
+
+RC minimum PWM pulse width in microseconds\. Typically 1000 is lower limit\, 1500 is neutral and 2000 is upper limit\.
+
+
++-----------+-------------+---------------------+
+| Increment | Range       | Units               |
++===========+=============+=====================+
+| 1         | 800 to 2200 | PWM in microseconds |
++-----------+-------------+---------------------+
+
+
+
+
+.. _RC26_TRIM:
+
+RC26\_TRIM: RC trim PWM
+~~~~~~~~~~~~~~~~~~~~~~~
+
+| *Note: This parameter is for advanced users*
+
+RC trim \(neutral\) PWM pulse width in microseconds\. Typically 1000 is lower limit\, 1500 is neutral and 2000 is upper limit\.
+
+
++-----------+-------------+---------------------+
+| Increment | Range       | Units               |
++===========+=============+=====================+
+| 1         | 800 to 2200 | PWM in microseconds |
++-----------+-------------+---------------------+
+
+
+
+
+.. _RC26_MAX:
+
+RC26\_MAX: RC max PWM
+~~~~~~~~~~~~~~~~~~~~~
+
+| *Note: This parameter is for advanced users*
+
+RC maximum PWM pulse width in microseconds\. Typically 1000 is lower limit\, 1500 is neutral and 2000 is upper limit\.
+
+
++-----------+-------------+---------------------+
+| Increment | Range       | Units               |
++===========+=============+=====================+
+| 1         | 800 to 2200 | PWM in microseconds |
++-----------+-------------+---------------------+
+
+
+
+
+.. _RC26_REVERSED:
+
+RC26\_REVERSED: RC reversed
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+| *Note: This parameter is for advanced users*
+
+Reverse channel input\. Set to 0 for normal operation\. Set to 1 to reverse this input channel\.
+
+
++----------------------+
+| Values               |
++======================+
+| +-------+----------+ |
+| | Value | Meaning  | |
+| +=======+==========+ |
+| | 0     | Normal   | |
+| +-------+----------+ |
+| | 1     | Reversed | |
+| +-------+----------+ |
+|                      |
++----------------------+
+
+
+
+
+.. _RC26_DZ:
+
+RC26\_DZ: RC dead\-zone
+~~~~~~~~~~~~~~~~~~~~~~~
+
+| *Note: This parameter is for advanced users*
+
+PWM dead zone in microseconds around trim or bottom
+
+
++----------+---------------------+
+| Range    | Units               |
++==========+=====================+
+| 0 to 200 | PWM in microseconds |
++----------+---------------------+
+
+
+
+
+.. _RC26_OPTION:
+
+RC26\_OPTION: RC input option
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+Function assigned to this RC channel
+
+
++-----------------------------------------------------------------+
+| Values                                                          |
++=================================================================+
+| +-------+-----------------------------------------------------+ |
+| | Value | Meaning                                             | |
+| +=======+=====================================================+ |
+| | 0     | Do Nothing                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 4     | RTL                                                 | |
+| +-------+-----------------------------------------------------+ |
+| | 9     | Camera Trigger                                      | |
+| +-------+-----------------------------------------------------+ |
+| | 11    | Fence Enable                                        | |
+| +-------+-----------------------------------------------------+ |
+| | 16    | AUTO Mode                                           | |
+| +-------+-----------------------------------------------------+ |
+| | 17    | AUTOTUNE Mode                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 22    | Parachute Release                                   | |
+| +-------+-----------------------------------------------------+ |
+| | 24    | Auto Mission Reset                                  | |
+| +-------+-----------------------------------------------------+ |
+| | 27    | Retract Mount1                                      | |
+| +-------+-----------------------------------------------------+ |
+| | 28    | Relay1 On/Off                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 29    | Landing Gear                                        | |
+| +-------+-----------------------------------------------------+ |
+| | 30    | Lost Plane Sound                                    | |
+| +-------+-----------------------------------------------------+ |
+| | 31    | Motor Emergency Stop                                | |
+| +-------+-----------------------------------------------------+ |
+| | 34    | Relay2 On/Off                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 35    | Relay3 On/Off                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 36    | Relay4 On/Off                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 38    | ADSB Avoidance Enable                               | |
+| +-------+-----------------------------------------------------+ |
+| | 41    | ArmDisarm (4.1 and lower)                           | |
+| +-------+-----------------------------------------------------+ |
+| | 43    | InvertedFlight Enable                               | |
+| +-------+-----------------------------------------------------+ |
+| | 46    | RC Override Enable                                  | |
+| +-------+-----------------------------------------------------+ |
+| | 51    | MANUAL Mode                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 52    | ACRO Mode                                           | |
+| +-------+-----------------------------------------------------+ |
+| | 55    | GUIDED Mode                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 56    | LOITER Mode                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 58    | Clear Waypoints                                     | |
+| +-------+-----------------------------------------------------+ |
+| | 62    | Compass Learn                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 64    | Reverse Throttle                                    | |
+| +-------+-----------------------------------------------------+ |
+| | 65    | GPS Disable                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 66    | Relay5 On/Off                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 67    | Relay6 On/Off                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 72    | CIRCLE Mode                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 77    | TAKEOFF Mode                                        | |
+| +-------+-----------------------------------------------------+ |
+| | 78    | RunCam Control                                      | |
+| +-------+-----------------------------------------------------+ |
+| | 79    | RunCam OSD Control                                  | |
+| +-------+-----------------------------------------------------+ |
+| | 81    | Disarm                                              | |
+| +-------+-----------------------------------------------------+ |
+| | 82    | QAssist 3pos                                        | |
+| +-------+-----------------------------------------------------+ |
+| | 84    | AirMode                                             | |
+| +-------+-----------------------------------------------------+ |
+| | 85    | Generator                                           | |
+| +-------+-----------------------------------------------------+ |
+| | 86    | Non Auto Terrain Follow Disable                     | |
+| +-------+-----------------------------------------------------+ |
+| | 87    | Crow Select                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 88    | Soaring Enable                                      | |
+| +-------+-----------------------------------------------------+ |
+| | 89    | Landing Flare                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 90    | EKF Source Set                                      | |
+| +-------+-----------------------------------------------------+ |
+| | 91    | Airspeed Ratio Calibration                          | |
+| +-------+-----------------------------------------------------+ |
+| | 92    | FBWA Mode                                           | |
+| +-------+-----------------------------------------------------+ |
+| | 94    | VTX Power                                           | |
+| +-------+-----------------------------------------------------+ |
+| | 95    | FBWA taildragger takeoff mode                       | |
+| +-------+-----------------------------------------------------+ |
+| | 96    | Trigger re-reading of mode switch                   | |
+| +-------+-----------------------------------------------------+ |
+| | 98    | TRAINING Mode                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 100   | KillIMU1                                            | |
+| +-------+-----------------------------------------------------+ |
+| | 101   | KillIMU2                                            | |
+| +-------+-----------------------------------------------------+ |
+| | 102   | Camera Mode Toggle                                  | |
+| +-------+-----------------------------------------------------+ |
+| | 103   | EKF lane switch attempt                             | |
+| +-------+-----------------------------------------------------+ |
+| | 104   | EKF yaw reset                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 105   | GPS Disable Yaw                                     | |
+| +-------+-----------------------------------------------------+ |
+| | 106   | Disable Airspeed Use                                | |
+| +-------+-----------------------------------------------------+ |
+| | 107   | Enable FW Autotune                                  | |
+| +-------+-----------------------------------------------------+ |
+| | 108   | QRTL Mode                                           | |
+| +-------+-----------------------------------------------------+ |
+| | 110   | KillIMU3                                            | |
+| +-------+-----------------------------------------------------+ |
+| | 111   | Loweheiser starter                                  | |
+| +-------+-----------------------------------------------------+ |
+| | 112   | SwitchExternalAHRS                                  | |
+| +-------+-----------------------------------------------------+ |
+| | 113   | Retract Mount2                                      | |
+| +-------+-----------------------------------------------------+ |
+| | 150   | CRUISE Mode                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 153   | ArmDisarm (4.2 and higher)                          | |
+| +-------+-----------------------------------------------------+ |
+| | 154   | ArmDisarm with Quadplane AirMode (4.2 and higher)   | |
+| +-------+-----------------------------------------------------+ |
+| | 155   | Set roll pitch and yaw trim to current servo and RC | |
+| +-------+-----------------------------------------------------+ |
+| | 157   | Force FS Action to FBWA                             | |
+| +-------+-----------------------------------------------------+ |
+| | 158   | Optflow Calibration                                 | |
+| +-------+-----------------------------------------------------+ |
+| | 160   | Weathervane Enable                                  | |
+| +-------+-----------------------------------------------------+ |
+| | 162   | FFT Tune                                            | |
+| +-------+-----------------------------------------------------+ |
+| | 163   | Mount Yaw Lock                                      | |
+| +-------+-----------------------------------------------------+ |
+| | 164   | Pause Stream Logging                                | |
+| +-------+-----------------------------------------------------+ |
+| | 165   | Arm/Emergency Motor Stop                            | |
+| +-------+-----------------------------------------------------+ |
+| | 166   | Camera Record Video                                 | |
+| +-------+-----------------------------------------------------+ |
+| | 167   | Camera Zoom                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 168   | Camera Manual Focus                                 | |
+| +-------+-----------------------------------------------------+ |
+| | 169   | Camera Auto Focus                                   | |
+| +-------+-----------------------------------------------------+ |
+| | 170   | QSTABILIZE Mode                                     | |
+| +-------+-----------------------------------------------------+ |
+| | 171   | Calibrate Compasses                                 | |
+| +-------+-----------------------------------------------------+ |
+| | 172   | Battery MPPT Enable                                 | |
+| +-------+-----------------------------------------------------+ |
+| | 173   | Plane AUTO Mode Landing Abort                       | |
+| +-------+-----------------------------------------------------+ |
+| | 174   | Camera Image Tracking                               | |
+| +-------+-----------------------------------------------------+ |
+| | 175   | Camera Lens                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 176   | Quadplane Fwd Throttle Override enable              | |
+| +-------+-----------------------------------------------------+ |
+| | 177   | Mount LRF enable                                    | |
+| +-------+-----------------------------------------------------+ |
+| | 179   | ICEngine start / stop                               | |
+| +-------+-----------------------------------------------------+ |
+| | 180   | Test autotuned gains after tune is complete         | |
+| +-------+-----------------------------------------------------+ |
+| | 181   | QuickTune                                           | |
+| +-------+-----------------------------------------------------+ |
+| | 182   | VTOL AutoTrim                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 184   | System ID Chirp                                     | |
+| +-------+-----------------------------------------------------+ |
+| | 185   | Mount Roll/Pitch Lock                               | |
+| +-------+-----------------------------------------------------+ |
+| | 186   | Mount POI Lock                                      | |
+| +-------+-----------------------------------------------------+ |
+| | 208   | Flap                                                | |
+| +-------+-----------------------------------------------------+ |
+| | 209   | VTOL Forward Throttle                               | |
+| +-------+-----------------------------------------------------+ |
+| | 210   | Airbrakes                                           | |
+| +-------+-----------------------------------------------------+ |
+| | 212   | Mount1 Roll                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 213   | Mount1 Pitch                                        | |
+| +-------+-----------------------------------------------------+ |
+| | 214   | Mount1 Yaw                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 215   | Mount2 Roll                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 216   | Mount2 Pitch                                        | |
+| +-------+-----------------------------------------------------+ |
+| | 217   | Mount2 Yaw                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 218   | Loweheiser throttle                                 | |
+| +-------+-----------------------------------------------------+ |
+| | 200   | Servos Auto Trim                                    | |
+| +-------+-----------------------------------------------------+ |
+| | 250   | Tuning Set Select                                   | |
+| +-------+-----------------------------------------------------+ |
+| | 251   | RTL Autoland Commit                                 | |
+| +-------+-----------------------------------------------------+ |
+| | 252   | Mount1 Head Track Enable                            | |
+| +-------+-----------------------------------------------------+ |
+| | 253   | Mount1 Head Track Center Lock                       | |
+| +-------+-----------------------------------------------------+ |
+| | 254   | Adaptive Pitch Trim                                 | |
+| +-------+-----------------------------------------------------+ |
+| | 300   | Scripting1                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 301   | Scripting2                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 302   | Scripting3                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 303   | Scripting4                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 304   | Scripting5                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 305   | Scripting6                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 306   | Scripting7                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 307   | Scripting8                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 308   | Scripting9                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 309   | Scripting10                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 310   | Scripting11                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 311   | Scripting12                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 312   | Scripting13                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 313   | Scripting14                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 314   | Scripting15                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 315   | Scripting16                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 316   | Stop-Restart Scripting                              | |
+| +-------+-----------------------------------------------------+ |
+|                                                                 |
++-----------------------------------------------------------------+
+
+
+
+
+
+.. _parameters_RC27_:
+
+RC27\_ Parameters
+-----------------
+
+
+.. _RC27_MIN:
+
+RC27\_MIN: RC min PWM
+~~~~~~~~~~~~~~~~~~~~~
+
+| *Note: This parameter is for advanced users*
+
+RC minimum PWM pulse width in microseconds\. Typically 1000 is lower limit\, 1500 is neutral and 2000 is upper limit\.
+
+
++-----------+-------------+---------------------+
+| Increment | Range       | Units               |
++===========+=============+=====================+
+| 1         | 800 to 2200 | PWM in microseconds |
++-----------+-------------+---------------------+
+
+
+
+
+.. _RC27_TRIM:
+
+RC27\_TRIM: RC trim PWM
+~~~~~~~~~~~~~~~~~~~~~~~
+
+| *Note: This parameter is for advanced users*
+
+RC trim \(neutral\) PWM pulse width in microseconds\. Typically 1000 is lower limit\, 1500 is neutral and 2000 is upper limit\.
+
+
++-----------+-------------+---------------------+
+| Increment | Range       | Units               |
++===========+=============+=====================+
+| 1         | 800 to 2200 | PWM in microseconds |
++-----------+-------------+---------------------+
+
+
+
+
+.. _RC27_MAX:
+
+RC27\_MAX: RC max PWM
+~~~~~~~~~~~~~~~~~~~~~
+
+| *Note: This parameter is for advanced users*
+
+RC maximum PWM pulse width in microseconds\. Typically 1000 is lower limit\, 1500 is neutral and 2000 is upper limit\.
+
+
++-----------+-------------+---------------------+
+| Increment | Range       | Units               |
++===========+=============+=====================+
+| 1         | 800 to 2200 | PWM in microseconds |
++-----------+-------------+---------------------+
+
+
+
+
+.. _RC27_REVERSED:
+
+RC27\_REVERSED: RC reversed
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+| *Note: This parameter is for advanced users*
+
+Reverse channel input\. Set to 0 for normal operation\. Set to 1 to reverse this input channel\.
+
+
++----------------------+
+| Values               |
++======================+
+| +-------+----------+ |
+| | Value | Meaning  | |
+| +=======+==========+ |
+| | 0     | Normal   | |
+| +-------+----------+ |
+| | 1     | Reversed | |
+| +-------+----------+ |
+|                      |
++----------------------+
+
+
+
+
+.. _RC27_DZ:
+
+RC27\_DZ: RC dead\-zone
+~~~~~~~~~~~~~~~~~~~~~~~
+
+| *Note: This parameter is for advanced users*
+
+PWM dead zone in microseconds around trim or bottom
+
+
++----------+---------------------+
+| Range    | Units               |
++==========+=====================+
+| 0 to 200 | PWM in microseconds |
++----------+---------------------+
+
+
+
+
+.. _RC27_OPTION:
+
+RC27\_OPTION: RC input option
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+Function assigned to this RC channel
+
+
++-----------------------------------------------------------------+
+| Values                                                          |
++=================================================================+
+| +-------+-----------------------------------------------------+ |
+| | Value | Meaning                                             | |
+| +=======+=====================================================+ |
+| | 0     | Do Nothing                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 4     | RTL                                                 | |
+| +-------+-----------------------------------------------------+ |
+| | 9     | Camera Trigger                                      | |
+| +-------+-----------------------------------------------------+ |
+| | 11    | Fence Enable                                        | |
+| +-------+-----------------------------------------------------+ |
+| | 16    | AUTO Mode                                           | |
+| +-------+-----------------------------------------------------+ |
+| | 17    | AUTOTUNE Mode                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 22    | Parachute Release                                   | |
+| +-------+-----------------------------------------------------+ |
+| | 24    | Auto Mission Reset                                  | |
+| +-------+-----------------------------------------------------+ |
+| | 27    | Retract Mount1                                      | |
+| +-------+-----------------------------------------------------+ |
+| | 28    | Relay1 On/Off                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 29    | Landing Gear                                        | |
+| +-------+-----------------------------------------------------+ |
+| | 30    | Lost Plane Sound                                    | |
+| +-------+-----------------------------------------------------+ |
+| | 31    | Motor Emergency Stop                                | |
+| +-------+-----------------------------------------------------+ |
+| | 34    | Relay2 On/Off                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 35    | Relay3 On/Off                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 36    | Relay4 On/Off                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 38    | ADSB Avoidance Enable                               | |
+| +-------+-----------------------------------------------------+ |
+| | 41    | ArmDisarm (4.1 and lower)                           | |
+| +-------+-----------------------------------------------------+ |
+| | 43    | InvertedFlight Enable                               | |
+| +-------+-----------------------------------------------------+ |
+| | 46    | RC Override Enable                                  | |
+| +-------+-----------------------------------------------------+ |
+| | 51    | MANUAL Mode                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 52    | ACRO Mode                                           | |
+| +-------+-----------------------------------------------------+ |
+| | 55    | GUIDED Mode                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 56    | LOITER Mode                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 58    | Clear Waypoints                                     | |
+| +-------+-----------------------------------------------------+ |
+| | 62    | Compass Learn                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 64    | Reverse Throttle                                    | |
+| +-------+-----------------------------------------------------+ |
+| | 65    | GPS Disable                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 66    | Relay5 On/Off                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 67    | Relay6 On/Off                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 72    | CIRCLE Mode                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 77    | TAKEOFF Mode                                        | |
+| +-------+-----------------------------------------------------+ |
+| | 78    | RunCam Control                                      | |
+| +-------+-----------------------------------------------------+ |
+| | 79    | RunCam OSD Control                                  | |
+| +-------+-----------------------------------------------------+ |
+| | 81    | Disarm                                              | |
+| +-------+-----------------------------------------------------+ |
+| | 82    | QAssist 3pos                                        | |
+| +-------+-----------------------------------------------------+ |
+| | 84    | AirMode                                             | |
+| +-------+-----------------------------------------------------+ |
+| | 85    | Generator                                           | |
+| +-------+-----------------------------------------------------+ |
+| | 86    | Non Auto Terrain Follow Disable                     | |
+| +-------+-----------------------------------------------------+ |
+| | 87    | Crow Select                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 88    | Soaring Enable                                      | |
+| +-------+-----------------------------------------------------+ |
+| | 89    | Landing Flare                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 90    | EKF Source Set                                      | |
+| +-------+-----------------------------------------------------+ |
+| | 91    | Airspeed Ratio Calibration                          | |
+| +-------+-----------------------------------------------------+ |
+| | 92    | FBWA Mode                                           | |
+| +-------+-----------------------------------------------------+ |
+| | 94    | VTX Power                                           | |
+| +-------+-----------------------------------------------------+ |
+| | 95    | FBWA taildragger takeoff mode                       | |
+| +-------+-----------------------------------------------------+ |
+| | 96    | Trigger re-reading of mode switch                   | |
+| +-------+-----------------------------------------------------+ |
+| | 98    | TRAINING Mode                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 100   | KillIMU1                                            | |
+| +-------+-----------------------------------------------------+ |
+| | 101   | KillIMU2                                            | |
+| +-------+-----------------------------------------------------+ |
+| | 102   | Camera Mode Toggle                                  | |
+| +-------+-----------------------------------------------------+ |
+| | 103   | EKF lane switch attempt                             | |
+| +-------+-----------------------------------------------------+ |
+| | 104   | EKF yaw reset                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 105   | GPS Disable Yaw                                     | |
+| +-------+-----------------------------------------------------+ |
+| | 106   | Disable Airspeed Use                                | |
+| +-------+-----------------------------------------------------+ |
+| | 107   | Enable FW Autotune                                  | |
+| +-------+-----------------------------------------------------+ |
+| | 108   | QRTL Mode                                           | |
+| +-------+-----------------------------------------------------+ |
+| | 110   | KillIMU3                                            | |
+| +-------+-----------------------------------------------------+ |
+| | 111   | Loweheiser starter                                  | |
+| +-------+-----------------------------------------------------+ |
+| | 112   | SwitchExternalAHRS                                  | |
+| +-------+-----------------------------------------------------+ |
+| | 113   | Retract Mount2                                      | |
+| +-------+-----------------------------------------------------+ |
+| | 150   | CRUISE Mode                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 153   | ArmDisarm (4.2 and higher)                          | |
+| +-------+-----------------------------------------------------+ |
+| | 154   | ArmDisarm with Quadplane AirMode (4.2 and higher)   | |
+| +-------+-----------------------------------------------------+ |
+| | 155   | Set roll pitch and yaw trim to current servo and RC | |
+| +-------+-----------------------------------------------------+ |
+| | 157   | Force FS Action to FBWA                             | |
+| +-------+-----------------------------------------------------+ |
+| | 158   | Optflow Calibration                                 | |
+| +-------+-----------------------------------------------------+ |
+| | 160   | Weathervane Enable                                  | |
+| +-------+-----------------------------------------------------+ |
+| | 162   | FFT Tune                                            | |
+| +-------+-----------------------------------------------------+ |
+| | 163   | Mount Yaw Lock                                      | |
+| +-------+-----------------------------------------------------+ |
+| | 164   | Pause Stream Logging                                | |
+| +-------+-----------------------------------------------------+ |
+| | 165   | Arm/Emergency Motor Stop                            | |
+| +-------+-----------------------------------------------------+ |
+| | 166   | Camera Record Video                                 | |
+| +-------+-----------------------------------------------------+ |
+| | 167   | Camera Zoom                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 168   | Camera Manual Focus                                 | |
+| +-------+-----------------------------------------------------+ |
+| | 169   | Camera Auto Focus                                   | |
+| +-------+-----------------------------------------------------+ |
+| | 170   | QSTABILIZE Mode                                     | |
+| +-------+-----------------------------------------------------+ |
+| | 171   | Calibrate Compasses                                 | |
+| +-------+-----------------------------------------------------+ |
+| | 172   | Battery MPPT Enable                                 | |
+| +-------+-----------------------------------------------------+ |
+| | 173   | Plane AUTO Mode Landing Abort                       | |
+| +-------+-----------------------------------------------------+ |
+| | 174   | Camera Image Tracking                               | |
+| +-------+-----------------------------------------------------+ |
+| | 175   | Camera Lens                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 176   | Quadplane Fwd Throttle Override enable              | |
+| +-------+-----------------------------------------------------+ |
+| | 177   | Mount LRF enable                                    | |
+| +-------+-----------------------------------------------------+ |
+| | 179   | ICEngine start / stop                               | |
+| +-------+-----------------------------------------------------+ |
+| | 180   | Test autotuned gains after tune is complete         | |
+| +-------+-----------------------------------------------------+ |
+| | 181   | QuickTune                                           | |
+| +-------+-----------------------------------------------------+ |
+| | 182   | VTOL AutoTrim                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 184   | System ID Chirp                                     | |
+| +-------+-----------------------------------------------------+ |
+| | 185   | Mount Roll/Pitch Lock                               | |
+| +-------+-----------------------------------------------------+ |
+| | 186   | Mount POI Lock                                      | |
+| +-------+-----------------------------------------------------+ |
+| | 208   | Flap                                                | |
+| +-------+-----------------------------------------------------+ |
+| | 209   | VTOL Forward Throttle                               | |
+| +-------+-----------------------------------------------------+ |
+| | 210   | Airbrakes                                           | |
+| +-------+-----------------------------------------------------+ |
+| | 212   | Mount1 Roll                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 213   | Mount1 Pitch                                        | |
+| +-------+-----------------------------------------------------+ |
+| | 214   | Mount1 Yaw                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 215   | Mount2 Roll                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 216   | Mount2 Pitch                                        | |
+| +-------+-----------------------------------------------------+ |
+| | 217   | Mount2 Yaw                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 218   | Loweheiser throttle                                 | |
+| +-------+-----------------------------------------------------+ |
+| | 200   | Servos Auto Trim                                    | |
+| +-------+-----------------------------------------------------+ |
+| | 250   | Tuning Set Select                                   | |
+| +-------+-----------------------------------------------------+ |
+| | 251   | RTL Autoland Commit                                 | |
+| +-------+-----------------------------------------------------+ |
+| | 252   | Mount1 Head Track Enable                            | |
+| +-------+-----------------------------------------------------+ |
+| | 253   | Mount1 Head Track Center Lock                       | |
+| +-------+-----------------------------------------------------+ |
+| | 254   | Adaptive Pitch Trim                                 | |
+| +-------+-----------------------------------------------------+ |
+| | 300   | Scripting1                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 301   | Scripting2                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 302   | Scripting3                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 303   | Scripting4                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 304   | Scripting5                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 305   | Scripting6                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 306   | Scripting7                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 307   | Scripting8                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 308   | Scripting9                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 309   | Scripting10                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 310   | Scripting11                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 311   | Scripting12                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 312   | Scripting13                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 313   | Scripting14                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 314   | Scripting15                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 315   | Scripting16                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 316   | Stop-Restart Scripting                              | |
+| +-------+-----------------------------------------------------+ |
+|                                                                 |
++-----------------------------------------------------------------+
+
+
+
+
+
+.. _parameters_RC28_:
+
+RC28\_ Parameters
+-----------------
+
+
+.. _RC28_MIN:
+
+RC28\_MIN: RC min PWM
+~~~~~~~~~~~~~~~~~~~~~
+
+| *Note: This parameter is for advanced users*
+
+RC minimum PWM pulse width in microseconds\. Typically 1000 is lower limit\, 1500 is neutral and 2000 is upper limit\.
+
+
++-----------+-------------+---------------------+
+| Increment | Range       | Units               |
++===========+=============+=====================+
+| 1         | 800 to 2200 | PWM in microseconds |
++-----------+-------------+---------------------+
+
+
+
+
+.. _RC28_TRIM:
+
+RC28\_TRIM: RC trim PWM
+~~~~~~~~~~~~~~~~~~~~~~~
+
+| *Note: This parameter is for advanced users*
+
+RC trim \(neutral\) PWM pulse width in microseconds\. Typically 1000 is lower limit\, 1500 is neutral and 2000 is upper limit\.
+
+
++-----------+-------------+---------------------+
+| Increment | Range       | Units               |
++===========+=============+=====================+
+| 1         | 800 to 2200 | PWM in microseconds |
++-----------+-------------+---------------------+
+
+
+
+
+.. _RC28_MAX:
+
+RC28\_MAX: RC max PWM
+~~~~~~~~~~~~~~~~~~~~~
+
+| *Note: This parameter is for advanced users*
+
+RC maximum PWM pulse width in microseconds\. Typically 1000 is lower limit\, 1500 is neutral and 2000 is upper limit\.
+
+
++-----------+-------------+---------------------+
+| Increment | Range       | Units               |
++===========+=============+=====================+
+| 1         | 800 to 2200 | PWM in microseconds |
++-----------+-------------+---------------------+
+
+
+
+
+.. _RC28_REVERSED:
+
+RC28\_REVERSED: RC reversed
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+| *Note: This parameter is for advanced users*
+
+Reverse channel input\. Set to 0 for normal operation\. Set to 1 to reverse this input channel\.
+
+
++----------------------+
+| Values               |
++======================+
+| +-------+----------+ |
+| | Value | Meaning  | |
+| +=======+==========+ |
+| | 0     | Normal   | |
+| +-------+----------+ |
+| | 1     | Reversed | |
+| +-------+----------+ |
+|                      |
++----------------------+
+
+
+
+
+.. _RC28_DZ:
+
+RC28\_DZ: RC dead\-zone
+~~~~~~~~~~~~~~~~~~~~~~~
+
+| *Note: This parameter is for advanced users*
+
+PWM dead zone in microseconds around trim or bottom
+
+
++----------+---------------------+
+| Range    | Units               |
++==========+=====================+
+| 0 to 200 | PWM in microseconds |
++----------+---------------------+
+
+
+
+
+.. _RC28_OPTION:
+
+RC28\_OPTION: RC input option
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+Function assigned to this RC channel
+
+
++-----------------------------------------------------------------+
+| Values                                                          |
++=================================================================+
+| +-------+-----------------------------------------------------+ |
+| | Value | Meaning                                             | |
+| +=======+=====================================================+ |
+| | 0     | Do Nothing                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 4     | RTL                                                 | |
+| +-------+-----------------------------------------------------+ |
+| | 9     | Camera Trigger                                      | |
+| +-------+-----------------------------------------------------+ |
+| | 11    | Fence Enable                                        | |
+| +-------+-----------------------------------------------------+ |
+| | 16    | AUTO Mode                                           | |
+| +-------+-----------------------------------------------------+ |
+| | 17    | AUTOTUNE Mode                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 22    | Parachute Release                                   | |
+| +-------+-----------------------------------------------------+ |
+| | 24    | Auto Mission Reset                                  | |
+| +-------+-----------------------------------------------------+ |
+| | 27    | Retract Mount1                                      | |
+| +-------+-----------------------------------------------------+ |
+| | 28    | Relay1 On/Off                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 29    | Landing Gear                                        | |
+| +-------+-----------------------------------------------------+ |
+| | 30    | Lost Plane Sound                                    | |
+| +-------+-----------------------------------------------------+ |
+| | 31    | Motor Emergency Stop                                | |
+| +-------+-----------------------------------------------------+ |
+| | 34    | Relay2 On/Off                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 35    | Relay3 On/Off                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 36    | Relay4 On/Off                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 38    | ADSB Avoidance Enable                               | |
+| +-------+-----------------------------------------------------+ |
+| | 41    | ArmDisarm (4.1 and lower)                           | |
+| +-------+-----------------------------------------------------+ |
+| | 43    | InvertedFlight Enable                               | |
+| +-------+-----------------------------------------------------+ |
+| | 46    | RC Override Enable                                  | |
+| +-------+-----------------------------------------------------+ |
+| | 51    | MANUAL Mode                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 52    | ACRO Mode                                           | |
+| +-------+-----------------------------------------------------+ |
+| | 55    | GUIDED Mode                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 56    | LOITER Mode                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 58    | Clear Waypoints                                     | |
+| +-------+-----------------------------------------------------+ |
+| | 62    | Compass Learn                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 64    | Reverse Throttle                                    | |
+| +-------+-----------------------------------------------------+ |
+| | 65    | GPS Disable                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 66    | Relay5 On/Off                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 67    | Relay6 On/Off                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 72    | CIRCLE Mode                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 77    | TAKEOFF Mode                                        | |
+| +-------+-----------------------------------------------------+ |
+| | 78    | RunCam Control                                      | |
+| +-------+-----------------------------------------------------+ |
+| | 79    | RunCam OSD Control                                  | |
+| +-------+-----------------------------------------------------+ |
+| | 81    | Disarm                                              | |
+| +-------+-----------------------------------------------------+ |
+| | 82    | QAssist 3pos                                        | |
+| +-------+-----------------------------------------------------+ |
+| | 84    | AirMode                                             | |
+| +-------+-----------------------------------------------------+ |
+| | 85    | Generator                                           | |
+| +-------+-----------------------------------------------------+ |
+| | 86    | Non Auto Terrain Follow Disable                     | |
+| +-------+-----------------------------------------------------+ |
+| | 87    | Crow Select                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 88    | Soaring Enable                                      | |
+| +-------+-----------------------------------------------------+ |
+| | 89    | Landing Flare                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 90    | EKF Source Set                                      | |
+| +-------+-----------------------------------------------------+ |
+| | 91    | Airspeed Ratio Calibration                          | |
+| +-------+-----------------------------------------------------+ |
+| | 92    | FBWA Mode                                           | |
+| +-------+-----------------------------------------------------+ |
+| | 94    | VTX Power                                           | |
+| +-------+-----------------------------------------------------+ |
+| | 95    | FBWA taildragger takeoff mode                       | |
+| +-------+-----------------------------------------------------+ |
+| | 96    | Trigger re-reading of mode switch                   | |
+| +-------+-----------------------------------------------------+ |
+| | 98    | TRAINING Mode                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 100   | KillIMU1                                            | |
+| +-------+-----------------------------------------------------+ |
+| | 101   | KillIMU2                                            | |
+| +-------+-----------------------------------------------------+ |
+| | 102   | Camera Mode Toggle                                  | |
+| +-------+-----------------------------------------------------+ |
+| | 103   | EKF lane switch attempt                             | |
+| +-------+-----------------------------------------------------+ |
+| | 104   | EKF yaw reset                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 105   | GPS Disable Yaw                                     | |
+| +-------+-----------------------------------------------------+ |
+| | 106   | Disable Airspeed Use                                | |
+| +-------+-----------------------------------------------------+ |
+| | 107   | Enable FW Autotune                                  | |
+| +-------+-----------------------------------------------------+ |
+| | 108   | QRTL Mode                                           | |
+| +-------+-----------------------------------------------------+ |
+| | 110   | KillIMU3                                            | |
+| +-------+-----------------------------------------------------+ |
+| | 111   | Loweheiser starter                                  | |
+| +-------+-----------------------------------------------------+ |
+| | 112   | SwitchExternalAHRS                                  | |
+| +-------+-----------------------------------------------------+ |
+| | 113   | Retract Mount2                                      | |
+| +-------+-----------------------------------------------------+ |
+| | 150   | CRUISE Mode                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 153   | ArmDisarm (4.2 and higher)                          | |
+| +-------+-----------------------------------------------------+ |
+| | 154   | ArmDisarm with Quadplane AirMode (4.2 and higher)   | |
+| +-------+-----------------------------------------------------+ |
+| | 155   | Set roll pitch and yaw trim to current servo and RC | |
+| +-------+-----------------------------------------------------+ |
+| | 157   | Force FS Action to FBWA                             | |
+| +-------+-----------------------------------------------------+ |
+| | 158   | Optflow Calibration                                 | |
+| +-------+-----------------------------------------------------+ |
+| | 160   | Weathervane Enable                                  | |
+| +-------+-----------------------------------------------------+ |
+| | 162   | FFT Tune                                            | |
+| +-------+-----------------------------------------------------+ |
+| | 163   | Mount Yaw Lock                                      | |
+| +-------+-----------------------------------------------------+ |
+| | 164   | Pause Stream Logging                                | |
+| +-------+-----------------------------------------------------+ |
+| | 165   | Arm/Emergency Motor Stop                            | |
+| +-------+-----------------------------------------------------+ |
+| | 166   | Camera Record Video                                 | |
+| +-------+-----------------------------------------------------+ |
+| | 167   | Camera Zoom                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 168   | Camera Manual Focus                                 | |
+| +-------+-----------------------------------------------------+ |
+| | 169   | Camera Auto Focus                                   | |
+| +-------+-----------------------------------------------------+ |
+| | 170   | QSTABILIZE Mode                                     | |
+| +-------+-----------------------------------------------------+ |
+| | 171   | Calibrate Compasses                                 | |
+| +-------+-----------------------------------------------------+ |
+| | 172   | Battery MPPT Enable                                 | |
+| +-------+-----------------------------------------------------+ |
+| | 173   | Plane AUTO Mode Landing Abort                       | |
+| +-------+-----------------------------------------------------+ |
+| | 174   | Camera Image Tracking                               | |
+| +-------+-----------------------------------------------------+ |
+| | 175   | Camera Lens                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 176   | Quadplane Fwd Throttle Override enable              | |
+| +-------+-----------------------------------------------------+ |
+| | 177   | Mount LRF enable                                    | |
+| +-------+-----------------------------------------------------+ |
+| | 179   | ICEngine start / stop                               | |
+| +-------+-----------------------------------------------------+ |
+| | 180   | Test autotuned gains after tune is complete         | |
+| +-------+-----------------------------------------------------+ |
+| | 181   | QuickTune                                           | |
+| +-------+-----------------------------------------------------+ |
+| | 182   | VTOL AutoTrim                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 184   | System ID Chirp                                     | |
+| +-------+-----------------------------------------------------+ |
+| | 185   | Mount Roll/Pitch Lock                               | |
+| +-------+-----------------------------------------------------+ |
+| | 186   | Mount POI Lock                                      | |
+| +-------+-----------------------------------------------------+ |
+| | 208   | Flap                                                | |
+| +-------+-----------------------------------------------------+ |
+| | 209   | VTOL Forward Throttle                               | |
+| +-------+-----------------------------------------------------+ |
+| | 210   | Airbrakes                                           | |
+| +-------+-----------------------------------------------------+ |
+| | 212   | Mount1 Roll                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 213   | Mount1 Pitch                                        | |
+| +-------+-----------------------------------------------------+ |
+| | 214   | Mount1 Yaw                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 215   | Mount2 Roll                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 216   | Mount2 Pitch                                        | |
+| +-------+-----------------------------------------------------+ |
+| | 217   | Mount2 Yaw                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 218   | Loweheiser throttle                                 | |
+| +-------+-----------------------------------------------------+ |
+| | 200   | Servos Auto Trim                                    | |
+| +-------+-----------------------------------------------------+ |
+| | 250   | Tuning Set Select                                   | |
+| +-------+-----------------------------------------------------+ |
+| | 251   | RTL Autoland Commit                                 | |
+| +-------+-----------------------------------------------------+ |
+| | 252   | Mount1 Head Track Enable                            | |
+| +-------+-----------------------------------------------------+ |
+| | 253   | Mount1 Head Track Center Lock                       | |
+| +-------+-----------------------------------------------------+ |
+| | 254   | Adaptive Pitch Trim                                 | |
+| +-------+-----------------------------------------------------+ |
+| | 300   | Scripting1                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 301   | Scripting2                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 302   | Scripting3                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 303   | Scripting4                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 304   | Scripting5                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 305   | Scripting6                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 306   | Scripting7                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 307   | Scripting8                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 308   | Scripting9                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 309   | Scripting10                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 310   | Scripting11                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 311   | Scripting12                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 312   | Scripting13                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 313   | Scripting14                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 314   | Scripting15                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 315   | Scripting16                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 316   | Stop-Restart Scripting                              | |
+| +-------+-----------------------------------------------------+ |
+|                                                                 |
++-----------------------------------------------------------------+
+
+
+
+
+
+.. _parameters_RC29_:
+
+RC29\_ Parameters
+-----------------
+
+
+.. _RC29_MIN:
+
+RC29\_MIN: RC min PWM
+~~~~~~~~~~~~~~~~~~~~~
+
+| *Note: This parameter is for advanced users*
+
+RC minimum PWM pulse width in microseconds\. Typically 1000 is lower limit\, 1500 is neutral and 2000 is upper limit\.
+
+
++-----------+-------------+---------------------+
+| Increment | Range       | Units               |
++===========+=============+=====================+
+| 1         | 800 to 2200 | PWM in microseconds |
++-----------+-------------+---------------------+
+
+
+
+
+.. _RC29_TRIM:
+
+RC29\_TRIM: RC trim PWM
+~~~~~~~~~~~~~~~~~~~~~~~
+
+| *Note: This parameter is for advanced users*
+
+RC trim \(neutral\) PWM pulse width in microseconds\. Typically 1000 is lower limit\, 1500 is neutral and 2000 is upper limit\.
+
+
++-----------+-------------+---------------------+
+| Increment | Range       | Units               |
++===========+=============+=====================+
+| 1         | 800 to 2200 | PWM in microseconds |
++-----------+-------------+---------------------+
+
+
+
+
+.. _RC29_MAX:
+
+RC29\_MAX: RC max PWM
+~~~~~~~~~~~~~~~~~~~~~
+
+| *Note: This parameter is for advanced users*
+
+RC maximum PWM pulse width in microseconds\. Typically 1000 is lower limit\, 1500 is neutral and 2000 is upper limit\.
+
+
++-----------+-------------+---------------------+
+| Increment | Range       | Units               |
++===========+=============+=====================+
+| 1         | 800 to 2200 | PWM in microseconds |
++-----------+-------------+---------------------+
+
+
+
+
+.. _RC29_REVERSED:
+
+RC29\_REVERSED: RC reversed
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+| *Note: This parameter is for advanced users*
+
+Reverse channel input\. Set to 0 for normal operation\. Set to 1 to reverse this input channel\.
+
+
++----------------------+
+| Values               |
++======================+
+| +-------+----------+ |
+| | Value | Meaning  | |
+| +=======+==========+ |
+| | 0     | Normal   | |
+| +-------+----------+ |
+| | 1     | Reversed | |
+| +-------+----------+ |
+|                      |
++----------------------+
+
+
+
+
+.. _RC29_DZ:
+
+RC29\_DZ: RC dead\-zone
+~~~~~~~~~~~~~~~~~~~~~~~
+
+| *Note: This parameter is for advanced users*
+
+PWM dead zone in microseconds around trim or bottom
+
+
++----------+---------------------+
+| Range    | Units               |
++==========+=====================+
+| 0 to 200 | PWM in microseconds |
++----------+---------------------+
+
+
+
+
+.. _RC29_OPTION:
+
+RC29\_OPTION: RC input option
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+Function assigned to this RC channel
+
+
++-----------------------------------------------------------------+
+| Values                                                          |
++=================================================================+
+| +-------+-----------------------------------------------------+ |
+| | Value | Meaning                                             | |
+| +=======+=====================================================+ |
+| | 0     | Do Nothing                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 4     | RTL                                                 | |
+| +-------+-----------------------------------------------------+ |
+| | 9     | Camera Trigger                                      | |
+| +-------+-----------------------------------------------------+ |
+| | 11    | Fence Enable                                        | |
+| +-------+-----------------------------------------------------+ |
+| | 16    | AUTO Mode                                           | |
+| +-------+-----------------------------------------------------+ |
+| | 17    | AUTOTUNE Mode                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 22    | Parachute Release                                   | |
+| +-------+-----------------------------------------------------+ |
+| | 24    | Auto Mission Reset                                  | |
+| +-------+-----------------------------------------------------+ |
+| | 27    | Retract Mount1                                      | |
+| +-------+-----------------------------------------------------+ |
+| | 28    | Relay1 On/Off                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 29    | Landing Gear                                        | |
+| +-------+-----------------------------------------------------+ |
+| | 30    | Lost Plane Sound                                    | |
+| +-------+-----------------------------------------------------+ |
+| | 31    | Motor Emergency Stop                                | |
+| +-------+-----------------------------------------------------+ |
+| | 34    | Relay2 On/Off                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 35    | Relay3 On/Off                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 36    | Relay4 On/Off                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 38    | ADSB Avoidance Enable                               | |
+| +-------+-----------------------------------------------------+ |
+| | 41    | ArmDisarm (4.1 and lower)                           | |
+| +-------+-----------------------------------------------------+ |
+| | 43    | InvertedFlight Enable                               | |
+| +-------+-----------------------------------------------------+ |
+| | 46    | RC Override Enable                                  | |
+| +-------+-----------------------------------------------------+ |
+| | 51    | MANUAL Mode                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 52    | ACRO Mode                                           | |
+| +-------+-----------------------------------------------------+ |
+| | 55    | GUIDED Mode                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 56    | LOITER Mode                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 58    | Clear Waypoints                                     | |
+| +-------+-----------------------------------------------------+ |
+| | 62    | Compass Learn                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 64    | Reverse Throttle                                    | |
+| +-------+-----------------------------------------------------+ |
+| | 65    | GPS Disable                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 66    | Relay5 On/Off                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 67    | Relay6 On/Off                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 72    | CIRCLE Mode                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 77    | TAKEOFF Mode                                        | |
+| +-------+-----------------------------------------------------+ |
+| | 78    | RunCam Control                                      | |
+| +-------+-----------------------------------------------------+ |
+| | 79    | RunCam OSD Control                                  | |
+| +-------+-----------------------------------------------------+ |
+| | 81    | Disarm                                              | |
+| +-------+-----------------------------------------------------+ |
+| | 82    | QAssist 3pos                                        | |
+| +-------+-----------------------------------------------------+ |
+| | 84    | AirMode                                             | |
+| +-------+-----------------------------------------------------+ |
+| | 85    | Generator                                           | |
+| +-------+-----------------------------------------------------+ |
+| | 86    | Non Auto Terrain Follow Disable                     | |
+| +-------+-----------------------------------------------------+ |
+| | 87    | Crow Select                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 88    | Soaring Enable                                      | |
+| +-------+-----------------------------------------------------+ |
+| | 89    | Landing Flare                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 90    | EKF Source Set                                      | |
+| +-------+-----------------------------------------------------+ |
+| | 91    | Airspeed Ratio Calibration                          | |
+| +-------+-----------------------------------------------------+ |
+| | 92    | FBWA Mode                                           | |
+| +-------+-----------------------------------------------------+ |
+| | 94    | VTX Power                                           | |
+| +-------+-----------------------------------------------------+ |
+| | 95    | FBWA taildragger takeoff mode                       | |
+| +-------+-----------------------------------------------------+ |
+| | 96    | Trigger re-reading of mode switch                   | |
+| +-------+-----------------------------------------------------+ |
+| | 98    | TRAINING Mode                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 100   | KillIMU1                                            | |
+| +-------+-----------------------------------------------------+ |
+| | 101   | KillIMU2                                            | |
+| +-------+-----------------------------------------------------+ |
+| | 102   | Camera Mode Toggle                                  | |
+| +-------+-----------------------------------------------------+ |
+| | 103   | EKF lane switch attempt                             | |
+| +-------+-----------------------------------------------------+ |
+| | 104   | EKF yaw reset                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 105   | GPS Disable Yaw                                     | |
+| +-------+-----------------------------------------------------+ |
+| | 106   | Disable Airspeed Use                                | |
+| +-------+-----------------------------------------------------+ |
+| | 107   | Enable FW Autotune                                  | |
+| +-------+-----------------------------------------------------+ |
+| | 108   | QRTL Mode                                           | |
+| +-------+-----------------------------------------------------+ |
+| | 110   | KillIMU3                                            | |
+| +-------+-----------------------------------------------------+ |
+| | 111   | Loweheiser starter                                  | |
+| +-------+-----------------------------------------------------+ |
+| | 112   | SwitchExternalAHRS                                  | |
+| +-------+-----------------------------------------------------+ |
+| | 113   | Retract Mount2                                      | |
+| +-------+-----------------------------------------------------+ |
+| | 150   | CRUISE Mode                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 153   | ArmDisarm (4.2 and higher)                          | |
+| +-------+-----------------------------------------------------+ |
+| | 154   | ArmDisarm with Quadplane AirMode (4.2 and higher)   | |
+| +-------+-----------------------------------------------------+ |
+| | 155   | Set roll pitch and yaw trim to current servo and RC | |
+| +-------+-----------------------------------------------------+ |
+| | 157   | Force FS Action to FBWA                             | |
+| +-------+-----------------------------------------------------+ |
+| | 158   | Optflow Calibration                                 | |
+| +-------+-----------------------------------------------------+ |
+| | 160   | Weathervane Enable                                  | |
+| +-------+-----------------------------------------------------+ |
+| | 162   | FFT Tune                                            | |
+| +-------+-----------------------------------------------------+ |
+| | 163   | Mount Yaw Lock                                      | |
+| +-------+-----------------------------------------------------+ |
+| | 164   | Pause Stream Logging                                | |
+| +-------+-----------------------------------------------------+ |
+| | 165   | Arm/Emergency Motor Stop                            | |
+| +-------+-----------------------------------------------------+ |
+| | 166   | Camera Record Video                                 | |
+| +-------+-----------------------------------------------------+ |
+| | 167   | Camera Zoom                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 168   | Camera Manual Focus                                 | |
+| +-------+-----------------------------------------------------+ |
+| | 169   | Camera Auto Focus                                   | |
+| +-------+-----------------------------------------------------+ |
+| | 170   | QSTABILIZE Mode                                     | |
+| +-------+-----------------------------------------------------+ |
+| | 171   | Calibrate Compasses                                 | |
+| +-------+-----------------------------------------------------+ |
+| | 172   | Battery MPPT Enable                                 | |
+| +-------+-----------------------------------------------------+ |
+| | 173   | Plane AUTO Mode Landing Abort                       | |
+| +-------+-----------------------------------------------------+ |
+| | 174   | Camera Image Tracking                               | |
+| +-------+-----------------------------------------------------+ |
+| | 175   | Camera Lens                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 176   | Quadplane Fwd Throttle Override enable              | |
+| +-------+-----------------------------------------------------+ |
+| | 177   | Mount LRF enable                                    | |
+| +-------+-----------------------------------------------------+ |
+| | 179   | ICEngine start / stop                               | |
+| +-------+-----------------------------------------------------+ |
+| | 180   | Test autotuned gains after tune is complete         | |
+| +-------+-----------------------------------------------------+ |
+| | 181   | QuickTune                                           | |
+| +-------+-----------------------------------------------------+ |
+| | 182   | VTOL AutoTrim                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 184   | System ID Chirp                                     | |
+| +-------+-----------------------------------------------------+ |
+| | 185   | Mount Roll/Pitch Lock                               | |
+| +-------+-----------------------------------------------------+ |
+| | 186   | Mount POI Lock                                      | |
+| +-------+-----------------------------------------------------+ |
+| | 208   | Flap                                                | |
+| +-------+-----------------------------------------------------+ |
+| | 209   | VTOL Forward Throttle                               | |
+| +-------+-----------------------------------------------------+ |
+| | 210   | Airbrakes                                           | |
+| +-------+-----------------------------------------------------+ |
+| | 212   | Mount1 Roll                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 213   | Mount1 Pitch                                        | |
+| +-------+-----------------------------------------------------+ |
+| | 214   | Mount1 Yaw                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 215   | Mount2 Roll                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 216   | Mount2 Pitch                                        | |
+| +-------+-----------------------------------------------------+ |
+| | 217   | Mount2 Yaw                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 218   | Loweheiser throttle                                 | |
+| +-------+-----------------------------------------------------+ |
+| | 200   | Servos Auto Trim                                    | |
+| +-------+-----------------------------------------------------+ |
+| | 250   | Tuning Set Select                                   | |
+| +-------+-----------------------------------------------------+ |
+| | 251   | RTL Autoland Commit                                 | |
+| +-------+-----------------------------------------------------+ |
+| | 252   | Mount1 Head Track Enable                            | |
+| +-------+-----------------------------------------------------+ |
+| | 253   | Mount1 Head Track Center Lock                       | |
+| +-------+-----------------------------------------------------+ |
+| | 254   | Adaptive Pitch Trim                                 | |
+| +-------+-----------------------------------------------------+ |
+| | 300   | Scripting1                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 301   | Scripting2                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 302   | Scripting3                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 303   | Scripting4                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 304   | Scripting5                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 305   | Scripting6                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 306   | Scripting7                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 307   | Scripting8                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 308   | Scripting9                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 309   | Scripting10                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 310   | Scripting11                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 311   | Scripting12                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 312   | Scripting13                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 313   | Scripting14                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 314   | Scripting15                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 315   | Scripting16                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 316   | Stop-Restart Scripting                              | |
+| +-------+-----------------------------------------------------+ |
+|                                                                 |
++-----------------------------------------------------------------+
+
+
+
+
+
+.. _parameters_RC30_:
+
+RC30\_ Parameters
+-----------------
+
+
+.. _RC30_MIN:
+
+RC30\_MIN: RC min PWM
+~~~~~~~~~~~~~~~~~~~~~
+
+| *Note: This parameter is for advanced users*
+
+RC minimum PWM pulse width in microseconds\. Typically 1000 is lower limit\, 1500 is neutral and 2000 is upper limit\.
+
+
++-----------+-------------+---------------------+
+| Increment | Range       | Units               |
++===========+=============+=====================+
+| 1         | 800 to 2200 | PWM in microseconds |
++-----------+-------------+---------------------+
+
+
+
+
+.. _RC30_TRIM:
+
+RC30\_TRIM: RC trim PWM
+~~~~~~~~~~~~~~~~~~~~~~~
+
+| *Note: This parameter is for advanced users*
+
+RC trim \(neutral\) PWM pulse width in microseconds\. Typically 1000 is lower limit\, 1500 is neutral and 2000 is upper limit\.
+
+
++-----------+-------------+---------------------+
+| Increment | Range       | Units               |
++===========+=============+=====================+
+| 1         | 800 to 2200 | PWM in microseconds |
++-----------+-------------+---------------------+
+
+
+
+
+.. _RC30_MAX:
+
+RC30\_MAX: RC max PWM
+~~~~~~~~~~~~~~~~~~~~~
+
+| *Note: This parameter is for advanced users*
+
+RC maximum PWM pulse width in microseconds\. Typically 1000 is lower limit\, 1500 is neutral and 2000 is upper limit\.
+
+
++-----------+-------------+---------------------+
+| Increment | Range       | Units               |
++===========+=============+=====================+
+| 1         | 800 to 2200 | PWM in microseconds |
++-----------+-------------+---------------------+
+
+
+
+
+.. _RC30_REVERSED:
+
+RC30\_REVERSED: RC reversed
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+| *Note: This parameter is for advanced users*
+
+Reverse channel input\. Set to 0 for normal operation\. Set to 1 to reverse this input channel\.
+
+
++----------------------+
+| Values               |
++======================+
+| +-------+----------+ |
+| | Value | Meaning  | |
+| +=======+==========+ |
+| | 0     | Normal   | |
+| +-------+----------+ |
+| | 1     | Reversed | |
+| +-------+----------+ |
+|                      |
++----------------------+
+
+
+
+
+.. _RC30_DZ:
+
+RC30\_DZ: RC dead\-zone
+~~~~~~~~~~~~~~~~~~~~~~~
+
+| *Note: This parameter is for advanced users*
+
+PWM dead zone in microseconds around trim or bottom
+
+
++----------+---------------------+
+| Range    | Units               |
++==========+=====================+
+| 0 to 200 | PWM in microseconds |
++----------+---------------------+
+
+
+
+
+.. _RC30_OPTION:
+
+RC30\_OPTION: RC input option
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+Function assigned to this RC channel
+
+
++-----------------------------------------------------------------+
+| Values                                                          |
++=================================================================+
+| +-------+-----------------------------------------------------+ |
+| | Value | Meaning                                             | |
+| +=======+=====================================================+ |
+| | 0     | Do Nothing                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 4     | RTL                                                 | |
+| +-------+-----------------------------------------------------+ |
+| | 9     | Camera Trigger                                      | |
+| +-------+-----------------------------------------------------+ |
+| | 11    | Fence Enable                                        | |
+| +-------+-----------------------------------------------------+ |
+| | 16    | AUTO Mode                                           | |
+| +-------+-----------------------------------------------------+ |
+| | 17    | AUTOTUNE Mode                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 22    | Parachute Release                                   | |
+| +-------+-----------------------------------------------------+ |
+| | 24    | Auto Mission Reset                                  | |
+| +-------+-----------------------------------------------------+ |
+| | 27    | Retract Mount1                                      | |
+| +-------+-----------------------------------------------------+ |
+| | 28    | Relay1 On/Off                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 29    | Landing Gear                                        | |
+| +-------+-----------------------------------------------------+ |
+| | 30    | Lost Plane Sound                                    | |
+| +-------+-----------------------------------------------------+ |
+| | 31    | Motor Emergency Stop                                | |
+| +-------+-----------------------------------------------------+ |
+| | 34    | Relay2 On/Off                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 35    | Relay3 On/Off                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 36    | Relay4 On/Off                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 38    | ADSB Avoidance Enable                               | |
+| +-------+-----------------------------------------------------+ |
+| | 41    | ArmDisarm (4.1 and lower)                           | |
+| +-------+-----------------------------------------------------+ |
+| | 43    | InvertedFlight Enable                               | |
+| +-------+-----------------------------------------------------+ |
+| | 46    | RC Override Enable                                  | |
+| +-------+-----------------------------------------------------+ |
+| | 51    | MANUAL Mode                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 52    | ACRO Mode                                           | |
+| +-------+-----------------------------------------------------+ |
+| | 55    | GUIDED Mode                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 56    | LOITER Mode                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 58    | Clear Waypoints                                     | |
+| +-------+-----------------------------------------------------+ |
+| | 62    | Compass Learn                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 64    | Reverse Throttle                                    | |
+| +-------+-----------------------------------------------------+ |
+| | 65    | GPS Disable                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 66    | Relay5 On/Off                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 67    | Relay6 On/Off                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 72    | CIRCLE Mode                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 77    | TAKEOFF Mode                                        | |
+| +-------+-----------------------------------------------------+ |
+| | 78    | RunCam Control                                      | |
+| +-------+-----------------------------------------------------+ |
+| | 79    | RunCam OSD Control                                  | |
+| +-------+-----------------------------------------------------+ |
+| | 81    | Disarm                                              | |
+| +-------+-----------------------------------------------------+ |
+| | 82    | QAssist 3pos                                        | |
+| +-------+-----------------------------------------------------+ |
+| | 84    | AirMode                                             | |
+| +-------+-----------------------------------------------------+ |
+| | 85    | Generator                                           | |
+| +-------+-----------------------------------------------------+ |
+| | 86    | Non Auto Terrain Follow Disable                     | |
+| +-------+-----------------------------------------------------+ |
+| | 87    | Crow Select                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 88    | Soaring Enable                                      | |
+| +-------+-----------------------------------------------------+ |
+| | 89    | Landing Flare                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 90    | EKF Source Set                                      | |
+| +-------+-----------------------------------------------------+ |
+| | 91    | Airspeed Ratio Calibration                          | |
+| +-------+-----------------------------------------------------+ |
+| | 92    | FBWA Mode                                           | |
+| +-------+-----------------------------------------------------+ |
+| | 94    | VTX Power                                           | |
+| +-------+-----------------------------------------------------+ |
+| | 95    | FBWA taildragger takeoff mode                       | |
+| +-------+-----------------------------------------------------+ |
+| | 96    | Trigger re-reading of mode switch                   | |
+| +-------+-----------------------------------------------------+ |
+| | 98    | TRAINING Mode                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 100   | KillIMU1                                            | |
+| +-------+-----------------------------------------------------+ |
+| | 101   | KillIMU2                                            | |
+| +-------+-----------------------------------------------------+ |
+| | 102   | Camera Mode Toggle                                  | |
+| +-------+-----------------------------------------------------+ |
+| | 103   | EKF lane switch attempt                             | |
+| +-------+-----------------------------------------------------+ |
+| | 104   | EKF yaw reset                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 105   | GPS Disable Yaw                                     | |
+| +-------+-----------------------------------------------------+ |
+| | 106   | Disable Airspeed Use                                | |
+| +-------+-----------------------------------------------------+ |
+| | 107   | Enable FW Autotune                                  | |
+| +-------+-----------------------------------------------------+ |
+| | 108   | QRTL Mode                                           | |
+| +-------+-----------------------------------------------------+ |
+| | 110   | KillIMU3                                            | |
+| +-------+-----------------------------------------------------+ |
+| | 111   | Loweheiser starter                                  | |
+| +-------+-----------------------------------------------------+ |
+| | 112   | SwitchExternalAHRS                                  | |
+| +-------+-----------------------------------------------------+ |
+| | 113   | Retract Mount2                                      | |
+| +-------+-----------------------------------------------------+ |
+| | 150   | CRUISE Mode                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 153   | ArmDisarm (4.2 and higher)                          | |
+| +-------+-----------------------------------------------------+ |
+| | 154   | ArmDisarm with Quadplane AirMode (4.2 and higher)   | |
+| +-------+-----------------------------------------------------+ |
+| | 155   | Set roll pitch and yaw trim to current servo and RC | |
+| +-------+-----------------------------------------------------+ |
+| | 157   | Force FS Action to FBWA                             | |
+| +-------+-----------------------------------------------------+ |
+| | 158   | Optflow Calibration                                 | |
+| +-------+-----------------------------------------------------+ |
+| | 160   | Weathervane Enable                                  | |
+| +-------+-----------------------------------------------------+ |
+| | 162   | FFT Tune                                            | |
+| +-------+-----------------------------------------------------+ |
+| | 163   | Mount Yaw Lock                                      | |
+| +-------+-----------------------------------------------------+ |
+| | 164   | Pause Stream Logging                                | |
+| +-------+-----------------------------------------------------+ |
+| | 165   | Arm/Emergency Motor Stop                            | |
+| +-------+-----------------------------------------------------+ |
+| | 166   | Camera Record Video                                 | |
+| +-------+-----------------------------------------------------+ |
+| | 167   | Camera Zoom                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 168   | Camera Manual Focus                                 | |
+| +-------+-----------------------------------------------------+ |
+| | 169   | Camera Auto Focus                                   | |
+| +-------+-----------------------------------------------------+ |
+| | 170   | QSTABILIZE Mode                                     | |
+| +-------+-----------------------------------------------------+ |
+| | 171   | Calibrate Compasses                                 | |
+| +-------+-----------------------------------------------------+ |
+| | 172   | Battery MPPT Enable                                 | |
+| +-------+-----------------------------------------------------+ |
+| | 173   | Plane AUTO Mode Landing Abort                       | |
+| +-------+-----------------------------------------------------+ |
+| | 174   | Camera Image Tracking                               | |
+| +-------+-----------------------------------------------------+ |
+| | 175   | Camera Lens                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 176   | Quadplane Fwd Throttle Override enable              | |
+| +-------+-----------------------------------------------------+ |
+| | 177   | Mount LRF enable                                    | |
+| +-------+-----------------------------------------------------+ |
+| | 179   | ICEngine start / stop                               | |
+| +-------+-----------------------------------------------------+ |
+| | 180   | Test autotuned gains after tune is complete         | |
+| +-------+-----------------------------------------------------+ |
+| | 181   | QuickTune                                           | |
+| +-------+-----------------------------------------------------+ |
+| | 182   | VTOL AutoTrim                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 184   | System ID Chirp                                     | |
+| +-------+-----------------------------------------------------+ |
+| | 185   | Mount Roll/Pitch Lock                               | |
+| +-------+-----------------------------------------------------+ |
+| | 186   | Mount POI Lock                                      | |
+| +-------+-----------------------------------------------------+ |
+| | 208   | Flap                                                | |
+| +-------+-----------------------------------------------------+ |
+| | 209   | VTOL Forward Throttle                               | |
+| +-------+-----------------------------------------------------+ |
+| | 210   | Airbrakes                                           | |
+| +-------+-----------------------------------------------------+ |
+| | 212   | Mount1 Roll                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 213   | Mount1 Pitch                                        | |
+| +-------+-----------------------------------------------------+ |
+| | 214   | Mount1 Yaw                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 215   | Mount2 Roll                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 216   | Mount2 Pitch                                        | |
+| +-------+-----------------------------------------------------+ |
+| | 217   | Mount2 Yaw                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 218   | Loweheiser throttle                                 | |
+| +-------+-----------------------------------------------------+ |
+| | 200   | Servos Auto Trim                                    | |
+| +-------+-----------------------------------------------------+ |
+| | 250   | Tuning Set Select                                   | |
+| +-------+-----------------------------------------------------+ |
+| | 251   | RTL Autoland Commit                                 | |
+| +-------+-----------------------------------------------------+ |
+| | 252   | Mount1 Head Track Enable                            | |
+| +-------+-----------------------------------------------------+ |
+| | 253   | Mount1 Head Track Center Lock                       | |
+| +-------+-----------------------------------------------------+ |
+| | 254   | Adaptive Pitch Trim                                 | |
+| +-------+-----------------------------------------------------+ |
+| | 300   | Scripting1                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 301   | Scripting2                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 302   | Scripting3                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 303   | Scripting4                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 304   | Scripting5                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 305   | Scripting6                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 306   | Scripting7                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 307   | Scripting8                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 308   | Scripting9                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 309   | Scripting10                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 310   | Scripting11                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 311   | Scripting12                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 312   | Scripting13                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 313   | Scripting14                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 314   | Scripting15                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 315   | Scripting16                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 316   | Stop-Restart Scripting                              | |
+| +-------+-----------------------------------------------------+ |
+|                                                                 |
++-----------------------------------------------------------------+
+
+
+
+
+
+.. _parameters_RC31_:
+
+RC31\_ Parameters
+-----------------
+
+
+.. _RC31_MIN:
+
+RC31\_MIN: RC min PWM
+~~~~~~~~~~~~~~~~~~~~~
+
+| *Note: This parameter is for advanced users*
+
+RC minimum PWM pulse width in microseconds\. Typically 1000 is lower limit\, 1500 is neutral and 2000 is upper limit\.
+
+
++-----------+-------------+---------------------+
+| Increment | Range       | Units               |
++===========+=============+=====================+
+| 1         | 800 to 2200 | PWM in microseconds |
++-----------+-------------+---------------------+
+
+
+
+
+.. _RC31_TRIM:
+
+RC31\_TRIM: RC trim PWM
+~~~~~~~~~~~~~~~~~~~~~~~
+
+| *Note: This parameter is for advanced users*
+
+RC trim \(neutral\) PWM pulse width in microseconds\. Typically 1000 is lower limit\, 1500 is neutral and 2000 is upper limit\.
+
+
++-----------+-------------+---------------------+
+| Increment | Range       | Units               |
++===========+=============+=====================+
+| 1         | 800 to 2200 | PWM in microseconds |
++-----------+-------------+---------------------+
+
+
+
+
+.. _RC31_MAX:
+
+RC31\_MAX: RC max PWM
+~~~~~~~~~~~~~~~~~~~~~
+
+| *Note: This parameter is for advanced users*
+
+RC maximum PWM pulse width in microseconds\. Typically 1000 is lower limit\, 1500 is neutral and 2000 is upper limit\.
+
+
++-----------+-------------+---------------------+
+| Increment | Range       | Units               |
++===========+=============+=====================+
+| 1         | 800 to 2200 | PWM in microseconds |
++-----------+-------------+---------------------+
+
+
+
+
+.. _RC31_REVERSED:
+
+RC31\_REVERSED: RC reversed
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+| *Note: This parameter is for advanced users*
+
+Reverse channel input\. Set to 0 for normal operation\. Set to 1 to reverse this input channel\.
+
+
++----------------------+
+| Values               |
++======================+
+| +-------+----------+ |
+| | Value | Meaning  | |
+| +=======+==========+ |
+| | 0     | Normal   | |
+| +-------+----------+ |
+| | 1     | Reversed | |
+| +-------+----------+ |
+|                      |
++----------------------+
+
+
+
+
+.. _RC31_DZ:
+
+RC31\_DZ: RC dead\-zone
+~~~~~~~~~~~~~~~~~~~~~~~
+
+| *Note: This parameter is for advanced users*
+
+PWM dead zone in microseconds around trim or bottom
+
+
++----------+---------------------+
+| Range    | Units               |
++==========+=====================+
+| 0 to 200 | PWM in microseconds |
++----------+---------------------+
+
+
+
+
+.. _RC31_OPTION:
+
+RC31\_OPTION: RC input option
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+Function assigned to this RC channel
+
+
++-----------------------------------------------------------------+
+| Values                                                          |
++=================================================================+
+| +-------+-----------------------------------------------------+ |
+| | Value | Meaning                                             | |
+| +=======+=====================================================+ |
+| | 0     | Do Nothing                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 4     | RTL                                                 | |
+| +-------+-----------------------------------------------------+ |
+| | 9     | Camera Trigger                                      | |
+| +-------+-----------------------------------------------------+ |
+| | 11    | Fence Enable                                        | |
+| +-------+-----------------------------------------------------+ |
+| | 16    | AUTO Mode                                           | |
+| +-------+-----------------------------------------------------+ |
+| | 17    | AUTOTUNE Mode                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 22    | Parachute Release                                   | |
+| +-------+-----------------------------------------------------+ |
+| | 24    | Auto Mission Reset                                  | |
+| +-------+-----------------------------------------------------+ |
+| | 27    | Retract Mount1                                      | |
+| +-------+-----------------------------------------------------+ |
+| | 28    | Relay1 On/Off                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 29    | Landing Gear                                        | |
+| +-------+-----------------------------------------------------+ |
+| | 30    | Lost Plane Sound                                    | |
+| +-------+-----------------------------------------------------+ |
+| | 31    | Motor Emergency Stop                                | |
+| +-------+-----------------------------------------------------+ |
+| | 34    | Relay2 On/Off                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 35    | Relay3 On/Off                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 36    | Relay4 On/Off                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 38    | ADSB Avoidance Enable                               | |
+| +-------+-----------------------------------------------------+ |
+| | 41    | ArmDisarm (4.1 and lower)                           | |
+| +-------+-----------------------------------------------------+ |
+| | 43    | InvertedFlight Enable                               | |
+| +-------+-----------------------------------------------------+ |
+| | 46    | RC Override Enable                                  | |
+| +-------+-----------------------------------------------------+ |
+| | 51    | MANUAL Mode                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 52    | ACRO Mode                                           | |
+| +-------+-----------------------------------------------------+ |
+| | 55    | GUIDED Mode                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 56    | LOITER Mode                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 58    | Clear Waypoints                                     | |
+| +-------+-----------------------------------------------------+ |
+| | 62    | Compass Learn                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 64    | Reverse Throttle                                    | |
+| +-------+-----------------------------------------------------+ |
+| | 65    | GPS Disable                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 66    | Relay5 On/Off                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 67    | Relay6 On/Off                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 72    | CIRCLE Mode                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 77    | TAKEOFF Mode                                        | |
+| +-------+-----------------------------------------------------+ |
+| | 78    | RunCam Control                                      | |
+| +-------+-----------------------------------------------------+ |
+| | 79    | RunCam OSD Control                                  | |
+| +-------+-----------------------------------------------------+ |
+| | 81    | Disarm                                              | |
+| +-------+-----------------------------------------------------+ |
+| | 82    | QAssist 3pos                                        | |
+| +-------+-----------------------------------------------------+ |
+| | 84    | AirMode                                             | |
+| +-------+-----------------------------------------------------+ |
+| | 85    | Generator                                           | |
+| +-------+-----------------------------------------------------+ |
+| | 86    | Non Auto Terrain Follow Disable                     | |
+| +-------+-----------------------------------------------------+ |
+| | 87    | Crow Select                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 88    | Soaring Enable                                      | |
+| +-------+-----------------------------------------------------+ |
+| | 89    | Landing Flare                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 90    | EKF Source Set                                      | |
+| +-------+-----------------------------------------------------+ |
+| | 91    | Airspeed Ratio Calibration                          | |
+| +-------+-----------------------------------------------------+ |
+| | 92    | FBWA Mode                                           | |
+| +-------+-----------------------------------------------------+ |
+| | 94    | VTX Power                                           | |
+| +-------+-----------------------------------------------------+ |
+| | 95    | FBWA taildragger takeoff mode                       | |
+| +-------+-----------------------------------------------------+ |
+| | 96    | Trigger re-reading of mode switch                   | |
+| +-------+-----------------------------------------------------+ |
+| | 98    | TRAINING Mode                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 100   | KillIMU1                                            | |
+| +-------+-----------------------------------------------------+ |
+| | 101   | KillIMU2                                            | |
+| +-------+-----------------------------------------------------+ |
+| | 102   | Camera Mode Toggle                                  | |
+| +-------+-----------------------------------------------------+ |
+| | 103   | EKF lane switch attempt                             | |
+| +-------+-----------------------------------------------------+ |
+| | 104   | EKF yaw reset                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 105   | GPS Disable Yaw                                     | |
+| +-------+-----------------------------------------------------+ |
+| | 106   | Disable Airspeed Use                                | |
+| +-------+-----------------------------------------------------+ |
+| | 107   | Enable FW Autotune                                  | |
+| +-------+-----------------------------------------------------+ |
+| | 108   | QRTL Mode                                           | |
+| +-------+-----------------------------------------------------+ |
+| | 110   | KillIMU3                                            | |
+| +-------+-----------------------------------------------------+ |
+| | 111   | Loweheiser starter                                  | |
+| +-------+-----------------------------------------------------+ |
+| | 112   | SwitchExternalAHRS                                  | |
+| +-------+-----------------------------------------------------+ |
+| | 113   | Retract Mount2                                      | |
+| +-------+-----------------------------------------------------+ |
+| | 150   | CRUISE Mode                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 153   | ArmDisarm (4.2 and higher)                          | |
+| +-------+-----------------------------------------------------+ |
+| | 154   | ArmDisarm with Quadplane AirMode (4.2 and higher)   | |
+| +-------+-----------------------------------------------------+ |
+| | 155   | Set roll pitch and yaw trim to current servo and RC | |
+| +-------+-----------------------------------------------------+ |
+| | 157   | Force FS Action to FBWA                             | |
+| +-------+-----------------------------------------------------+ |
+| | 158   | Optflow Calibration                                 | |
+| +-------+-----------------------------------------------------+ |
+| | 160   | Weathervane Enable                                  | |
+| +-------+-----------------------------------------------------+ |
+| | 162   | FFT Tune                                            | |
+| +-------+-----------------------------------------------------+ |
+| | 163   | Mount Yaw Lock                                      | |
+| +-------+-----------------------------------------------------+ |
+| | 164   | Pause Stream Logging                                | |
+| +-------+-----------------------------------------------------+ |
+| | 165   | Arm/Emergency Motor Stop                            | |
+| +-------+-----------------------------------------------------+ |
+| | 166   | Camera Record Video                                 | |
+| +-------+-----------------------------------------------------+ |
+| | 167   | Camera Zoom                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 168   | Camera Manual Focus                                 | |
+| +-------+-----------------------------------------------------+ |
+| | 169   | Camera Auto Focus                                   | |
+| +-------+-----------------------------------------------------+ |
+| | 170   | QSTABILIZE Mode                                     | |
+| +-------+-----------------------------------------------------+ |
+| | 171   | Calibrate Compasses                                 | |
+| +-------+-----------------------------------------------------+ |
+| | 172   | Battery MPPT Enable                                 | |
+| +-------+-----------------------------------------------------+ |
+| | 173   | Plane AUTO Mode Landing Abort                       | |
+| +-------+-----------------------------------------------------+ |
+| | 174   | Camera Image Tracking                               | |
+| +-------+-----------------------------------------------------+ |
+| | 175   | Camera Lens                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 176   | Quadplane Fwd Throttle Override enable              | |
+| +-------+-----------------------------------------------------+ |
+| | 177   | Mount LRF enable                                    | |
+| +-------+-----------------------------------------------------+ |
+| | 179   | ICEngine start / stop                               | |
+| +-------+-----------------------------------------------------+ |
+| | 180   | Test autotuned gains after tune is complete         | |
+| +-------+-----------------------------------------------------+ |
+| | 181   | QuickTune                                           | |
+| +-------+-----------------------------------------------------+ |
+| | 182   | VTOL AutoTrim                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 184   | System ID Chirp                                     | |
+| +-------+-----------------------------------------------------+ |
+| | 185   | Mount Roll/Pitch Lock                               | |
+| +-------+-----------------------------------------------------+ |
+| | 186   | Mount POI Lock                                      | |
+| +-------+-----------------------------------------------------+ |
+| | 208   | Flap                                                | |
+| +-------+-----------------------------------------------------+ |
+| | 209   | VTOL Forward Throttle                               | |
+| +-------+-----------------------------------------------------+ |
+| | 210   | Airbrakes                                           | |
+| +-------+-----------------------------------------------------+ |
+| | 212   | Mount1 Roll                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 213   | Mount1 Pitch                                        | |
+| +-------+-----------------------------------------------------+ |
+| | 214   | Mount1 Yaw                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 215   | Mount2 Roll                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 216   | Mount2 Pitch                                        | |
+| +-------+-----------------------------------------------------+ |
+| | 217   | Mount2 Yaw                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 218   | Loweheiser throttle                                 | |
+| +-------+-----------------------------------------------------+ |
+| | 200   | Servos Auto Trim                                    | |
+| +-------+-----------------------------------------------------+ |
+| | 250   | Tuning Set Select                                   | |
+| +-------+-----------------------------------------------------+ |
+| | 251   | RTL Autoland Commit                                 | |
+| +-------+-----------------------------------------------------+ |
+| | 252   | Mount1 Head Track Enable                            | |
+| +-------+-----------------------------------------------------+ |
+| | 253   | Mount1 Head Track Center Lock                       | |
+| +-------+-----------------------------------------------------+ |
+| | 254   | Adaptive Pitch Trim                                 | |
+| +-------+-----------------------------------------------------+ |
+| | 300   | Scripting1                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 301   | Scripting2                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 302   | Scripting3                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 303   | Scripting4                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 304   | Scripting5                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 305   | Scripting6                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 306   | Scripting7                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 307   | Scripting8                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 308   | Scripting9                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 309   | Scripting10                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 310   | Scripting11                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 311   | Scripting12                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 312   | Scripting13                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 313   | Scripting14                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 314   | Scripting15                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 315   | Scripting16                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 316   | Stop-Restart Scripting                              | |
+| +-------+-----------------------------------------------------+ |
+|                                                                 |
++-----------------------------------------------------------------+
+
+
+
+
+
+.. _parameters_RC32_:
+
+RC32\_ Parameters
+-----------------
+
+
+.. _RC32_MIN:
+
+RC32\_MIN: RC min PWM
+~~~~~~~~~~~~~~~~~~~~~
+
+| *Note: This parameter is for advanced users*
+
+RC minimum PWM pulse width in microseconds\. Typically 1000 is lower limit\, 1500 is neutral and 2000 is upper limit\.
+
+
++-----------+-------------+---------------------+
+| Increment | Range       | Units               |
++===========+=============+=====================+
+| 1         | 800 to 2200 | PWM in microseconds |
++-----------+-------------+---------------------+
+
+
+
+
+.. _RC32_TRIM:
+
+RC32\_TRIM: RC trim PWM
+~~~~~~~~~~~~~~~~~~~~~~~
+
+| *Note: This parameter is for advanced users*
+
+RC trim \(neutral\) PWM pulse width in microseconds\. Typically 1000 is lower limit\, 1500 is neutral and 2000 is upper limit\.
+
+
++-----------+-------------+---------------------+
+| Increment | Range       | Units               |
++===========+=============+=====================+
+| 1         | 800 to 2200 | PWM in microseconds |
++-----------+-------------+---------------------+
+
+
+
+
+.. _RC32_MAX:
+
+RC32\_MAX: RC max PWM
+~~~~~~~~~~~~~~~~~~~~~
+
+| *Note: This parameter is for advanced users*
+
+RC maximum PWM pulse width in microseconds\. Typically 1000 is lower limit\, 1500 is neutral and 2000 is upper limit\.
+
+
++-----------+-------------+---------------------+
+| Increment | Range       | Units               |
++===========+=============+=====================+
+| 1         | 800 to 2200 | PWM in microseconds |
++-----------+-------------+---------------------+
+
+
+
+
+.. _RC32_REVERSED:
+
+RC32\_REVERSED: RC reversed
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+| *Note: This parameter is for advanced users*
+
+Reverse channel input\. Set to 0 for normal operation\. Set to 1 to reverse this input channel\.
+
+
++----------------------+
+| Values               |
++======================+
+| +-------+----------+ |
+| | Value | Meaning  | |
+| +=======+==========+ |
+| | 0     | Normal   | |
+| +-------+----------+ |
+| | 1     | Reversed | |
+| +-------+----------+ |
+|                      |
++----------------------+
+
+
+
+
+.. _RC32_DZ:
+
+RC32\_DZ: RC dead\-zone
+~~~~~~~~~~~~~~~~~~~~~~~
+
+| *Note: This parameter is for advanced users*
+
+PWM dead zone in microseconds around trim or bottom
+
+
++----------+---------------------+
+| Range    | Units               |
++==========+=====================+
+| 0 to 200 | PWM in microseconds |
++----------+---------------------+
+
+
+
+
+.. _RC32_OPTION:
+
+RC32\_OPTION: RC input option
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+Function assigned to this RC channel
+
+
++-----------------------------------------------------------------+
+| Values                                                          |
++=================================================================+
+| +-------+-----------------------------------------------------+ |
+| | Value | Meaning                                             | |
+| +=======+=====================================================+ |
+| | 0     | Do Nothing                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 4     | RTL                                                 | |
+| +-------+-----------------------------------------------------+ |
+| | 9     | Camera Trigger                                      | |
+| +-------+-----------------------------------------------------+ |
+| | 11    | Fence Enable                                        | |
+| +-------+-----------------------------------------------------+ |
+| | 16    | AUTO Mode                                           | |
+| +-------+-----------------------------------------------------+ |
+| | 17    | AUTOTUNE Mode                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 22    | Parachute Release                                   | |
+| +-------+-----------------------------------------------------+ |
+| | 24    | Auto Mission Reset                                  | |
+| +-------+-----------------------------------------------------+ |
+| | 27    | Retract Mount1                                      | |
+| +-------+-----------------------------------------------------+ |
+| | 28    | Relay1 On/Off                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 29    | Landing Gear                                        | |
+| +-------+-----------------------------------------------------+ |
+| | 30    | Lost Plane Sound                                    | |
+| +-------+-----------------------------------------------------+ |
+| | 31    | Motor Emergency Stop                                | |
+| +-------+-----------------------------------------------------+ |
+| | 34    | Relay2 On/Off                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 35    | Relay3 On/Off                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 36    | Relay4 On/Off                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 38    | ADSB Avoidance Enable                               | |
+| +-------+-----------------------------------------------------+ |
+| | 41    | ArmDisarm (4.1 and lower)                           | |
+| +-------+-----------------------------------------------------+ |
+| | 43    | InvertedFlight Enable                               | |
+| +-------+-----------------------------------------------------+ |
+| | 46    | RC Override Enable                                  | |
+| +-------+-----------------------------------------------------+ |
+| | 51    | MANUAL Mode                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 52    | ACRO Mode                                           | |
+| +-------+-----------------------------------------------------+ |
+| | 55    | GUIDED Mode                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 56    | LOITER Mode                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 58    | Clear Waypoints                                     | |
+| +-------+-----------------------------------------------------+ |
+| | 62    | Compass Learn                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 64    | Reverse Throttle                                    | |
+| +-------+-----------------------------------------------------+ |
+| | 65    | GPS Disable                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 66    | Relay5 On/Off                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 67    | Relay6 On/Off                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 72    | CIRCLE Mode                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 77    | TAKEOFF Mode                                        | |
+| +-------+-----------------------------------------------------+ |
+| | 78    | RunCam Control                                      | |
+| +-------+-----------------------------------------------------+ |
+| | 79    | RunCam OSD Control                                  | |
+| +-------+-----------------------------------------------------+ |
+| | 81    | Disarm                                              | |
+| +-------+-----------------------------------------------------+ |
+| | 82    | QAssist 3pos                                        | |
+| +-------+-----------------------------------------------------+ |
+| | 84    | AirMode                                             | |
+| +-------+-----------------------------------------------------+ |
+| | 85    | Generator                                           | |
+| +-------+-----------------------------------------------------+ |
+| | 86    | Non Auto Terrain Follow Disable                     | |
+| +-------+-----------------------------------------------------+ |
+| | 87    | Crow Select                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 88    | Soaring Enable                                      | |
+| +-------+-----------------------------------------------------+ |
+| | 89    | Landing Flare                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 90    | EKF Source Set                                      | |
+| +-------+-----------------------------------------------------+ |
+| | 91    | Airspeed Ratio Calibration                          | |
+| +-------+-----------------------------------------------------+ |
+| | 92    | FBWA Mode                                           | |
+| +-------+-----------------------------------------------------+ |
+| | 94    | VTX Power                                           | |
+| +-------+-----------------------------------------------------+ |
+| | 95    | FBWA taildragger takeoff mode                       | |
+| +-------+-----------------------------------------------------+ |
+| | 96    | Trigger re-reading of mode switch                   | |
+| +-------+-----------------------------------------------------+ |
+| | 98    | TRAINING Mode                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 100   | KillIMU1                                            | |
+| +-------+-----------------------------------------------------+ |
+| | 101   | KillIMU2                                            | |
+| +-------+-----------------------------------------------------+ |
+| | 102   | Camera Mode Toggle                                  | |
+| +-------+-----------------------------------------------------+ |
+| | 103   | EKF lane switch attempt                             | |
+| +-------+-----------------------------------------------------+ |
+| | 104   | EKF yaw reset                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 105   | GPS Disable Yaw                                     | |
+| +-------+-----------------------------------------------------+ |
+| | 106   | Disable Airspeed Use                                | |
+| +-------+-----------------------------------------------------+ |
+| | 107   | Enable FW Autotune                                  | |
+| +-------+-----------------------------------------------------+ |
+| | 108   | QRTL Mode                                           | |
+| +-------+-----------------------------------------------------+ |
+| | 110   | KillIMU3                                            | |
+| +-------+-----------------------------------------------------+ |
+| | 111   | Loweheiser starter                                  | |
+| +-------+-----------------------------------------------------+ |
+| | 112   | SwitchExternalAHRS                                  | |
+| +-------+-----------------------------------------------------+ |
+| | 113   | Retract Mount2                                      | |
+| +-------+-----------------------------------------------------+ |
+| | 150   | CRUISE Mode                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 153   | ArmDisarm (4.2 and higher)                          | |
+| +-------+-----------------------------------------------------+ |
+| | 154   | ArmDisarm with Quadplane AirMode (4.2 and higher)   | |
+| +-------+-----------------------------------------------------+ |
+| | 155   | Set roll pitch and yaw trim to current servo and RC | |
+| +-------+-----------------------------------------------------+ |
+| | 157   | Force FS Action to FBWA                             | |
+| +-------+-----------------------------------------------------+ |
+| | 158   | Optflow Calibration                                 | |
+| +-------+-----------------------------------------------------+ |
+| | 160   | Weathervane Enable                                  | |
+| +-------+-----------------------------------------------------+ |
+| | 162   | FFT Tune                                            | |
+| +-------+-----------------------------------------------------+ |
+| | 163   | Mount Yaw Lock                                      | |
+| +-------+-----------------------------------------------------+ |
+| | 164   | Pause Stream Logging                                | |
+| +-------+-----------------------------------------------------+ |
+| | 165   | Arm/Emergency Motor Stop                            | |
+| +-------+-----------------------------------------------------+ |
+| | 166   | Camera Record Video                                 | |
+| +-------+-----------------------------------------------------+ |
+| | 167   | Camera Zoom                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 168   | Camera Manual Focus                                 | |
+| +-------+-----------------------------------------------------+ |
+| | 169   | Camera Auto Focus                                   | |
+| +-------+-----------------------------------------------------+ |
+| | 170   | QSTABILIZE Mode                                     | |
+| +-------+-----------------------------------------------------+ |
+| | 171   | Calibrate Compasses                                 | |
+| +-------+-----------------------------------------------------+ |
+| | 172   | Battery MPPT Enable                                 | |
+| +-------+-----------------------------------------------------+ |
+| | 173   | Plane AUTO Mode Landing Abort                       | |
+| +-------+-----------------------------------------------------+ |
+| | 174   | Camera Image Tracking                               | |
+| +-------+-----------------------------------------------------+ |
+| | 175   | Camera Lens                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 176   | Quadplane Fwd Throttle Override enable              | |
+| +-------+-----------------------------------------------------+ |
+| | 177   | Mount LRF enable                                    | |
+| +-------+-----------------------------------------------------+ |
+| | 179   | ICEngine start / stop                               | |
+| +-------+-----------------------------------------------------+ |
+| | 180   | Test autotuned gains after tune is complete         | |
+| +-------+-----------------------------------------------------+ |
+| | 181   | QuickTune                                           | |
+| +-------+-----------------------------------------------------+ |
+| | 182   | VTOL AutoTrim                                       | |
+| +-------+-----------------------------------------------------+ |
+| | 184   | System ID Chirp                                     | |
+| +-------+-----------------------------------------------------+ |
+| | 185   | Mount Roll/Pitch Lock                               | |
+| +-------+-----------------------------------------------------+ |
+| | 186   | Mount POI Lock                                      | |
+| +-------+-----------------------------------------------------+ |
+| | 208   | Flap                                                | |
+| +-------+-----------------------------------------------------+ |
+| | 209   | VTOL Forward Throttle                               | |
+| +-------+-----------------------------------------------------+ |
+| | 210   | Airbrakes                                           | |
+| +-------+-----------------------------------------------------+ |
+| | 212   | Mount1 Roll                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 213   | Mount1 Pitch                                        | |
+| +-------+-----------------------------------------------------+ |
+| | 214   | Mount1 Yaw                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 215   | Mount2 Roll                                         | |
+| +-------+-----------------------------------------------------+ |
+| | 216   | Mount2 Pitch                                        | |
+| +-------+-----------------------------------------------------+ |
+| | 217   | Mount2 Yaw                                          | |
+| +-------+-----------------------------------------------------+ |
+| | 218   | Loweheiser throttle                                 | |
+| +-------+-----------------------------------------------------+ |
+| | 200   | Servos Auto Trim                                    | |
+| +-------+-----------------------------------------------------+ |
+| | 250   | Tuning Set Select                                   | |
 | +-------+-----------------------------------------------------+ |
 | | 251   | RTL Autoland Commit                                 | |
 | +-------+-----------------------------------------------------+ |
