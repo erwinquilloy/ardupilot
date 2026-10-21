@@ -1411,12 +1411,8 @@ void Plane::servos_auto_trim(void)
     // Fork: AUTO_TRIM mode is also whitelisted -- it sets auto_trim.run on
     // _enter() so the outer arm gate fires, and we want the trim loop to
     // run while the pilot flies in that mode.
-    // Fork: COURSE_HOLD is whitelisted too. It levels like FBWA (manual
-    // throttle, stick pitch, locked heading), so SERVO_AUTO_TRIM=2 keeps
-    // trimming there, the way iNav's continuous autotrim does.
     if ((!control_mode->does_auto_throttle() || control_mode == &mode_takeoff || control_mode == &mode_auto) &&
         control_mode != &mode_fbwa &&
-        control_mode != &mode_course_hold &&
         control_mode != &mode_auto_trim) {
         return;
     }
