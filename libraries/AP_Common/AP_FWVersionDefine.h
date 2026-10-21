@@ -31,11 +31,12 @@
 // autotest scripts) keep working.
 //
 // Resulting strings (paired with git hash, added below):
-//   master_custom_4.7.1:        "ArduPlane V4.7.1 Custom v2.1 (abc1234)"
-//   master_custom_4.7.1_light:  "ArduPlane V4.7.1 Custom v2.1 Light (abc1234)"
+//   2 MB boards:  "ArduPlane V4.7.2 Stratos v2.1 (abc1234)"
+//   1 MB boards:  "ArduPlane V4.7.2 Stratos v2.1 Light (abc1234)"
+// The brand was "ArduCustom" up to v1.1 and "Custom" in v2.0.
 //
 // Sets ORIGINAL_FWSTR to the bare THISFIRMWARE so anything that
-// specifically wants the upstream "ArduPlane V4.7.1" can still get it.
+// specifically wants the upstream "ArduPlane V4.7.2" can still get it.
 #define FORK_VERSION "v2.1"
 
 /*
@@ -48,9 +49,9 @@
 #if AP_CUSTOM_LIGHT
 // Light variant: extra " Light" suffix so users can tell the light
 // .apj apart from the full one in mavlink AUTOPILOT_VERSION + filename.
-#define ACTIVE_FWSTR THISFIRMWARE " Custom " FORK_VERSION " Light"
+#define ACTIVE_FWSTR THISFIRMWARE " Stratos " FORK_VERSION " Light"
 #else
-#define ACTIVE_FWSTR THISFIRMWARE " Custom " FORK_VERSION
+#define ACTIVE_FWSTR THISFIRMWARE " Stratos " FORK_VERSION
 #endif
 #define ORIGINAL_FWSTR THISFIRMWARE
 #endif

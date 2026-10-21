@@ -78,11 +78,11 @@ def build(out, branch):
     fork = define('libraries/AP_Common/AP_FWVersionDefine.h', 'FORK_VERSION')
     upstream = define('ArduPlane/version.h', 'THISFIRMWARE').replace('ArduPlane V', '')
     commit = git('rev-parse', '--short=7', 'HEAD')
-    banner = ('<b>ArduPlane Custom %s</b> on ArduPlane %s · README at commit <code>%s</code> · '
+    banner = ('<b>ArduPlane Stratos %s</b> on ArduPlane %s · README at commit <code>%s</code> · '
               '<a href="%s/blob/%s/README_CUSTOM.md" target="_blank" rel="noopener">source on GitHub</a>'
               % (fork, upstream, commit, GITHUB, branch))
 
-    page = (TEMPLATE.replace('{{TITLE}}', 'ArduPlane Custom %s README' % fork)
+    page = (TEMPLATE.replace('{{TITLE}}', 'ArduPlane Stratos %s README' % fork)
             .replace('{{BANNER}}', banner).replace('{{TOC}}', toc).replace('{{BODY}}', body))
     with open(out, 'w', encoding='utf-8', newline='\n') as f:
         f.write(page)
