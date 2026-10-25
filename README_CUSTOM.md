@@ -2691,6 +2691,11 @@ drives the gimbal.
 On boot, `CDXHT: head tracker stream up` appears in the messages once the
 first valid frame arrives, so you can confirm the wiring.
 
+**Needs Walksnail VTX firmware 18.21.14 or later.** Earlier VTX firmware sent
+pitch and yaw mirrored on the gimbal port (fixed in 18.21.14), so with it the
+gimbal follows the head backwards on those two axes while roll is right. Update
+the VTX rather than reversing anything on the FC.
+
 **Differences from the MSP source:**
 - **Angles are 1:1.** The gimbal port carries real degrees, applied directly and clamped
   at the `MNT1_*` limits. (MSP instead stretches full head deflection across the

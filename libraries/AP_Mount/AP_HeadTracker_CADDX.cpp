@@ -62,14 +62,13 @@ void AP_HeadTracker_CADDX::handle_frame()
     const uint16_t yaw_raw   = (_buf[6] >> 4) | ((uint16_t)_buf[7] << 4);
 
     // 0..4096 spans a full turn; wrap_180 folds the upper half to negative angles.
-    // Pitch and yaw come out mirrored relative to what AP_Mount_CADDX sends: with a
-    // GM3 v2 on the autopilot both axes followed the head backwards (bench test
-    // 2026-09-25, Walksnail Ascent), while roll was correct. Negate them so the
-    // frame the autopilot re-sends matches what the VTX would have sent.
+    // Taken as sent: Walksnail VTX firmware before 18.21.14 mirrored pitch and yaw
+    // on this port (fixed there, "yaw and pitch axes were reversed"), so negating
+    // them here would reverse both axes on current firmware.
     const float scale = 360.0f / AXIS_MAX;
     const float roll_deg  = wrap_180(roll_raw * scale);
-    const float pitch_deg = -wrap_180(pitch_raw * scale);
-    const float yaw_deg   = -wrap_180(yaw_raw * scale);
+    const float pitch_deg = wrap_180(pitch_raw * scale);
+    const float yaw_deg   = wrap_180(yaw_raw * scale);
 
     if (!_announced) {
         _announced = true;
