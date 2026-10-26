@@ -48,16 +48,22 @@ def fix_dup(anchor):
     return re.sub(r'_(\d+)$', lambda m: '-' + m.group(1), anchor)
 
 
-def inline_image(m):
-    alt, path = m.group(1), m.group(2)
+def data_uri(path):
     mime = 'image/png' if path.lower().endswith('.png') else 'image/jpeg'
     data = base64.b64encode(open(os.path.join(REPO, path), 'rb').read()).decode()
-    return '![%s](data:%s;base64,%s)' % (alt, mime, data)
+    return 'data:%s;base64,%s' % (mime, data)
+
+
+def inline_image(m):
+    return '![%s](%s)' % (m.group(1), data_uri(m.group(2)))
 
 
 def build(out, branch):
     src = open(os.path.join(REPO, 'README_CUSTOM.md'), encoding='utf-8').read()
     src = re.sub(r'!\[([^\]]*)\]\((docs/images/[^)]+)\)', inline_image, src)
+    # raw <img> tags (the centred logo); class="logo" drops the photo border
+    src = re.sub(r'<img src="(docs/images/[^"]+)"',
+                 lambda m: '<img class="logo" src="%s"' % data_uri(m.group(1)), src)
     src = re.sub(r'\]\(((?:docs|libraries|Tools)/[^)#]*)\)',
                  lambda m: '](%s/blob/%s/%s)' % (GITHUB, branch, m.group(1)), src)
 
@@ -153,6 +159,7 @@ table{border-collapse:collapse;font-size:14.5px;font-variant-numeric:tabular-num
 th,td{border:1px solid var(--line);padding:6px 10px;text-align:left;vertical-align:top}
 th{background:var(--code);font-weight:600}
 img{max-width:100%;height:auto;border-radius:6px;border:1px solid var(--line)}
+img.logo{border:0;border-radius:0}
 hr{border:0;border-top:1px solid var(--line);margin:2em 0}
 .top{position:fixed;right:16px;bottom:calc(env(safe-area-inset-bottom,0px) + 16px);background:var(--panel);
   border:1px solid var(--line);border-radius:999px;padding:8px 14px;font:600 13px var(--f-body);color:var(--ink);
