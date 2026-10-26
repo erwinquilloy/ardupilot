@@ -1495,6 +1495,9 @@ tailwind approach (multiplier `1 + LAND_WIND_BIAS`). The lowest-scoring candidat
 `LAND_WIND_BIAS = 1` lets a direct-tailwind 500 m approach lose to a
 direct-headwind 1000 m approach; `0.3` is a gentler tilt that still
 breaks ties in favour of upwind landings.
+Values above `1` are treated as `1` (from v2.2; before that, a value
+above `1` could make it pick a tailwind landing). If two candidates
+score the same, the nearer one wins.
 
 ![LAND_WIND_BIAS example: the into-wind landing #12 is picked over the nearer crosswind #24](docs/images/land-wind-bias-example.png)
 
