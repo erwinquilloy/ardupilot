@@ -23,7 +23,10 @@
 
 bool Plane::try_upwind_jump_to_landing_sequence(const Location &from_loc)
 {
-    const float bias = g2.rtl_land_wind_bias.get();
+    // Clamp to the documented 0..1 range.  Above 1 a headwind
+    // candidate's score goes negative, which buys nothing over 1 (a
+    // full headwind already scores 0 there).
+    const float bias = MIN(g2.rtl_land_wind_bias.get(), 1.0f);
     if (!is_positive(bias)) {
         // Disabled: upstream behaviour, including its "Landing sequence
         // start" / "Unable to start landing sequence" GCS messages.
@@ -55,8 +58,11 @@ bool Plane::try_upwind_jump_to_landing_sequence(const Location &from_loc)
     const float dist_limit = g2.rtl_land_wind_bias_dist.get();
     const bool have_dist_cap = is_positive(dist_limit);
 
+    // best_idx == 0 means nothing scored yet.  Don't use a negative
+    // best_score as that marker: a score can legitimately be <= 0.
     uint16_t best_idx = 0;
-    float best_score = -1.0f;
+    float best_score = 0.0f;
+    float best_distance = 0.0f;
     uint16_t nearest_idx = 0;
     float min_distance = -1.0f;
 
@@ -136,8 +142,12 @@ bool Plane::try_upwind_jump_to_landing_sequence(const Location &from_loc)
             // effective distance of a strict tailwind candidate.
             score = distance * (1.0f - bias * alignment);
         }
-        if (best_score < 0 || score < best_score) {
+        // Equal scores (e.g. several full-headwind candidates at
+        // bias 1, all scoring 0) go to the nearer one.
+        if (best_idx == 0 || score < best_score ||
+            (is_equal(score, best_score) && distance < best_distance)) {
             best_score = score;
+            best_distance = distance;
             best_idx = i;
         }
     }
