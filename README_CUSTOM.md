@@ -3253,7 +3253,7 @@ Measured at **v2.1**:
 |---|---|---:|---:|---|
 | MatekF765-Wing | F7 / 2 MB | **550.1 KB** | −6.8 | Ships — Matek F765-WING (most flash headroom in the fleet) |
 | MatekH7A3-Wing | H7 / 2 MB | **489.3 KB** | −7.4 | Ships — Matek H7A3-WING (bidirectional DShot); most room of any H7 |
-| AET-H743-Basic | H7 / 2 MB | **150.3 KB** | new | **New in v2.1** (added after release) — AeroEggTech AET-H743-Basic (see below) |
+| AET-H743-Basic | H7 / 2 MB | **145.7 KB** | new | **New in v2.1** (added after release) — AeroEggTech AET-H743-Basic, hardware V1.x and V2.0 (see below) |
 | KakuteH7-Wing | H7 / 2 MB | **140.9 KB** | −5.4 | Ships — Holybro Kakute H743 Wing |
 | TBS_LUCID_H7_WING_AIO | H7 / 2 MB | **130.6 KB** | −5.8 | Ships — TBS Lucid H7 Wing AIO |
 | TBS_LUCID_H7_OEM | H7 / 2 MB | **125.5 KB** | −5.4 | Ships — TBS Lucid H7 OEM |
@@ -3316,7 +3316,12 @@ feature add will push against.
 
 > **`AET-H743-Basic`** (STM32H743, 2 MB, board ID 2024, by AeroEggTech)
 > joined in v2.1 (added to the `full-v2.1` release after it shipped). It
-> ships on upstream's own board definition, unchanged. Serial ports already
+> covers **both hardware versions**: V1.x (dual ICM42688P) and V2.0
+> (BMI088 + BMI270, printed "H743-V2.0" on the board). Upstream's board
+> definition only knows V1.x and finds no IMU on a V2.0 board ("Config
+> Error: INS: unable to initialise driver"), so the fork adds the V2.0 IMU
+> and baro lines taken from AeroEggTech's own V2.0 firmware. Everything else,
+> including board ID 2024, is the same on both. Serial ports already
 > follow `SERIALn` = chip UART `n` with no `EMPTY` gap (the board has no
 > UART5, so `SERIAL5` is the second USB port, SLCAN): `SERIAL1` MAVLink2,
 > `SERIAL2` GPS, `SERIAL3` MAVLink2, `SERIAL4` GPS2, `SERIAL6` RC input
@@ -3324,7 +3329,7 @@ feature add will push against.
 > `SERIAL8` free. Outputs 1–10 support DShot; 11–12 are PWM only (TIM15 has
 > no DMA, despite the board README) and 13 is the LED strip. No bidirectional
 > DShot is shipped (upstream has no `-bdshot` target). Analog OSD (AT7456E), dual
-> ICM42688P, CAN, two battery monitors, no built-in compass. Coming from
+> IMUs, CAN, two battery monitors, no built-in compass. Coming from
 > INAV or Betaflight, flash `arduplane_with_bl.hex` over DFU first. Not
 > flown on Stratos yet. See
 > [the board README](libraries/AP_HAL_ChibiOS/hwdef/AET-H743-Basic/README.md).
