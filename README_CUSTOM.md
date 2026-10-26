@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="docs/images/stratos-logo-wide.png" alt="ArduPlane Stratos, powered by ArduPilot" width="720">
+</p>
+
 # ArduPlane Stratos
 
 *Formerly ArduPlane Custom. Same firmware and release tracks; v2.1 is the first release under the new name.*
