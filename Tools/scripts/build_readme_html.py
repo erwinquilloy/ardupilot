@@ -61,9 +61,11 @@ def inline_image(m):
 def build(out, branch):
     src = open(os.path.join(REPO, 'README_CUSTOM.md'), encoding='utf-8').read()
     src = re.sub(r'!\[([^\]]*)\]\((docs/images/[^)]+)\)', inline_image, src)
-    # raw <img> tags (the centred logo); class="logo" drops the photo border
+    # raw <img>/<source> tags (the centred logo); class="logo" drops the photo border
     src = re.sub(r'<img src="(docs/images/[^"]+)"',
                  lambda m: '<img class="logo" src="%s"' % data_uri(m.group(1)), src)
+    src = re.sub(r'srcset="(docs/images/[^"]+)"',
+                 lambda m: 'srcset="%s"' % data_uri(m.group(1)), src)
     src = re.sub(r'\]\(((?:docs|libraries|Tools)/[^)#]*)\)',
                  lambda m: '](%s/blob/%s/%s)' % (GITHUB, branch, m.group(1)), src)
 
