@@ -1,5 +1,8 @@
 <p align="center">
-  <img src="docs/images/stratos-logo-wide.png" alt="ArduPlane Stratos, powered by ArduPilot" width="720">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="docs/images/stratos-logo-wide.png">
+    <img src="docs/images/stratos-logo-wide-light.png" alt="ArduPlane Stratos, powered by ArduPilot" width="720">
+  </picture>
 </p>
 
 # ArduPlane Stratos
