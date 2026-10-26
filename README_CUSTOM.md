@@ -2351,7 +2351,7 @@ pads showing up on `SERIAL6`).
 Affected boards: `MatekF405-TE(-bdshot)`, `MatekF405-STD`, `omnibusf4pro`,
 `MatekH743(-bdshot)` since v0.3-beta, and **`MatekF765-Wing` and
 `KakuteH7-Wing` since v2.0**. Every board in both release fleets now follows
-the rule; `XFLY-H743-bdshot`, `TBS_LUCID_H7_OEM`, `MatekH7A3-Wing` and `TBS_LUCID_H7_WING_AIO` joined already numbered
+the rule; `XFLY-H743-bdshot`, `TBS_LUCID_H7_OEM`, `MatekH7A3-Wing`, `TBS_LUCID_H7_WING_AIO` and `AET-H743-Basic` joined already numbered
 this way. Where a UART is missing, its number is an `EMPTY` placeholder so
 the rest stay aligned: `SERIAL2`/`SERIAL5` on `omnibusf4pro`, `SERIAL4` on
 `KakuteH7-Wing` (no UART4), `SERIAL5` on `MatekH743-bdshot` and
@@ -3245,7 +3245,7 @@ full build has no suffix.
 Since v1.1 the two tracks don't overlap — a given board appears on exactly one
 of them, so there is no choice to get wrong.
 
-### Full track — 8 boards (F7 / H7, 2 MB)
+### Full track — 9 boards (F7 / H7, 2 MB)
 
 Measured at **v2.1**:
 
@@ -3253,6 +3253,7 @@ Measured at **v2.1**:
 |---|---|---:|---:|---|
 | MatekF765-Wing | F7 / 2 MB | **550.1 KB** | −6.8 | Ships — Matek F765-WING (most flash headroom in the fleet) |
 | MatekH7A3-Wing | H7 / 2 MB | **489.3 KB** | −7.4 | Ships — Matek H7A3-WING (bidirectional DShot); most room of any H7 |
+| AET-H743-Basic | H7 / 2 MB | **150.3 KB** | new | **New in v2.1** (added after release) — AeroEggTech AET-H743-Basic (see below) |
 | KakuteH7-Wing | H7 / 2 MB | **140.9 KB** | −5.4 | Ships — Holybro Kakute H743 Wing |
 | TBS_LUCID_H7_WING_AIO | H7 / 2 MB | **130.6 KB** | −5.8 | Ships — TBS Lucid H7 Wing AIO |
 | TBS_LUCID_H7_OEM | H7 / 2 MB | **125.5 KB** | −5.4 | Ships — TBS Lucid H7 OEM |
@@ -3312,6 +3313,20 @@ feature add will push against.
 > 1–7 plus 13 (LED strip by default). Coming from INAV or Betaflight, flash
 > `arduplane_with_bl.hex` over DFU first. See
 > [the board README](libraries/AP_HAL_ChibiOS/hwdef/TBS_LUCID_H7_WING_AIO/README.md).
+
+> **`AET-H743-Basic`** (STM32H743, 2 MB, board ID 2024, by AeroEggTech)
+> joined in v2.1 (added to the `full-v2.1` release after it shipped). It
+> ships on upstream's own board definition, unchanged. Serial ports already
+> follow `SERIALn` = chip UART `n` with no `EMPTY` gap (the board has no
+> UART5, so `SERIAL5` is the second USB port, SLCAN): `SERIAL1` MAVLink2,
+> `SERIAL2` GPS, `SERIAL3` MAVLink2, `SERIAL4` GPS2, `SERIAL6` RC input
+> (SBUS inverted on RX6), `SERIAL7` MAVLink2 (built-in Bluetooth),
+> `SERIAL8` free. 13 outputs, all DShot capable; no bidirectional DShot
+> (upstream has no `-bdshot` target). Analog OSD (AT7456E), dual
+> ICM42688P, CAN, two battery monitors, no built-in compass. Coming from
+> INAV or Betaflight, flash `arduplane_with_bl.hex` over DFU first. Not
+> flown on Stratos yet. See
+> [the board README](libraries/AP_HAL_ChibiOS/hwdef/AET-H743-Basic/README.md).
 
 ### Light track — 15 boards (all 1 MB F4)
 
