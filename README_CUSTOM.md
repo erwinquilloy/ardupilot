@@ -3321,8 +3321,9 @@ feature add will push against.
 > UART5, so `SERIAL5` is the second USB port, SLCAN): `SERIAL1` MAVLink2,
 > `SERIAL2` GPS, `SERIAL3` MAVLink2, `SERIAL4` GPS2, `SERIAL6` RC input
 > (SBUS inverted on RX6), `SERIAL7` MAVLink2 (built-in Bluetooth),
-> `SERIAL8` free. 13 outputs, all DShot capable; no bidirectional DShot
-> (upstream has no `-bdshot` target). Analog OSD (AT7456E), dual
+> `SERIAL8` free. Outputs 1–10 support DShot; 11–12 are PWM only (TIM15 has
+> no DMA, despite the board README) and 13 is the LED strip. No bidirectional
+> DShot is shipped (upstream has no `-bdshot` target). Analog OSD (AT7456E), dual
 > ICM42688P, CAN, two battery monitors, no built-in compass. Coming from
 > INAV or Betaflight, flash `arduplane_with_bl.hex` over DFU first. Not
 > flown on Stratos yet. See
