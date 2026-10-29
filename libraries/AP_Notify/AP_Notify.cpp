@@ -208,6 +208,57 @@ const AP_Param::GroupInfo AP_Notify::var_info[] = {
     // @RebootRequired: True
     AP_GROUPINFO("LED_LEN", 9, AP_Notify, _led_len, NOTIFY_LED_LEN_DEFAULT),
 
+#if AP_NOTIFY_LED_SEGMENTS_ENABLED
+    // Fork-only: INAV-style LED segments.  Indexes start at 40 to stay
+    // clear of upstream additions to this table.
+
+    // @Param: LS_ENABLE
+    // @DisplayName: LED segments enable
+    // @Description: 1 draws the NeoPixel strip as up to 8 segments set by NTF_LS1_* to NTF_LS8_*, each with its own function and colour. 0 keeps the stock behaviour where the whole strip shows one status colour. Needs NTF_LED_TYPES NeoPixel and an output with SERVOn_FUNCTION 120. LEDs not covered by any segment stay off.
+    // @Values: 0:Disabled,1:Enabled
+    // @User: Standard
+    AP_GROUPINFO("LS_ENABLE", 48, AP_Notify, _led_seg_enable, 0),
+
+    // @Param: LS_MODECLR
+    // @DisplayName: LED segment flight-mode colours
+    // @Description: Colours used by segments with FUNC Flight mode. Six 4-bit palette numbers (same list as NTF_LSn_COLOR) packed into one value: bits 0-3 Manual/Stabilize/Training/Acro, bits 4-7 FBWA/FBWB/Cruise/Autotune/Course Hold/Auto Trim, bits 8-11 Auto/Takeoff/Guided/Avoid ADSB/Thermal, bits 12-15 RTL/QRTL/QLand/Loiter to QLand, bits 16-19 Loiter/Circle, bits 20-23 QStabilize/QHover/QLoiter/QAutotune/QAcro. Value = sum of colour * 16^group. Default: Manual yellow, assisted green, auto blue, return/land orange, loiter cyan, VTOL violet.
+    // @Range: 0 16777215
+    // @User: Advanced
+    AP_GROUPINFO("LS_MODECLR", 49, AP_Notify, _led_seg_mode_colours, 4 | (6<<4) | (10<<8) | (3<<12) | (8<<16) | (11<<20)),
+
+    // @Group: LS1_
+    // @Path: LEDSegments.cpp
+    AP_SUBGROUPINFO(_led_seg[0], "LS1_", 40, AP_Notify, NotifyLEDSegment),
+
+    // @Group: LS2_
+    // @Path: LEDSegments.cpp
+    AP_SUBGROUPINFO(_led_seg[1], "LS2_", 41, AP_Notify, NotifyLEDSegment),
+
+    // @Group: LS3_
+    // @Path: LEDSegments.cpp
+    AP_SUBGROUPINFO(_led_seg[2], "LS3_", 42, AP_Notify, NotifyLEDSegment),
+
+    // @Group: LS4_
+    // @Path: LEDSegments.cpp
+    AP_SUBGROUPINFO(_led_seg[3], "LS4_", 43, AP_Notify, NotifyLEDSegment),
+
+    // @Group: LS5_
+    // @Path: LEDSegments.cpp
+    AP_SUBGROUPINFO(_led_seg[4], "LS5_", 44, AP_Notify, NotifyLEDSegment),
+
+    // @Group: LS6_
+    // @Path: LEDSegments.cpp
+    AP_SUBGROUPINFO(_led_seg[5], "LS6_", 45, AP_Notify, NotifyLEDSegment),
+
+    // @Group: LS7_
+    // @Path: LEDSegments.cpp
+    AP_SUBGROUPINFO(_led_seg[6], "LS7_", 46, AP_Notify, NotifyLEDSegment),
+
+    // @Group: LS8_
+    // @Path: LEDSegments.cpp
+    AP_SUBGROUPINFO(_led_seg[7], "LS8_", 47, AP_Notify, NotifyLEDSegment),
+#endif
+
     AP_GROUPEND
 };
 
