@@ -1129,7 +1129,14 @@ void RCOutput::set_group_mode(pwm_group &group)
         // configure timer driver for DMAR at requested rate
         const uint8_t pad_end_bits = 8;
         const uint8_t pad_start_bits = 1;
-        const uint8_t channels_per_group = 4;
+        // fork: a NeoPixel strip alone in its timer group only needs its
+        // own CCR in the DMA buffer, a quarter of the 4-channel size
+        // (48 LEDs: 18.6 KB -> 4.6 KB of DMA-safe RAM)
+        group.serial_led_single = 0;
+        if (group.current_mode != MODE_PROFILED && __builtin_popcount(group.serial_led_chan_mask) == 1) {
+            group.serial_led_single = __builtin_ctz(group.serial_led_chan_mask) + 1;
+        }
+        const uint8_t channels_per_group = group.serial_led_single ? 1 : 4;
         const uint16_t bit_length = bits_per_pixel * group.serial_nleds + pad_start_bits + pad_end_bits;
         const uint16_t buffer_length = bit_length * sizeof(uint32_t) * channels_per_group;
         // calculate min time between pulses taking into account the DMAR parallelism
@@ -1852,6 +1859,19 @@ void RCOutput::send_pulses_DMAR(pwm_group &group, uint32_t buffer_length)
 
     // setup for burst strided transfers into the timers 4 CCR registers
     const uint8_t ccr_ofs = offsetof(stm32_tim_t, CCR)/4;
+#if HAL_SERIALLED_ENABLED
+    if (group.serial_led_single && is_led_protocol(group.current_mode) && !group.in_serial_dma) {
+        // fork: lone NeoPixel channel, one beat per update into its own
+        // CCR; hold the group's other channels low
+        const uint8_t idx = group.serial_led_single - 1;
+        for (uint8_t k = 0; k < 4; k++) {
+            if (k != idx) {
+                group.pwm_drv->tim->CCR[k] = 0;
+            }
+        }
+        group.pwm_drv->tim->DCR = STM32_TIM_DCR_DBA(ccr_ofs + idx) | STM32_TIM_DCR_DBL(0);
+    } else
+#endif
     // burst address (BA) of the CCR register, burst length (BL) of 4 (0b11)
     group.pwm_drv->tim->DCR = STM32_TIM_DCR_DBA(ccr_ofs) | STM32_TIM_DCR_DBL(3);
     group.dshot_state = DshotState::SEND_START;
@@ -2570,6 +2590,7 @@ bool RCOutput::set_serial_led_num_LEDs(const uint16_t chan, uint8_t num_leds, ou
         case MODE_NEOPIXELRGB: {
             grp->serial_nleds = MAX(num_leds, grp->serial_nleds);
             grp->led_mode = mode;
+            grp->serial_led_chan_mask |= 1U << i;
             return true;
         }
         case MODE_PROFILED: {
@@ -2601,6 +2622,10 @@ void RCOutput::fill_DMA_buffer_serial_led(pwm_group& group)
 {
     memset(group.dma_buffer, 0, group.dma_buffer_len);
     for (uint8_t j = 0; j < 4; j++) {
+        if (group.serial_led_single && j != group.serial_led_single - 1) {
+            // fork: the buffer only holds the lone NeoPixel channel
+            continue;
+        }
         if (group.serial_led_data[j] == nullptr) {
             // something very bad has happended
             continue;
@@ -2646,7 +2671,11 @@ void RCOutput::_set_neopixel_rgb_data(pwm_group *grp, uint8_t idx, uint8_t led, 
 {
     const uint8_t pad_start_bits = 1;
     const uint8_t neopixel_bit_length = 24;
-    const uint8_t stride = 4;
+    // fork: a lone NeoPixel channel is packed without interleaving
+    const uint8_t stride = grp->serial_led_single ? 1 : 4;
+    if (grp->serial_led_single) {
+        idx = 0;
+    }
     dmar_uint_t *buf = grp->dma_buffer + (led * neopixel_bit_length + pad_start_bits) * stride + idx;
     uint32_t bits = (green<<16) | (red<<8) | blue;
     const uint32_t BIT_0 = NEOP_BIT_0_TICKS * grp->bit_width_mul;
