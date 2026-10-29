@@ -49,7 +49,10 @@ protected:
     virtual void _set_rgb(uint8_t red, uint8_t green, uint8_t blue);
 
     void update_override();
-    
+
+    // fork: protected so SerialLED's LED segments honour NTF_LED_BRIGHT and the USB dimming
+    uint8_t get_brightness(void) const;
+
     // meta-data common to all hw devices
     uint8_t _red_curr, _green_curr, _blue_curr;  // current colours displayed by the led
     uint8_t _led_off;
@@ -68,8 +71,6 @@ private:
     uint32_t get_colour_sequence() const;
     uint32_t get_colour_sequence_obc() const;
     uint32_t get_colour_sequence_traffic_light() const;
-
-    uint8_t get_brightness(void) const;
 
 #define DEFINE_COLOUR_SEQUENCE(S0, S1, S2, S3, S4, S5, S6, S7, S8, S9)  \
     ((S0) << (0*3) | (S1) << (1*3) | (S2) << (2*3) | (S3) << (3*3) | (S4) << (4*3) | (S5) << (5*3) | (S6) << (6*3) | (S7) << (7*3) | (S8) << (8*3) | (S9) << (9*3))

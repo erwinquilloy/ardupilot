@@ -20,6 +20,7 @@
 #include <AP_IOMCU/AP_IOMCU.h>
 
 #include "NotifyDevice.h"
+#include "LEDSegments.h"
 
 // Device parameters values
 #define RGB_LED_OFF     0
@@ -38,6 +39,7 @@
 class AP_Notify
 {
     friend class RGBLed;            // RGBLed needs access to notify parameters
+    friend class SerialLED;         // fork: SerialLED draws the NTF_LS* segments
     friend class Display;           // Display needs access to notify parameters
 public:
     AP_Notify();
@@ -264,6 +266,11 @@ private:
     AP_Int8 _buzzer_level;
     AP_Int8 _buzzer_volume;
     AP_Int8 _led_len;
+#if AP_NOTIFY_LED_SEGMENTS_ENABLED
+    AP_Int8 _led_seg_enable;
+    AP_Int32 _led_seg_mode_colours;
+    NotifyLEDSegment _led_seg[AP_NOTIFY_LED_SEGMENTS];
+#endif
 
     char _send_text[NOTIFY_TEXT_BUFFER_SIZE];
     uint32_t _send_text_updated_millis; // last time text changed

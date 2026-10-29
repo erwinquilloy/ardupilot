@@ -36,12 +36,24 @@ public:
 
     virtual uint16_t init_ports() { return 0; };
 
+#if AP_NOTIFY_LED_SEGMENTS_ENABLED
+    void update() override;
+#endif
+
 protected:
 
     bool hw_set_rgb(uint8_t r, uint8_t g, uint8_t b) override;
 
 private:
     uint16_t enable_mask;
+
+#if AP_NOTIFY_LED_SEGMENTS_ENABLED
+    // fork: NTF_LS* segment drawing
+    bool segments_active() const;
+    void draw_segments();
+    bool _segments_were_active;
+    uint8_t _segment_tick;
+#endif
 
     HAL_Semaphore _sem;
 };
