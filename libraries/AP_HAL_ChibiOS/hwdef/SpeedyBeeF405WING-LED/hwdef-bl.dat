@@ -1,0 +1,4 @@
+# Bootloader for the custom SpeedyBee F405 WING buzzer + LED-segments
+# variant. Identical to the stock SpeedyBeeF405WING bootloader (same board
+# ID 1106, flash layout and pins), so we just reuse it.
+include ../SpeedyBeeF405WING/hwdef-bl.dat
