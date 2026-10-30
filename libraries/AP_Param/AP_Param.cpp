@@ -2678,8 +2678,32 @@ void AP_Param::send_parameter(const char *name, enum ap_var_type var_type, uint8
  */
 uint16_t AP_Param::count_parameters(void)
 {
-    // if we haven't cached the parameter count yet...
+    // fork: the main loop must never wait for another thread's count.
+    // The io thread counts every parameter for a GCS param download, which
+    // on a busy F4 with a large param set can take over 500ms; a main-loop
+    // PARAM_VALUE send then blocked on the lock and tripped
+    // main_loop_stuck. If the lock is busy, hand back the last known count:
+    // it only fills the informational param_count field and is right again
+    // on the next send.
+    if (hal.scheduler->in_main_thread() && _parameter_count != 0) {
+        if (!_count_sem.take_nonblocking()) {
+            return _parameter_count;
+        }
+        const uint16_t count = count_parameters_locked();
+        _count_sem.give();
+        return count;
+    }
     WITH_SEMAPHORE(_count_sem);
+    return count_parameters_locked();
+}
+
+/*
+  count all scalar parameters, refreshing the cached count if it is stale.
+  Caller must hold _count_sem
+ */
+uint16_t AP_Param::count_parameters_locked(void)
+{
+    // if we haven't cached the parameter count yet...
     if (_parameter_count != 0 &&
         _count_marker == _count_marker_done) {
         return _parameter_count;
