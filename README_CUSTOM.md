@@ -3478,13 +3478,27 @@ to stock `SpeedyBeeF405WING` (20.4 KB vs 20.7 KB free at v2.1 —
 a 0.3 KB difference). Shipped as an extra
 asset on the light release alongside the other boards above.
 
-From v2.2 the SpeedyBee F405 Wing ships in three versions: stock
-`SpeedyBeeF405WING`, `SpeedyBeeF405WING-Buzz`, and **`SpeedyBeeF405WING-LED`**
-= the `-Buzz` board plus
-[addressable LED strip segments](#addressable-led-strip-segments-v22) on the
-LED pad (output 12). It costs ~2.5 KB of flash over `-Buzz`, which is why the
-other two leave it out. The name drops `Buzz` because board names are capped at
-23 characters; the S11 tone buzzer is included.
+From v2.2 the SpeedyBee F405 Wing ships in three versions. All three flash
+over the stock bootloader (board ID 1106) and keep your parameters, so you can
+switch between them as a normal firmware update.
+
+| Firmware | Tone buzzer on S11 | LED strip on output 12 | Pick it if… |
+|---|---|---|---|
+| `SpeedyBeeF405WING` | no, S11 is a servo output | stock single status colour | you need all 12 outputs, and run no strip or a short one |
+| `SpeedyBeeF405WING-Buzz` | yes, full pitched tunes on a passive piezo | stock single status colour | you want the tone buzzer, and run no strip or a short one |
+| **`SpeedyBeeF405WING-LED`** | yes, same as `-Buzz` | [segments](#addressable-led-strip-segments-v22) | you run an LED strip, above all a long one |
+
+`-LED` is `-Buzz` plus the LED segments, so the piezo on S11 plays the same
+tunes; the buzzer (TIM12) and the strip (TIM1) do not share a timer. The name
+drops `Buzz` because board names are capped at 23 characters.
+
+The strip is what sets the choice, not the buzzer. The stock firmwares drive a
+strip with the 4-channel DMA buffer, about 400 bytes of RAM per LED, while
+`-LED` needs about 108: a 48-LED strip takes ~18.7 KB on `SpeedyBeeF405WING`
+or `-Buzz` and ~5.2 KB on `-LED`. On an F405 that difference can decide
+whether EKF3 still gets its memory. The buzzer itself costs no RAM. `-LED`
+costs ~2.5 KB more flash than `-Buzz`, which is why the other two leave the
+segments out.
 
 A sibling variant, **`KakuteF4-Wing-Buzz`**, applies the same idea to the
 Holybro **Kakute F4 Wing** — which has *no* buzzer at all on the stock
