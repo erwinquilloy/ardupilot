@@ -1,0 +1,17 @@
+# hw definition for a custom SpeedyBee F405 WING variant with the S11 tone
+# buzzer (SpeedyBeeF405WING-Buzz) plus INAV-style addressable LED segments
+# (NTF_LS_*) on the WS2812 LED pad (output 12).
+#
+# Identical to SpeedyBeeF405WING-Buzz except the light-build defaults for
+# the LED-strip code are turned on: NTF_LS* segments, and the 1-channel
+# DMA buffer that a strip alone in its timer needs (TIM1 drives only
+# output 12 here, so 26 LEDs take ~2.8 KB of RAM instead of ~10.2 KB).
+# Costs ~2.5 KB of flash, which is why the plain and Buzz variants leave
+# it out. Board ID is inherited (1106), so it flashes over the stock
+# SpeedyBee bootloader like a normal firmware update.
+# (The name drops "Buzz" because board names are capped at 23 characters.)
+
+include ../SpeedyBeeF405WING-Buzz/hwdef.dat
+
+define AP_NOTIFY_LED_SEGMENTS_ENABLED 1
+define HAL_SERIALLED_1CH_DMA_ENABLED 1

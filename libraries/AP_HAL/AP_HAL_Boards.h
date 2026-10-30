@@ -167,6 +167,13 @@
 #define AP_CUSTOM_LIGHT (HAL_PROGRAM_SIZE_LIMIT_KB <= 1024)
 #endif
 
+// Fork-only: a NeoPixel strip alone in its timer group gets a 1-channel
+// DMA buffer instead of the 4-channel one. Full boards get it; a light
+// board opts in from its hwdef.
+#ifndef HAL_SERIALLED_1CH_DMA_ENABLED
+#define HAL_SERIALLED_1CH_DMA_ENABLED !AP_CUSTOM_LIGHT
+#endif
+
 #ifndef HAL_OS_SOCKETS
 #define HAL_OS_SOCKETS 0
 #endif

@@ -15,3 +15,10 @@ PB3  TIM2_CH2   TIM2  PWM(7)  GPIO(56) BIDIR
 PA15 TIM2_CH1   TIM2  PWM(8)  GPIO(57)
 
 DMA_PRIORITY TIM8* TIM1*
+
+# fork: WS2812 strip with INAV-style LED segments (NTF_LS_*) on the LED pad
+# (output 12, PB1 TIM3_CH4). TIM3 drives nothing else, so the strip gets
+# the 1-channel DMA buffer (~108 bytes of RAM per LED).
+define AP_NOTIFY_LED_SEGMENTS_ENABLED 1
+define HAL_SERIALLED_1CH_DMA_ENABLED 1
+define DEFAULT_NTF_LED_TYPES 257

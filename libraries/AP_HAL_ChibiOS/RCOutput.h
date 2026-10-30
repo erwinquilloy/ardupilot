@@ -389,8 +389,10 @@ private:
         // fork: group channels set up for NeoPixel, and the single
         // channel (index + 1) whose CCR the DMA writes on its own when it
         // is the only one. 0 keeps the upstream 4-channel DMAR burst.
+#if HAL_SERIALLED_1CH_DMA_ENABLED
         uint8_t serial_led_chan_mask;
         uint8_t serial_led_single;
+#endif
         HAL_Semaphore serial_led_mutex;
         // structure to hold serial LED data until it can be transferred
         // to the DMA buffer

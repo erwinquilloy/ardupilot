@@ -128,9 +128,10 @@
 #define AP_NOTIFY_NEOPIXEL_ENABLED AP_NOTIFY_SERIALLED_ENABLED
 #endif
 
-// Fork-only: INAV-style LED segments drawn by the NeoPixel backend
+// Fork-only: INAV-style LED segments drawn by the NeoPixel backend.
+// Full boards get them; a light board opts in from its hwdef.
 #ifndef AP_NOTIFY_LED_SEGMENTS_ENABLED
-#define AP_NOTIFY_LED_SEGMENTS_ENABLED AP_NOTIFY_NEOPIXEL_ENABLED
+#define AP_NOTIFY_LED_SEGMENTS_ENABLED (AP_NOTIFY_NEOPIXEL_ENABLED && !AP_CUSTOM_LIGHT)
 #endif
 
 #ifndef AP_NOTIFY_NEOPIXEL_MASK
