@@ -135,6 +135,7 @@ An outline of everything this fork adds and where it is documented. Each line li
   - [Smarter RC relays](#smarter-rc-relays)
   - [32 RC channels (v2.1)](#32-rc-channels-v21)
   - [mLRS MAVLink RC on every board (v2.1)](#mlrs-mavlink-rc-radio_rc_channels-on-every-board-v21)
+  - [Addressable LED strip segments (v2.2)](#addressable-led-strip-segments-v22)
   - [Steering assist supports reverse driving](#steering-assist-supports-reverse-driving)
   - [MAVFTP reliability on low-RAM F4 boards](#mavftp-reliability-on-low-ram-f4-boards)
   - [EKF3 allocation failed on 1 MB F4](#ekf3-allocation-failed-on-1-mb-f4--allocation-order-and-the-fix)
@@ -2199,6 +2200,62 @@ sends no CRSF in this setup. Needed:
 As the mLRS docs note, link statistics over MAVLink are thinner than over CRSF
 (RSSI or LQ only on the FC side).
 
+## Addressable LED strip segments (v2.2)
+
+*New in v2.2. Off by default.*
+
+Stock ArduPilot paints a whole WS2812 (NeoPixel) strip in one status colour.
+This firmware can split the strip into up to 8 **segments**, INAV-style, each
+showing its own thing: nav lights on the wingtips, a white strobe, a battery
+bar, the flight mode, a failsafe flash.
+
+**Which firmware has it:** every **full** board, and on the light track only
+**`SpeedyBeeF405WING-LED`** (the `-Buzz` board plus segments, see
+[the board variants](#tone-buzzer-board-variant-speedybeef405wing-buzz)) and
+**`MatekF405-TE-bdshot`**. The other light boards leave it out to save
+~2.5 KB of flash and keep the stock single-colour strip.
+
+| Board | Strip on |
+|---|---|
+| `SpeedyBeeF405WING-LED` | LED pad, output 12 (default `SERVO12_FUNCTION 120`) |
+| `MatekF405-TE-bdshot` | LED pad, output 12 (default `SERVO12_FUNCTION 120`, `NTF_LED_TYPES 257`) |
+| Full boards with a WS2812 pad (Matek F765/H743, TBS Lucid OEM/Wing AIO, AET H743) | output 13 |
+| KakuteH7-Wing, MatekH7A3-Wing, XFLY-H743 (no LED pad) | any output with DMA, set `SERVOn_FUNCTION 120`; the other output on the same timer stops working as a servo |
+
+**Setup:**
+
+| Param | Effect |
+|---|---|
+| `NTF_LED_TYPES` | must include NeoPixel (`257` = board LED + NeoPixel; `262145` if red and green are swapped) |
+| `NTF_LED_LEN` | number of LEDs on the strip |
+| `NTF_LS_ENABLE` | `0` (default) = stock single-colour strip; `1` = draw the segments |
+| `NTF_LSn_START` / `NTF_LSn_LEN` | first LED (1 = the data-input end) and length of segment n (1–8); START 0 turns it off. Where segments overlap, the higher number wins; LEDs no segment covers stay off |
+| `NTF_LSn_FUNC` | 0 Off, 1 Fixed colour, 2 Flight mode, 3 Arm state, 4 Battery, 5 GPS, 6 Link quality, 7 Throttle, 8 Status (the stock pattern) |
+| `NTF_LSn_COLOR` | palette colour for Fixed colour and Throttle: 0 Off, 1 White, 2 Red, 3 Orange, 4 Yellow, 5 Lime, 6 Green, 7 Mint, 8 Cyan, 9 Light blue, 10 Blue, 11 Violet, 12 Magenta, 13 Pink, 14 Amber, 15 Warm white |
+| `NTF_LSn_OVL` | effects on top (bitmask): 1 Blink, 2 Strobe, 4 Larson scanner, 8 Failsafe warning, 16 Bar, 32 Reverse, 64 Only when armed |
+| `NTF_LS_MODECLR` | colours used by Flight mode segments |
+
+Example, 26 LEDs split over the two wings, red left and green right, white
+strobe on the first two LEDs, arm state with a failsafe flash on the last two:
+
+```
+NTF_LS_ENABLE 1
+NTF_LS1_START 1    NTF_LS1_LEN 13   NTF_LS1_FUNC 1   NTF_LS1_COLOR 2
+NTF_LS2_START 14   NTF_LS2_LEN 13   NTF_LS2_FUNC 1   NTF_LS2_COLOR 6
+NTF_LS3_START 1    NTF_LS3_LEN 2    NTF_LS3_FUNC 1   NTF_LS3_COLOR 0   NTF_LS3_OVL 2
+NTF_LS4_START 25   NTF_LS4_LEN 2    NTF_LS4_FUNC 3                     NTF_LS4_OVL 8
+```
+
+**RAM:** when the strip is the only output on its timer (true for every LED
+pad above), these builds give it a 1-channel DMA buffer instead of the stock
+4-channel one: about 108 bytes per LED (26 LEDs ≈ 2.8 KB, 48 ≈ 5.1 KB) instead
+of about 400 (26 LEDs ≈ 10.2 KB). The memory is taken once at boot and does not
+depend on the segments or effects. On the RAM-tight F4s, check `freemem` and
+that EKF3 still starts after adding a long strip.
+
+**Notes:** WS2812/WS2812B/SK6812 RGB (2020 or 5050) work; RGBW (32-bit) strips
+do not. Power the strip from a 5 V BEC that shares ground with the FC.
+
 ## Steering assist supports reverse driving
 
 `calc_nav_yaw_ground()` now flips the steering output sign when the
@@ -3420,6 +3477,14 @@ bootloader as a normal update. Flash footprint is essentially identical
 to stock `SpeedyBeeF405WING` (20.4 KB vs 20.7 KB free at v2.1 —
 a 0.3 KB difference). Shipped as an extra
 asset on the light release alongside the other boards above.
+
+From v2.2 the SpeedyBee F405 Wing ships in three versions: stock
+`SpeedyBeeF405WING`, `SpeedyBeeF405WING-Buzz`, and **`SpeedyBeeF405WING-LED`**
+= the `-Buzz` board plus
+[addressable LED strip segments](#addressable-led-strip-segments-v22) on the
+LED pad (output 12). It costs ~2.5 KB of flash over `-Buzz`, which is why the
+other two leave it out. The name drops `Buzz` because board names are capped at
+23 characters; the S11 tone buzzer is included.
 
 A sibling variant, **`KakuteF4-Wing-Buzz`**, applies the same idea to the
 Holybro **Kakute F4 Wing** — which has *no* buzzer at all on the stock
