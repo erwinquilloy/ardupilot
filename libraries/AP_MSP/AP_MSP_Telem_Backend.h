@@ -197,6 +197,7 @@ protected:
     // we only set arming status
     // custom masks are needed for vendor specific settings
     virtual uint32_t get_osd_flight_mode_bitmask(void);
+    bool in_disarm_hold(void) const;
 
     virtual bool is_scheduler_enabled() const = 0;                            // only osd backends should allow a push type telemetry
     virtual bool use_msp_thread() const {return true;};                       // is this backend hanlded by the MSP thread?
