@@ -3094,6 +3094,20 @@ Stats themselves are armed-relative (pre-arm baseline captured,
 deltas accumulated armed); wind stats are gated until 30 s of flight
 time has accumulated.
 
+### Keeping the stats in DJI video (`MSP_DSARM_HOLD`)
+
+DJI air units stop recording almost as soon as MSP reports disarmed, which
+can cut the video before the stats screen is on it. `MSP_DSARM_HOLD` keeps
+reporting armed over MSP for that many seconds after a disarm (0-7, default
+`0` = off). Only the MSP report is held: the motors and the vehicle disarm
+normally, and re-arming during the hold works as usual.
+
+To use it, point `OSD_DSARM_SCR` at a screen with `OSDx_STATS_EN = 1` and set
+`MSP_DSARM_HOLD = 5`. The air unit stays recording, at full power, for those
+seconds. On a fixed-wing the stats screen can take up to about a second to
+appear, so keep the hold above that. Walksnail doesn't need this and can stay
+on `0`.
+
 ### Persistent maximum-flight-time stat
 
 `STAT_FLT_TIME_MX` (seconds, read-only, persisted) — the longest
@@ -3954,6 +3968,9 @@ reads its 16-bit cm distance format.
   on Betaflight; upstream issue #28276. The first four slots keep MSP's AERT
   order and their existing scaling. AUX channels are sent as received, with
   no trim or deadzone applied.
+- **`MSP_DSARM_HOLD`** keeps reporting armed over MSP after a disarm so DJI
+  video catches the stats screen; see
+  [Keeping the stats in DJI video](#keeping-the-stats-in-dji-video-msp_dsarm_hold).
 
 ## FrSky SPort passthrough
 

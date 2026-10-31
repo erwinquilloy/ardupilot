@@ -675,11 +675,30 @@ void AP_MSP_Telem_Backend::msp_handle_airspeed(const MSP::msp_airspeed_data_mess
 }
 #endif
 
+/*
+  true while disarmed and still inside the MSP_DSARM_HOLD window, when
+  the VTX is told we are armed so that it keeps recording
+ */
+bool AP_MSP_Telem_Backend::in_disarm_hold(void) const
+{
+    if (hal.util->get_soft_armed()) {
+        return false;
+    }
+    const AP_MSP *msp = AP::msp();
+    if (msp == nullptr) {
+        return false;
+    }
+    // last_armed_change is 0 until the first arm, don't hold through boot
+    const uint32_t last_change_ms = hal.util->get_last_armed_change();
+    const uint32_t hold_ms = constrain_int16(msp->_disarm_hold_s, 0, 7) * 1000U;
+    return last_change_ms != 0 && AP_HAL::millis() - last_change_ms < hold_ms;
+}
+
 uint32_t AP_MSP_Telem_Backend::get_osd_flight_mode_bitmask(void)
 {
     // Note: we only set the BOXARM bit (bit 0) which is the same for BF, INAV and DJI VTX
     // When armed we simply return 1 (1 == 1 << 0)
-    if (hal.util->get_soft_armed()) {
+    if (hal.util->get_soft_armed() || in_disarm_hold()) {
         return 1U;
     }
     return 0U;
@@ -880,7 +899,7 @@ MSPCommandResult AP_MSP_Telem_Backend::msp_process_out_status(sbuf_t *dst)
 
     status.flight_mode_flags = get_osd_flight_mode_bitmask();
     status.arming_disable_flags_count = 1;
-    status.arming_disable_flags = !AP::notify().flags.armed;
+    status.arming_disable_flags = !(AP::notify().flags.armed || in_disarm_hold());
 
     sbuf_write_data(dst, &status, sizeof(status));
     return MSP_RESULT_ACK;

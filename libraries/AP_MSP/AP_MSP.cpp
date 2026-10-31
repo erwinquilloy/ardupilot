@@ -49,6 +49,15 @@ const AP_Param::GroupInfo AP_MSP::var_info[] = {
     // @User: Standard
     AP_GROUPINFO("_OPTIONS", 2, AP_MSP, _options, 0),
 
+    // @Param: _DSARM_HOLD
+    // @DisplayName: MSP disarm hold time
+    // @Description: Keep reporting armed over MSP for this long after a disarm. DJI air units stop recording when the arm bit clears, so this keeps the OSD_DSARM_SCR stats screen in the video. Only the MSP report is held: the vehicle disarms normally. Zero disables.
+    // @Units: s
+    // @Range: 0 7
+    // @Increment: 1
+    // @User: Standard
+    AP_GROUPINFO("_DSARM_HOLD", 20, AP_MSP, _disarm_hold_s, 0),
+
     AP_GROUPEND
 };
 
