@@ -95,7 +95,7 @@ plus a few additions originating in this fork.
 | Boards | **CoreWing F405 Wing V2 and Wing Mini V2** (`CoreWingF405WingV2`, `CoreWingF405WMiniV2`, light): new in ArduPlane 4.7.2, shipped on upstream's own board definitions | [CoreWing F405 Wing V2 / Wing Mini V2](#light-track--15-boards-all-1-mb-f4) |
 | Boards | **`MatekF405-Wing-PWM10`** (light): `MatekF405-Wing-bdshot` with the `LED` pad back as PWM output 10 instead of relay 1 | [Light track](#light-track--15-boards-all-1-mb-f4) |
 
-## Upgrading to v2.x
+## Upgrading to Stratos v2.x
 
 Find what you're running now. Save a full parameter backup first in every case.
 Then flash the `.apj` from Mission Planner or QGC
@@ -103,36 +103,73 @@ Then flash the `.apj` from Mission Planner or QGC
 
 | Coming from | Parameters | After flashing |
 |---|---|---|
-| **Stratos or Custom v2.0 / v2.1** | Carry over unchanged | Nothing to do |
-| **Stock ArduPlane 4.7.x** | Carry over. **Don't reset** | Check the [serial ports](#serial-port-numbering-matched-to-chip-uart-numbers) and the [default changes](#behaviour-changes-vs-upstream--migration-notes). Mode 26 is Course Hold here, not AUTOLAND |
-| **Custom v1.1 or older (ArduPlane 4.6.3)** | Converted on first boot. **Don't reset** | Follow [Upgrading from v1.1](#upgrading-from-v11-arduplane-463-base) |
+| **Stratos v2.1 or Custom v2.0** | Carry over unchanged | Nothing to do |
+| **Stock ArduPlane 4.7.x** | Carry over. **Don't reset** | Check the [serial ports](#serial-port-numbering-matched-to-chip-uart-numbers) and the [default changes](#behaviour-changes-vs-upstream--migration-notes). Mode 26 is Course Hold on Stratos, not AUTOLAND |
+| **Custom v1.1 or older on ArduPlane 4.6.3** (the banner reads `ArduCustom v1.1`) | Converted on first boot. **Don't reset** | Follow [Upgrading from v1.1](#upgrading-from-v11-arduplane-463-base) |
 | **Stock ArduPlane 4.6.x** | Converted on first boot. **Don't reset** | Follow [Upgrading from v1.1](#upgrading-from-v11-arduplane-463-base), plus the serial ports and default changes above |
-| **Stock ArduPlane older than 4.6** | Conversions back to 4.1 are still in the firmware, but this jump hasn't been tested. **Don't reset** | Follow the same section, then check failsafes, limits and serial ports before flying |
-| **ArduCustom v11.3** | **Reset them.** Some old values load into the wrong parameters | Follow [Coming from ArduCustom v11.3](#coming-from-arducustom-v113) |
+| **Stock ArduPlane older than 4.6** | Conversions back to ArduPlane 4.1 are still in the firmware, but this jump hasn't been tested. **Don't reset** | Follow the same section, then check failsafes, limits and serial ports before flying |
+| **ArduCustom v11.3** | Some values are lost or change meaning. **Reset recommended** | Follow [Coming from ArduCustom v11.3](#coming-from-arducustom-v113) |
 
-**Stock boards with renumbered serial ports:** `MatekF405-TE`, `MatekF405-STD`,
-`omnibusf4pro`, `MatekH743`, `MatekF765-Wing` and `KakuteH7-Wing`. On these,
-`SERIALn` matches the `TXn/RXn` pad here, so saved `SERIALn_*` values can point
-at a different UART than on stock firmware. Check GPS, telemetry and RC first
-if something stops working.
+**Boards with renumbered serial ports compared with stock ArduPlane:**
+`MatekF405-TE`, `MatekF405-STD`, `omnibusf4pro`, `MatekH743`, `MatekF765-Wing`
+and `KakuteH7-Wing`. On these, `SERIALn` matches the `TXn/RXn` pad on Stratos,
+so saved `SERIALn_*` values can point at a different UART than on stock
+ArduPlane. Check GPS, telemetry and RC first if something stops working.
 
 ### Coming from ArduCustom v11.3
 
-v11.3 and v2.x use the same parameter storage format, so nothing is wiped when
-you flash. But v11.3 reused storage slots that later ArduPilot versions gave to
-other parameters, so old values would load silently, some into the wrong place.
-This advice comes from comparing the two firmwares' code; the upgrade itself
-hasn't been run on a board.
+Flashing an `.apj` keeps your parameters, because ArduCustom v11.3 and Stratos
+v2.x use the same storage format. Most settings carry over, including PIDs, OSD
+layout and flight modes. A few don't: ArduCustom v11.3 reused storage slots that
+later ArduPilot versions gave to other parameters, so some values drop back to
+default and some change meaning, with no warning. `_with_bl.hex` can wipe
+parameters, so use the `.apj` if you plan to keep them.
 
-1. Save a `.param` file on v11.3.
-2. Flash the v2.x `.apj`.
-3. Set `FORMAT_VERSION` to `0` and reboot. This wipes all parameters and
+These lists come from comparing the two firmwares' code. One lightly configured
+plane has flown Stratos v2.1 with its ArduCustom v11.3 parameters kept, which
+shows it can work on a simple setup. It doesn't cover every setting below.
+
+Save a `.param` file on ArduCustom v11.3 first, then pick one of these.
+
+#### Option 1: reset (recommended)
+
+Best if your setup is tuned, or uses custom `FLIGHT_OPTIONS`, speed limits or
+RTL settings.
+
+1. Flash the Stratos v2.x `.apj`.
+2. Set `FORMAT_VERSION` to `0` and reboot. This wipes all parameters and
    calibration.
-4. Redo the accelerometer, compass and RC calibration.
-5. Re-enter your settings by hand from the saved file. Don't load the whole
-   file, because old `FLIGHT_OPTIONS` and `KFF_THR2PTCH` values change behaviour.
+3. Redo the accelerometer, compass and RC calibration.
+4. Re-enter your settings by hand from the saved file, using the table below.
+   Don't load the whole file, because old `FLIGHT_OPTIONS` and `KFF_THR2PTCH`
+   values change behaviour.
 
-| v11.3 | v2.x |
+#### Option 2: keep your parameters
+
+Reasonable for a simple setup, if you check everything below before flying.
+
+1. Flash the Stratos v2.x `.apj`.
+2. Compare these with your saved file and set them again. They go back to
+   default:
+   - `AIRSPEED_MIN`, `AIRSPEED_MAX`
+   - `RTL_ALTITUDE`
+   - `PTCH_TRIM_DEG`
+   - `FLAP_1_PERCNT`, `FLAP_1_SPEED`, `FLAP_2_SPEED`
+   - `THR_SLEWRATE`, `TKOFF_THR_SLEW`
+   - `KFF_THRAT2ELEV`, `KFF_FLAP2ELEV`
+3. Fix these. They carry over but mean something different:
+   - `FLIGHT_OPTIONS`: bit 21 now ends TAKEOFF in FBWB. If you used it for RTL
+     manual altitude, clear it and set bit 24.
+   - `KFF_THR2PTCH`: now acts across the whole throttle range. Set it to `0` and
+     retune.
+   - `LAND_WIND_BIAS`, `LAND_WIND_DIST`: can pick up old `THR_EXPO_*` values. Set
+     both to `0` unless you use them.
+4. Check the control surfaces and motors, then make the first flight a careful
+   one, with a switch ready to take over from RTL.
+
+#### Either way
+
+| ArduCustom v11.3 | Stratos v2.x |
 |---|---|
 | `ARSPD_FBW_MIN` / `ARSPD_FBW_MAX` | `AIRSPEED_MIN` / `AIRSPEED_MAX` |
 | `TRIM_ARSPD_CM` | `AIRSPEED_CRUISE` (divide by 100) |
@@ -140,22 +177,24 @@ hasn't been run on a board.
 | `LIM_PITCH_MAX` / `LIM_PITCH_MIN` | `PTCH_LIM_MAX_DEG` / `PTCH_LIM_MIN_DEG` (divide by 100) |
 | `TRIM_PITCH` | `PTCH_TRIM_DEG` |
 | `THR_AUTO_SRATE` | `THR_SLEWRATE` |
+| `TKOFF_THR_SRATE` | `TKOFF_THR_SLEW` |
 | `MIX_THRAT2ELEV` / `MIX_FLAP2ELEV` | `KFF_THRAT2ELEV` / `KFF_FLAP2ELEV` |
-| `FLIGHT_OPTIONS` bit 21 (RTL manual altitude) | Bit **24**. Bit 21 now ends TAKEOFF in FBWB |
-| `KFF_THRAT2PTCH` (above trim throttle only) | `KFF_THR2PTCH` (whole throttle range), so start at `0` and retune |
+| `FLIGHT_OPTIONS` bit 21 (RTL manual altitude) | Bit **24** |
+| `KFF_THRAT2PTCH` (above trim throttle only) | `KFF_THR2PTCH` (whole throttle range) |
 
 Leave `FLIGHT_OPTIONS` bit 4 (climb before turn) off: when RTL starts low, the
 turn towards home can stall at the 5° climb bank limit.
 
 ## Upgrading from v1.1 (ArduPlane 4.6.3 base)
 
-v2.0 moved the fork from ArduPlane 4.6.3 to 4.7.1. **Don't reset your
-parameters before upgrading** — old values are converted on the first boot of
-v2.0, and a board that was wiped first has nothing to convert.
+Custom v2.0 moved the fork from ArduPlane 4.6.3 to 4.7.1, and Stratos v2.1 moved
+it to 4.7.2. **Don't reset your parameters before upgrading.** Old values are
+converted on the first boot of Custom v2.0 or later, and a board that was wiped
+first has nothing to convert.
 
 **Converted automatically on first boot:**
 
-| Was (v1.1) | Now (v2.0) | Note |
+| Was (Custom v1.1) | Now (Custom v2.0 and later) | Note |
 |---|---|---|
 | `ARMING_CHECK` | `ARMING_SKIPCHK` | **Inverted meaning**: now a mask of checks to *skip*. `0` = run all checks. |
 | `SYSID_THISMAV` / `SYSID_MYGCS` | `MAV_SYSID` / `MAV_GCS_SYSID` | |
@@ -169,13 +208,13 @@ v2.0, and a board that was wiped first has nothing to convert.
 | `RNGFNDn_MIN_CM` / `RNGFNDn_MAX_CM` / `RNGFNDn_GNDCLEAR` (cm) | `RNGFNDn_MIN` / `RNGFNDn_MAX` / `RNGFNDn_GNDCLR` (metres) | e.g. TFmini `RNGFND1_MAX_CM 1200` becomes `RNGFND1_MAX 12` |
 | `CAM_RC_*` (RunCam) | `CAM2_RC_*` | RunCam control is now camera 2 (`CAM2_TYPE 8`), set up automatically when a RunCam serial port or `CAM_RC_TYPE` was configured |
 | `GLIDE_SLOPE_MIN` / `GLIDE_SLOPE_THR` | `ALT_SLOPE_MIN` / `ALT_SLOPE_MAXHGT` | renamed only; value kept |
-| fork: `LAND_WIND_STRICT`, `VEHICLE_UID`, `TKOFF_THR_IDLE` | same names | storage moved because 4.7 reused the old slots; values carried over |
+| fork: `LAND_WIND_STRICT`, `VEHICLE_UID`, `TKOFF_THR_IDLE` | same names | storage moved because ArduPlane 4.7 reused the old slots; values carried over |
 
 **Needs a manual change:**
 
 - **Parameter files (`.parm`) you load by hand are not converted.** Update old
-  names in them to the 4.7 names before loading, or load them on v1.1 first and
-  upgrade afterwards.
+  names in them to the ArduPlane 4.7 names before loading, or load them on
+  Custom v1.1 first and upgrade afterwards.
 - **`FS_SHORT_TIMEOUT` is gone** (upstream). The short failsafe now starts when
   RC is declared lost, set by the new **`RC_FS_TIMEOUT`** (default 1 s;
   `FS_SHORT_TIMEOUT` defaulted to 1.5 s).
@@ -202,7 +241,7 @@ list is in [ArduPlane's release notes](https://github.com/ArduPilot/ardupilot/bl
 
 An outline of everything this fork adds and where it is documented. Each line links to its section.
 
-- **Getting started** — [What's new in v2.2](#whats-new-in-v22), [What's new in v2.1](#whats-new-in-v21), [Upgrading to v2.x](#upgrading-to-v2x), [Why flash this instead of stock ArduPlane 4.7.2?](#why-flash-this-instead-of-stock-arduplane-472), [Building](#building), [Which file in the zip do I flash?](#which-file-in-the-zip-do-i-flash), [Release fleets (full-v2.1 / light-v2.1)](#release-fleets-full-v21--light-v21), [Tone-buzzer board variant (SpeedyBeeF405WING-Buzz)](#tone-buzzer-board-variant-speedybeef405wing-buzz)
+- **Getting started** — [What's new in v2.2](#whats-new-in-v22), [What's new in v2.1](#whats-new-in-v21), [Upgrading to Stratos v2.x](#upgrading-to-stratos-v2x), [Why flash this instead of stock ArduPlane 4.7.2?](#why-flash-this-instead-of-stock-arduplane-472), [Building](#building), [Which file in the zip do I flash?](#which-file-in-the-zip-do-i-flash), [Release fleets (full-v2.1 / light-v2.1)](#release-fleets-full-v21--light-v21), [Tone-buzzer board variant (SpeedyBeeF405WING-Buzz)](#tone-buzzer-board-variant-speedybeef405wing-buzz)
 - **[What this fork adds](#what-this-fork-adds)**
   - [Flight modes](#flight-modes)
     - [Course Hold (mode 26)](#course-hold-mode-26)
@@ -4151,7 +4190,7 @@ stock 4.7.2 build and then load this firmware:
 | Flight mode 26 is **Course Hold**, not upstream's AUTOLAND | AUTOLAND is compiled out. Use `RTL_AUTOLAND` + `DO_LAND_START` (with `LAND_WIND_BIAS`) for automatic landings. |
 | `STAT_FLTCNT` / `STAT_DISTFLWN` not present | The fork's own flight-count and distance statistics are used instead. |
 
-Upgrading from an older build? Start at [Upgrading to v2.x](#upgrading-to-v2x).
+Upgrading from an older build? Start at [Upgrading to Stratos v2.x](#upgrading-to-stratos-v2x).
 
 ---
 
