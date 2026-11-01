@@ -3120,10 +3120,25 @@ reporting armed to the VTX for that many seconds after a disarm (0-7, default
 `0` = off). Only that report is held: the motors and the vehicle disarm
 normally, and re-arming during the hold works as usual.
 
-The hold applies only to MSP DisplayPort ports (`SERIALn_PROTOCOL = 42`), which
-is what DJI O3 and O4 use. Ports set to `32` (MSP) or `33` (DJI_FPV) always
-report the live arm state, so a radar or other device on them isn't affected.
-Head tracking and other data coming in over MSP don't depend on it.
+**The hold targets MSP DisplayPort only.** It runs per serial port, and only a
+port with `SERIALn_PROTOCOL = 42` ever reports the held state. Every other MSP
+device keeps seeing the real arm state at the same moment it always did, even
+with the hold on and even while another port is holding:
+
+| `SERIALn_PROTOCOL` | Used by | With `MSP_DSARM_HOLD` set |
+|---|---|---|
+| `42` MSP DisplayPort | DJI O3 and O4, and other DisplayPort VTXs | **Reports armed for the hold time** |
+| `33` DJI_FPV | Older DJI air units, FormationFlight radar | Live arm state, no hold |
+| `32` MSP | Other MSP devices | Live arm state, no hold |
+
+So check which protocol your VTX port uses. On `33` the parameter does nothing
+and the recording stops as before; move the VTX to `42` if you want the hold.
+Anything on a port that isn't MSP, such as MAVLink telemetry, a GCS or mLRS, is
+untouched too.
+
+Only the arm state the port reports changes. Head tracking and other data
+coming in over MSP keep working during the hold, and with `MSP_DSARM_HOLD = 0`
+(the default) nothing changes on any port.
 
 To use it, point `OSD_DSARM_SCR` at a screen with `OSDx_STATS_EN = 1` and set
 `MSP_DSARM_HOLD = 5`. The air unit stays recording, at full power, for those
