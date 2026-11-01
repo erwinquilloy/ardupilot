@@ -3288,6 +3288,9 @@ seconds. On a fixed-wing the stats screen can take up to about a second to
 appear, so keep the hold above that. Walksnail doesn't need this and can stay
 on `0`.
 
+*Suggested by [@jaroszmm](https://github.com/jaroszmm), who also tested early
+builds.*
+
 ### Persistent maximum-flight-time stat
 
 `STAT_FLT_TIME_MX` (seconds, read-only, persisted) — the longest
@@ -4451,6 +4454,7 @@ writes a single-file HTML copy with the outline in a side panel (needs
   wind alignment. Shaped the anchor semantics (measure from the
   plane's decision-time position, not always from home) and the
   soft-fallback-vs-hard-fence design.
+  Also suggested `MSP_DSARM_HOLD` and tested early builds of it.
 - **[mmosca](https://github.com/mmosca)** — introduced the Walksnail
   head-tracker-over-MSP protocol (`MSP2_SENSOR_HEADTRACKER`) to the
   [iNav project](https://github.com/iNavFlight/inav). This fork's MSP
