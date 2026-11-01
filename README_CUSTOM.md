@@ -61,6 +61,18 @@ plus a few additions originating in this fork.
 
 ---
 
+## What's new in v2.2
+
+*Not released yet: the current download is v2.1. Everything below is on both tracks unless the row says otherwise.*
+
+| Area | Change | Details |
+|---|---|---|
+| Flight | **`LAND_WIND_BIAS` above 1 could choose a tailwind landing.** Values above 1 now act as 1, and equal scores go to the nearer `DO_LAND_START` | [LAND_WIND_BIAS](#land_wind_bias--pick-the-upwind-do_land_start) |
+| Reliability | **Connecting a GCS right after power-up no longer stalls the main loop.** On F4 boards with many parameters (seen on a tilt-tri quadplane) this gave `Internal errors 0x8000 main_loop_stk` and blocked arming until a reboot | |
+| OSD | **`MSP_DSARM_HOLD`** (off by default): keeps reporting armed for up to 7 s after a disarm so DJI O3 and O4 video catches the stats screen. It applies only to MSP DisplayPort ports; the motors disarm normally | [Keeping the stats in DJI video](#keeping-the-stats-in-dji-video-msp_dsarm_hold) |
+| LEDs | **Addressable LED strip segments** (`NTF_LS*`, off by default): up to 8 INAV-style segments for nav lights, strobes, a battery bar, flight mode or failsafe flash. Every full board, plus `SpeedyBeeF405WING-LED` and `MatekF405-TE-bdshot` on the light track | [LED strip segments](#addressable-led-strip-segments-v22) |
+| Boards | **`SpeedyBeeF405WING-LED`** (light): the `-Buzz` board plus LED segments. `MatekF405-TE-bdshot` now defaults its LED pad to a NeoPixel strip on output 12 | [Which SpeedyBee firmware](#tone-buzzer-board-variant-speedybeef405wing-buzz) |
+
 ## What's new in v2.1
 
 *Everything below is on both tracks unless it says "full only".*
@@ -229,7 +241,7 @@ list is in [ArduPlane's release notes](https://github.com/ArduPilot/ardupilot/bl
 
 An outline of everything this fork adds and where it is documented. Each line links to its section.
 
-- **Getting started** — [What's new in v2.1](#whats-new-in-v21), [Upgrading to Stratos v2.x](#upgrading-to-stratos-v2x), [Why flash this instead of stock ArduPlane 4.7.2?](#why-flash-this-instead-of-stock-arduplane-472), [Building](#building), [Which file in the zip do I flash?](#which-file-in-the-zip-do-i-flash), [Release fleets (full-v2.1 / light-v2.1)](#release-fleets-full-v21--light-v21), [Tone-buzzer board variant (SpeedyBeeF405WING-Buzz)](#tone-buzzer-board-variant-speedybeef405wing-buzz)
+- **Getting started** — [What's new in v2.2](#whats-new-in-v22), [What's new in v2.1](#whats-new-in-v21), [Upgrading to Stratos v2.x](#upgrading-to-stratos-v2x), [Why flash this instead of stock ArduPlane 4.7.2?](#why-flash-this-instead-of-stock-arduplane-472), [Building](#building), [Which file in the zip do I flash?](#which-file-in-the-zip-do-i-flash), [Release fleets (full-v2.1 / light-v2.1)](#release-fleets-full-v21--light-v21), [Tone-buzzer board variant (SpeedyBeeF405WING-Buzz)](#tone-buzzer-board-variant-speedybeef405wing-buzz)
 - **[What this fork adds](#what-this-fork-adds)**
   - [Flight modes](#flight-modes)
     - [Course Hold (mode 26)](#course-hold-mode-26)
@@ -277,6 +289,7 @@ An outline of everything this fork adds and where it is documented. Each line li
   - [Smarter RC relays](#smarter-rc-relays)
   - [32 RC channels (v2.1)](#32-rc-channels-v21)
   - [mLRS MAVLink RC on every board (v2.1)](#mlrs-mavlink-rc-radio_rc_channels-on-every-board-v21)
+  - [Addressable LED strip segments (v2.2)](#addressable-led-strip-segments-v22)
   - [Steering assist supports reverse driving](#steering-assist-supports-reverse-driving)
   - [MAVFTP reliability on low-RAM F4 boards](#mavftp-reliability-on-low-ram-f4-boards)
   - [EKF3 allocation failed on 1 MB F4](#ekf3-allocation-failed-on-1-mb-f4--allocation-order-and-the-fix)
@@ -338,6 +351,9 @@ aimed at efficiency and situational awareness:
   to you — iNav-style. Upstream only shows ADS-B traffic on the GCS map.
   From v2.1 it flashes when traffic comes inside a distance you set
   (`OSD_W_ADSB_DIST`).
+- **Stats screen in your DJI video** (v2.2) — `MSP_DSARM_HOLD` keeps an O3 or
+  O4 recording for a few seconds after disarm, so the stats screen is on the
+  footage.
 
 → [OSD additions](#osd-additions)
 
@@ -415,10 +431,13 @@ Built for throwing a wing off your hand safely:
   build. Up to 32 channels with `RC_32CH_ENABLE`.
 - **Expanded battery monitoring**: Wh accounting, cell count/voltage, and
   capacity-remaining plus low/critical thresholds feeding the OSD readouts.
+- **LED strip segments** (v2.2) — split a WS2812 strip into up to 8 INAV-style
+  segments: nav lights, strobes, a battery bar, flight mode.
 
 → [Peer-aircraft radar](#peer-aircraft-radar-inav-radar--formationflight) ·
 [Telemetry](#telemetry) ·
-[Battery monitoring](#battery-monitoring-ap_battmonitor)
+[Battery monitoring](#battery-monitoring-ap_battmonitor) ·
+[LED strip segments](#addressable-led-strip-segments-v22)
 
 ### 🎥 Head-tracked FPV gimbal (MSP)
 
@@ -522,12 +541,12 @@ ArduPlane V<x.y.z> Stratos <FORK_VERSION>[ Light] (<git-hash>)
 For example:
 
 ```
-ArduPlane V4.7.2 Stratos v2.1 (1a2b3c4)        # 2 MB board (full track)
-ArduPlane V4.7.2 Stratos v2.1 Light (1a2b3c4)  # 1 MB board (light track)
+ArduPlane V4.7.2 Stratos v2.2 (1a2b3c4)        # 2 MB board (full track)
+ArduPlane V4.7.2 Stratos v2.2 Light (1a2b3c4)  # 1 MB board (light track)
 ```
 
 The hash is the commit the release was built from; the release notes
-print it, and the release tags (`full-v2.1` / `light-v2.1`) point at it.
+print it, and the release tags (`full-v2.2` / `light-v2.2`) point at it.
 
 The upstream `ArduPlane V4.7.2` prefix is kept so GCS tools that parse
 the upstream version string (MissionPlanner, MAVProxy, autotest
@@ -1637,6 +1656,9 @@ tailwind approach (multiplier `1 + LAND_WIND_BIAS`). The lowest-scoring candidat
 `LAND_WIND_BIAS = 1` lets a direct-tailwind 500 m approach lose to a
 direct-headwind 1000 m approach; `0.3` is a gentler tilt that still
 breaks ties in favour of upwind landings.
+Values above `1` are treated as `1` (from v2.2; before that, a value
+above `1` could make it pick a tailwind landing). If two candidates
+score the same, the nearer one wins.
 
 ![LAND_WIND_BIAS example: the into-wind landing #12 is picked over the nearer crosswind #24](docs/images/land-wind-bias-example.png)
 
@@ -2337,6 +2359,62 @@ sends no CRSF in this setup. Needed:
 
 As the mLRS docs note, link statistics over MAVLink are thinner than over CRSF
 (RSSI or LQ only on the FC side).
+
+## Addressable LED strip segments (v2.2)
+
+*New in v2.2. Off by default.*
+
+Stock ArduPilot paints a whole WS2812 (NeoPixel) strip in one status colour.
+This firmware can split the strip into up to 8 **segments**, INAV-style, each
+showing its own thing: nav lights on the wingtips, a white strobe, a battery
+bar, the flight mode, a failsafe flash.
+
+**Which firmware has it:** every **full** board, and on the light track only
+**`SpeedyBeeF405WING-LED`** (the `-Buzz` board plus segments, see
+[the board variants](#tone-buzzer-board-variant-speedybeef405wing-buzz)) and
+**`MatekF405-TE-bdshot`**. The other light boards leave it out to save
+~2.5 KB of flash and keep the stock single-colour strip.
+
+| Board | Strip on |
+|---|---|
+| `SpeedyBeeF405WING-LED` | LED pad, output 12 (default `SERVO12_FUNCTION 120`) |
+| `MatekF405-TE-bdshot` | LED pad, output 12 (default `SERVO12_FUNCTION 120`, `NTF_LED_TYPES 257`) |
+| Full boards with a WS2812 pad (Matek F765/H743, TBS Lucid OEM/Wing AIO, AET H743) | output 13 |
+| KakuteH7-Wing, MatekH7A3-Wing, XFLY-H743 (no LED pad) | any output with DMA, set `SERVOn_FUNCTION 120`; the other output on the same timer stops working as a servo |
+
+**Setup:**
+
+| Param | Effect |
+|---|---|
+| `NTF_LED_TYPES` | must include NeoPixel (`257` = board LED + NeoPixel; `262145` if red and green are swapped) |
+| `NTF_LED_LEN` | number of LEDs on the strip |
+| `NTF_LS_ENABLE` | `0` (default) = stock single-colour strip; `1` = draw the segments |
+| `NTF_LSn_START` / `NTF_LSn_LEN` | first LED (1 = the data-input end) and length of segment n (1–8); START 0 turns it off. Where segments overlap, the higher number wins; LEDs no segment covers stay off |
+| `NTF_LSn_FUNC` | 0 Off, 1 Fixed colour, 2 Flight mode, 3 Arm state, 4 Battery, 5 GPS, 6 Link quality, 7 Throttle, 8 Status (the stock pattern) |
+| `NTF_LSn_COLOR` | palette colour for Fixed colour and Throttle: 0 Off, 1 White, 2 Red, 3 Orange, 4 Yellow, 5 Lime, 6 Green, 7 Mint, 8 Cyan, 9 Light blue, 10 Blue, 11 Violet, 12 Magenta, 13 Pink, 14 Amber, 15 Warm white |
+| `NTF_LSn_OVL` | effects on top (bitmask): 1 Blink, 2 Strobe, 4 Larson scanner, 8 Failsafe warning, 16 Bar, 32 Reverse, 64 Only when armed |
+| `NTF_LS_MODECLR` | colours used by Flight mode segments |
+
+Example, 26 LEDs split over the two wings, red left and green right, white
+strobe on the first two LEDs, arm state with a failsafe flash on the last two:
+
+```
+NTF_LS_ENABLE 1
+NTF_LS1_START 1    NTF_LS1_LEN 13   NTF_LS1_FUNC 1   NTF_LS1_COLOR 2
+NTF_LS2_START 14   NTF_LS2_LEN 13   NTF_LS2_FUNC 1   NTF_LS2_COLOR 6
+NTF_LS3_START 1    NTF_LS3_LEN 2    NTF_LS3_FUNC 1   NTF_LS3_COLOR 0   NTF_LS3_OVL 2
+NTF_LS4_START 25   NTF_LS4_LEN 2    NTF_LS4_FUNC 3                     NTF_LS4_OVL 8
+```
+
+**RAM:** when the strip is the only output on its timer (true for every LED
+pad above), these builds give it a 1-channel DMA buffer instead of the stock
+4-channel one: about 108 bytes per LED (26 LEDs ≈ 2.8 KB, 48 ≈ 5.1 KB) instead
+of about 400 (26 LEDs ≈ 10.2 KB). The memory is taken once at boot and does not
+depend on the segments or effects. On the RAM-tight F4s, check `freemem` and
+that EKF3 still starts after adding a long strip.
+
+**Notes:** WS2812/WS2812B/SK6812 RGB (2020 or 5050) work; RGBW (32-bit) strips
+do not. Power the strip from a 5 V BEC that shares ground with the FC.
 
 ## Steering assist supports reverse driving
 
@@ -3176,6 +3254,43 @@ Stats themselves are armed-relative (pre-arm baseline captured,
 deltas accumulated armed); wind stats are gated until 30 s of flight
 time has accumulated.
 
+### Keeping the stats in DJI video (`MSP_DSARM_HOLD`)
+
+DJI air units stop recording almost as soon as MSP reports disarmed, which
+can cut the video before the stats screen is on it. `MSP_DSARM_HOLD` keeps
+reporting armed to the VTX for that many seconds after a disarm (0-7, default
+`0` = off). Only that report is held: the motors and the vehicle disarm
+normally, and re-arming during the hold works as usual.
+
+**The hold targets MSP DisplayPort only.** It runs per serial port, and only a
+port with `SERIALn_PROTOCOL = 42` ever reports the held state. Every other MSP
+device keeps seeing the real arm state at the same moment it always did, even
+with the hold on and even while another port is holding:
+
+| `SERIALn_PROTOCOL` | Used by | With `MSP_DSARM_HOLD` set |
+|---|---|---|
+| `42` MSP DisplayPort | DJI O3 and O4, and other DisplayPort VTXs | **Reports armed for the hold time** |
+| `33` DJI_FPV | Older DJI air units, FormationFlight radar | Live arm state, no hold |
+| `32` MSP | Other MSP devices | Live arm state, no hold |
+
+So check which protocol your VTX port uses. On `33` the parameter does nothing
+and the recording stops as before; move the VTX to `42` if you want the hold.
+Anything on a port that isn't MSP, such as MAVLink telemetry, a GCS or mLRS, is
+untouched too.
+
+Only the arm state the port reports changes. Head tracking and other data
+coming in over MSP keep working during the hold, and with `MSP_DSARM_HOLD = 0`
+(the default) nothing changes on any port.
+
+To use it, point `OSD_DSARM_SCR` at a screen with `OSDx_STATS_EN = 1` and set
+`MSP_DSARM_HOLD = 5`. The air unit stays recording, at full power, for those
+seconds. On a fixed-wing the stats screen can take up to about a second to
+appear, so keep the hold above that. Walksnail doesn't need this and can stay
+on `0`.
+
+*Suggested by [@jaroszmm](https://github.com/jaroszmm), who also tested early
+builds.*
+
 ### Persistent maximum-flight-time stat
 
 `STAT_FLT_TIME_MX` (seconds, read-only, persisted) — the longest
@@ -3559,6 +3674,28 @@ bootloader as a normal update. Flash footprint is essentially identical
 to stock `SpeedyBeeF405WING` (20.4 KB vs 20.7 KB free at v2.1 —
 a 0.3 KB difference). Shipped as an extra
 asset on the light release alongside the other boards above.
+
+From v2.2 the SpeedyBee F405 Wing ships in three versions. All three flash
+over the stock bootloader (board ID 1106) and keep your parameters, so you can
+switch between them as a normal firmware update.
+
+| Firmware | Tone buzzer on S11 | LED strip on output 12 | Pick it if… |
+|---|---|---|---|
+| `SpeedyBeeF405WING` | no, S11 is a servo output | stock single status colour | you need all 12 outputs, and run no strip or a short one |
+| `SpeedyBeeF405WING-Buzz` | yes, full pitched tunes on a passive piezo | stock single status colour | you want the tone buzzer, and run no strip or a short one |
+| **`SpeedyBeeF405WING-LED`** | yes, same as `-Buzz` | [segments](#addressable-led-strip-segments-v22) | you run an LED strip, above all a long one |
+
+`-LED` is `-Buzz` plus the LED segments, so the piezo on S11 plays the same
+tunes; the buzzer (TIM12) and the strip (TIM1) do not share a timer. The name
+drops `Buzz` because board names are capped at 23 characters.
+
+The strip is what sets the choice, not the buzzer. The stock firmwares drive a
+strip with the 4-channel DMA buffer, about 400 bytes of RAM per LED, while
+`-LED` needs about 108: a 48-LED strip takes ~18.7 KB on `SpeedyBeeF405WING`
+or `-Buzz` and ~5.2 KB on `-LED`. On an F405 that difference can decide
+whether EKF3 still gets its memory. The buzzer itself costs no RAM. `-LED`
+costs ~2.5 KB more flash than `-Buzz`, which is why the other two leave the
+segments out.
 
 A sibling variant, **`KakuteF4-Wing-Buzz`**, applies the same idea to the
 Holybro **Kakute F4 Wing** — which has *no* buzzer at all on the stock
@@ -4014,6 +4151,9 @@ reads its 16-bit cm distance format.
   on Betaflight; upstream issue #28276. The first four slots keep MSP's AERT
   order and their existing scaling. AUX channels are sent as received, with
   no trim or deadzone applied.
+- **`MSP_DSARM_HOLD`** keeps reporting armed over MSP after a disarm so DJI
+  video catches the stats screen; see
+  [Keeping the stats in DJI video](#keeping-the-stats-in-dji-video-msp_dsarm_hold).
 
 ## FrSky SPort passthrough
 
@@ -4314,6 +4454,7 @@ writes a single-file HTML copy with the outline in a side panel (needs
   wind alignment. Shaped the anchor semantics (measure from the
   plane's decision-time position, not always from home) and the
   soft-fallback-vs-hard-fence design.
+  Also suggested `MSP_DSARM_HOLD` and tested early builds of it.
 - **[mmosca](https://github.com/mmosca)** — introduced the Walksnail
   head-tracker-over-MSP protocol (`MSP2_SENSOR_HEADTRACKER`) to the
   [iNav project](https://github.com/iNavFlight/inav). This fork's MSP
