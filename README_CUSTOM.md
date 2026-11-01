@@ -3098,9 +3098,14 @@ time has accumulated.
 
 DJI air units stop recording almost as soon as MSP reports disarmed, which
 can cut the video before the stats screen is on it. `MSP_DSARM_HOLD` keeps
-reporting armed over MSP for that many seconds after a disarm (0-7, default
-`0` = off). Only the MSP report is held: the motors and the vehicle disarm
+reporting armed to the VTX for that many seconds after a disarm (0-7, default
+`0` = off). Only that report is held: the motors and the vehicle disarm
 normally, and re-arming during the hold works as usual.
+
+The hold applies only to MSP DisplayPort ports (`SERIALn_PROTOCOL = 42`), which
+is what DJI O3 and O4 use. Ports set to `32` (MSP) or `33` (DJI_FPV) always
+report the live arm state, so a radar or other device on them isn't affected.
+Head tracking and other data coming in over MSP don't depend on it.
 
 To use it, point `OSD_DSARM_SCR` at a screen with `OSDx_STATS_EN = 1` and set
 `MSP_DSARM_HOLD = 5`. The air unit stays recording, at full power, for those
