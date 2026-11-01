@@ -51,7 +51,7 @@ const AP_Param::GroupInfo AP_MSP::var_info[] = {
 
     // @Param: _DSARM_HOLD
     // @DisplayName: MSP disarm hold time
-    // @Description: Keep reporting armed over MSP for this long after a disarm. DJI air units stop recording when the arm bit clears, so this keeps the OSD_DSARM_SCR stats screen in the video. Only the MSP report is held: the vehicle disarms normally. Zero disables.
+    // @Description: Keep reporting armed to an MSP DisplayPort VTX (SERIALn_PROTOCOL 42) for this long after a disarm. DJI air units stop recording when the arm bit clears, so this keeps the OSD_DSARM_SCR stats screen in the video. Only that MSP report is held: the vehicle disarms normally, and other MSP ports still report the live state. Zero disables.
     // @Units: s
     // @Range: 0 7
     // @Increment: 1

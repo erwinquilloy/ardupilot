@@ -677,11 +677,14 @@ void AP_MSP_Telem_Backend::msp_handle_airspeed(const MSP::msp_airspeed_data_mess
 
 /*
   true while disarmed and still inside the MSP_DSARM_HOLD window, when
-  the VTX is told we are armed so that it keeps recording
+  the VTX is told we are armed so that it keeps recording. Only a
+  DisplayPort VTX gets this: other MSP ports can carry devices that
+  need the live arm state, such as a radar on DJI_FPV.
  */
 bool AP_MSP_Telem_Backend::in_disarm_hold(void) const
 {
-    if (hal.util->get_soft_armed()) {
+    if (get_serial_protocol() != AP_SerialManager::SerialProtocol_MSP_DisplayPort ||
+        hal.util->get_soft_armed()) {
         return false;
     }
     const AP_MSP *msp = AP::msp();
