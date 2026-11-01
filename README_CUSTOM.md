@@ -61,6 +61,18 @@ plus a few additions originating in this fork.
 
 ---
 
+## What's new in v2.2
+
+*Not released yet: the current download is v2.1. Everything below is on both tracks unless the row says otherwise.*
+
+| Area | Change | Details |
+|---|---|---|
+| Flight | **`LAND_WIND_BIAS` above 1 could choose a tailwind landing.** Values above 1 now act as 1, and equal scores go to the nearer `DO_LAND_START` | [LAND_WIND_BIAS](#land_wind_bias--pick-the-upwind-do_land_start) |
+| Reliability | **Connecting a GCS right after power-up no longer stalls the main loop.** On F4 boards with many parameters (seen on a tilt-tri quadplane) this gave `Internal errors 0x8000 main_loop_stk` and blocked arming until a reboot | |
+| OSD | **`MSP_DSARM_HOLD`** (off by default): keeps reporting armed for up to 7 s after a disarm so DJI O3 and O4 video catches the stats screen. It applies only to MSP DisplayPort ports; the motors disarm normally | [Keeping the stats in DJI video](#keeping-the-stats-in-dji-video-msp_dsarm_hold) |
+| LEDs | **Addressable LED strip segments** (`NTF_LS*`, off by default): up to 8 INAV-style segments for nav lights, strobes, a battery bar, flight mode or failsafe flash. Every full board, plus `SpeedyBeeF405WING-LED` and `MatekF405-TE-bdshot` on the light track | [LED strip segments](#addressable-led-strip-segments-v22) |
+| Boards | **`SpeedyBeeF405WING-LED`** (light): the `-Buzz` board plus LED segments. `MatekF405-TE-bdshot` now defaults its LED pad to a NeoPixel strip on output 12 | [Which SpeedyBee firmware](#tone-buzzer-board-variant-speedybeef405wing-buzz) |
+
 ## What's new in v2.1
 
 *Everything below is on both tracks unless it says "full only".*
@@ -87,7 +99,7 @@ plus a few additions originating in this fork.
 
 An outline of everything this fork adds and where it is documented. Each line links to its section.
 
-- **Getting started** — [What's new in v2.1](#whats-new-in-v21), [Why flash this instead of stock ArduPlane 4.7.2?](#why-flash-this-instead-of-stock-arduplane-472), [Building](#building), [Which file in the zip do I flash?](#which-file-in-the-zip-do-i-flash), [Release fleets (full-v2.1 / light-v2.1)](#release-fleets-full-v21--light-v21), [Tone-buzzer board variant (SpeedyBeeF405WING-Buzz)](#tone-buzzer-board-variant-speedybeef405wing-buzz)
+- **Getting started** — [What's new in v2.2](#whats-new-in-v22), [What's new in v2.1](#whats-new-in-v21), [Why flash this instead of stock ArduPlane 4.7.2?](#why-flash-this-instead-of-stock-arduplane-472), [Building](#building), [Which file in the zip do I flash?](#which-file-in-the-zip-do-i-flash), [Release fleets (full-v2.1 / light-v2.1)](#release-fleets-full-v21--light-v21), [Tone-buzzer board variant (SpeedyBeeF405WING-Buzz)](#tone-buzzer-board-variant-speedybeef405wing-buzz)
 - **[What this fork adds](#what-this-fork-adds)**
   - [Flight modes](#flight-modes)
     - [Course Hold (mode 26)](#course-hold-mode-26)
@@ -197,6 +209,9 @@ aimed at efficiency and situational awareness:
   to you — iNav-style. Upstream only shows ADS-B traffic on the GCS map.
   From v2.1 it flashes when traffic comes inside a distance you set
   (`OSD_W_ADSB_DIST`).
+- **Stats screen in your DJI video** (v2.2) — `MSP_DSARM_HOLD` keeps an O3 or
+  O4 recording for a few seconds after disarm, so the stats screen is on the
+  footage.
 
 → [OSD additions](#osd-additions)
 
@@ -274,10 +289,13 @@ Built for throwing a wing off your hand safely:
   build. Up to 32 channels with `RC_32CH_ENABLE`.
 - **Expanded battery monitoring**: Wh accounting, cell count/voltage, and
   capacity-remaining plus low/critical thresholds feeding the OSD readouts.
+- **LED strip segments** (v2.2) — split a WS2812 strip into up to 8 INAV-style
+  segments: nav lights, strobes, a battery bar, flight mode.
 
 → [Peer-aircraft radar](#peer-aircraft-radar-inav-radar--formationflight) ·
 [Telemetry](#telemetry) ·
-[Battery monitoring](#battery-monitoring-ap_battmonitor)
+[Battery monitoring](#battery-monitoring-ap_battmonitor) ·
+[LED strip segments](#addressable-led-strip-segments-v22)
 
 ### 🎥 Head-tracked FPV gimbal (MSP)
 
@@ -381,12 +399,12 @@ ArduPlane V<x.y.z> Stratos <FORK_VERSION>[ Light] (<git-hash>)
 For example:
 
 ```
-ArduPlane V4.7.2 Stratos v2.1 (1a2b3c4)        # 2 MB board (full track)
-ArduPlane V4.7.2 Stratos v2.1 Light (1a2b3c4)  # 1 MB board (light track)
+ArduPlane V4.7.2 Stratos v2.2 (1a2b3c4)        # 2 MB board (full track)
+ArduPlane V4.7.2 Stratos v2.2 Light (1a2b3c4)  # 1 MB board (light track)
 ```
 
 The hash is the commit the release was built from; the release notes
-print it, and the release tags (`full-v2.1` / `light-v2.1`) point at it.
+print it, and the release tags (`full-v2.2` / `light-v2.2`) point at it.
 
 The upstream `ArduPlane V4.7.2` prefix is kept so GCS tools that parse
 the upstream version string (MissionPlanner, MAVProxy, autotest
