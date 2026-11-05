@@ -29535,6 +29535,17 @@
     }
   },
   "MSP": {
+    "MSP_DSARM_HOLD": {
+      "Description": "Keep reporting armed to an MSP DisplayPort VTX (SERIALn_PROTOCOL 42) for this long after a disarm. DJI air units stop recording when the arm bit clears, so this keeps the OSD_DSARM_SCR stats screen in the video. Only that MSP report is held: the vehicle disarms normally, and other MSP ports still report the live state. Zero disables.",
+      "DisplayName": "MSP disarm hold time",
+      "Increment": "1",
+      "Range": {
+        "high": "7",
+        "low": "0"
+      },
+      "Units": "s",
+      "User": "Standard"
+    },
     "MSP_OPTIONS": {
       "Bitmask": {
         "0": "EnableTelemetryMode",
@@ -30496,6 +30507,24 @@
       "DisplayName": "LED Driver Types",
       "User": "Advanced"
     },
+    "NTF_LS_ENABLE": {
+      "Description": "1 draws the NeoPixel strip as up to 8 segments set by NTF_LS1_* to NTF_LS8_*, each with its own function and colour. 0 keeps the stock behaviour where the whole strip shows one status colour. Needs NTF_LED_TYPES NeoPixel and an output with SERVOn_FUNCTION 120. LEDs not covered by any segment stay off.",
+      "DisplayName": "LED segments enable",
+      "User": "Standard",
+      "Values": {
+        "0": "Disabled",
+        "1": "Enabled"
+      }
+    },
+    "NTF_LS_MODECLR": {
+      "Description": "Colours used by segments with FUNC Flight mode. Six 4-bit palette numbers (same list as NTF_LSn_COLOR) packed into one value: bits 0-3 Manual/Stabilize/Training/Acro, bits 4-7 FBWA/FBWB/Cruise/Autotune/Course Hold/Auto Trim, bits 8-11 Auto/Takeoff/Guided/Avoid ADSB/Thermal, bits 12-15 RTL/QRTL/QLand/Loiter to QLand, bits 16-19 Loiter/Circle, bits 20-23 QStabilize/QHover/QLoiter/QAutotune/QAcro. Value = sum of colour * 16^group. Default: Manual yellow, assisted green, auto blue, return/land orange, loiter cyan, VTOL violet.",
+      "DisplayName": "LED segment flight-mode colours",
+      "Range": {
+        "high": "16777215",
+        "low": "0"
+      },
+      "User": "Advanced"
+    },
     "NTF_OREO_THEME": {
       "Description": "Enable/Disable Solo Oreo LED driver, 0 to disable, 1 for Aircraft theme, 2 for Rover theme",
       "DisplayName": "OreoLED Theme",
@@ -30505,6 +30534,590 @@
         "1": "Aircraft",
         "2": "Rover"
       }
+    }
+  },
+  "NTF_LS1_": {
+    "NTF_LS1_COLOR": {
+      "Description": "Palette colour for Fixed colour and Throttle segments, and the fallback for Battery when no remaining-capacity estimate is available.",
+      "DisplayName": "LED segment colour",
+      "User": "Standard",
+      "Values": {
+        "0": "Off",
+        "1": "White",
+        "10": "Blue",
+        "11": "Violet",
+        "12": "Magenta",
+        "13": "Pink",
+        "14": "Amber",
+        "15": "Warm white",
+        "2": "Red",
+        "3": "Orange",
+        "4": "Yellow",
+        "5": "Lime",
+        "6": "Green",
+        "7": "Mint",
+        "8": "Cyan",
+        "9": "Light blue"
+      }
+    },
+    "NTF_LS1_FUNC": {
+      "Description": "What this segment shows. Fixed colour uses COLOR. Flight mode uses NTF_LS_MODECLR. Arm state is green when armed, blue when disarmed and ready, amber when pre-arm checks fail. Battery and Link quality fade from red through yellow to green. GPS is red without a 3D fix, yellow with 3D, green with DGPS or better. Throttle shows COLOR at a brightness that follows the throttle. Status copies the stock NeoPixel status pattern.",
+      "DisplayName": "LED segment function",
+      "User": "Standard",
+      "Values": {
+        "0": "Off",
+        "1": "Fixed colour",
+        "2": "Flight mode",
+        "3": "Arm state",
+        "4": "Battery",
+        "5": "GPS",
+        "6": "Link quality",
+        "7": "Throttle",
+        "8": "Status"
+      }
+    },
+    "NTF_LS1_LEN": {
+      "Description": "Number of LEDs in this segment. LEDs past NTF_LED_LEN are ignored.",
+      "DisplayName": "LED segment length",
+      "Range": {
+        "high": "127",
+        "low": "0"
+      },
+      "User": "Standard"
+    },
+    "NTF_LS1_OVL": {
+      "Bitmask": {
+        "0": "Blink",
+        "1": "Strobe",
+        "2": "Larson scanner",
+        "3": "Failsafe warning",
+        "4": "Bar",
+        "5": "Reverse",
+        "6": "Only when armed"
+      },
+      "Description": "Effects drawn on top of the segment function. Blink is 1 Hz. Strobe is a white double flash every 1.2 s (with COLOR Off between flashes this makes a white anti-collision strobe). Larson scanner sweeps one bright LED along the segment. Failsafe warning flashes red during any radio/battery/GCS/EKF failsafe. Bar lights a share of the segment proportional to Battery/GPS satellites/Link quality/Throttle. Reverse runs the segment from its last LED. Only when armed blanks the segment while disarmed.",
+      "DisplayName": "LED segment effects",
+      "User": "Standard"
+    },
+    "NTF_LS1_START": {
+      "Description": "First LED of this segment, counting from 1 at the data-input end of the strip. 0 turns the segment off. Segments are drawn in order, so where two overlap the higher-numbered segment wins. Only used when NTF_LS_ENABLE is 1.",
+      "DisplayName": "LED segment first LED",
+      "Range": {
+        "high": "127",
+        "low": "0"
+      },
+      "User": "Standard"
+    }
+  },
+  "NTF_LS2_": {
+    "NTF_LS2_COLOR": {
+      "Description": "Palette colour for Fixed colour and Throttle segments, and the fallback for Battery when no remaining-capacity estimate is available.",
+      "DisplayName": "LED segment colour",
+      "User": "Standard",
+      "Values": {
+        "0": "Off",
+        "1": "White",
+        "10": "Blue",
+        "11": "Violet",
+        "12": "Magenta",
+        "13": "Pink",
+        "14": "Amber",
+        "15": "Warm white",
+        "2": "Red",
+        "3": "Orange",
+        "4": "Yellow",
+        "5": "Lime",
+        "6": "Green",
+        "7": "Mint",
+        "8": "Cyan",
+        "9": "Light blue"
+      }
+    },
+    "NTF_LS2_FUNC": {
+      "Description": "What this segment shows. Fixed colour uses COLOR. Flight mode uses NTF_LS_MODECLR. Arm state is green when armed, blue when disarmed and ready, amber when pre-arm checks fail. Battery and Link quality fade from red through yellow to green. GPS is red without a 3D fix, yellow with 3D, green with DGPS or better. Throttle shows COLOR at a brightness that follows the throttle. Status copies the stock NeoPixel status pattern.",
+      "DisplayName": "LED segment function",
+      "User": "Standard",
+      "Values": {
+        "0": "Off",
+        "1": "Fixed colour",
+        "2": "Flight mode",
+        "3": "Arm state",
+        "4": "Battery",
+        "5": "GPS",
+        "6": "Link quality",
+        "7": "Throttle",
+        "8": "Status"
+      }
+    },
+    "NTF_LS2_LEN": {
+      "Description": "Number of LEDs in this segment. LEDs past NTF_LED_LEN are ignored.",
+      "DisplayName": "LED segment length",
+      "Range": {
+        "high": "127",
+        "low": "0"
+      },
+      "User": "Standard"
+    },
+    "NTF_LS2_OVL": {
+      "Bitmask": {
+        "0": "Blink",
+        "1": "Strobe",
+        "2": "Larson scanner",
+        "3": "Failsafe warning",
+        "4": "Bar",
+        "5": "Reverse",
+        "6": "Only when armed"
+      },
+      "Description": "Effects drawn on top of the segment function. Blink is 1 Hz. Strobe is a white double flash every 1.2 s (with COLOR Off between flashes this makes a white anti-collision strobe). Larson scanner sweeps one bright LED along the segment. Failsafe warning flashes red during any radio/battery/GCS/EKF failsafe. Bar lights a share of the segment proportional to Battery/GPS satellites/Link quality/Throttle. Reverse runs the segment from its last LED. Only when armed blanks the segment while disarmed.",
+      "DisplayName": "LED segment effects",
+      "User": "Standard"
+    },
+    "NTF_LS2_START": {
+      "Description": "First LED of this segment, counting from 1 at the data-input end of the strip. 0 turns the segment off. Segments are drawn in order, so where two overlap the higher-numbered segment wins. Only used when NTF_LS_ENABLE is 1.",
+      "DisplayName": "LED segment first LED",
+      "Range": {
+        "high": "127",
+        "low": "0"
+      },
+      "User": "Standard"
+    }
+  },
+  "NTF_LS3_": {
+    "NTF_LS3_COLOR": {
+      "Description": "Palette colour for Fixed colour and Throttle segments, and the fallback for Battery when no remaining-capacity estimate is available.",
+      "DisplayName": "LED segment colour",
+      "User": "Standard",
+      "Values": {
+        "0": "Off",
+        "1": "White",
+        "10": "Blue",
+        "11": "Violet",
+        "12": "Magenta",
+        "13": "Pink",
+        "14": "Amber",
+        "15": "Warm white",
+        "2": "Red",
+        "3": "Orange",
+        "4": "Yellow",
+        "5": "Lime",
+        "6": "Green",
+        "7": "Mint",
+        "8": "Cyan",
+        "9": "Light blue"
+      }
+    },
+    "NTF_LS3_FUNC": {
+      "Description": "What this segment shows. Fixed colour uses COLOR. Flight mode uses NTF_LS_MODECLR. Arm state is green when armed, blue when disarmed and ready, amber when pre-arm checks fail. Battery and Link quality fade from red through yellow to green. GPS is red without a 3D fix, yellow with 3D, green with DGPS or better. Throttle shows COLOR at a brightness that follows the throttle. Status copies the stock NeoPixel status pattern.",
+      "DisplayName": "LED segment function",
+      "User": "Standard",
+      "Values": {
+        "0": "Off",
+        "1": "Fixed colour",
+        "2": "Flight mode",
+        "3": "Arm state",
+        "4": "Battery",
+        "5": "GPS",
+        "6": "Link quality",
+        "7": "Throttle",
+        "8": "Status"
+      }
+    },
+    "NTF_LS3_LEN": {
+      "Description": "Number of LEDs in this segment. LEDs past NTF_LED_LEN are ignored.",
+      "DisplayName": "LED segment length",
+      "Range": {
+        "high": "127",
+        "low": "0"
+      },
+      "User": "Standard"
+    },
+    "NTF_LS3_OVL": {
+      "Bitmask": {
+        "0": "Blink",
+        "1": "Strobe",
+        "2": "Larson scanner",
+        "3": "Failsafe warning",
+        "4": "Bar",
+        "5": "Reverse",
+        "6": "Only when armed"
+      },
+      "Description": "Effects drawn on top of the segment function. Blink is 1 Hz. Strobe is a white double flash every 1.2 s (with COLOR Off between flashes this makes a white anti-collision strobe). Larson scanner sweeps one bright LED along the segment. Failsafe warning flashes red during any radio/battery/GCS/EKF failsafe. Bar lights a share of the segment proportional to Battery/GPS satellites/Link quality/Throttle. Reverse runs the segment from its last LED. Only when armed blanks the segment while disarmed.",
+      "DisplayName": "LED segment effects",
+      "User": "Standard"
+    },
+    "NTF_LS3_START": {
+      "Description": "First LED of this segment, counting from 1 at the data-input end of the strip. 0 turns the segment off. Segments are drawn in order, so where two overlap the higher-numbered segment wins. Only used when NTF_LS_ENABLE is 1.",
+      "DisplayName": "LED segment first LED",
+      "Range": {
+        "high": "127",
+        "low": "0"
+      },
+      "User": "Standard"
+    }
+  },
+  "NTF_LS4_": {
+    "NTF_LS4_COLOR": {
+      "Description": "Palette colour for Fixed colour and Throttle segments, and the fallback for Battery when no remaining-capacity estimate is available.",
+      "DisplayName": "LED segment colour",
+      "User": "Standard",
+      "Values": {
+        "0": "Off",
+        "1": "White",
+        "10": "Blue",
+        "11": "Violet",
+        "12": "Magenta",
+        "13": "Pink",
+        "14": "Amber",
+        "15": "Warm white",
+        "2": "Red",
+        "3": "Orange",
+        "4": "Yellow",
+        "5": "Lime",
+        "6": "Green",
+        "7": "Mint",
+        "8": "Cyan",
+        "9": "Light blue"
+      }
+    },
+    "NTF_LS4_FUNC": {
+      "Description": "What this segment shows. Fixed colour uses COLOR. Flight mode uses NTF_LS_MODECLR. Arm state is green when armed, blue when disarmed and ready, amber when pre-arm checks fail. Battery and Link quality fade from red through yellow to green. GPS is red without a 3D fix, yellow with 3D, green with DGPS or better. Throttle shows COLOR at a brightness that follows the throttle. Status copies the stock NeoPixel status pattern.",
+      "DisplayName": "LED segment function",
+      "User": "Standard",
+      "Values": {
+        "0": "Off",
+        "1": "Fixed colour",
+        "2": "Flight mode",
+        "3": "Arm state",
+        "4": "Battery",
+        "5": "GPS",
+        "6": "Link quality",
+        "7": "Throttle",
+        "8": "Status"
+      }
+    },
+    "NTF_LS4_LEN": {
+      "Description": "Number of LEDs in this segment. LEDs past NTF_LED_LEN are ignored.",
+      "DisplayName": "LED segment length",
+      "Range": {
+        "high": "127",
+        "low": "0"
+      },
+      "User": "Standard"
+    },
+    "NTF_LS4_OVL": {
+      "Bitmask": {
+        "0": "Blink",
+        "1": "Strobe",
+        "2": "Larson scanner",
+        "3": "Failsafe warning",
+        "4": "Bar",
+        "5": "Reverse",
+        "6": "Only when armed"
+      },
+      "Description": "Effects drawn on top of the segment function. Blink is 1 Hz. Strobe is a white double flash every 1.2 s (with COLOR Off between flashes this makes a white anti-collision strobe). Larson scanner sweeps one bright LED along the segment. Failsafe warning flashes red during any radio/battery/GCS/EKF failsafe. Bar lights a share of the segment proportional to Battery/GPS satellites/Link quality/Throttle. Reverse runs the segment from its last LED. Only when armed blanks the segment while disarmed.",
+      "DisplayName": "LED segment effects",
+      "User": "Standard"
+    },
+    "NTF_LS4_START": {
+      "Description": "First LED of this segment, counting from 1 at the data-input end of the strip. 0 turns the segment off. Segments are drawn in order, so where two overlap the higher-numbered segment wins. Only used when NTF_LS_ENABLE is 1.",
+      "DisplayName": "LED segment first LED",
+      "Range": {
+        "high": "127",
+        "low": "0"
+      },
+      "User": "Standard"
+    }
+  },
+  "NTF_LS5_": {
+    "NTF_LS5_COLOR": {
+      "Description": "Palette colour for Fixed colour and Throttle segments, and the fallback for Battery when no remaining-capacity estimate is available.",
+      "DisplayName": "LED segment colour",
+      "User": "Standard",
+      "Values": {
+        "0": "Off",
+        "1": "White",
+        "10": "Blue",
+        "11": "Violet",
+        "12": "Magenta",
+        "13": "Pink",
+        "14": "Amber",
+        "15": "Warm white",
+        "2": "Red",
+        "3": "Orange",
+        "4": "Yellow",
+        "5": "Lime",
+        "6": "Green",
+        "7": "Mint",
+        "8": "Cyan",
+        "9": "Light blue"
+      }
+    },
+    "NTF_LS5_FUNC": {
+      "Description": "What this segment shows. Fixed colour uses COLOR. Flight mode uses NTF_LS_MODECLR. Arm state is green when armed, blue when disarmed and ready, amber when pre-arm checks fail. Battery and Link quality fade from red through yellow to green. GPS is red without a 3D fix, yellow with 3D, green with DGPS or better. Throttle shows COLOR at a brightness that follows the throttle. Status copies the stock NeoPixel status pattern.",
+      "DisplayName": "LED segment function",
+      "User": "Standard",
+      "Values": {
+        "0": "Off",
+        "1": "Fixed colour",
+        "2": "Flight mode",
+        "3": "Arm state",
+        "4": "Battery",
+        "5": "GPS",
+        "6": "Link quality",
+        "7": "Throttle",
+        "8": "Status"
+      }
+    },
+    "NTF_LS5_LEN": {
+      "Description": "Number of LEDs in this segment. LEDs past NTF_LED_LEN are ignored.",
+      "DisplayName": "LED segment length",
+      "Range": {
+        "high": "127",
+        "low": "0"
+      },
+      "User": "Standard"
+    },
+    "NTF_LS5_OVL": {
+      "Bitmask": {
+        "0": "Blink",
+        "1": "Strobe",
+        "2": "Larson scanner",
+        "3": "Failsafe warning",
+        "4": "Bar",
+        "5": "Reverse",
+        "6": "Only when armed"
+      },
+      "Description": "Effects drawn on top of the segment function. Blink is 1 Hz. Strobe is a white double flash every 1.2 s (with COLOR Off between flashes this makes a white anti-collision strobe). Larson scanner sweeps one bright LED along the segment. Failsafe warning flashes red during any radio/battery/GCS/EKF failsafe. Bar lights a share of the segment proportional to Battery/GPS satellites/Link quality/Throttle. Reverse runs the segment from its last LED. Only when armed blanks the segment while disarmed.",
+      "DisplayName": "LED segment effects",
+      "User": "Standard"
+    },
+    "NTF_LS5_START": {
+      "Description": "First LED of this segment, counting from 1 at the data-input end of the strip. 0 turns the segment off. Segments are drawn in order, so where two overlap the higher-numbered segment wins. Only used when NTF_LS_ENABLE is 1.",
+      "DisplayName": "LED segment first LED",
+      "Range": {
+        "high": "127",
+        "low": "0"
+      },
+      "User": "Standard"
+    }
+  },
+  "NTF_LS6_": {
+    "NTF_LS6_COLOR": {
+      "Description": "Palette colour for Fixed colour and Throttle segments, and the fallback for Battery when no remaining-capacity estimate is available.",
+      "DisplayName": "LED segment colour",
+      "User": "Standard",
+      "Values": {
+        "0": "Off",
+        "1": "White",
+        "10": "Blue",
+        "11": "Violet",
+        "12": "Magenta",
+        "13": "Pink",
+        "14": "Amber",
+        "15": "Warm white",
+        "2": "Red",
+        "3": "Orange",
+        "4": "Yellow",
+        "5": "Lime",
+        "6": "Green",
+        "7": "Mint",
+        "8": "Cyan",
+        "9": "Light blue"
+      }
+    },
+    "NTF_LS6_FUNC": {
+      "Description": "What this segment shows. Fixed colour uses COLOR. Flight mode uses NTF_LS_MODECLR. Arm state is green when armed, blue when disarmed and ready, amber when pre-arm checks fail. Battery and Link quality fade from red through yellow to green. GPS is red without a 3D fix, yellow with 3D, green with DGPS or better. Throttle shows COLOR at a brightness that follows the throttle. Status copies the stock NeoPixel status pattern.",
+      "DisplayName": "LED segment function",
+      "User": "Standard",
+      "Values": {
+        "0": "Off",
+        "1": "Fixed colour",
+        "2": "Flight mode",
+        "3": "Arm state",
+        "4": "Battery",
+        "5": "GPS",
+        "6": "Link quality",
+        "7": "Throttle",
+        "8": "Status"
+      }
+    },
+    "NTF_LS6_LEN": {
+      "Description": "Number of LEDs in this segment. LEDs past NTF_LED_LEN are ignored.",
+      "DisplayName": "LED segment length",
+      "Range": {
+        "high": "127",
+        "low": "0"
+      },
+      "User": "Standard"
+    },
+    "NTF_LS6_OVL": {
+      "Bitmask": {
+        "0": "Blink",
+        "1": "Strobe",
+        "2": "Larson scanner",
+        "3": "Failsafe warning",
+        "4": "Bar",
+        "5": "Reverse",
+        "6": "Only when armed"
+      },
+      "Description": "Effects drawn on top of the segment function. Blink is 1 Hz. Strobe is a white double flash every 1.2 s (with COLOR Off between flashes this makes a white anti-collision strobe). Larson scanner sweeps one bright LED along the segment. Failsafe warning flashes red during any radio/battery/GCS/EKF failsafe. Bar lights a share of the segment proportional to Battery/GPS satellites/Link quality/Throttle. Reverse runs the segment from its last LED. Only when armed blanks the segment while disarmed.",
+      "DisplayName": "LED segment effects",
+      "User": "Standard"
+    },
+    "NTF_LS6_START": {
+      "Description": "First LED of this segment, counting from 1 at the data-input end of the strip. 0 turns the segment off. Segments are drawn in order, so where two overlap the higher-numbered segment wins. Only used when NTF_LS_ENABLE is 1.",
+      "DisplayName": "LED segment first LED",
+      "Range": {
+        "high": "127",
+        "low": "0"
+      },
+      "User": "Standard"
+    }
+  },
+  "NTF_LS7_": {
+    "NTF_LS7_COLOR": {
+      "Description": "Palette colour for Fixed colour and Throttle segments, and the fallback for Battery when no remaining-capacity estimate is available.",
+      "DisplayName": "LED segment colour",
+      "User": "Standard",
+      "Values": {
+        "0": "Off",
+        "1": "White",
+        "10": "Blue",
+        "11": "Violet",
+        "12": "Magenta",
+        "13": "Pink",
+        "14": "Amber",
+        "15": "Warm white",
+        "2": "Red",
+        "3": "Orange",
+        "4": "Yellow",
+        "5": "Lime",
+        "6": "Green",
+        "7": "Mint",
+        "8": "Cyan",
+        "9": "Light blue"
+      }
+    },
+    "NTF_LS7_FUNC": {
+      "Description": "What this segment shows. Fixed colour uses COLOR. Flight mode uses NTF_LS_MODECLR. Arm state is green when armed, blue when disarmed and ready, amber when pre-arm checks fail. Battery and Link quality fade from red through yellow to green. GPS is red without a 3D fix, yellow with 3D, green with DGPS or better. Throttle shows COLOR at a brightness that follows the throttle. Status copies the stock NeoPixel status pattern.",
+      "DisplayName": "LED segment function",
+      "User": "Standard",
+      "Values": {
+        "0": "Off",
+        "1": "Fixed colour",
+        "2": "Flight mode",
+        "3": "Arm state",
+        "4": "Battery",
+        "5": "GPS",
+        "6": "Link quality",
+        "7": "Throttle",
+        "8": "Status"
+      }
+    },
+    "NTF_LS7_LEN": {
+      "Description": "Number of LEDs in this segment. LEDs past NTF_LED_LEN are ignored.",
+      "DisplayName": "LED segment length",
+      "Range": {
+        "high": "127",
+        "low": "0"
+      },
+      "User": "Standard"
+    },
+    "NTF_LS7_OVL": {
+      "Bitmask": {
+        "0": "Blink",
+        "1": "Strobe",
+        "2": "Larson scanner",
+        "3": "Failsafe warning",
+        "4": "Bar",
+        "5": "Reverse",
+        "6": "Only when armed"
+      },
+      "Description": "Effects drawn on top of the segment function. Blink is 1 Hz. Strobe is a white double flash every 1.2 s (with COLOR Off between flashes this makes a white anti-collision strobe). Larson scanner sweeps one bright LED along the segment. Failsafe warning flashes red during any radio/battery/GCS/EKF failsafe. Bar lights a share of the segment proportional to Battery/GPS satellites/Link quality/Throttle. Reverse runs the segment from its last LED. Only when armed blanks the segment while disarmed.",
+      "DisplayName": "LED segment effects",
+      "User": "Standard"
+    },
+    "NTF_LS7_START": {
+      "Description": "First LED of this segment, counting from 1 at the data-input end of the strip. 0 turns the segment off. Segments are drawn in order, so where two overlap the higher-numbered segment wins. Only used when NTF_LS_ENABLE is 1.",
+      "DisplayName": "LED segment first LED",
+      "Range": {
+        "high": "127",
+        "low": "0"
+      },
+      "User": "Standard"
+    }
+  },
+  "NTF_LS8_": {
+    "NTF_LS8_COLOR": {
+      "Description": "Palette colour for Fixed colour and Throttle segments, and the fallback for Battery when no remaining-capacity estimate is available.",
+      "DisplayName": "LED segment colour",
+      "User": "Standard",
+      "Values": {
+        "0": "Off",
+        "1": "White",
+        "10": "Blue",
+        "11": "Violet",
+        "12": "Magenta",
+        "13": "Pink",
+        "14": "Amber",
+        "15": "Warm white",
+        "2": "Red",
+        "3": "Orange",
+        "4": "Yellow",
+        "5": "Lime",
+        "6": "Green",
+        "7": "Mint",
+        "8": "Cyan",
+        "9": "Light blue"
+      }
+    },
+    "NTF_LS8_FUNC": {
+      "Description": "What this segment shows. Fixed colour uses COLOR. Flight mode uses NTF_LS_MODECLR. Arm state is green when armed, blue when disarmed and ready, amber when pre-arm checks fail. Battery and Link quality fade from red through yellow to green. GPS is red without a 3D fix, yellow with 3D, green with DGPS or better. Throttle shows COLOR at a brightness that follows the throttle. Status copies the stock NeoPixel status pattern.",
+      "DisplayName": "LED segment function",
+      "User": "Standard",
+      "Values": {
+        "0": "Off",
+        "1": "Fixed colour",
+        "2": "Flight mode",
+        "3": "Arm state",
+        "4": "Battery",
+        "5": "GPS",
+        "6": "Link quality",
+        "7": "Throttle",
+        "8": "Status"
+      }
+    },
+    "NTF_LS8_LEN": {
+      "Description": "Number of LEDs in this segment. LEDs past NTF_LED_LEN are ignored.",
+      "DisplayName": "LED segment length",
+      "Range": {
+        "high": "127",
+        "low": "0"
+      },
+      "User": "Standard"
+    },
+    "NTF_LS8_OVL": {
+      "Bitmask": {
+        "0": "Blink",
+        "1": "Strobe",
+        "2": "Larson scanner",
+        "3": "Failsafe warning",
+        "4": "Bar",
+        "5": "Reverse",
+        "6": "Only when armed"
+      },
+      "Description": "Effects drawn on top of the segment function. Blink is 1 Hz. Strobe is a white double flash every 1.2 s (with COLOR Off between flashes this makes a white anti-collision strobe). Larson scanner sweeps one bright LED along the segment. Failsafe warning flashes red during any radio/battery/GCS/EKF failsafe. Bar lights a share of the segment proportional to Battery/GPS satellites/Link quality/Throttle. Reverse runs the segment from its last LED. Only when armed blanks the segment while disarmed.",
+      "DisplayName": "LED segment effects",
+      "User": "Standard"
+    },
+    "NTF_LS8_START": {
+      "Description": "First LED of this segment, counting from 1 at the data-input end of the strip. 0 turns the segment off. Segments are drawn in order, so where two overlap the higher-numbered segment wins. Only used when NTF_LS_ENABLE is 1.",
+      "DisplayName": "LED segment first LED",
+      "Range": {
+        "high": "127",
+        "low": "0"
+      },
+      "User": "Standard"
     }
   },
   "OSD": {
@@ -44118,7 +44731,7 @@
       "User": "Advanced"
     },
     "LAND_WIND_BIAS": {
-      "Description": "Bias the DO_LAND_START selection toward landings whose final approach faces into the wind. Applies wherever ArduPlane chooses a landing sequence -- RTL autoland, fence breach, battery failsafe, and the GCS DO_LAND_START command. 0 = pure nearest-distance (upstream default; no behaviour change). > 0 = penalise tailwind candidates; full headwind earns no penalty. Falls back to nearest-distance when AHRS wind estimate < 1 m/s or an approach heading cannot be derived from the mission sequence.",
+      "Description": "Bias the DO_LAND_START selection toward landings whose final approach faces into the wind. Applies wherever ArduPlane chooses a landing sequence -- RTL autoland, fence breach, battery failsafe, and the GCS DO_LAND_START command. 0 = pure nearest-distance (upstream default; no behaviour change). > 0 = penalise tailwind candidates; full headwind earns no penalty. Values above 1 are treated as 1. Falls back to nearest-distance when AHRS wind estimate < 1 m/s or an approach heading cannot be derived from the mission sequence.",
       "DisplayName": "Landing sequence wind bias",
       "Range": {
         "high": "1",
