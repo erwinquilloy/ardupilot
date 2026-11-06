@@ -1,0 +1,22 @@
+# hw definition for a fork variant of the AET-H743-Basic with the tone buzzer
+# on the S12 pad.
+#
+# The board's beeper pin (PA15, TIM2_CH1 ALARM) is not brought out to any pad
+# in AeroEggTech's pinout, so a buzzer can't be wired to it. This variant moves
+# the ALARM to PE6 (TIM15_CH2), the S12 pad: AP_ToneAlarm plays the full
+# pitched tunes on a passive piezo wired between S12 and G.
+#
+# Cost: outputs 11 AND 12. They share TIM15, and the tone generator retunes
+# the timer, so S11 can't run PWM next to it. S11 stays as a plain GPIO (60)
+# for a relay. Outputs 1-10 and the LED strip on output 13 (with the v2.2 LED
+# segments) are unchanged. 11-12 were PWM only (no DMA on TIM15) anyway.
+#
+# Board ID is inherited (AP_HW_AET-H743-Basic, 2024), so the .apj flashes over
+# the stock bootloader as a normal firmware update.
+
+include ../AET-H743-Basic/hwdef.dat
+
+undef PE5 PE6 PA15
+PE5 S11_GPIO OUTPUT LOW GPIO(60)
+PE6 TIM15_CH2 TIM15 GPIO(61) ALARM
+PA15 BEEPER_UNUSED OUTPUT LOW GPIO(32)

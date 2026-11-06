@@ -1,0 +1,4 @@
+# Bootloader for the AET-H743-Basic tone-buzzer variant. Identical to the stock
+# AET-H743-Basic bootloader (same board ID, flash layout and pins); the buzzer
+# change only affects the application firmware.
+include ../AET-H743-Basic/hwdef-bl.dat
