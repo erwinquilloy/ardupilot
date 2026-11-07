@@ -24,7 +24,7 @@
 > [Building](#building)).
 > **⬇ Download:** grab the newest build for your board from the
 > [**Releases** page](https://github.com/erwinquilloy/ardupilot/releases)
-> (every version, newest first — the current releases are `full-v2.1` and `light-v2.1`).
+> (every version, newest first — the current releases are `full-v2.2` and `light-v2.2`).
 
 A curated fork of ArduPlane, rebased onto upstream **ArduPlane 4.7.2**
 (tag `Plane-4.7.2`, commit `fb77356789`). This branch carries a set of
@@ -63,37 +63,15 @@ plus a few additions originating in this fork.
 
 ## What's new in v2.2
 
-*Not released yet: the current download is v2.1. Everything below is on both tracks unless the row says otherwise.*
+*Everything below is on both tracks unless the row says otherwise.*
 
 | Area | Change | Details |
 |---|---|---|
 | Flight | **`LAND_WIND_BIAS` above 1 could choose a tailwind landing.** Values above 1 now act as 1, and equal scores go to the nearer `DO_LAND_START` | [LAND_WIND_BIAS](#land_wind_bias--pick-the-upwind-do_land_start) |
 | Reliability | **Connecting a GCS right after power-up no longer stalls the main loop.** On F4 boards with many parameters (seen on a tilt-tri quadplane) this gave `Internal errors 0x8000 main_loop_stk` and blocked arming until a reboot | |
 | OSD | **`MSP_DSARM_HOLD`** (off by default): keeps reporting armed for up to 7 s after a disarm so DJI O3 and O4 video catches the stats screen. It applies only to MSP DisplayPort ports; the motors disarm normally | [Keeping the stats in DJI video](#keeping-the-stats-in-dji-video-msp_dsarm_hold) |
-| LEDs | **Addressable LED strip segments** (`NTF_LS*`, off by default): up to 8 INAV-style segments for nav lights, strobes, a battery bar, flight mode or failsafe flash. Every full board, plus `SpeedyBeeF405WING-LED` and `MatekF405-TE-bdshot` on the light track | [LED strip segments](#addressable-led-strip-segments-v22) |
+| LEDs | **Addressable LED strip segments** (`NTF_LS*`, off by default): up to 8 INAV-style segments for nav lights, strobes, a battery bar, flight mode or failsafe flash. Every full board, plus `SpeedyBeeF405WING-LED` and `MatekF405-TE-bdshot` on the light track. Design them in the [LED Segment Editor](https://erwinquilloy.github.io/ardupilot-tools/led-editor.html) | [LED strip segments](#addressable-led-strip-segments-v22) |
 | Boards | **`SpeedyBeeF405WING-LED`** (light): the `-Buzz` board plus LED segments. `MatekF405-TE-bdshot` now defaults its LED pad to a NeoPixel strip on output 12 | [Which SpeedyBee firmware](#tone-buzzer-board-variant-speedybeef405wing-buzz) |
-
-## What's new in v2.1
-
-*Everything below is on both tracks unless it says "full only".*
-
-| Area | Change | Details |
-|---|---|---|
-| Name | **ArduPlane Custom is now ArduPlane Stratos.** The boot banner reads `ArduPlane V4.7.2 Stratos v2.1`; parameters, release tracks and branch names are unchanged | [Firmware version string](#firmware-version-string) |
-| Base | **Rebased onto ArduPlane 4.7.2** (v2.0 was on 4.7.1). A bug-fix release: no parameter renames. Most visible fix: a flight controller mounted upside down or rotated (`AHRS_ORIENTATION` not 0) no longer waits minutes for "Roll/Pitch inconsistent" after power-up | [What ArduPlane 4.7.2 brought in](#what-arduplane-472-brought-in) |
-| Flight | **Adaptive pitch trim** (`RCx_OPTION 254`, `PTCH_TRIM_SPD` / `PTCH_TRIM_OFS`): pitch trim scheduled on airspeed, learned in a few straight legs; `KFF_THR2PTCH` is ignored while the curve is active | [Adaptive pitch trim](#adaptive-pitch-trim--airspeed-schedule-learned-in-flight-rcx_option--254) |
-| Flight | **Servo auto-trim also works in Course Hold**, under the same rules as FBWA: `SERVO_AUTO_TRIM 1` (once), `2` (continuous) or the `RCx_OPTION 200` switch. With 0 and the switch low, Course Hold never trims | [Auto-trim improvements](#auto-trim-improvements) |
-| Flight | `FLIGHT_OPTIONS` bit 21 handover message starts with "Takeoff complete", so Yaapu voices it | [Bit 21](#flight_options-bit-21--end-takeoff-in-fbwb-instead-of-loitering) |
-| VTOL | **`Q_FS_EKF_HOLD`** (off by default): after an EKF failsafe, refuse switching from a VTOL mode to a fixed-wing mode for N seconds, so a forward transition can't start on a bad height estimate | [Q_FS_EKF_HOLD](#q_fs_ekf_hold--no-forward-transition-right-after-an-ekf-failsafe-v21) |
-| RC | **32 RC channels** (`RC_32CH_ENABLE`, off by default), `RC17_`–`RC32_OPTION` | [32 RC channels](#32-rc-channels-v21) |
-| RC | **mLRS RC over MAVLink (`radio_rc_channels`) on every board**, light 1 MB F4 included; stock needs a 2 MB board. Channels 17–32 stay steady with mLRS 1.4.04's mixed 16/32-channel frames | [mLRS MAVLink RC](#mlrs-mavlink-rc-radio_rc_channels-on-every-board-v21) |
-| Head tracking | **Head tracking from the VTX gimbal port** (`SERIALn_PROTOCOL 51`) for goggles that don't send it over MSP; one UART can also drive a CADDX gimbal; MSP head tracking wins when both arrive | [Gimbal-port head tracking](#head-tracking-from-the-vtx-gimbal-port-serialn_protocol-51) |
-| Head tracking | Short or malformed MSP head-tracker frames are dropped | |
-| OSD | **ADS-B traffic warning**: the `OSDx_ADSB` element flashes inside `OSD_W_ADSB_DIST` (and optionally `OSD_W_ADSB_ALT`). **Full only** | [Traffic warning](#traffic-warning-v21) |
-| Radar | `RADAR_OSD_MODE 1` shows the nearest peer instead of cycling. A peer without a GPS fix (sending 0,0) is no longer drawn with a distance to 0,0 | [Radar OSD element](#osd-element) |
-| Boards | **Four new tone-buzzer variants**: `AtomRCF405NAVI-Buzz`, `CoreWingF405WingV2-Buzz`, `CoreWingF405MiniV2-Buzz` (light) and `TBS_LUCID_H7_OEM-Buzz` (full) play the full pitched tunes on a passive buzzer wired to the LED pad, instead of the single-pitch beeps of the stock buzzer output. They give up only the LED pad's own output; the stock boards still ship alongside for anyone who wants it | [Tone-buzzer variants](#tone-buzzer-board-variant-speedybeef405wing-buzz) |
-| Boards | **CoreWing F405 Wing V2 and Wing Mini V2** (`CoreWingF405WingV2`, `CoreWingF405WMiniV2`, light): new in ArduPlane 4.7.2, shipped on upstream's own board definitions | [CoreWing F405 Wing V2 / Wing Mini V2](#light-track--15-boards-all-1-mb-f4) |
-| Boards | **`MatekF405-Wing-PWM10`** (light): `MatekF405-Wing-bdshot` with the `LED` pad back as PWM output 10 instead of relay 1 | [Light track](#light-track--15-boards-all-1-mb-f4) |
 
 ## Upgrading to Stratos v2.x
 
@@ -241,7 +219,7 @@ list is in [ArduPlane's release notes](https://github.com/ArduPilot/ardupilot/bl
 
 An outline of everything this fork adds and where it is documented. Each line links to its section.
 
-- **Getting started** — [What's new in v2.2](#whats-new-in-v22), [What's new in v2.1](#whats-new-in-v21), [Upgrading to Stratos v2.x](#upgrading-to-stratos-v2x), [Why flash this instead of stock ArduPlane 4.7.2?](#why-flash-this-instead-of-stock-arduplane-472), [Building](#building), [Which file in the zip do I flash?](#which-file-in-the-zip-do-i-flash), [Release fleets (full-v2.1 / light-v2.1)](#release-fleets-full-v21--light-v21), [Tone-buzzer board variant (SpeedyBeeF405WING-Buzz)](#tone-buzzer-board-variant-speedybeef405wing-buzz)
+- **Getting started** — [What's new in v2.2](#whats-new-in-v22), [Upgrading to Stratos v2.x](#upgrading-to-stratos-v2x), [Why flash this instead of stock ArduPlane 4.7.2?](#why-flash-this-instead-of-stock-arduplane-472), [Building](#building), [Which file in the zip do I flash?](#which-file-in-the-zip-do-i-flash), [Release fleets (full-v2.2 / light-v2.2)](#release-fleets-full-v22--light-v22), [Tone-buzzer board variant (SpeedyBeeF405WING-Buzz)](#tone-buzzer-board-variant-speedybeef405wing-buzz)
 - **[What this fork adds](#what-this-fork-adds)**
   - [Flight modes](#flight-modes)
     - [Course Hold (mode 26)](#course-hold-mode-26)
@@ -510,7 +488,7 @@ Identical to upstream. From a configured WSL / Linux toolchain:
 ```
 
 The branch builds clean for every board in the
-[release fleets](#release-fleets-full-v21--light-v21); SITL builds and runs cleanly.
+[release fleets](#release-fleets-full-v22--light-v22); SITL builds and runs cleanly.
 
 ### Full or light is picked by the board's flash size
 
@@ -2382,7 +2360,11 @@ bar, the flight mode, a failsafe flash.
 | Full boards with a WS2812 pad (Matek F765/H743, TBS Lucid OEM/Wing AIO, AET H743) | output 13 |
 | KakuteH7-Wing, MatekH7A3-Wing, XFLY-H743 (no LED pad) | any output with DMA, set `SERVOn_FUNCTION 120`; the other output on the same timer stops working as a servo |
 
-**Setup:**
+**Setup:** the quickest way is the
+[LED Segment Editor](https://erwinquilloy.github.io/ardupilot-tools/led-editor.html) on ArduPilot Tools. Set up the
+segments in a table, watch them on a live strip as you change a simulated
+flight (mode, armed, battery, GPS, link, throttle, failsafe), then copy or
+download the `NTF_LS*` parameters as a `.param` file. The parameters themselves:
 
 | Param | Effect |
 |---|---|
@@ -3497,13 +3479,13 @@ can actually flash.
 > first try. Boards that shipped with Betaflight, or that have been
 > flashed across firmware families, are the usual candidates.
 
-## Release fleets (`full-v2.1` / `light-v2.1`)
+## Release fleets (`full-v2.2` / `light-v2.2`)
 
 Every release ships two per-board tracks built from **the same commit**:
-`full-v2.1` for F7 / H7 / 2 MB boards and `light-v2.1` for 1 MB F4 boards.
+`full-v2.2` for F7 / H7 / 2 MB boards and `light-v2.2` for 1 MB F4 boards.
 Both carry the **identical fork feature set**; they differ only in which
 hardware backends are compiled in. A board's version string tells you which you
-flashed: the light build appends ` Light` (`... Stratos v2.1 Light (…)`), the
+flashed: the light build appends ` Light` (`... Stratos v2.2 Light (…)`), the
 full build has no suffix.
 
 Since v1.1 the two tracks don't overlap — a given board appears on exactly one
@@ -3511,22 +3493,23 @@ of them, so there is no choice to get wrong.
 
 ### Full track — 9 boards (F7 / H7, 2 MB)
 
-Measured at **v2.1**:
+Measured at **v2.2**:
 
-| Board | MCU / Flash | Free after fork features | vs v2.0 | Status |
+| Board | MCU / Flash | Free after fork features | vs v2.1 | Status |
 |---|---|---:|---:|---|
-| MatekF765-Wing | F7 / 2 MB | **550.1 KB** | −6.8 | Ships — Matek F765-WING (most flash headroom in the fleet) |
-| MatekH7A3-Wing | H7 / 2 MB | **489.3 KB** | −7.4 | Ships — Matek H7A3-WING (bidirectional DShot); most room of any H7 |
-| AET-H743-Basic | H7 / 2 MB | **145.7 KB** | new | **New in v2.1** (added after release) — AeroEggTech AET-H743-Basic, hardware V1.x and V2.0 (see below) |
-| KakuteH7-Wing | H7 / 2 MB | **140.9 KB** | −5.4 | Ships — Holybro Kakute H743 Wing |
-| TBS_LUCID_H7_WING_AIO | H7 / 2 MB | **130.6 KB** | −5.8 | Ships — TBS Lucid H7 Wing AIO |
-| TBS_LUCID_H7_OEM | H7 / 2 MB | **125.5 KB** | −5.4 | Ships — TBS Lucid H7 OEM |
-| TBS_LUCID_H7_OEM-Buzz | H7 / 2 MB | **125.3 KB** | new | **New in v2.1** — TBS Lucid H7 OEM + tone buzzer on S13/LED (see below) |
-| MatekH743-bdshot | H7 / 2 MB | **123.4 KB** | −5.4 | Ships — Matek H743-WING (bidirectional DShot) |
-| XFLY-H743-bdshot | H7 / 2 MB | **111.6 KB** | −5.7 | Ships — XFly VTOL kit FC (bidirectional DShot); tightest of the full fleet |
+| MatekF765-Wing | F7 / 2 MB | **547.8 KB** | −2.3 | Ships — Matek F765-WING (most flash headroom in the fleet) |
+| MatekH7A3-Wing | H7 / 2 MB | **486.9 KB** | −2.4 | Ships — Matek H7A3-WING (bidirectional DShot); most room of any H7 |
+| AET-H743-Basic | H7 / 2 MB | **143.4 KB** | −2.3 | Ships — AeroEggTech AET-H743-Basic, hardware V1.x and V2.0 (see below) |
+| KakuteH7-Wing | H7 / 2 MB | **138.7 KB** | −2.2 | Ships — Holybro Kakute H743 Wing |
+| TBS_LUCID_H7_WING_AIO | H7 / 2 MB | **128.2 KB** | −2.4 | Ships — TBS Lucid H7 Wing AIO |
+| TBS_LUCID_H7_OEM | H7 / 2 MB | **123.3 KB** | −2.2 | Ships — TBS Lucid H7 OEM |
+| TBS_LUCID_H7_OEM-Buzz | H7 / 2 MB | **123.2 KB** | −2.1 | Ships — TBS Lucid H7 OEM + tone buzzer on S13/LED (see below) |
+| MatekH743-bdshot | H7 / 2 MB | **121.2 KB** | −2.2 | Ships — Matek H743-WING (bidirectional DShot) |
+| XFLY-H743-bdshot | H7 / 2 MB | **109.2 KB** | −2.4 | Ships — XFly VTOL kit FC (bidirectional DShot); tightest of the full fleet |
 
-Every board gave up 5–8 KB to v2.1 (the ArduPlane 4.7.2 base plus the v2.1
-fork additions). The `-Buzz` variant costs essentially nothing (0.1 KB)
+Every board gave up 2.1–2.4 KB to v2.2, almost all of it the
+[LED strip segments](#addressable-led-strip-segments-v22), which every full
+board carries. The `-Buzz` variant costs essentially nothing (0.1 KB)
 against its stock board.
 `MatekF765-Wing` still has several times the room of any H743, because the
 H743 hwdefs reserve more flash; the H7A3 in `MatekH7A3-Wing` comes close to it.
@@ -3598,30 +3581,34 @@ feature add will push against.
 > flown on Stratos yet. See
 > [the board README](libraries/AP_HAL_ChibiOS/hwdef/AET-H743-Basic/README.md).
 
-### Light track — 15 boards (all 1 MB F4)
+### Light track — 16 boards (all 1 MB F4)
 
-Measured at **v2.1** with radar, `LAND_WIND_DIST` and `LAND_WIND_STRICT` on:
+Measured at **v2.2** with radar, `LAND_WIND_DIST` and `LAND_WIND_STRICT` on:
 
-| Board | Flash | Free after fork features | vs v2.0 | Status |
+| Board | Flash | Free after fork features | vs v2.1 | Status |
 |---|---:|---:|---:|---|
-| KakuteF4-Wing-Buzz | 1 MB | **76.6 KB** | −5.2 | Ships — Kakute F4 Wing + tone buzzer (see below) |
-| speedybeef4v3 | 1 MB | **44.1 KB** | −6.3 | Ships — most F4 headroom with gimbal support |
-| MatekF405-STD | 1 MB | **41.5 KB** | −5.6 | Ships |
-| omnibusf4pro | 1 MB | **35.7 KB** | −6.3 | Ships — Omnibus F4 Pro FPV FC |
-| MatekF405-TE-bdshot | 1 MB | **28.8 KB** | −6.5 | Ships — RunCam camera control compiled in |
-| CoreWingF405WMiniV2 | 1 MB | **27.1 KB** | new | **New in v2.1** — CoreWing F405 Wing Mini V2 (see below) |
-| CoreWingF405MiniV2-Buzz | 1 MB | **26.9 KB** | new | **New in v2.1** — Wing Mini V2 + tone buzzer on the LED pad (see below) |
-| AtomRCF405NAVI | 1 MB | **25.8 KB** | −6.3 | Ships — AtomRC F405 Navi FPV FC |
-| AtomRCF405NAVI-Buzz | 1 MB | **25.8 KB** | new | **New in v2.1** — AtomRC F405 Navi + tone buzzer on the LED pad (see below) |
-| CoreWingF405WingV2 | 1 MB | **22.9 KB** | new | **New in v2.1** — CoreWing F405 Wing V2 (see below) |
-| CoreWingF405WingV2-Buzz | 1 MB | **22.6 KB** | new | **New in v2.1** — Wing V2 + tone buzzer on the LED pad (see below) |
-| SpeedyBeeF405WING | 1 MB | **20.7 KB** | −6.1 | Ships |
-| SpeedyBeeF405WING-Buzz | 1 MB | **20.4 KB** | −6.1 | Ships — SpeedyBee F405 WING + tone buzzer (see below) |
-| MatekF405-Wing-bdshot | 1 MB | **13.8 KB** | −7.1 | Ships — RunCam camera control compiled in |
-| MatekF405-Wing-PWM10 | 1 MB | **13.5 KB** | new | **New in v2.1** — Matek F405-Wing with the `LED` pad as PWM output 10 (see below); tightest of the F4 fleet |
+| KakuteF4-Wing-Buzz | 1 MB | **76.3 KB** | −0.3 | Ships — Kakute F4 Wing + tone buzzer (see below) |
+| speedybeef4v3 | 1 MB | **43.8 KB** | −0.3 | Ships — most F4 headroom with gimbal support |
+| MatekF405-STD | 1 MB | **41.3 KB** | −0.2 | Ships |
+| omnibusf4pro | 1 MB | **35.5 KB** | −0.2 | Ships — Omnibus F4 Pro FPV FC |
+| CoreWingF405WMiniV2 | 1 MB | **26.9 KB** | −0.2 | Ships — CoreWing F405 Wing Mini V2 (see below) |
+| CoreWingF405MiniV2-Buzz | 1 MB | **26.6 KB** | −0.3 | Ships — Wing Mini V2 + tone buzzer on the LED pad (see below) |
+| AtomRCF405NAVI | 1 MB | **25.5 KB** | −0.3 | Ships — AtomRC F405 Navi FPV FC |
+| AtomRCF405NAVI-Buzz | 1 MB | **25.5 KB** | −0.3 | Ships — AtomRC F405 Navi + tone buzzer on the LED pad (see below) |
+| MatekF405-TE-bdshot | 1 MB | **25.1 KB** | −3.7 | Ships — RunCam camera control compiled in; [LED strip segments](#addressable-led-strip-segments-v22) on the LED pad (new in v2.2) |
+| CoreWingF405WingV2 | 1 MB | **22.6 KB** | −0.3 | Ships — CoreWing F405 Wing V2 (see below) |
+| CoreWingF405WingV2-Buzz | 1 MB | **22.3 KB** | −0.3 | Ships — Wing V2 + tone buzzer on the LED pad (see below) |
+| SpeedyBeeF405WING | 1 MB | **20.4 KB** | −0.3 | Ships |
+| SpeedyBeeF405WING-Buzz | 1 MB | **20.1 KB** | −0.3 | Ships — SpeedyBee F405 WING + tone buzzer (see below) |
+| SpeedyBeeF405WING-LED | 1 MB | **17.7 KB** | new | **New in v2.2** — SpeedyBee F405 WING + tone buzzer + [LED strip segments](#addressable-led-strip-segments-v22) (see below) |
+| MatekF405-Wing-bdshot | 1 MB | **13.5 KB** | −0.3 | Ships — RunCam camera control compiled in |
+| MatekF405-Wing-PWM10 | 1 MB | **13.3 KB** | −0.2 | Ships — Matek F405-Wing with the `LED` pad as PWM output 10 (see below); tightest of the F4 fleet |
 
-Every board gave up 5–7 KB to v2.1 (the ArduPlane 4.7.2 base plus the v2.1
-fork additions); `AtomRCF405NAVI-Buzz` costs 40 bytes against stock
+v2.2 costs these boards about 0.3 KB (the parameter-count fix and
+`MSP_DSARM_HOLD`). `MatekF405-TE-bdshot` gives up 3.7 KB, because it also
+carries the [LED strip segments](#addressable-led-strip-segments-v22) and its
+first `defaults.parm`; `SpeedyBeeF405WING-LED` has 2.4 KB less than `-Buzz`
+for the same reason. `AtomRCF405NAVI-Buzz` costs 32 bytes against stock
 `AtomRCF405NAVI`. The twelve boards with gimbal support also carry the POI lock
 switch (about 1.2 KB).
 
@@ -3671,7 +3658,7 @@ routing them through the DShot ESCs. Cost is one servo output (S11 /
 channel 11); outputs 1-10 and 12 (WS2812 LED) are unchanged. Board ID
 is inherited (1106) so the `.apj` flashes over the stock SpeedyBee
 bootloader as a normal update. Flash footprint is essentially identical
-to stock `SpeedyBeeF405WING` (20.4 KB vs 20.7 KB free at v2.1 —
+to stock `SpeedyBeeF405WING` (20.1 KB vs 20.4 KB free at v2.2 —
 a 0.3 KB difference). Shipped as an extra
 asset on the light release alongside the other boards above.
 
@@ -4227,14 +4214,15 @@ collected here rather than scattered through the feature sections.
 
 **→ [ArduPilot Tools](https://erwinquilloy.github.io/ardupilot-tools/)**
 collects the browser tools on one page: the searchable parameter list,
-the bitmask calculator, the QRTL Planner, the LAND_WIND_BIAS Explorer and
-a link to the TECS tuning helper. Everything runs in your browser.
+the bitmask calculator, the QRTL Planner, the LAND_WIND_BIAS Explorer, the
+LED Segment Editor and a link to the TECS tuning helper. Everything runs in your browser.
 
 | Tool | What it is for | Where |
 |---|---|---|
-| **ArduPilot Tools site** | The browser tools below plus the QRTL Planner (where a QRTL starts its glide and how low it gets), the LAND_WIND_BIAS Explorer (which `DO_LAND_START` an autoland picks, and why) and the Adaptive Pitch Trim Explorer (plots a pitch-trim curve from a `.param` or `.bin`) | [erwinquilloy.github.io/ardupilot-tools](https://erwinquilloy.github.io/ardupilot-tools/) |
+| **ArduPilot Tools site** | The browser tools below plus the QRTL Planner (where a QRTL starts its glide and how low it gets), the LAND_WIND_BIAS Explorer (which `DO_LAND_START` an autoland picks, and why) the Adaptive Pitch Trim Explorer (plots a pitch-trim curve from a `.param` or `.bin`) and the LED Segment Editor (below) | [erwinquilloy.github.io/ardupilot-tools](https://erwinquilloy.github.io/ardupilot-tools/) |
 | **Full parameter reference** | Every parameter this firmware exposes, with descriptions, units and ranges — your GCS ships upstream metadata and will not describe fork parameters | [below](#full-parameter-reference) |
 | **Bitmask calculator** | Tick bits, copy out the integer — or paste a value back to see which bits are set. Knows this fork's bits | [below](#bitmask-calculator) |
+| **LED Segment Editor** | Set up [LED strip segments](#addressable-led-strip-segments-v22), preview them on a live strip in a simulated flight and export the `NTF_LS*` parameters | [led-editor.html](https://erwinquilloy.github.io/ardupilot-tools/led-editor.html) |
 | **TECS tuning helper** | Step-by-step TECS tuning from the transmitter, reading live telemetry — Ethos and EdgeTX | [below](#tecs-tuning-helper-ethos--edgetx) |
 | **Yaapu Course Hold pack** | Makes modes 26 (Course Hold) and 27 (Auto Trim) show a name and speak their cue on Yaapu telemetry | [below](#yaapu-course-hold-telemetry-pack) |
 
