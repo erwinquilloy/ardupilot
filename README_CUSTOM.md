@@ -67,7 +67,7 @@ plus a few additions originating in this fork.
 
 | Area | Change | Details |
 |---|---|---|
-| Flight | **A second takeoff without a reboot could end at once on the ground.** The pitch level-off timer from the previous climb was never cleared, so re-arming in TAKEOFF ended the takeoff immediately: with `FLIGHT_OPTIONS` bit 21 that gave "Takeoff complete - FBWB" and FBWB with the aircraft still in hand. AUTO `NAV_TAKEOFF` had the same leftover. Fixed for both | [FLIGHT_OPTIONS bit 21](#flight_options-bit-21--end-takeoff-in-fbwb-instead-of-loitering) |
+| Flight | **A second TAKEOFF without a reboot could end at once on the ground.** The pitch level-off timer from the previous climb was never cleared, so selecting TAKEOFF again ended the takeoff straight away, even before arming: with `FLIGHT_OPTIONS` bit 21 that gave "Takeoff complete - FBWB" and FBWB with the aircraft still in hand. Fixed | [FLIGHT_OPTIONS bit 21](#flight_options-bit-21--end-takeoff-in-fbwb-instead-of-loitering) |
 | Flight | **`LAND_WIND_BIAS` above 1 could choose a tailwind landing.** Values above 1 now act as 1, and equal scores go to the nearer `DO_LAND_START` | [LAND_WIND_BIAS](#land_wind_bias--pick-the-upwind-do_land_start) |
 | Reliability | **Connecting a GCS right after power-up no longer stalls the main loop.** On F4 boards with many parameters (seen on a tilt-tri quadplane) this gave `Internal errors 0x8000 main_loop_stk` and blocked arming until a reboot | |
 | OSD | **`MSP_DSARM_HOLD`** (off by default): keeps reporting armed for up to 7 s after a disarm so DJI O3 and O4 video catches the stats screen. It applies only to MSP DisplayPort ports; the motors disarm normally | [Keeping the stats in DJI video](#keeping-the-stats-in-dji-video-msp_dsarm_hold) |
