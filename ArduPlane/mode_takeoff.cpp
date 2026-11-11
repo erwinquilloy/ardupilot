@@ -74,8 +74,26 @@ bool ModeTakeoff::_enter()
     takeoff_mode_setup = false;
     have_autoenabled_fences = false;
     target_alt_seeded = false;
+    clear_level_off_state();
 
     return true;
+}
+
+/*
+  Forget the previous takeoff's pitch level-off. Only a detected launch
+  cleared level_off_start_time_ms, and only an AUTO NAV_TAKEOFF cleared
+  height_below_takeoff_to_level_off_cm, so a second TAKEOFF without a
+  reboot started with both left over from the last climb: the level-off
+  timeout saw a timestamp minutes old and ended the takeoff stage while the
+  aircraft was still in the pilot's hand. With FLIGHT_OPTIONS bit 21 that
+  meant "Takeoff complete - FBWB" and FBWB on the ground, throttle on the
+  stick. Called on entry and on every pre-launch update, so a re-arm that
+  stays in TAKEOFF mode is covered too.
+ */
+void ModeTakeoff::clear_level_off_state()
+{
+    plane.takeoff_state.level_off_start_time_ms = 0;
+    plane.auto_state.height_below_takeoff_to_level_off_cm = 0;
 }
 
 /*
@@ -153,6 +171,9 @@ void ModeTakeoff::update()
             plane.next_WP_loc.offset_bearing(direction, dist);
 
             plane.crash_state.is_crashed = false;
+
+            // not launched yet: no level-off can belong to this takeoff
+            clear_level_off_state();
 
             plane.auto_state.takeoff_pitch_cd = level_pitch * 100;
 

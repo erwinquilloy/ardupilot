@@ -389,6 +389,10 @@ void Plane::do_takeoff(const AP_Mission::Mission_Command& cmd)
     auto_state.takeoff_complete = false; // set flag to use gps ground course during TO. IMU will be doing yaw drift correction.
     auto_state.rotation_complete = false;
     auto_state.height_below_takeoff_to_level_off_cm = 0;
+    // and the previous takeoff's level-off timer: only a detected launch
+    // cleared it, and verify_takeoff() checks it before launch, so a second
+    // AUTO takeoff without a reboot could complete on the ground
+    takeoff_state.level_off_start_time_ms = 0;
     // Flag also used to override "on the ground" throttle disable
 
     // zero locked course

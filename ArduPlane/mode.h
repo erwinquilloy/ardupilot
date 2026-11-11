@@ -1058,6 +1058,10 @@ private:
     // Sets target_alt_seeded.
     void seed_loiter_state();
 
+    // forget the previous takeoff's pitch level-off timer and height, so a
+    // re-arm without a reboot does not inherit them
+    void clear_level_off_state();
+
     // true once seed_target_altitude() has run. navigate() must not write
     // target_altitude back into next_WP_loc before this, or it would clobber
     // the climb target with a stale altitude left over from the previous mode.
