@@ -53,8 +53,8 @@ plus a few additions originating in this fork.
 >
 > One set covers both release tracks.
 >
-> Those two, plus the transmitter-side scripts (**TECS tuning helper**,
-> **Yaapu Course Hold pack**), are collected under
+> Those two, plus the transmitter-side scripts (**OmniDeck telemetry
+> display**, **TECS tuning helper**, **Yaapu Course Hold pack**), are collected under
 > **[Documentation and tooling](#documentation-and-tooling)**. The browser
 > tools are also on one page:
 > **[ArduPilot Tools](https://erwinquilloy.github.io/ardupilot-tools/)**.
@@ -295,6 +295,7 @@ An outline of everything this fork adds and where it is documented. Each line li
 - **[Documentation and tooling](#documentation-and-tooling)**
   - [Full parameter reference](#full-parameter-reference)
   - [Bitmask calculator](#bitmask-calculator)
+  - [OmniDeck telemetry display (Ethos / EdgeTX)](#omnideck-telemetry-display-ethos--edgetx)
   - [TECS tuning helper (Ethos / EdgeTX)](#tecs-tuning-helper-ethos--edgetx)
   - [Yaapu Course Hold telemetry pack](#yaapu-course-hold-telemetry-pack)
 - **[Branch / repository layout](#branch--repository-layout)**
@@ -4226,7 +4227,7 @@ collected here rather than scattered through the feature sections.
 **→ [ArduPilot Tools](https://erwinquilloy.github.io/ardupilot-tools/)**
 collects the browser tools on one page: the searchable parameter list,
 the bitmask calculator, the QRTL Planner, the LAND_WIND_BIAS Explorer, the
-LED Segment Editor and a link to the TECS tuning helper. Everything runs in your browser.
+LED Segment Editor, the [OmniDeck guide](https://erwinquilloy.github.io/ardupilot-tools/omnideck.html) and a link to the TECS tuning helper. Everything runs in your browser.
 
 | Tool | What it is for | Where |
 |---|---|---|
@@ -4234,6 +4235,7 @@ LED Segment Editor and a link to the TECS tuning helper. Everything runs in your
 | **Full parameter reference** | Every parameter this firmware exposes, with descriptions, units and ranges — your GCS ships upstream metadata and will not describe fork parameters | [below](#full-parameter-reference) |
 | **Bitmask calculator** | Tick bits, copy out the integer — or paste a value back to see which bits are set. Knows this fork's bits | [below](#bitmask-calculator) |
 | **LED Segment Editor** | Set up [LED strip segments](#addressable-led-strip-segments-v22), preview them on a live strip in a simulated flight and export the `NTF_LS*` parameters | [led-editor.html](https://erwinquilloy.github.io/ardupilot-tools/led-editor.html) |
+| **OmniDeck** | One telemetry display on Ethos and EdgeTX colour radios: horizon, moving map with tiles, messages, flight summary, voice call-outs. Reads the same passthrough as Yaapu | [below](#omnideck-telemetry-display-ethos--edgetx) · [guide](https://erwinquilloy.github.io/ardupilot-tools/omnideck.html) |
 | **TECS tuning helper** | Step-by-step TECS tuning from the transmitter, reading live telemetry — Ethos and EdgeTX | [below](#tecs-tuning-helper-ethos--edgetx) |
 | **Yaapu Course Hold pack** | Makes modes 26 (Course Hold) and 27 (Auto Trim) show a name and speak their cue on Yaapu telemetry | [below](#yaapu-course-hold-telemetry-pack) |
 
@@ -4335,6 +4337,31 @@ curl -O https://raw.githubusercontent.com/erwinquilloy/ardupilot/master_custom_4
 
 Open the HTML file in your browser, then in the "Source" dropdown
 pick **Upload file…** and point at the JSON.
+
+## OmniDeck telemetry display (Ethos / EdgeTX)
+
+**→ [OmniDeck guide on ArduPilot Tools](https://erwinquilloy.github.io/ardupilot-tools/omnideck.html)** · [erwinquilloy/OmniDeck](https://github.com/erwinquilloy/OmniDeck)
+
+A full-screen telemetry widget for FrSky **Ethos** and **EdgeTX** colour
+radios: horizon with speed and altitude tapes, a moving map with satellite
+or street tiles, status messages, voice call-outs and a flight summary. It
+reads the same FrSky passthrough telemetry as Yaapu, so it works with this
+firmware as it is, and it also shows INAV and Betaflight.
+
+![OmniDeck main page on an Ethos X20: horizon, minimap and flight data](docs/images/omnideck-main.png)
+
+| | |
+|---|---|
+| **Radios** | FrSky **Ethos** (X20 family, X18) and **EdgeTX** (RadioMaster TX16S MK2, MK3 / MK3 Max) |
+| **Transport** | CRSF passthrough (Crossfire, ELRS, mLRS) and FrSky S.Port / F.Port passthrough |
+| **Needs** | Passthrough telemetry already working — see the [Telemetry](#telemetry) chapter |
+| **Install** | One zip per system from the [OmniDeck releases](https://github.com/erwinquilloy/OmniDeck/releases); steps in the [guide](https://erwinquilloy.github.io/ardupilot-tools/omnideck.html#install) |
+
+With TBS Crossfire in its 50 Hz mode the radio display steps every few
+seconds, as Yaapu's does; force 150 Hz for a live horizon
+([why](https://erwinquilloy.github.io/ardupilot-tools/omnideck.html#crossfire-50hz)).
+
+> ℹ️ Separate repository, not part of this firmware — nothing to flash.
 
 ## TECS tuning helper (Ethos / EdgeTX)
 
