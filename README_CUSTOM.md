@@ -72,7 +72,7 @@ plus a few additions originating in this fork.
 | Reliability | **Connecting a GCS right after power-up no longer stalls the main loop.** On F4 boards with many parameters (seen on a tilt-tri quadplane) this gave `Internal errors 0x8000 main_loop_stk` and blocked arming until a reboot | |
 | OSD | **`MSP_DSARM_HOLD`** (off by default): keeps reporting armed for up to 7 s after a disarm so DJI O3 and O4 video catches the stats screen. It applies only to MSP DisplayPort ports; the motors disarm normally | [Keeping the stats in DJI video](#keeping-the-stats-in-dji-video-msp_dsarm_hold) |
 | LEDs | **Addressable LED strip segments** (`NTF_LS*`, off by default): up to 8 INAV-style segments for nav lights, strobes, a battery bar, flight mode or failsafe flash. Every full board, plus `SpeedyBeeF405WING-LED` and `MatekF405-TE-bdshot` on the light track. Design them in the [LED Segment Editor](https://erwinquilloy.github.io/ardupilot-tools/led-editor.html) | [LED strip segments](#addressable-led-strip-segments-v22) |
-| Boards | **`SpeedyBeeF405WING-LED`** (light): the `-Buzz` board plus LED segments. `MatekF405-TE-bdshot` now defaults its LED pad to a NeoPixel strip on output 12 | [Which SpeedyBee firmware](#tone-buzzer-board-variant-speedybeef405wing-buzz) |
+| Boards | **`AET-H743-Basic-Buzz`** (full): the AET-H743-Basic with a tone buzzer on the S12 pad. **`SpeedyBeeF405WING-LED`** (light): the `-Buzz` board plus LED segments. `MatekF405-TE-bdshot` now defaults its LED pad to a NeoPixel strip on output 12 | [Which SpeedyBee firmware](#tone-buzzer-board-variant-speedybeef405wing-buzz) |
 
 ## Upgrading to Stratos v2.x
 
@@ -3492,14 +3492,15 @@ full build has no suffix.
 Since v1.1 the two tracks don't overlap — a given board appears on exactly one
 of them, so there is no choice to get wrong.
 
-### Full track — 9 boards (F7 / H7, 2 MB)
+### Full track — 10 boards (F7 / H7, 2 MB)
 
 Measured at **v2.2**:
 
 | Board | MCU / Flash | Free after fork features | vs v2.1 | Status |
 |---|---|---:|---:|---|
-| MatekF765-Wing | F7 / 2 MB | **547.8 KB** | −2.3 | Ships — Matek F765-WING (most flash headroom in the fleet) |
+| MatekF765-Wing | F7 / 2 MB | **547.7 KB** | −2.4 | Ships — Matek F765-WING (most flash headroom in the fleet) |
 | MatekH7A3-Wing | H7 / 2 MB | **486.9 KB** | −2.4 | Ships — Matek H7A3-WING (bidirectional DShot); most room of any H7 |
+| AET-H743-Basic-Buzz | H7 / 2 MB | **143.5 KB** | new | Ships — AET-H743-Basic + tone buzzer on S12 (see below) |
 | AET-H743-Basic | H7 / 2 MB | **143.4 KB** | −2.3 | Ships — AeroEggTech AET-H743-Basic, hardware V1.x and V2.0 (see below) |
 | KakuteH7-Wing | H7 / 2 MB | **138.7 KB** | −2.2 | Ships — Holybro Kakute H743 Wing |
 | TBS_LUCID_H7_WING_AIO | H7 / 2 MB | **128.2 KB** | −2.4 | Ships — TBS Lucid H7 Wing AIO |
@@ -3510,8 +3511,8 @@ Measured at **v2.2**:
 
 Every board gave up 2.1–2.4 KB to v2.2, almost all of it the
 [LED strip segments](#addressable-led-strip-segments-v22), which every full
-board carries. The `-Buzz` variant costs essentially nothing (0.1 KB)
-against its stock board.
+board carries. The `-Buzz` variants cost essentially nothing (0.1 KB
+or less) against their stock boards.
 `MatekF765-Wing` still has several times the room of any H743, because the
 H743 hwdefs reserve more flash; the H7A3 in `MatekH7A3-Wing` comes close to it.
 
@@ -3581,6 +3582,15 @@ feature add will push against.
 > INAV or Betaflight, flash `arduplane_with_bl.hex` over DFU first. Not
 > flown on Stratos yet. See
 > [the board README](libraries/AP_HAL_ChibiOS/hwdef/AET-H743-Basic/README.md).
+>
+> **`AET-H743-Basic-Buzz`** (new in v2.2) is the same board with a tone
+> buzzer. The board's own beeper pin (PA15) is not brought out to any pad,
+> so this firmware moves the buzzer to the **S12** pad (PE6): wire a passive
+> piezo between S12 and G and it plays the full tunes. S11 and S12 share a
+> timer, so on this firmware **S11 is a plain GPIO (60)**, for a relay;
+> outputs 1–10 and the LED strip on 13 are unchanged (11–12 were PWM only
+> anyway). Same board ID, so the `.apj` flashes over the stock bootloader.
+> Pick it only if you want the buzzer; otherwise flash `AET-H743-Basic`.
 
 ### Light track — 16 boards (all 1 MB F4)
 
@@ -3590,13 +3600,13 @@ Measured at **v2.2** with radar, `LAND_WIND_DIST` and `LAND_WIND_STRICT` on:
 |---|---:|---:|---:|---|
 | KakuteF4-Wing-Buzz | 1 MB | **76.3 KB** | −0.3 | Ships — Kakute F4 Wing + tone buzzer (see below) |
 | speedybeef4v3 | 1 MB | **43.8 KB** | −0.3 | Ships — most F4 headroom with gimbal support |
-| MatekF405-STD | 1 MB | **41.3 KB** | −0.2 | Ships |
-| omnibusf4pro | 1 MB | **35.5 KB** | −0.2 | Ships — Omnibus F4 Pro FPV FC |
-| CoreWingF405WMiniV2 | 1 MB | **26.9 KB** | −0.2 | Ships — CoreWing F405 Wing Mini V2 (see below) |
+| MatekF405-STD | 1 MB | **41.2 KB** | −0.3 | Ships |
+| omnibusf4pro | 1 MB | **35.4 KB** | −0.3 | Ships — Omnibus F4 Pro FPV FC |
+| CoreWingF405WMiniV2 | 1 MB | **26.8 KB** | −0.3 | Ships — CoreWing F405 Wing Mini V2 (see below) |
 | CoreWingF405MiniV2-Buzz | 1 MB | **26.6 KB** | −0.3 | Ships — Wing Mini V2 + tone buzzer on the LED pad (see below) |
 | AtomRCF405NAVI | 1 MB | **25.5 KB** | −0.3 | Ships — AtomRC F405 Navi FPV FC |
 | AtomRCF405NAVI-Buzz | 1 MB | **25.5 KB** | −0.3 | Ships — AtomRC F405 Navi + tone buzzer on the LED pad (see below) |
-| MatekF405-TE-bdshot | 1 MB | **25.1 KB** | −3.7 | Ships — RunCam camera control compiled in; [LED strip segments](#addressable-led-strip-segments-v22) on the LED pad (new in v2.2) |
+| MatekF405-TE-bdshot | 1 MB | **25.0 KB** | −3.8 | Ships — RunCam camera control compiled in; [LED strip segments](#addressable-led-strip-segments-v22) on the LED pad (new in v2.2) |
 | CoreWingF405WingV2 | 1 MB | **22.6 KB** | −0.3 | Ships — CoreWing F405 Wing V2 (see below) |
 | CoreWingF405WingV2-Buzz | 1 MB | **22.3 KB** | −0.3 | Ships — Wing V2 + tone buzzer on the LED pad (see below) |
 | SpeedyBeeF405WING | 1 MB | **20.4 KB** | −0.3 | Ships |
@@ -3606,7 +3616,7 @@ Measured at **v2.2** with radar, `LAND_WIND_DIST` and `LAND_WIND_STRICT` on:
 | MatekF405-Wing-PWM10 | 1 MB | **13.3 KB** | −0.2 | Ships — Matek F405-Wing with the `LED` pad as PWM output 10 (see below); tightest of the F4 fleet |
 
 v2.2 costs these boards about 0.3 KB (the parameter-count fix and
-`MSP_DSARM_HOLD`). `MatekF405-TE-bdshot` gives up 3.7 KB, because it also
+`MSP_DSARM_HOLD`). `MatekF405-TE-bdshot` gives up 3.8 KB, because it also
 carries the [LED strip segments](#addressable-led-strip-segments-v22) and its
 first `defaults.parm`; `SpeedyBeeF405WING-LED` has 2.4 KB less than `-Buzz`
 for the same reason. `AtomRCF405NAVI-Buzz` costs 32 bytes against stock
