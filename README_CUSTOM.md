@@ -61,6 +61,14 @@ plus a few additions originating in this fork.
 
 ---
 
+## What's new in v2.2.1
+
+*Not released yet. On both tracks.*
+
+| Area | Change | Details |
+|---|---|---|
+| Telemetry | **Read and set parameters from the radio over ELRS and TBS Crossfire.** A radio script, such as OmniDeck's Params page, can use ArduPilot's MAVlite parameter messages over CRSF, as it already could over FrSky S.Port / F.Port. 252 bytes of flash. Also proposed upstream as [ArduPilot#35160](https://github.com/ArduPilot/ardupilot/pull/35160) | [Parameters over CRSF](#parameters-over-crsf-mavlite) |
+
 ## What's new in v2.2
 
 *Everything below is on both tracks unless the row says otherwise.*
@@ -220,7 +228,7 @@ list is in [ArduPlane's release notes](https://github.com/ArduPilot/ardupilot/bl
 
 An outline of everything this fork adds and where it is documented. Each line links to its section.
 
-- **Getting started** — [What's new in v2.2](#whats-new-in-v22), [Upgrading to Stratos v2.x](#upgrading-to-stratos-v2x), [Why flash this instead of stock ArduPlane 4.7.2?](#why-flash-this-instead-of-stock-arduplane-472), [Building](#building), [Which file in the zip do I flash?](#which-file-in-the-zip-do-i-flash), [Release fleets (full-v2.2 / light-v2.2)](#release-fleets-full-v22--light-v22), [Tone-buzzer board variant (SpeedyBeeF405WING-Buzz)](#tone-buzzer-board-variant-speedybeef405wing-buzz)
+- **Getting started** — [What's new in v2.2.1](#whats-new-in-v221), [What's new in v2.2](#whats-new-in-v22), [Upgrading to Stratos v2.x](#upgrading-to-stratos-v2x), [Why flash this instead of stock ArduPlane 4.7.2?](#why-flash-this-instead-of-stock-arduplane-472), [Building](#building), [Which file in the zip do I flash?](#which-file-in-the-zip-do-i-flash), [Release fleets (full-v2.2 / light-v2.2)](#release-fleets-full-v22--light-v22), [Tone-buzzer board variant (SpeedyBeeF405WING-Buzz)](#tone-buzzer-board-variant-speedybeef405wing-buzz)
 - **[What this fork adds](#what-this-fork-adds)**
   - [Flight modes](#flight-modes)
     - [Course Hold (mode 26)](#course-hold-mode-26)
@@ -289,7 +297,7 @@ An outline of everything this fork adds and where it is documented. Each line li
 - **[TECS / throttle](#tecs--throttle)** — [Default changes](#default-changes), [New params](#new-params-1), [Behaviour changes](#behaviour-changes-1)
 - **[EKF / state estimator](#ekf--state-estimator)**
 - **[Sensors](#sensors)** — [LightWare SF000/B rangefinder over I2C](#lightware-sf000b-rangefinder-over-i2c)
-- **[Telemetry](#telemetry)** — [CRSF](#crsf), [MSP / DJI](#msp--dji), [FrSky SPort passthrough](#frsky-sport-passthrough), [Common](#common)
+- **[Telemetry](#telemetry)** — [CRSF](#crsf), [Parameters over CRSF](#parameters-over-crsf-mavlite), [MSP / DJI](#msp--dji), [FrSky SPort passthrough](#frsky-sport-passthrough), [Common](#common)
 - **[Behaviour changes vs upstream — migration notes](#behaviour-changes-vs-upstream--migration-notes)**
 - **[Deliberately not included](#deliberately-not-included)**
 - **[Documentation and tooling](#documentation-and-tooling)**
@@ -413,11 +421,15 @@ Built for throwing a wing off your hand safely:
   capacity-remaining plus low/critical thresholds feeding the OSD readouts.
 - **LED strip segments** (v2.2) — split a WS2812 strip into up to 8 INAV-style
   segments: nav lights, strobes, a battery bar, flight mode.
+- **Parameters from the radio over ELRS / Crossfire** (v2.2.1) — a radio
+  script (OmniDeck's Params page) reads and sets parameters by name over CRSF,
+  as it could before only over FrSky S.Port / F.Port.
 
 → [Peer-aircraft radar](#peer-aircraft-radar-inav-radar--formationflight) ·
 [Telemetry](#telemetry) ·
 [Battery monitoring](#battery-monitoring-ap_battmonitor) ·
-[LED strip segments](#addressable-led-strip-segments-v22)
+[LED strip segments](#addressable-led-strip-segments-v22) ·
+[Parameters over CRSF](#parameters-over-crsf-mavlite)
 
 ### 🎥 Head-tracked FPV gimbal (MSP)
 
@@ -4134,6 +4146,26 @@ reads its 16-bit cm distance format.
 - Vehicle UID transmitted (for goggle OSD systems that key on it)
 - Relative altitude (above home) sent in addition to AMSL
 - CRSF system-info messages suppressed by default (cuts noise)
+- Parameters read and set from the radio (v2.2.1), see below
+
+### Parameters over CRSF (MAVlite)
+
+*v2.2.1.* A radio script can read and set parameters by name over CRSF (ELRS,
+TBS Crossfire) with the MAVlite messages FrSky passthrough already uses:
+`PARAM_REQUEST_READ`, `PARAM_SET` and the small `COMMAND_LONG` set (reboot,
+baro calibration, mode, fence). [OmniDeck](#omnideck-telemetry-display-ethos--edgetx)'s
+Params page uses it.
+
+| | |
+|---|---|
+| **Radio → aircraft** | ArduPilot custom frame `0x80` (or `0x7F`) with the extended header, so ELRS routes it to the flight controller: `0xC8`, origin, sub type `0xF4`, len, msgid, payload |
+| **Aircraft → radio** | `0xF4`, len, msgid, payload (`PARAM_VALUE`, `COMMAND_ACK`), sent in the CRSF parameter slot. One message at a time: the radio waits for each reply |
+| **Telemetry** | Keeps flowing while parameters are read: a reply does not start the 5 s CRSF parameter mode |
+| **Ignored** | Frames for another device, another sub type, or a length above 31 |
+| **Not over** | mLRS (its TX module does not pass these frames on) and ELRS MAVLink mode |
+| **Size** | 252 bytes of flash on a 1 MB F4 |
+
+Proposed upstream as [ArduPilot#35160](https://github.com/ArduPilot/ardupilot/pull/35160).
 
 ## MSP / DJI
 
@@ -4360,6 +4392,10 @@ firmware as it is, and it also shows INAV and Betaflight.
 With TBS Crossfire in its 50 Hz mode the radio display steps every few
 seconds, as Yaapu's does; force 150 Hz for a live horizon
 ([why](https://erwinquilloy.github.io/ardupilot-tools/omnideck.html#crossfire-50hz)).
+
+OmniDeck's **Params page** reads and sets parameters over S.Port / F.Port on
+any ArduPilot, and over ELRS / Crossfire from v2.2.1
+([how](#parameters-over-crsf-mavlite)).
 
 > ℹ️ Separate repository, not part of this firmware — nothing to flash.
 
