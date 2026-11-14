@@ -68,6 +68,7 @@ plus a few additions originating in this fork.
 | Area | Change | Details |
 |---|---|---|
 | Telemetry | **Read and set parameters from the radio over ELRS and TBS Crossfire.** A radio script, such as OmniDeck's Params page, can use ArduPilot's MAVlite parameter messages over CRSF, as it already could over FrSky S.Port / F.Port. 252 bytes of flash. Also proposed upstream as [ArduPilot#35160](https://github.com/ArduPilot/ardupilot/pull/35160) | [Parameters over CRSF](#parameters-over-crsf-mavlite) |
+| Telemetry | **Download and send missions from the radio**, over ELRS, TBS Crossfire and FrSky S.Port / F.Port. OmniDeck shows the mission on its map and its mission editor sends a new one, written item by item, checked by ArduPilot like a Mission Planner upload, and read back. Sending is refused while armed. 872 bytes of flash | [Missions over MAVlite](#missions-over-mavlite) |
 
 ## What's new in v2.2
 
@@ -297,7 +298,7 @@ An outline of everything this fork adds and where it is documented. Each line li
 - **[TECS / throttle](#tecs--throttle)** — [Default changes](#default-changes), [New params](#new-params-1), [Behaviour changes](#behaviour-changes-1)
 - **[EKF / state estimator](#ekf--state-estimator)**
 - **[Sensors](#sensors)** — [LightWare SF000/B rangefinder over I2C](#lightware-sf000b-rangefinder-over-i2c)
-- **[Telemetry](#telemetry)** — [CRSF](#crsf), [Parameters over CRSF](#parameters-over-crsf-mavlite), [MSP / DJI](#msp--dji), [FrSky SPort passthrough](#frsky-sport-passthrough), [Common](#common)
+- **[Telemetry](#telemetry)** — [CRSF](#crsf), [Parameters over CRSF](#parameters-over-crsf-mavlite), [Missions over MAVlite](#missions-over-mavlite), [MSP / DJI](#msp--dji), [FrSky SPort passthrough](#frsky-sport-passthrough), [Common](#common)
 - **[Behaviour changes vs upstream — migration notes](#behaviour-changes-vs-upstream--migration-notes)**
 - **[Deliberately not included](#deliberately-not-included)**
 - **[Documentation and tooling](#documentation-and-tooling)**
@@ -424,12 +425,16 @@ Built for throwing a wing off your hand safely:
 - **Parameters from the radio over ELRS / Crossfire** (v2.2.1) — a radio
   script (OmniDeck's Params page) reads and sets parameters by name over CRSF,
   as it could before only over FrSky S.Port / F.Port.
+- **Missions from the radio** (v2.2.1) — OmniDeck downloads the mission onto
+  its map and its mission editor sends one back, over ELRS, Crossfire and
+  S.Port / F.Port.
 
 → [Peer-aircraft radar](#peer-aircraft-radar-inav-radar--formationflight) ·
 [Telemetry](#telemetry) ·
 [Battery monitoring](#battery-monitoring-ap_battmonitor) ·
 [LED strip segments](#addressable-led-strip-segments-v22) ·
-[Parameters over CRSF](#parameters-over-crsf-mavlite)
+[Parameters over CRSF](#parameters-over-crsf-mavlite) ·
+[Missions over MAVlite](#missions-over-mavlite)
 
 ### 🎥 Head-tracked FPV gimbal (MSP)
 
@@ -4162,10 +4167,25 @@ Params page uses it.
 | **Aircraft → radio** | `0xF4`, len, msgid, payload (`PARAM_VALUE`, `COMMAND_ACK`), sent in the CRSF parameter slot. One message at a time: the radio waits for each reply |
 | **Telemetry** | Keeps flowing while parameters are read: a reply does not start the 5 s CRSF parameter mode |
 | **Ignored** | Frames for another device, another sub type, or a length above 31 |
-| **Not over** | mLRS (its TX module does not pass these frames on) and ELRS MAVLink mode |
+| **Not over** | mLRS (its TX module does not pass these frames on) and ELRS MAVLink mode. On mLRS, OmniDeck uses the module's MAVLink bridge instead (`Tx Ser Port` = cbridge) and talks standard MAVLink, so it needs no firmware support there |
 | **Size** | 252 bytes of flash on a 1 MB F4 |
 
 Proposed upstream as [ArduPilot#35160](https://github.com/ArduPilot/ardupilot/pull/35160).
+
+### Missions over MAVlite
+
+*v2.2.1.* The same MAVlite channel (CRSF as above, or FrSky S.Port / F.Port)
+also carries the mission, so a radio script can show it and send a new one.
+OmniDeck's map shows the downloaded mission; its mission editor (TX16S / MK3,
+Ethos X20 family) sends one.
+
+| | |
+|---|---|
+| **Download** | `MISSION_REQUEST_LIST` → `MISSION_COUNT` (count + last-change stamp); `MISSION_REQUEST_INT` → a compact `MISSION_ITEM_INT` (seq, command, frame, lat, lon, alt, param1-3), 29 bytes to fit MAVlite's 31. Item 0 is home |
+| **Send** | `MISSION_CLEAR_ALL`, then `MISSION_ITEM_INT` items from 1 (home stays in slot 0); each answered with `MISSION_ACK`. Every item goes through ArduPilot's own check, as an upload from Mission Planner; a bad one is refused with its reason |
+| **Armed** | Sending is refused (`MAV_MISSION_DENIED`); downloading works in flight |
+| **Kept** | param1-3 (loiter turns / radius / time, speed, VTOL land and transition options); param4 is not carried |
+| **Size** | 872 bytes of flash on a 1 MB F4 |
 
 ## MSP / DJI
 
@@ -4395,7 +4415,10 @@ seconds, as Yaapu's does; force 150 Hz for a live horizon
 
 OmniDeck's **Params page** reads and sets parameters over S.Port / F.Port on
 any ArduPilot, and over ELRS / Crossfire from v2.2.1
-([how](#parameters-over-crsf-mavlite)).
+([how](#parameters-over-crsf-mavlite)). From v2.2.1 OmniDeck also downloads
+the mission onto its map and sends missions from its editor over ELRS,
+Crossfire and S.Port / F.Port ([how](#missions-over-mavlite)). Over mLRS both
+work on any ArduPilot through the mLRS MAVLink bridge (`Tx Ser Port` = cbridge).
 
 > ℹ️ Separate repository, not part of this firmware — nothing to flash.
 
