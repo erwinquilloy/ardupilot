@@ -3,6 +3,7 @@
 #include <AC_Fence/AC_Fence.h>
 #include <AP_Vehicle/AP_Vehicle.h>
 #include <GCS_MAVLink/GCS.h>
+#include <AP_Mission/AP_Mission.h>
 
 extern const AP_HAL::HAL& hal;
 
@@ -282,8 +283,167 @@ void AP_Frsky_MAVliteMsgHandler::process_message(const AP_Frsky_MAVlite_Message 
         case MAVLINK_MSG_ID_COMMAND_LONG:
             handle_command_long(rxmsg);
             break;
+#if AP_MISSION_ENABLED
+        case MAVLINK_MSG_ID_MISSION_REQUEST_LIST:
+            handle_mission_request_list(rxmsg);
+            break;
+        case MAVLINK_MSG_ID_MISSION_REQUEST_INT:
+            handle_mission_request_int(rxmsg);
+            break;
+        case MAVLINK_MSG_ID_MISSION_CLEAR_ALL:
+            handle_mission_clear_all(rxmsg);
+            break;
+        case MAVLINK_MSG_ID_MISSION_ITEM_INT:
+            handle_mission_item_int(rxmsg);
+            break;
+#endif
     }
 }
+
+#if AP_MISSION_ENABLED
+/*
+  fork: mission download for radio scripts (OmniDeck), over FrSky passthrough and CRSF.
+  MAVlite carries at most MAVLITE_MAX_PAYLOAD_LEN (31) bytes and a MISSION_ITEM_INT is 37, so
+  the replies are compact (little endian):
+    MISSION_REQUEST_LIST (no payload) -> MISSION_COUNT: count u16, last change ms u32
+                                         (the change time tells the radio to fetch it again)
+    MISSION_REQUEST_INT: seq u16      -> MISSION_ITEM_INT: seq u16, command u16, frame u8,
+                                         x i32, y i32, z float, param1 float, param3 float,
+                                         param2 float (29 bytes; param2 carries e.g. the speed
+                                         of DO_CHANGE_SPEED)
+                                         (seq 0 = the stored home slot, may be empty: use
+                                         the live home from telemetry)
+                                      or MISSION_ACK: seq u16, MAV_MISSION_INVALID_SEQUENCE
+  Read only: nothing here changes the mission.
+ */
+void AP_Frsky_MAVliteMsgHandler::handle_mission_request_list(const AP_Frsky_MAVlite_Message &rxmsg)
+{
+    const AP_Mission *mission = AP::mission();
+    if (mission == nullptr) {
+        return;
+    }
+    AP_Frsky_MAVlite_Message txmsg;
+    txmsg.msgid = MAVLINK_MSG_ID_MISSION_COUNT;
+    if (!txmsg.set_uint16(mission->num_commands(), 0) ||
+        !txmsg.set_uint32(mission->last_change_time_ms(), 2)) {
+        return;
+    }
+    send_message(txmsg);
+}
+
+void AP_Frsky_MAVliteMsgHandler::handle_mission_request_int(const AP_Frsky_MAVlite_Message &rxmsg)
+{
+    uint16_t seq;
+    if (!rxmsg.get_uint16(seq, 0)) {
+        return;
+    }
+    const AP_Mission *mission = AP::mission();
+    if (mission == nullptr) {
+        return;
+    }
+    AP_Frsky_MAVlite_Message txmsg;
+    mavlink_mission_item_int_t item {};
+    if (seq >= mission->num_commands() || !mission->get_item(seq, item)) {
+        txmsg.msgid = MAVLINK_MSG_ID_MISSION_ACK;
+        if (txmsg.set_uint16(seq, 0) && txmsg.set_uint8(MAV_MISSION_INVALID_SEQUENCE, 2)) {
+            send_message(txmsg);
+        }
+        return;
+    }
+    txmsg.msgid = MAVLINK_MSG_ID_MISSION_ITEM_INT;
+    if (!txmsg.set_uint16(seq, 0) ||
+        !txmsg.set_uint16(item.command, 2) ||
+        !txmsg.set_uint8(item.frame, 4) ||
+        !txmsg.set_int32(item.x, 5) ||
+        !txmsg.set_int32(item.y, 9) ||
+        !txmsg.set_float(item.z, 13) ||
+        !txmsg.set_float(item.param1, 17) ||
+        !txmsg.set_float(item.param3, 21) ||
+        !txmsg.set_float(item.param2, 25)) {
+        return;
+    }
+    send_message(txmsg);
+}
+
+/*
+  fork: mission write from a radio (OmniDeck's mission editor). Refused while armed. Every
+  request gets a MISSION_ACK: seq u16 (0xFFFF for the clear), result u8 (MAV_MISSION_RESULT).
+    MISSION_CLEAR_ALL (no payload): AP_Mission::clear()
+    MISSION_ITEM_INT (the compact item of the download, 29 bytes; 25 = no param2): item seq >= 1 replaces the
+      item at seq, or is added when seq is the next free slot (home goes into slot 0 by
+      itself). Checked by AP_Mission::mavlink_int_to_mission_cmd like a GCS upload.
+  The radio reads the mission back afterwards to verify it.
+ */
+void AP_Frsky_MAVliteMsgHandler::send_mission_ack(uint16_t seq, MAV_MISSION_RESULT result)
+{
+    AP_Frsky_MAVlite_Message txmsg;
+    txmsg.msgid = MAVLINK_MSG_ID_MISSION_ACK;
+    if (txmsg.set_uint16(seq, 0) && txmsg.set_uint8(result, 2)) {
+        send_message(txmsg);
+    }
+}
+
+void AP_Frsky_MAVliteMsgHandler::handle_mission_clear_all(const AP_Frsky_MAVlite_Message &rxmsg)
+{
+    AP_Mission *mission = AP::mission();
+    if (mission == nullptr) {
+        return;
+    }
+    if (hal.util->get_soft_armed()) {
+        send_mission_ack(0xFFFF, MAV_MISSION_DENIED);
+        return;
+    }
+    send_mission_ack(0xFFFF, mission->clear() ? MAV_MISSION_ACCEPTED : MAV_MISSION_ERROR);
+}
+
+void AP_Frsky_MAVliteMsgHandler::handle_mission_item_int(const AP_Frsky_MAVlite_Message &rxmsg)
+{
+    AP_Mission *mission = AP::mission();
+    if (mission == nullptr) {
+        return;
+    }
+    mavlink_mission_item_int_t packet {};
+    uint8_t frame;
+    if (!rxmsg.get_uint16(packet.seq, 0) ||
+        !rxmsg.get_uint16(packet.command, 2) ||
+        !rxmsg.get_uint8(frame, 4) ||
+        !rxmsg.get_int32(packet.x, 5) ||
+        !rxmsg.get_int32(packet.y, 9) ||
+        !rxmsg.get_float(packet.z, 13) ||
+        !rxmsg.get_float(packet.param1, 17) ||
+        !rxmsg.get_float(packet.param3, 21)) {
+        return;
+    }
+    // param2 is optional: only read it when the radio sent it (bytes past len are not cleared)
+    if (rxmsg.len >= 29 && !rxmsg.get_float(packet.param2, 25)) {
+        return;
+    }
+    packet.frame = frame;
+    packet.autocontinue = 1;
+    if (hal.util->get_soft_armed()) {
+        send_mission_ack(packet.seq, MAV_MISSION_DENIED);
+        return;
+    }
+    const uint16_t total = mission->num_commands();
+    if (packet.seq == 0 || packet.seq > MAX(total, (uint16_t)1)) {
+        send_mission_ack(packet.seq, MAV_MISSION_INVALID_SEQUENCE);
+        return;
+    }
+    AP_Mission::Mission_Command cmd {};
+    const MAV_MISSION_RESULT res = AP_Mission::mavlink_int_to_mission_cmd(packet, cmd);
+    if (res != MAV_MISSION_ACCEPTED) {
+        send_mission_ack(packet.seq, res);
+        return;
+    }
+    bool ok;
+    if (packet.seq < total) {
+        ok = mission->replace_cmd(packet.seq, cmd);
+    } else {
+        ok = mission->add_cmd(cmd);
+    }
+    send_mission_ack(packet.seq, ok ? MAV_MISSION_ACCEPTED : MAV_MISSION_NO_SPACE);
+}
+#endif // AP_MISSION_ENABLED
 
 /*
  * Send a mavlite message
