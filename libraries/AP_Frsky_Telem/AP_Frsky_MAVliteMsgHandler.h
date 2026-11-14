@@ -3,6 +3,7 @@
 #include "AP_Frsky_MAVlite.h"
 #include "AP_Frsky_Telem.h"
 #include "AP_Frsky_MAVlite_Message.h"
+#include <AP_Mission/AP_Mission_config.h>
 
 #if HAL_WITH_FRSKY_TELEM_BIDIRECTIONAL
 
@@ -24,6 +25,15 @@ private:
     void handle_param_set(const AP_Frsky_MAVlite_Message &rxmsg);
 
     void handle_command_long(const AP_Frsky_MAVlite_Message &rxmsg);
+#if AP_MISSION_ENABLED
+    // fork: mission download for radio scripts (OmniDeck), compact replies
+    void handle_mission_request_list(const AP_Frsky_MAVlite_Message &rxmsg);
+    void handle_mission_request_int(const AP_Frsky_MAVlite_Message &rxmsg);
+    // fork: mission write from a radio (OmniDeck's mission editor), disarmed only
+    void handle_mission_clear_all(const AP_Frsky_MAVlite_Message &rxmsg);
+    void handle_mission_item_int(const AP_Frsky_MAVlite_Message &rxmsg);
+    void send_mission_ack(uint16_t seq, MAV_MISSION_RESULT result);
+#endif
 
     MAV_RESULT handle_command(const mavlink_command_long_t &mav_command_long);
     MAV_RESULT handle_command_preflight_calibration_baro(const mavlink_command_long_t &mav_command_long);

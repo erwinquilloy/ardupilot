@@ -33,6 +33,16 @@ public:
     bool set_uint8(const uint8_t value, const uint8_t offset) WARN_IF_UNUSED {
         return set_bytes((uint8_t*)&value, offset, 1);
     }
+    // fork: 32-bit fields for the mission download replies
+    bool set_uint32(const uint32_t value, const uint8_t offset) WARN_IF_UNUSED {
+        return set_bytes((uint8_t*)&value, offset, 4);
+    }
+    bool set_int32(const int32_t value, const uint8_t offset) WARN_IF_UNUSED {
+        return set_bytes((uint8_t*)&value, offset, 4);
+    }
+    bool get_int32(int32_t &value, const uint8_t offset) const WARN_IF_UNUSED {
+        return get_bytes((uint8_t*)&value, offset, 4);
+    }
 
     uint8_t msgid = 0;                          // ID of message in payload
     uint8_t len = 0;                            // Length of payload
