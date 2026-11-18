@@ -25,7 +25,20 @@ env OPTIMIZE -O2
 FLASH_RESERVE_START_KB 128
 
 # order of UARTs (and USB)
-SERIAL_ORDER OTG1 USART2 USART6 USART1 UART4 USART3 OTG2
+# Stratos: SERIALn is chip UARTn, as on every fork board. Upstream's order is
+# OTG1 USART2 USART6 USART1 UART4 USART3 OTG2. There is no UART5, so
+# SERIAL5 is EMPTY.
+SERIAL_ORDER OTG1 USART1 USART2 USART3 UART4 EMPTY USART6 OTG2
+
+# Protocol defaults are per SERIAL number, so re-pin each port's upstream
+# role to its new number: a board left on defaults keeps its GPS on GPS1
+# and MAVLink on TELEM1/TELEM2 after the renumbering.
+define DEFAULT_SERIAL1_PROTOCOL SerialProtocol_GPS
+define DEFAULT_SERIAL1_BAUD AP_SERIALMANAGER_GPS_BAUD/1000
+define DEFAULT_SERIAL3_PROTOCOL SerialProtocol_None
+define DEFAULT_SERIAL3_BAUD AP_SERIALMANAGER_MAVLINK_BAUD/1000
+define DEFAULT_SERIAL6_PROTOCOL SerialProtocol_MAVLink2
+define DEFAULT_SERIAL6_BAUD AP_SERIALMANAGER_MAVLINK_BAUD/1000
 
 # USB
 PA11 OTG_FS_DM OTG1

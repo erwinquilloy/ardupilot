@@ -31,13 +31,22 @@ resellers, linked from [SIYI](https://siyi.biz)
 
 ## UART Mapping
 
+**ArduPlane Stratos:** SERIALn is the chip's UARTn, as on every Stratos board,
+so the numbers differ from upstream ArduPilot (upstream order in brackets).
+The default protocols follow the ports, so GPS1, TELEM1 and TELEM2 work
+without changes.
+
 - SERIAL0 -> USB
-- SERIAL1 -> USART2 (Telem1, MAVLink2)
-- SERIAL2 -> USART6 (Telem2, MAVLink2)
-- SERIAL3 -> USART1 (GPS1)
-- SERIAL4 -> UART4 (GPS2)
-- SERIAL5 -> USART3 (User)
-- SERIAL6 -> USB2 (SLCAN virtual port on USB)
+- SERIAL1 -> USART1 (GPS1, GPS) [upstream SERIAL3]
+- SERIAL2 -> USART2 (Telem1, MAVLink2) [upstream SERIAL1]
+- SERIAL3 -> USART3 (Telem3, User) [upstream SERIAL5]
+- SERIAL4 -> UART4 (GPS2, GPS) [upstream SERIAL4]
+- SERIAL5 -> not used (the chip has no UART5; no SERIAL5_* parameters)
+- SERIAL6 -> USART6 (Telem2, MAVLink2) [upstream SERIAL2]
+- SERIAL7 -> USB2 (SLCAN virtual port on USB) [upstream SERIAL6]
+
+Mission Planner's Serial Ports page fails on the empty SERIAL5; set the
+SERIALn_ parameters in the Full Parameter List instead.
 
 -All UARTs have DMA
 
