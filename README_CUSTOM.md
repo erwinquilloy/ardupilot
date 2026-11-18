@@ -67,8 +67,8 @@ plus a few additions originating in this fork.
 
 | Area | Change | Details |
 |---|---|---|
-| Telemetry | **Read and set parameters from the radio over ELRS and TBS Crossfire.** A radio script, such as OmniDeck's Params page, can use ArduPilot's MAVlite parameter messages over CRSF, as it already could over FrSky S.Port / F.Port. 252 bytes of flash. Also proposed upstream as [ArduPilot#35160](https://github.com/ArduPilot/ardupilot/pull/35160) | [Parameters over CRSF](#parameters-over-crsf-mavlite) |
-| Telemetry | **Download and send missions from the radio**, over ELRS, TBS Crossfire and FrSky S.Port / F.Port. OmniDeck shows the mission on its map and its mission editor sends a new one, written item by item, checked by ArduPilot like a Mission Planner upload, and read back. Sending is refused while armed. 872 bytes of flash | [Missions over MAVlite](#missions-over-mavlite) |
+| Telemetry | **Read and set parameters from the radio over ELRS and TBS Crossfire.** A radio script, such as OmniDeck's Params page (coming in OmniDeck 0.4), can use ArduPilot's MAVlite parameter messages over CRSF, as it already could over FrSky S.Port / F.Port. 252 bytes of flash. Also proposed upstream as [ArduPilot#35160](https://github.com/ArduPilot/ardupilot/pull/35160) | [Parameters over CRSF](#parameters-over-crsf-mavlite) |
+| Telemetry | **Download and send missions from the radio**, over ELRS, TBS Crossfire and FrSky S.Port / F.Port. OmniDeck 0.4 (coming) shows the mission on its map and its mission editor sends a new one, written item by item, checked by ArduPilot like a Mission Planner upload, and read back. Sending is refused while armed. 872 bytes of flash | [Missions over MAVlite](#missions-over-mavlite) |
 | Boards | **`SIYI-UniFC-6-PICO`** (full): the SIYI UniFC 6 Pico, on upstream ArduPilot's board definition with the Stratos serial numbering (`SERIALn` = chip UART `n`). Bidirectional DShot on outputs 1–8 | [SIYI UniFC 6 Pico](#siyi-unifc-6-pico) |
 | Boards | **`AET-H743-Buzz-bdshot`** (full): the `AET-H743-Basic-Buzz` with bidirectional DShot on outputs 3–10, for ESC RPM telemetry and the RPM notch filter | [Release fleets](#full-track--12-boards-f7--h7-2-mb) |
 
@@ -425,9 +425,10 @@ Built for throwing a wing off your hand safely:
 - **LED strip segments** (v2.2) — split a WS2812 strip into up to 8 INAV-style
   segments: nav lights, strobes, a battery bar, flight mode.
 - **Parameters from the radio over ELRS / Crossfire** (v2.2.1) — a radio
-  script (OmniDeck's Params page) reads and sets parameters by name over CRSF,
+  script (OmniDeck's Params page, coming in OmniDeck 0.4) reads and sets
+  parameters by name over CRSF,
   as it could before only over FrSky S.Port / F.Port.
-- **Missions from the radio** (v2.2.1) — OmniDeck downloads the mission onto
+- **Missions from the radio** (v2.2.1) — OmniDeck 0.4 (coming) downloads the mission onto
   its map and its mission editor sends one back, over ELRS, Crossfire and
   S.Port / F.Port.
 
@@ -4204,7 +4205,7 @@ reads its 16-bit cm distance format.
 TBS Crossfire) with the MAVlite messages FrSky passthrough already uses:
 `PARAM_REQUEST_READ`, `PARAM_SET` and the small `COMMAND_LONG` set (reboot,
 baro calibration, mode, fence). [OmniDeck](#omnideck-telemetry-display-ethos--edgetx)'s
-Params page uses it.
+Params page uses it (coming in OmniDeck 0.4).
 
 | | |
 |---|---|
@@ -4222,7 +4223,7 @@ Proposed upstream as [ArduPilot#35160](https://github.com/ArduPilot/ardupilot/pu
 *v2.2.1.* The same MAVlite channel (CRSF as above, or FrSky S.Port / F.Port)
 also carries the mission, so a radio script can show it and send a new one.
 OmniDeck's map shows the downloaded mission; its mission editor (TX16S / MK3,
-Ethos X20 family) sends one.
+Ethos X20 family) sends one. Both are coming in OmniDeck 0.4.
 
 | | |
 |---|---|
@@ -4458,8 +4459,8 @@ With TBS Crossfire in its 50 Hz mode the radio display steps every few
 seconds, as Yaapu's does; force 150 Hz for a live horizon
 ([why](https://erwinquilloy.github.io/ardupilot-tools/omnideck.html#crossfire-50hz)).
 
-OmniDeck's **Params page** reads and sets parameters over S.Port / F.Port on
-any ArduPilot, and over ELRS / Crossfire from v2.2.1
+OmniDeck's **Params page** (coming in OmniDeck 0.4) reads and sets parameters
+over S.Port / F.Port on any ArduPilot, and over ELRS / Crossfire from v2.2.1
 ([how](#parameters-over-crsf-mavlite)). From v2.2.1 OmniDeck also downloads
 the mission onto its map and sends missions from its editor over ELRS,
 Crossfire and S.Port / F.Port ([how](#missions-over-mavlite)). Over mLRS both
