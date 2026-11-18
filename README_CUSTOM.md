@@ -70,6 +70,7 @@ plus a few additions originating in this fork.
 | Telemetry | **Read and set parameters from the radio over ELRS and TBS Crossfire.** A radio script, such as OmniDeck's Params page, can use ArduPilot's MAVlite parameter messages over CRSF, as it already could over FrSky S.Port / F.Port. 252 bytes of flash. Also proposed upstream as [ArduPilot#35160](https://github.com/ArduPilot/ardupilot/pull/35160) | [Parameters over CRSF](#parameters-over-crsf-mavlite) |
 | Telemetry | **Download and send missions from the radio**, over ELRS, TBS Crossfire and FrSky S.Port / F.Port. OmniDeck shows the mission on its map and its mission editor sends a new one, written item by item, checked by ArduPilot like a Mission Planner upload, and read back. Sending is refused while armed. 872 bytes of flash | [Missions over MAVlite](#missions-over-mavlite) |
 | Boards | **`SIYI-UniFC-6-PICO`** (full): the SIYI UniFC 6 Pico, on upstream ArduPilot's board definition with the Stratos serial numbering (`SERIALn` = chip UART `n`). Bidirectional DShot on outputs 1–8 | [SIYI UniFC 6 Pico](#siyi-unifc-6-pico) |
+| Boards | **`AET-H743-Buzz-bdshot`** (full): the `AET-H743-Basic-Buzz` with bidirectional DShot on outputs 3–10, for ESC RPM telemetry and the RPM notch filter | [Release fleets](#full-track--12-boards-f7--h7-2-mb) |
 
 ## What's new in v2.2
 
@@ -3511,7 +3512,7 @@ full build has no suffix.
 Since v1.1 the two tracks don't overlap — a given board appears on exactly one
 of them, so there is no choice to get wrong.
 
-### Full track — 11 boards (F7 / H7, 2 MB)
+### Full track — 12 boards (F7 / H7, 2 MB)
 
 Measured at **v2.2**:
 
@@ -3522,6 +3523,7 @@ Measured at **v2.2**:
 | SIYI-UniFC-6-PICO | H7 / 2 MB | **149.3 KB** | new (v2.2.1) | Ships from v2.2.1 — SIYI UniFC 6 Pico (bidirectional DShot, Ethernet, dual CAN) |
 | AET-H743-Basic-Buzz | H7 / 2 MB | **143.5 KB** | new | Ships — AET-H743-Basic + tone buzzer on S12 (see below) |
 | AET-H743-Basic | H7 / 2 MB | **143.4 KB** | −2.3 | Ships — AeroEggTech AET-H743-Basic, hardware V1.x and V2.0 (see below) |
+| AET-H743-Buzz-bdshot | H7 / 2 MB | **138.1 KB** | new (v2.2.1) | Ships from v2.2.1 — AET-H743-Basic-Buzz + bidirectional DShot on outputs 3–10 (see below) |
 | KakuteH7-Wing | H7 / 2 MB | **138.7 KB** | −2.2 | Ships — Holybro Kakute H743 Wing |
 | TBS_LUCID_H7_WING_AIO | H7 / 2 MB | **128.2 KB** | −2.4 | Ships — TBS Lucid H7 Wing AIO |
 | TBS_LUCID_H7_OEM | H7 / 2 MB | **123.3 KB** | −2.2 | Ships — TBS Lucid H7 OEM |
@@ -3638,6 +3640,16 @@ feature add will push against.
 > outputs 1–10 and the LED strip on 13 are unchanged (11–12 were PWM only
 > anyway). Same board ID, so the `.apj` flashes over the stock bootloader.
 > Pick it only if you want the buzzer; otherwise flash `AET-H743-Basic`.
+>
+> **`AET-H743-Buzz-bdshot`** (new in v2.2.1) is the `-Buzz` firmware with
+> **bidirectional DShot on outputs 3–10** (ESC RPM telemetry, RPM notch
+> filter). Outputs 1–2 are complementary timer channels that can't read the
+> ESC's reply, so they stay plain DShot/PWM: **put the motors on 3–10**.
+> The buzzer on S12, S11 as GPIO 60 and the LED strip on 13 are as on
+> `-Buzz`. Same board ID, so the `.apj` flashes over the stock bootloader.
+> To turn it on: `SERVO_BLH_MASK` and `SERVO_BLH_BDMASK` = the motor
+> outputs, `SERVO_BLH_OTYPE` 5 (DShot300) or 6 (DShot600), `SERVO_BLH_POLES`
+> = motor magnet count. Not flown yet.
 
 ### Light track — 16 boards (all 1 MB F4)
 
