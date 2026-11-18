@@ -69,6 +69,7 @@ plus a few additions originating in this fork.
 |---|---|---|
 | Telemetry | **Read and set parameters from the radio over ELRS and TBS Crossfire.** A radio script, such as OmniDeck's Params page, can use ArduPilot's MAVlite parameter messages over CRSF, as it already could over FrSky S.Port / F.Port. 252 bytes of flash. Also proposed upstream as [ArduPilot#35160](https://github.com/ArduPilot/ardupilot/pull/35160) | [Parameters over CRSF](#parameters-over-crsf-mavlite) |
 | Telemetry | **Download and send missions from the radio**, over ELRS, TBS Crossfire and FrSky S.Port / F.Port. OmniDeck shows the mission on its map and its mission editor sends a new one, written item by item, checked by ArduPilot like a Mission Planner upload, and read back. Sending is refused while armed. 872 bytes of flash | [Missions over MAVlite](#missions-over-mavlite) |
+| Boards | **`SIYI-UniFC-6-PICO`** (full): the SIYI UniFC 6 Pico, on upstream ArduPilot's board definition with the Stratos serial numbering (`SERIALn` = chip UART `n`). Bidirectional DShot on outputs 1–8 | [SIYI UniFC 6 Pico](#siyi-unifc-6-pico) |
 
 ## What's new in v2.2
 
@@ -2580,10 +2581,10 @@ Affected boards: `MatekF405-TE(-bdshot)`, `MatekF405-STD`, `omnibusf4pro`,
 `MatekH743(-bdshot)` since v0.3-beta, and **`MatekF765-Wing` and
 `KakuteH7-Wing` since v2.0**. Every board in both release fleets now follows
 the rule; `XFLY-H743-bdshot`, `TBS_LUCID_H7_OEM`, `MatekH7A3-Wing`, `TBS_LUCID_H7_WING_AIO` and `AET-H743-Basic` joined already numbered
-this way. Where a UART is missing, its number is an `EMPTY` placeholder so
+this way, and `SIYI-UniFC-6-PICO` was renumbered when it joined in v2.2.1. Where a UART is missing, its number is an `EMPTY` placeholder so
 the rest stay aligned: `SERIAL2`/`SERIAL5` on `omnibusf4pro`, `SERIAL4` on
 `KakuteH7-Wing` (no UART4), `SERIAL5` on `MatekH743-bdshot` and
-`TBS_LUCID_H7_WING_AIO`, and `SERIAL4`/`SERIAL6` on `XFLY-H743-bdshot`. Upstream's `KakuteF4-Wing`
+`TBS_LUCID_H7_WING_AIO` and `SIYI-UniFC-6-PICO`, and `SERIAL4`/`SERIAL6` on `XFLY-H743-bdshot`. Upstream's `KakuteF4-Wing`
 (and so `KakuteF4-Wing-Buzz`) already had an empty `SERIAL4`.
 
 The v0.3-beta boards changed `SERIAL_ORDER` only, so their default protocols
@@ -3510,7 +3511,7 @@ full build has no suffix.
 Since v1.1 the two tracks don't overlap — a given board appears on exactly one
 of them, so there is no choice to get wrong.
 
-### Full track — 10 boards (F7 / H7, 2 MB)
+### Full track — 11 boards (F7 / H7, 2 MB)
 
 Measured at **v2.2**:
 
@@ -3518,6 +3519,7 @@ Measured at **v2.2**:
 |---|---|---:|---:|---|
 | MatekF765-Wing | F7 / 2 MB | **547.7 KB** | −2.4 | Ships — Matek F765-WING (most flash headroom in the fleet) |
 | MatekH7A3-Wing | H7 / 2 MB | **486.9 KB** | −2.4 | Ships — Matek H7A3-WING (bidirectional DShot); most room of any H7 |
+| SIYI-UniFC-6-PICO | H7 / 2 MB | **149.3 KB** | new (v2.2.1) | Ships from v2.2.1 — SIYI UniFC 6 Pico (bidirectional DShot, Ethernet, dual CAN) |
 | AET-H743-Basic-Buzz | H7 / 2 MB | **143.5 KB** | new | Ships — AET-H743-Basic + tone buzzer on S12 (see below) |
 | AET-H743-Basic | H7 / 2 MB | **143.4 KB** | −2.3 | Ships — AeroEggTech AET-H743-Basic, hardware V1.x and V2.0 (see below) |
 | KakuteH7-Wing | H7 / 2 MB | **138.7 KB** | −2.2 | Ships — Holybro Kakute H743 Wing |
@@ -3569,6 +3571,33 @@ feature add will push against.
 > flash `arduplane_with_bl.hex` over DFU first (hold the boot button while
 > plugging in USB). See
 > [the board README](libraries/AP_HAL_ChibiOS/hwdef/MatekH7A3-Wing/README.md).
+
+#### SIYI UniFC 6 Pico
+
+> **`SIYI-UniFC-6-PICO`** (STM32H743, 2 MB, board ID 1215, from v2.2.1)
+> uses the board definition SIYI added to upstream ArduPilot after 4.7.2,
+> with one Stratos change: **serial port numbers follow the chip UARTs, not
+> upstream's order**, so a stock ArduPilot parameter file puts things on
+> the wrong ports. Default protocols follow the ports, so a board left on
+> defaults has GPS on GPS1 and MAVLink2 on TELEM1 and TELEM2:
+>
+> | Port on the board | Chip UART | Upstream | Stratos | Default |
+> |---|---|---|---|---|
+> | GPS1 | USART1 | SERIAL3 | **SERIAL1** | GPS |
+> | TELEM1 (RTS/CTS) | USART2 | SERIAL1 | **SERIAL2** | MAVLink2 |
+> | TELEM3 | USART3 | SERIAL5 | **SERIAL3** | none |
+> | GPS2 | UART4 | SERIAL4 | **SERIAL4** | GPS |
+> | (no UART5) | | | SERIAL5 (empty) | |
+> | TELEM2 (RTS/CTS) | USART6 | SERIAL2 | **SERIAL6** | MAVLink2 |
+> | USB2 (SLCAN) | OTG2 | SERIAL6 | **SERIAL7** | |
+>
+> Mission Planner's Serial Ports page fails on the empty `SERIAL5`; set
+> `SERIALn_*` in the Full Parameter List. The RCIN pin takes SBUS/PPM only,
+> so wire ELRS/CRSF to a UART (for example TELEM3 = `SERIAL3`,
+> `SERIAL3_PROTOCOL 23`). 14 outputs: DShot on 1–12, bidirectional DShot on
+> 1–8. ICM45686 + BMI088 IMUs, two ICP201XX baros, IST8310 compass, FRAM,
+> microSD, Ethernet and two CAN ports. See
+> [the board README](libraries/AP_HAL_ChibiOS/hwdef/SIYI-UniFC-6-PICO/README.md).
 
 > **`TBS_LUCID_H7_WING_AIO`** (STM32H743, 2 MB, board ID 5254) joined in
 > v2.0 (added to the `full-v2.0` release after it shipped). It ships on
