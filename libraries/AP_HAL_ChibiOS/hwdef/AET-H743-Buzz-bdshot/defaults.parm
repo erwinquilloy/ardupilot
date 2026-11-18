@@ -1,0 +1,2 @@
+# same defaults as the Buzz variant (LED strip on output 13)
+@include ../AET-H743-Basic-Buzz/defaults.parm
