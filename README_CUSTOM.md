@@ -24,7 +24,7 @@
 > [Building](#building)).
 > **⬇ Download:** grab the newest build for your board from the
 > [**Releases** page](https://github.com/erwinquilloy/ardupilot/releases)
-> (every version, newest first — the current releases are `full-v2.2` and `light-v2.2`).
+> (every version, newest first — the current releases are `full-v2.2.1` and `light-v2.2.1`).
 
 A curated fork of ArduPlane, rebased onto upstream **ArduPlane 4.7.2**
 (tag `Plane-4.7.2`, commit `fb77356789`). This branch carries a set of
@@ -63,7 +63,7 @@ plus a few additions originating in this fork.
 
 ## What's new in v2.2.1
 
-*Not released yet. On both tracks.*
+*Everything below is on both tracks unless the row says otherwise.*
 
 | Area | Change | Details |
 |---|---|---|
@@ -93,7 +93,7 @@ Then flash the `.apj` from Mission Planner or QGC
 
 | Coming from | Parameters | After flashing |
 |---|---|---|
-| **Stratos v2.1 or Custom v2.0** | Carry over unchanged | Nothing to do |
+| **Stratos v2.2, v2.1 or Custom v2.0** | Carry over unchanged | Nothing to do. On `SIYI-UniFC-6-PICO` see [its serial ports](#siyi-unifc-6-pico) if you ran stock ArduPilot on it |
 | **Stock ArduPlane 4.7.x** | Carry over. **Don't reset** | Check the [serial ports](#serial-port-numbering-matched-to-chip-uart-numbers) and the [default changes](#behaviour-changes-vs-upstream--migration-notes). Mode 26 is Course Hold on Stratos, not AUTOLAND |
 | **Custom v1.1 or older on ArduPlane 4.6.3** (the banner reads `ArduCustom v1.1`) | Converted on first boot. **Don't reset** | Follow [Upgrading from v1.1](#upgrading-from-v11-arduplane-463-base) |
 | **Stock ArduPlane 4.6.x** | Converted on first boot. **Don't reset** | Follow [Upgrading from v1.1](#upgrading-from-v11-arduplane-463-base), plus the serial ports and default changes above |
@@ -231,7 +231,7 @@ list is in [ArduPlane's release notes](https://github.com/ArduPilot/ardupilot/bl
 
 An outline of everything this fork adds and where it is documented. Each line links to its section.
 
-- **Getting started** — [What's new in v2.2.1](#whats-new-in-v221), [What's new in v2.2](#whats-new-in-v22), [Upgrading to Stratos v2.x](#upgrading-to-stratos-v2x), [Why flash this instead of stock ArduPlane 4.7.2?](#why-flash-this-instead-of-stock-arduplane-472), [Building](#building), [Which file in the zip do I flash?](#which-file-in-the-zip-do-i-flash), [Release fleets (full-v2.2 / light-v2.2)](#release-fleets-full-v22--light-v22), [Tone-buzzer board variant (SpeedyBeeF405WING-Buzz)](#tone-buzzer-board-variant-speedybeef405wing-buzz)
+- **Getting started** — [What's new in v2.2.1](#whats-new-in-v221), [What's new in v2.2](#whats-new-in-v22), [Upgrading to Stratos v2.x](#upgrading-to-stratos-v2x), [Why flash this instead of stock ArduPlane 4.7.2?](#why-flash-this-instead-of-stock-arduplane-472), [Building](#building), [Which file in the zip do I flash?](#which-file-in-the-zip-do-i-flash), [Release fleets (full-v2.2.1 / light-v2.2.1)](#release-fleets-full-v221--light-v221), [Tone-buzzer board variant (SpeedyBeeF405WING-Buzz)](#tone-buzzer-board-variant-speedybeef405wing-buzz)
 - **[What this fork adds](#what-this-fork-adds)**
   - [Flight modes](#flight-modes)
     - [Course Hold (mode 26)](#course-hold-mode-26)
@@ -509,7 +509,7 @@ Identical to upstream. From a configured WSL / Linux toolchain:
 ```
 
 The branch builds clean for every board in the
-[release fleets](#release-fleets-full-v22--light-v22); SITL builds and runs cleanly.
+[release fleets](#release-fleets-full-v221--light-v221); SITL builds and runs cleanly.
 
 ### Full or light is picked by the board's flash size
 
@@ -540,12 +540,12 @@ ArduPlane V<x.y.z> Stratos <FORK_VERSION>[ Light] (<git-hash>)
 For example:
 
 ```
-ArduPlane V4.7.2 Stratos v2.2 (1a2b3c4)        # 2 MB board (full track)
-ArduPlane V4.7.2 Stratos v2.2 Light (1a2b3c4)  # 1 MB board (light track)
+ArduPlane V4.7.2 Stratos v2.2.1 (1a2b3c4)        # 2 MB board (full track)
+ArduPlane V4.7.2 Stratos v2.2.1 Light (1a2b3c4)  # 1 MB board (light track)
 ```
 
 The hash is the commit the release was built from; the release notes
-print it, and the release tags (`full-v2.2` / `light-v2.2`) point at it.
+print it, and the release tags (`full-v2.2.1` / `light-v2.2.1`) point at it.
 
 The upstream `ArduPlane V4.7.2` prefix is kept so GCS tools that parse
 the upstream version string (MissionPlanner, MAVProxy, autotest
@@ -3500,13 +3500,13 @@ can actually flash.
 > first try. Boards that shipped with Betaflight, or that have been
 > flashed across firmware families, are the usual candidates.
 
-## Release fleets (`full-v2.2` / `light-v2.2`)
+## Release fleets (`full-v2.2.1` / `light-v2.2.1`)
 
 Every release ships two per-board tracks built from **the same commit**:
-`full-v2.2` for F7 / H7 / 2 MB boards and `light-v2.2` for 1 MB F4 boards.
+`full-v2.2.1` for F7 / H7 / 2 MB boards and `light-v2.2.1` for 1 MB F4 boards.
 Both carry the **identical fork feature set**; they differ only in which
 hardware backends are compiled in. A board's version string tells you which you
-flashed: the light build appends ` Light` (`... Stratos v2.2 Light (…)`), the
+flashed: the light build appends ` Light` (`... Stratos v2.2.1 Light (…)`), the
 full build has no suffix.
 
 Since v1.1 the two tracks don't overlap — a given board appears on exactly one
