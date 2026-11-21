@@ -26,9 +26,9 @@
 > [**Releases** page](https://github.com/erwinquilloy/ardupilot/releases)
 > (every version, newest first — the current releases are `full-v2.2.1` and `light-v2.2.1`).
 
-A curated fork of ArduPlane, rebased onto upstream **ArduPlane 4.7.2**
-(tag `Plane-4.7.2`, commit `fb77356789`). This branch carries a set of
-additions and behaviour changes on top of stock 4.7.2, mostly ported
+A curated fork of ArduPlane, rebased onto upstream **ArduPlane 4.7.3**
+(tag `Plane-4.7.3`, commit `d9c5097c3d`). This branch carries a set of
+additions and behaviour changes on top of stock 4.7.3, mostly ported
 from [shellixyz's classic 2022 fork](https://github.com/shellixyz/ardupilot)
 and the maintained successor at [ArduCustom/ardupilot](https://github.com/ArduCustom/ardupilot),
 plus a few additions originating in this fork.
@@ -61,12 +61,14 @@ plus a few additions originating in this fork.
 
 ---
 
-## What's new since v2.2.1 (next release)
+## What's new in v2.3.0 (staged, not released yet)
 
 *Everything below is on both tracks unless the row says otherwise.*
 
 | Area | Change | Details |
 |---|---|---|
+| Base | **Rebased onto ArduPlane 4.7.3** (was 4.7.2). A small upstream point release: no Plane flight-code changes. For Stratos users: a fix for the flight controller locking up or corrupting data during BLHeli ESC pass-through, configurable camera servo zoom / focus speeds (`CAMx_ZOM_RAT_MAX`, `CAMx_FOC_RAT_MAX`), and every filtered gyro sample logged when the rate thread decimates. TBS Lucid H7 OEM: no change (it already probed both baros) | [ArduPlane 4.7.3 release notes](https://github.com/ArduPilot/ardupilot/blob/Plane-4.7.3/ArduPlane/ReleaseNotes.txt) |
+| Gimbal | **Caddx gimbals switch into roll / pitch lock reliably after power-up.** From ArduPlane 4.7.3: for the first 5 s after the first packet the gimbal is told body frame, so it sees a mode change once it has booted (it ignored a lock mode that hadn't changed since power-up). Combined with the Stratos head-tracker centre lock, which still sends FPV mode | [Head tracking](#walksnail-headtracking-via-msp-and-serial-gimbal) |
 | OSD | **The flaps element reads `FL` instead of a flap icon.** `OSDx_AUTO_FLP` now shows `FL 50%`, `FL100%`, and `FL---%` while disarmed. The icon was blank on DJI O4 goggles (their built-in fonts have no flap symbol) and on Walksnail's default ArduPilot fonts; letters show on every OSD. The value is the larger of the auto flap setting and the flap switch (`RCx_OPTION` 208). The element is now 6 characters wide (was 5): check it doesn't run into the element to its right | [New elements](#new-elements) |
 
 ## What's new in v2.2.1
@@ -239,7 +241,7 @@ list is in [ArduPlane's release notes](https://github.com/ArduPilot/ardupilot/bl
 
 An outline of everything this fork adds and where it is documented. Each line links to its section.
 
-- **Getting started** — [What's new since v2.2.1](#whats-new-since-v221-next-release), [What's new in v2.2.1](#whats-new-in-v221), [What's new in v2.2](#whats-new-in-v22), [Upgrading to Stratos v2.x](#upgrading-to-stratos-v2x), [Why flash this instead of stock ArduPlane 4.7.2?](#why-flash-this-instead-of-stock-arduplane-472), [Building](#building), [Which file in the zip do I flash?](#which-file-in-the-zip-do-i-flash), [Release fleets (full-v2.2.1 / light-v2.2.1)](#release-fleets-full-v221--light-v221), [Tone-buzzer board variant (SpeedyBeeF405WING-Buzz)](#tone-buzzer-board-variant-speedybeef405wing-buzz)
+- **Getting started** — [What's new in v2.3.0](#whats-new-in-v230-staged-not-released-yet), [What's new in v2.2.1](#whats-new-in-v221), [What's new in v2.2](#whats-new-in-v22), [Upgrading to Stratos v2.x](#upgrading-to-stratos-v2x), [Why flash this instead of stock ArduPlane 4.7.3?](#why-flash-this-instead-of-stock-arduplane-473), [Building](#building), [Which file in the zip do I flash?](#which-file-in-the-zip-do-i-flash), [Release fleets (full-v2.2.1 / light-v2.2.1)](#release-fleets-full-v221--light-v221), [Tone-buzzer board variant (SpeedyBeeF405WING-Buzz)](#tone-buzzer-board-variant-speedybeef405wing-buzz)
 - **[What this fork adds](#what-this-fork-adds)**
   - [Flight modes](#flight-modes)
     - [Course Hold (mode 26)](#course-hold-mode-26)
@@ -322,9 +324,9 @@ An outline of everything this fork adds and where it is documented. Each line li
 
 ---
 
-## Why flash this instead of stock ArduPlane 4.7.2?
+## Why flash this instead of stock ArduPlane 4.7.3?
 
-Everything stock ArduPlane 4.7.2 does still works underneath — this fork
+Everything stock ArduPlane 4.7.3 does still works underneath — this fork
 only **adds** on top (both variants carry the identical feature set; they
 differ only in which hardware backends are compiled in). If you fly
 long-range or FPV fixed-wing, these are the additions most worth flashing
@@ -549,14 +551,14 @@ ArduPlane V<x.y.z> Stratos <FORK_VERSION>[ Light] (<git-hash>)
 For example:
 
 ```
-ArduPlane V4.7.2 Stratos v2.2.1 (1a2b3c4)        # 2 MB board (full track)
-ArduPlane V4.7.2 Stratos v2.2.1 Light (1a2b3c4)  # 1 MB board (light track)
+ArduPlane V4.7.3 Stratos v2.3.0 (1a2b3c4)        # 2 MB board (full track)
+ArduPlane V4.7.3 Stratos v2.3.0 Light (1a2b3c4)  # 1 MB board (light track)
 ```
 
 The hash is the commit the release was built from; the release notes
 print it, and the release tags (`full-v2.2.1` / `light-v2.2.1`) point at it.
 
-The upstream `ArduPlane V4.7.2` prefix is kept so GCS tools that parse
+The upstream `ArduPlane V4.7.3` prefix is kept so GCS tools that parse
 the upstream version string (MissionPlanner, MAVProxy, autotest
 scripts) keep working. `FORK_VERSION` lives in
 `libraries/AP_Common/AP_FWVersionDefine.h` — bump it on each release.
@@ -4527,9 +4529,10 @@ EdgeTX widget sound path, which is not the one you would guess — are in
 
 # Branch / repository layout
 
-- `master_custom_4.7.2` — mainline (this branch), on ArduPlane 4.7.2, from
-  v2.1. Builds **both** release tracks: 1 MB boards get the light
+- `master_custom_4.7.3` — mainline (this branch), on ArduPlane 4.7.3, from
+  v2.3.0. Builds **both** release tracks: 1 MB boards get the light
   configuration automatically. All ongoing work goes here.
+- `master_custom_4.7.2` — the ArduPlane 4.7.2 base (v2.1 – v2.2.1). Frozen reference.
 - `master_custom_4.7.1` — the ArduPlane 4.7.1 base (v2.0). Frozen reference.
 - `master_custom_4.6.3` / `master_custom_4.6.3_light` — the previous
   ArduPlane 4.6.3 base (full and light variants, releases up to v1.1).
