@@ -173,6 +173,16 @@ const AP_Param::GroupInfo AP_Mount_Params::var_info[] = {
     // @User: Standard
     AP_GROUPINFO("_OPTIONS", 16, AP_Mount_Params, options, 0),
 
+#if HAL_MOUNT_CADDX_ENABLED
+    // index 40: fork param, kept clear of upstream's growing range (master uses 17 and 18)
+    // @Param: _CADDX_SENS
+    // @DisplayName: CADDX gimbal sensitivity
+    // @Description: Sensitivity sent to a CADDX GM gimbal in every mode (FPV, pitch stabilisation and Horizon). 0 leaves it unset. Caddx's own VTX sends 10. Only used when the mount type is CADDX
+    // @Range: 0 31
+    // @User: Advanced
+    AP_GROUPINFO("_CADDX_SENS", 40, AP_Mount_Params, caddx_sens, 0),
+#endif
+
     AP_GROUPEND
 };
 

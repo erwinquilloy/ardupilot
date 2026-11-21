@@ -86,7 +86,7 @@ void AP_Mount_CADDX::send_target_angles(const MountAngleTarget& angle_target_rad
     set_attitude_cmd_buf[1] = SET_ATTITUDE_HEADER2;
 
     // byte 2's lower 3 bits are mode
-    // lower 5 bits are sensitivity but always left as zero
+    // upper 5 bits are sensitivity (fork: MNTx_CADDX_SENS, applied in every mode)
     uint8_t mode = 0; //start with axes in bf
     // the gimbal appears not to act on a lock mode that is unchanged since its power-up, so hold body frame
     // for a while after the first packet to give it a mode change once it has booted
@@ -116,7 +116,7 @@ void AP_Mount_CADDX::send_target_angles(const MountAngleTarget& angle_target_rad
     if (mode & (uint8_t)LockMode::ROLL_LOCK) {
         mode = (uint8_t)LockMode::ROLL_LOCK;
     }
-    set_attitude_cmd_buf[2] = mode & 0x07;
+    set_attitude_cmd_buf[2] = (mode & 0x07) | (uint8_t(constrain_int16(_params.caddx_sens.get(), 0, 31)) << 3);
 
     // byte 3's lower 4 bits are reserved
     // upper 4 bits are roll's lower 4 bits

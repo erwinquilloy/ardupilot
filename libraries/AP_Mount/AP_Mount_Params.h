@@ -2,6 +2,7 @@
 
 #include <AP_Param/AP_Param.h>
 #include <AP_Math/AP_Math.h>
+#include "AP_Mount_config.h"
 
 class AP_Mount_Params {
 
@@ -32,4 +33,7 @@ public:
     AP_Int8     sysid_default;      // target sysid for mount to follow
     AP_Int32    dev_id;             // Device id taking into account bus
     AP_Int8     options;            // mount options bitmask
+#if HAL_MOUNT_CADDX_ENABLED
+    AP_Int8     caddx_sens;         // fork: CADDX gimbal sensitivity sent in every mode (0-31)
+#endif
 };
