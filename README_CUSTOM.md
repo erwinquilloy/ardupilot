@@ -2981,7 +2981,7 @@ the VTX rather than reversing anything on the FC.
 | `OSDx_AVG_EFG`     | Average ground efficiency (standalone)        |
 | `OSDx_AVG_EFA`     | Average air efficiency (standalone)           |
 | `OSDx_ASPD_DEM`    | TECS demanded airspeed                        |
-| `OSDx_AUTO_FLP`    | Active auto-flap deflection                   |
+| `OSDx_AUTO_FLP`    | Flap deflection, e.g. `FL 50%` (auto or manual RCx_OPTION 208, whichever is larger) |
 | `OSDx_RC_FS`       | RC failsafe indicator                         |
 | `OSDx_PEAK_RR`     | Peak roll rate (since last reset)             |
 | `OSDx_PEAK_PR`     | Peak pitch rate                               |

@@ -1265,7 +1265,7 @@ const AP_Param::GroupInfo AP_OSD_Screen::var_info2[] = {
 
     // @Param: AUTO_FLP_EN
     // @DisplayName: AUTO_FLP_EN
-    // @Description: Displays the auto-flap deployment percentage (Plane only; fork #199 stub-port of #55)
+    // @Description: Displays the flap deployment percentage as FL followed by the value (Plane only; fork #199 stub-port of #55)
     // @Values: 0:Disabled,1:Enabled
 
     // @Param: AUTO_FLP_X
@@ -3583,10 +3583,10 @@ void AP_OSD_Screen::draw_peak_pitch_rate(uint8_t x, uint8_t y)
 void AP_OSD_Screen::draw_auto_flaps(uint8_t x, uint8_t y)
 {
     if (!AP_Notify::flags.armed) {
-        backend->write(x, y, false, "%c---%c", SYMBOL(SYM_FLAP), SYMBOL(SYM_PCNT));
+        backend->write(x, y, false, "FL---%c", SYMBOL(SYM_PCNT));
     } else {
         const float flaps_pcnt = AP::vehicle()->auto_flap_percent();
-        backend->write(x, y, false, "%c%3u%c", SYMBOL(SYM_FLAP), (unsigned)lrintf(flaps_pcnt), SYMBOL(SYM_PCNT));
+        backend->write(x, y, false, "FL%3u%c", (unsigned)lrintf(flaps_pcnt), SYMBOL(SYM_PCNT));
     }
 }
 
