@@ -68,6 +68,7 @@ plus a few additions originating in this fork.
 | Area | Change | Details |
 |---|---|---|
 | Base | **Rebased onto ArduPlane 4.7.3** (was 4.7.2). A small upstream point release: no Plane flight-code changes. For Stratos users: a fix for the flight controller locking up or corrupting data during BLHeli ESC pass-through, configurable camera servo zoom / focus speeds (`CAMx_ZOM_RAT_MAX`, `CAMx_FOC_RAT_MAX`), and every filtered gyro sample logged when the rate thread decimates. TBS Lucid H7 OEM: no change (it already probed both baros) | [ArduPlane 4.7.3 release notes](https://github.com/ArduPilot/ardupilot/blob/Plane-4.7.3/ArduPlane/ReleaseNotes.txt) |
+| Gimbal | **Caddx GM gimbals reach Horizon mode.** `RCx_OPTION 185` HIGH (roll + pitch lock) now sends Horizon (mode 2, as Caddx's own VTX does) instead of 3, which a GM3 treated as pitch stab, so HIGH never levelled roll. LOW = FPV and MID = pitch stab are unchanged. Bench-tested on a GM3 v2 (firmware 2.2.59), with the mode confirmed in the CaddxFPV tool | [Head tracking controls](#controls) |
 | Gimbal | **Caddx gimbals switch into roll / pitch lock reliably after power-up.** From ArduPlane 4.7.3: for the first 5 s after the first packet the gimbal is told body frame, so it sees a mode change once it has booted (it ignored a lock mode that hadn't changed since power-up). Combined with the Stratos head-tracker centre lock, which still sends FPV mode | [Head tracking](#walksnail-headtracking-via-msp-and-serial-gimbal) |
 | OSD | **The flaps element reads `FL` instead of a flap icon.** `OSDx_AUTO_FLP` now shows `FL 50%`, `FL100%`, and `FL---%` while disarmed. The icon was blank on DJI O4 goggles (their built-in fonts have no flap symbol) and on Walksnail's default ArduPilot fonts; letters show on every OSD. The value is the larger of the auto flap setting and the flap switch (`RCx_OPTION` 208). The element is now 6 characters wide (was 5): check it doesn't run into the element to its right | [New elements](#new-elements) |
 
@@ -2839,6 +2840,14 @@ Servo gimbal: assign the outputs with `SERVOn_FUNCTION` = `6` (Mount1Yaw),
   head-tracker stream, and the FC treats **~1 s of silence** as a centre + lock,
   resuming when the stream returns. A genuine link dropout parks the gimbal the
   same way — a handy failsafe.
+- **`RCx_OPTION 185` — stabilisation mode (Caddx GM gimbals).** LOW = FPV (no
+  stabilisation), MID = pitch stab, HIGH = Horizon (roll and pitch held level).
+  Stratos sends the GM mode numbers 0 / 1 / 2, as Caddx's own VTX does; upstream
+  ArduPilot sends 3 for HIGH, which leaves a GM3 in pitch stab. From v2.3.0 the
+  gimbal is held in FPV for the first 5 s after the flight controller starts
+  talking to it (from ArduPlane 4.7.3), so a switch already at MID or HIGH at
+  power-up takes effect without a toggle. Bench-tested on a GM3 v2 (firmware
+  2.2.59).
 
 ## POI lock with head tracking
 

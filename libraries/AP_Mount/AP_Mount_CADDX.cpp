@@ -110,6 +110,12 @@ void AP_Mount_CADDX::send_target_angles(const MountAngleTarget& angle_target_rad
             mode |= (uint8_t)LockMode::ROLL_LOCK;
         }
     }
+    // Fork: Caddx GM gimbals read these bits as a mode number (0 FPV, 1 pitch stab,
+    // 2 Horizon; Caddx's own VTX sends 2 for Horizon), not as lock flags. Roll + pitch
+    // lock as flags (3) left a GM3 v2 (fw 2.2.59) in pitch stab; 2 gives Horizon.
+    if (mode & (uint8_t)LockMode::ROLL_LOCK) {
+        mode = (uint8_t)LockMode::ROLL_LOCK;
+    }
     set_attitude_cmd_buf[2] = mode & 0x07;
 
     // byte 3's lower 4 bits are reserved
