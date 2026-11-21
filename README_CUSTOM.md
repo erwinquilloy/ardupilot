@@ -61,6 +61,14 @@ plus a few additions originating in this fork.
 
 ---
 
+## What's new since v2.2.1 (next release)
+
+*Everything below is on both tracks unless the row says otherwise.*
+
+| Area | Change | Details |
+|---|---|---|
+| OSD | **The flaps element reads `FL` instead of a flap icon.** `OSDx_AUTO_FLP` now shows `FL 50%`, `FL100%`, and `FL---%` while disarmed. The icon was blank on DJI O4 goggles (their built-in fonts have no flap symbol) and on Walksnail's default ArduPilot fonts; letters show on every OSD. The value is the larger of the auto flap setting and the flap switch (`RCx_OPTION` 208). The element is now 6 characters wide (was 5): check it doesn't run into the element to its right | [New elements](#new-elements) |
+
 ## What's new in v2.2.1
 
 *Everything below is on both tracks unless the row says otherwise.*
@@ -231,7 +239,7 @@ list is in [ArduPlane's release notes](https://github.com/ArduPilot/ardupilot/bl
 
 An outline of everything this fork adds and where it is documented. Each line links to its section.
 
-- **Getting started** — [What's new in v2.2.1](#whats-new-in-v221), [What's new in v2.2](#whats-new-in-v22), [Upgrading to Stratos v2.x](#upgrading-to-stratos-v2x), [Why flash this instead of stock ArduPlane 4.7.2?](#why-flash-this-instead-of-stock-arduplane-472), [Building](#building), [Which file in the zip do I flash?](#which-file-in-the-zip-do-i-flash), [Release fleets (full-v2.2.1 / light-v2.2.1)](#release-fleets-full-v221--light-v221), [Tone-buzzer board variant (SpeedyBeeF405WING-Buzz)](#tone-buzzer-board-variant-speedybeef405wing-buzz)
+- **Getting started** — [What's new since v2.2.1](#whats-new-since-v221-next-release), [What's new in v2.2.1](#whats-new-in-v221), [What's new in v2.2](#whats-new-in-v22), [Upgrading to Stratos v2.x](#upgrading-to-stratos-v2x), [Why flash this instead of stock ArduPlane 4.7.2?](#why-flash-this-instead-of-stock-arduplane-472), [Building](#building), [Which file in the zip do I flash?](#which-file-in-the-zip-do-i-flash), [Release fleets (full-v2.2.1 / light-v2.2.1)](#release-fleets-full-v221--light-v221), [Tone-buzzer board variant (SpeedyBeeF405WING-Buzz)](#tone-buzzer-board-variant-speedybeef405wing-buzz)
 - **[What this fork adds](#what-this-fork-adds)**
   - [Flight modes](#flight-modes)
     - [Course Hold (mode 26)](#course-hold-mode-26)
