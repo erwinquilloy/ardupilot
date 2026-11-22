@@ -105,6 +105,8 @@ const AP_ToneAlarm::Tone AP_ToneAlarm::_tones[] {
     { "MBT32L64 O1cdefgab", true },
 #define AP_NOTIFY_TONE_WAITING_FOR_LAUNCH 34
     { "MBT32L64 O5aP4aP4aP4aP4aP4aP4", true },
+#define AP_NOTIFY_TONE_WAITING_FOR_GPS 35
+    { "MBT90L4O2gcP2", true },      // low and falling: don't launch
 };
 
 bool AP_ToneAlarm::init()
@@ -465,6 +467,9 @@ void AP_ToneAlarm::update()
                 break;
             case AP_Notify::TKOFS_WAITING_FOR_LAUNCH:
                 play_tone(AP_NOTIFY_TONE_WAITING_FOR_LAUNCH);
+                break;
+            case AP_Notify::TKOFS_WAITING_FOR_GPS:
+                play_tone(AP_NOTIFY_TONE_WAITING_FOR_GPS);
                 break;
             case AP_Notify::TKOFS_IDLE:
             default:

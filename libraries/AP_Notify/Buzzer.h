@@ -53,6 +53,7 @@ private:
     static const uint32_t  TKOF_RAISE_BUZZ = 0b10000000001000000000100000000000UL; // slow lone beeps: raise throttle
     static const uint32_t   TKOF_IDLE_BUZZ = 0b10100000101000001010000000000000UL; // medium double-beeps: spooling to idle
     static const uint32_t TKOF_LAUNCH_BUZZ = 0b10101010101010101010101010101010UL; // fast continuous: ready to launch
+    static const uint32_t    TKOF_GPS_BUZZ = 0b11111111110000000000000000000000UL; // one long beep: no GPS, don't launch
 
     /// play_pattern - plays the defined buzzer pattern
     void play_pattern(const uint32_t pattern);

@@ -268,6 +268,17 @@ private:
     // we leave the idle-throttle path.
     uint32_t takeoff_delay_start_tstamp_ms = 0;
 
+    // fork: GPS gate for the wait before an automatic launch, see
+    // update_launch_gps_gate()
+    struct {
+        uint32_t lost_ms;           // when the fix was lost, 0 = have one
+        uint32_t regained_ms;       // when it came back while waiting, 0 = not yet
+        uint32_t report_ms;         // last reminder sent
+        bool active;                // waiting for a launch
+        bool waiting;               // no usable GPS
+        bool need_stick_cycle;      // stick was up while waiting: lower it before idle or launch
+    } launch_gps;
+
     // Training mode
     bool training_manual_roll;  // user has manual roll control
     bool training_manual_pitch; // user has manual pitch control
@@ -1311,6 +1322,9 @@ private:
 
     // takeoff.cpp
     bool auto_takeoff_check(void);
+    void update_launch_gps_gate(void);
+    // true while GPS forbids idle throttle, the ready cue and the launch
+    bool launch_gps_blocked(void) const { return launch_gps.waiting || launch_gps.need_stick_cycle; }
     bool in_takeoff_cancel_window(void);
     bool takeoff_stick_cancel_check(void);
     void takeoff_calc_roll(void);

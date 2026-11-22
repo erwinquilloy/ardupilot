@@ -55,6 +55,15 @@ bool Plane::auto_takeoff_check(void)
        takeoff_state.waiting_for_rudder_neutral = false;
     }  
 
+    // fork: no launch while the cue says wait, and none off a timer or shake
+    // count left over from before the GPS was lost
+    if (launch_gps_blocked()) {
+        takeoff_state.launchTimerStarted = false;
+        takeoff_state.last_tkoff_arm_time = 0;
+        takeoff_state.accel_event_counter = 0;
+        return false;
+    }
+
     // Check for bad GPS
     if (gps.status() < AP_GPS::GPS_OK_FIX_3D) {
         // no auto takeoff without GPS lock
@@ -200,6 +209,112 @@ bool Plane::in_takeoff_cancel_window(void)
     }
     return (AP_HAL::millis() - takeoff_state.cancel_launch_ms) >=
            (uint32_t)(MAX(mode_takeoff.cancel_delay.get(), 0.0f) * 1000);
+}
+
+#define LAUNCH_GPS_LOST_MS      1000    // shorter dropouts don't stop the idle motor
+#define LAUNCH_GPS_REGAINED_MS  3000    // the fix must hold this long to count again
+#define LAUNCH_GPS_REPORT_MS    3000
+
+/*
+  fork: GPS gate for the wait before an automatic launch (TAKEOFF, or a fixed
+  wing NAV_TAKEOFF in AUTO).
+
+  auto_takeoff_check() can't launch without a 3D fix, but idle throttle and
+  the ready-to-launch cue didn't look at GPS, so the aircraft seemed ready and
+  got thrown on idle. While GPS is unusable this holds idle at zero, replaces
+  the ready cue and blocks the launch:
+
+  - no fix on entry blocks at once. Losing it later blocks after 1 s, so a
+    blip during the throw doesn't stop the motor.
+  - a returning fix must hold for 3 s.
+  - if idle throttle is configured and the stick was up meanwhile, the stick
+    must go to zero first: GPS coming back must not start a motor in the
+    pilot's hand.
+
+  Nothing here runs once the aircraft has launched.
+ */
+void Plane::update_launch_gps_gate(void)
+{
+    bool pre_launch = false;
+    if (throttle_suppressed) {
+        if (control_mode == &mode_takeoff) {
+            pre_launch = true;
+        } else if (control_mode == &mode_auto && !auto_state.takeoff_complete) {
+            const uint16_t id = mission.get_current_nav_cmd().id;
+            pre_launch = (id == MAV_CMD_NAV_TAKEOFF);
+#if HAL_QUADPLANE_ENABLED
+            pre_launch = pre_launch && !quadplane.is_vtol_takeoff(id);
+#endif
+        }
+    }
+    if (!pre_launch) {
+        launch_gps = {};
+        return;
+    }
+
+    bool usable = gps.status() >= AP_GPS::GPS_OK_FIX_3D;
+    if (control_mode == &mode_takeoff) {
+        // ModeTakeoff::update() holds zero throttle until it has these
+        usable = usable && current_loc.initialised() && ahrs.home_is_set();
+    }
+
+    const uint32_t now = AP_HAL::millis();
+    const bool armed = arming.is_armed();
+
+    if (!launch_gps.active || !armed) {
+        // on entry, and all the time while disarmed: follow the fix directly
+        launch_gps = {};
+        launch_gps.active = true;
+        launch_gps.waiting = !usable;
+        if (!armed) {
+            return;
+        }
+    } else if (launch_gps.waiting) {
+        if (!usable) {
+            launch_gps.regained_ms = 0;
+        } else if (launch_gps.regained_ms == 0) {
+            launch_gps.regained_ms = now;
+        } else if (now - launch_gps.regained_ms >= LAUNCH_GPS_REGAINED_MS) {
+            launch_gps.waiting = false;
+            launch_gps.lost_ms = 0;
+            launch_gps.report_ms = 0;
+            if (!launch_gps.need_stick_cycle) {
+                gcs().send_text(MAV_SEVERITY_INFO, "GPS OK for launch");
+            }
+        }
+    } else {
+        if (usable) {
+            launch_gps.lost_ms = 0;
+        } else if (launch_gps.lost_ms == 0) {
+            launch_gps.lost_ms = now;
+        } else if (now - launch_gps.lost_ms >= LAUNCH_GPS_LOST_MS) {
+            launch_gps.waiting = true;
+            launch_gps.regained_ms = 0;
+            launch_gps.report_ms = 0;
+        }
+    }
+
+    // an RC failsafe also reads as zero stick, that isn't the pilot lowering it
+    if (rc().has_valid_input() && !failsafe.rc_failsafe) {
+        if (is_zero(get_throttle_input(false))) {
+            if (launch_gps.need_stick_cycle && !launch_gps.waiting) {
+                gcs().send_text(MAV_SEVERITY_INFO, "GPS OK for launch");
+            }
+            launch_gps.need_stick_cycle = false;
+        } else if (launch_gps.waiting &&
+                   aparm.takeoff_throttle_idle > 0 &&
+                   !g.throttle_suppress_manual) {
+            launch_gps.need_stick_cycle = true;
+        }
+    }
+
+    // WARNING so that CRSF passes it on; repeated as the OSD keeps one message
+    if (launch_gps_blocked() &&
+        (launch_gps.report_ms == 0 || now - launch_gps.report_ms >= LAUNCH_GPS_REPORT_MS)) {
+        launch_gps.report_ms = now;
+        gcs().send_text(MAV_SEVERITY_WARNING, "%s", launch_gps.waiting ? "No GPS fix - do not launch"
+                                                                     : "GPS OK - lower then raise THR");
+    }
 }
 
 /*

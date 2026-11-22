@@ -51,7 +51,8 @@ void Plane::throttle_slew_limit()
     if (in_pre_takeoff_suppressed) {
         // Pre-launch idle throttle: snap to zero instantly when the stick
         // is at zero, otherwise climb at TKOFF_IDL_SRATE towards TKOFF_THR_IDLE.
-        if (is_zero(get_throttle_input(false))) {
+        if (launch_gps_blocked() || is_zero(get_throttle_input(false))) {
+            // (fork: the GPS gate snaps to zero just like stick down)
             // Seed the slew limiter while the output is still zero.
             // SRV_Channels::set_slew_rate() only *creates* its per-function entry
             // when handed a positive rate, and seeds last_scaled_output from
@@ -771,6 +772,9 @@ void Plane::set_throttle(void)
     // override when we're actually in a pre-launch suppressed-throttle state.
     AP_Notify::takeoff_status = AP_Notify::TKOFS_IDLE;
 
+    // before suppress_throttle(), which can launch
+    update_launch_gps_gate();
+
     if (suppress_throttle()) {
         const bool in_pre_takeoff = ((control_mode == &mode_auto &&
                                       flight_stage == AP_FixedWing::FlightStage::NORMAL &&
@@ -780,12 +784,21 @@ void Plane::set_throttle(void)
             // manual pass through of throttle while throttle is suppressed
             SRV_Channels::set_output_scaled(SRV_Channel::k_throttle, get_throttle_input(true));
             if (in_pre_takeoff) {
-                AP_Notify::takeoff_status = AP_Notify::TKOFS_WAITING_FOR_LAUNCH;
+                // fork: the throttle stays the pilot's, but don't call it ready without GPS
+                AP_Notify::takeoff_status = launch_gps.waiting ? AP_Notify::TKOFS_WAITING_FOR_GPS
+                                                               : AP_Notify::TKOFS_WAITING_FOR_LAUNCH;
             }
 
         } else if (landing.is_flaring() && landing.use_thr_min_during_flare() ) {
             // throttle is suppressed (above) to zero in final flare in auto mode, but we allow instead thr_min if user prefers, eg turbines:
             SRV_Channels::set_output_scaled(SRV_Channel::k_throttle, aparm.throttle_min.get());
+
+        } else if (in_pre_takeoff && launch_gps_blocked()) {
+            // fork: can't launch, so no idle motor and no ready cue
+            SRV_Channels::set_output_scaled(SRV_Channel::k_throttle, 0.0);
+            takeoff_delay_start_tstamp_ms = 0;
+            AP_Notify::takeoff_status = launch_gps.waiting ? AP_Notify::TKOFS_WAITING_FOR_GPS
+                                                           : AP_Notify::TKOFS_WAITING_TO_RAISE_THROTTLE;
 
         } else if (in_pre_takeoff && aparm.takeoff_throttle_idle > 0 && !is_zero(get_throttle_input(false))) {
             // Pre-launch idle throttle: hold TKOFF_THR_IDLE while the stick is raised,

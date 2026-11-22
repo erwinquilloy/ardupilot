@@ -84,6 +84,9 @@ void Buzzer::update_pattern_to_play()
         case AP_Notify::TKOFS_WAITING_FOR_LAUNCH:
             play_pattern(TKOF_LAUNCH_BUZZ);
             return;
+        case AP_Notify::TKOFS_WAITING_FOR_GPS:
+            play_pattern(TKOF_GPS_BUZZ);
+            return;
         case AP_Notify::TKOFS_IDLE:
         default:
             break;
@@ -101,6 +104,10 @@ void Buzzer::update_pattern_to_play()
     // past its first bit.
     if (_takeoff_status == AP_Notify::TKOFS_WAITING_FOR_LAUNCH) {
         play_pattern(TKOF_LAUNCH_BUZZ);
+        return;
+    }
+    if (_takeoff_status == AP_Notify::TKOFS_WAITING_FOR_GPS) {
+        play_pattern(TKOF_GPS_BUZZ);
         return;
     }
 
