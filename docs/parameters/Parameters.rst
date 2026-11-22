@@ -34218,6 +34218,42 @@ Camera vertical field of view\. 0 if unknown
 
 
 
+.. _CAM1_ZOM_RAT_MAX:
+
+CAM1\_ZOM\_RAT\_MAX: Camera zoom speed
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+Speed at which the zoom output moves for continuous \(rate\) zoom commands\. Only used by the Servo camera type\. The default of 5\%\/s moves across the full range in 20 seconds
+
+
++----------+--------------------+
+| Range    | Units              |
++==========+====================+
+| 0 to 100 | percent per second |
++----------+--------------------+
+
+
+
+
+.. _CAM1_FOC_RAT_MAX:
+
+CAM1\_FOC\_RAT\_MAX: Camera focus speed
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+Speed at which the focus output moves for continuous \(rate\) focus commands\. Only used by the Servo camera type\. The default of 5\%\/s moves across the full range in 20 seconds
+
+
++----------+--------------------+
+| Range    | Units              |
++==========+====================+
+| 0 to 100 | percent per second |
++----------+--------------------+
+
+
+
+
 
 .. _parameters_CAM1_RC_:
 
@@ -34644,6 +34680,42 @@ Camera vertical field of view\. 0 if unknown
 +==========+=========+
 | 0 to 180 | degrees |
 +----------+---------+
+
+
+
+
+.. _CAM2_ZOM_RAT_MAX:
+
+CAM2\_ZOM\_RAT\_MAX: Camera zoom speed
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+Speed at which the zoom output moves for continuous \(rate\) zoom commands\. Only used by the Servo camera type\. The default of 5\%\/s moves across the full range in 20 seconds
+
+
++----------+--------------------+
+| Range    | Units              |
++==========+====================+
+| 0 to 100 | percent per second |
++----------+--------------------+
+
+
+
+
+.. _CAM2_FOC_RAT_MAX:
+
+CAM2\_FOC\_RAT\_MAX: Camera focus speed
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+Speed at which the focus output moves for continuous \(rate\) focus commands\. Only used by the Servo camera type\. The default of 5\%\/s moves across the full range in 20 seconds
+
+
++----------+--------------------+
+| Range    | Units              |
++==========+====================+
+| 0 to 100 | percent per second |
++----------+--------------------+
 
 
 
@@ -42368,6 +42440,8 @@ Type of AHRS device
 | | 7     | MicroStrain7 | |
 | +-------+--------------+ |
 | | 8     | SBG          | |
+| +-------+--------------+ |
+| | 10    | Aeron        | |
 | +-------+--------------+ |
 | | 11    | SensAItion   | |
 | +-------+--------------+ |
@@ -64785,6 +64859,25 @@ Mount options bitmask\, note bit 2 only impacts RC targetting mode
 
 
 
+.. _MNT1_CADDX_SENS:
+
+MNT1\_CADDX\_SENS: CADDX gimbal sensitivity
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+| *Note: This parameter is for advanced users*
+
+Sensitivity sent to a CADDX GM gimbal in every mode \(FPV\, pitch stabilisation and Horizon\)\. 0 leaves it unset\. Caddx\'s own VTX sends 10\. Only used when the mount type is CADDX
+
+
++---------+
+| Range   |
++=========+
+| 0 to 31 |
++---------+
+
+
+
+
 
 .. _parameters_MNT2:
 
@@ -65192,6 +65285,25 @@ Mount options bitmask\, note bit 2 only impacts RC targetting mode
 | +-----+-----------------------------------------+ |
 |                                                   |
 +---------------------------------------------------+
+
+
+
+
+.. _MNT2_CADDX_SENS:
+
+MNT2\_CADDX\_SENS: CADDX gimbal sensitivity
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+| *Note: This parameter is for advanced users*
+
+Sensitivity sent to a CADDX GM gimbal in every mode \(FPV\, pitch stabilisation and Horizon\)\. 0 leaves it unset\. Caddx\'s own VTX sends 10\. Only used when the mount type is CADDX
+
+
++---------+
+| Range   |
++=========+
+| 0 to 31 |
++---------+
 
 
 
@@ -73988,7 +74100,7 @@ OSD1\_AUTO\_FLP\_EN: AUTO\_FLP\_EN
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
-Displays the auto\-flap deployment percentage \(Plane only\; fork \#199 stub\-port of \#55\)
+Displays the flap deployment percentage as FL followed by the value \(Plane only\; fork \#199 stub\-port of \#55\)
 
 
 +----------------------+
@@ -79243,7 +79355,7 @@ OSD2\_AUTO\_FLP\_EN: AUTO\_FLP\_EN
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
-Displays the auto\-flap deployment percentage \(Plane only\; fork \#199 stub\-port of \#55\)
+Displays the flap deployment percentage as FL followed by the value \(Plane only\; fork \#199 stub\-port of \#55\)
 
 
 +----------------------+
@@ -84498,7 +84610,7 @@ OSD3\_AUTO\_FLP\_EN: AUTO\_FLP\_EN
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
-Displays the auto\-flap deployment percentage \(Plane only\; fork \#199 stub\-port of \#55\)
+Displays the flap deployment percentage as FL followed by the value \(Plane only\; fork \#199 stub\-port of \#55\)
 
 
 +----------------------+
@@ -89753,7 +89865,7 @@ OSD4\_AUTO\_FLP\_EN: AUTO\_FLP\_EN
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
-Displays the auto\-flap deployment percentage \(Plane only\; fork \#199 stub\-port of \#55\)
+Displays the flap deployment percentage as FL followed by the value \(Plane only\; fork \#199 stub\-port of \#55\)
 
 
 +----------------------+
@@ -95008,7 +95120,7 @@ OSD5\_AUTO\_FLP\_EN: AUTO\_FLP\_EN
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
-Displays the auto\-flap deployment percentage \(Plane only\; fork \#199 stub\-port of \#55\)
+Displays the flap deployment percentage as FL followed by the value \(Plane only\; fork \#199 stub\-port of \#55\)
 
 
 +----------------------+

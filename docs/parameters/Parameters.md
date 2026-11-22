@@ -17349,6 +17349,22 @@ Camera vertical field of view. 0 if unknown
 
 - Range: 0 180
 
+## CAM1_ZOM_RAT_MAX: Camera zoom speed
+
+Speed at which the zoom output moves for continuous (rate) zoom commands. Only used by the Servo camera type. The default of 5%/s moves across the full range in 20 seconds
+
+- Units: %/s
+
+- Range: 0 100
+
+## CAM1_FOC_RAT_MAX: Camera focus speed
+
+Speed at which the focus output moves for continuous (rate) focus commands. Only used by the Servo camera type. The default of 5%/s moves across the full range in 20 seconds
+
+- Units: %/s
+
+- Range: 0 100
+
 # CAM1RC Parameters
 
 ## CAM1_RC_TYPE: RunCam device type
@@ -17517,6 +17533,22 @@ Camera vertical field of view. 0 if unknown
 - Units: deg
 
 - Range: 0 180
+
+## CAM2_ZOM_RAT_MAX: Camera zoom speed
+
+Speed at which the zoom output moves for continuous (rate) zoom commands. Only used by the Servo camera type. The default of 5%/s moves across the full range in 20 seconds
+
+- Units: %/s
+
+- Range: 0 100
+
+## CAM2_FOC_RAT_MAX: Camera focus speed
+
+Speed at which the focus output moves for continuous (rate) focus commands. Only used by the Servo camera type. The default of 5%/s moves across the full range in 20 seconds
+
+- Units: %/s
+
+- Range: 0 100
 
 # CAM2RC Parameters
 
@@ -20731,6 +20763,7 @@ Type of AHRS device
 |6|Trimble GSOF|
 |7|MicroStrain7|
 |8|SBG|
+|10|Aeron|
 |11|SensAItion|
 
 ## EAHRS_RATE: AHRS data rate
@@ -32710,6 +32743,14 @@ Mount options bitmask, note bit 2 only impacts RC targetting mode
 
 - Bitmask: 0:RC lock state from previous mode, 1:Return to neutral angles on RC failsafe, 2:Force FPV (bf) lock on roll and pitch
 
+## MNT1_CADDX_SENS: CADDX gimbal sensitivity
+
+*Note: This parameter is for advanced users*
+
+Sensitivity sent to a CADDX GM gimbal in every mode (FPV, pitch stabilisation and Horizon). 0 leaves it unset. Caddx's own VTX sends 10. Only used when the mount type is CADDX
+
+- Range: 0 31
+
 # MNT2 Parameters
 
 ## MNT2_TYPE: Mount Type
@@ -32917,6 +32958,14 @@ Mount device ID, taking into account its type, bus and instance
 Mount options bitmask, note bit 2 only impacts RC targetting mode
 
 - Bitmask: 0:RC lock state from previous mode, 1:Return to neutral angles on RC failsafe, 2:Force FPV (bf) lock on roll and pitch
+
+## MNT2_CADDX_SENS: CADDX gimbal sensitivity
+
+*Note: This parameter is for advanced users*
+
+Sensitivity sent to a CADDX GM gimbal in every mode (FPV, pitch stabilisation and Horizon). 0 leaves it unset. Caddx's own VTX sends 10. Only used when the mount type is CADDX
+
+- Range: 0 31
 
 # MSP Parameters
 
@@ -36165,7 +36214,7 @@ Vertical position on screen
 
 ## OSD1_AUTO_FLP_EN: AUTO_FLP_EN
 
-Displays the auto-flap deployment percentage (Plane only; fork #199 stub-port of #55)
+Displays the flap deployment percentage as FL followed by the value (Plane only; fork #199 stub-port of #55)
 
 |Value|Meaning|
 |:---:|:---:|
@@ -37974,7 +38023,7 @@ Vertical position on screen
 
 ## OSD2_AUTO_FLP_EN: AUTO_FLP_EN
 
-Displays the auto-flap deployment percentage (Plane only; fork #199 stub-port of #55)
+Displays the flap deployment percentage as FL followed by the value (Plane only; fork #199 stub-port of #55)
 
 |Value|Meaning|
 |:---:|:---:|
@@ -39783,7 +39832,7 @@ Vertical position on screen
 
 ## OSD3_AUTO_FLP_EN: AUTO_FLP_EN
 
-Displays the auto-flap deployment percentage (Plane only; fork #199 stub-port of #55)
+Displays the flap deployment percentage as FL followed by the value (Plane only; fork #199 stub-port of #55)
 
 |Value|Meaning|
 |:---:|:---:|
@@ -41592,7 +41641,7 @@ Vertical position on screen
 
 ## OSD4_AUTO_FLP_EN: AUTO_FLP_EN
 
-Displays the auto-flap deployment percentage (Plane only; fork #199 stub-port of #55)
+Displays the flap deployment percentage as FL followed by the value (Plane only; fork #199 stub-port of #55)
 
 |Value|Meaning|
 |:---:|:---:|
@@ -43401,7 +43450,7 @@ Vertical position on screen
 
 ## OSD5_AUTO_FLP_EN: AUTO_FLP_EN
 
-Displays the auto-flap deployment percentage (Plane only; fork #199 stub-port of #55)
+Displays the flap deployment percentage as FL followed by the value (Plane only; fork #199 stub-port of #55)
 
 |Value|Meaning|
 |:---:|:---:|

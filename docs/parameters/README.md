@@ -1,7 +1,7 @@
-# Parameter documentation — `master_custom_4.7.1` fork (v2.0)
+# Parameter documentation — ArduPlane Stratos v2.3.0 (`master_custom_4.7.3`)
 
 Machine-generated parameter metadata for **this fork** of ArduPlane
-(v2.0, ArduPlane 4.7.1 base). One set covers both the full and the light
+(Stratos v2.3.0, ArduPlane 4.7.3 base). One set covers both the full and the light
 release tracks. Regenerated from source via:
 
 ```bash
@@ -11,13 +11,15 @@ python3 Tools/autotest/param_metadata/param_parse.py --vehicle ArduPlane --forma
 The files in this directory cover **every parameter** that the firmware
 exposes, including the fork-specific additions:
 
-- `FLIGHT_OPTIONS` bits 22 (`RTL_CLIMB_FIRST_ONLY_IN_FS`), 23
+- `FLIGHT_OPTIONS` bits 18 (`VTOL_TRANS_END_IN_FBWB`), 21 (`TKOFF_END_IN_FBWB`),
+  22 (`RTL_CLIMB_FIRST_ONLY_IN_FS`), 23
   (`ALLOW_GLIDING_IN_AUTO_THR_MODES`), 24 (`RTL_MANUAL_ALT_CONTROL`)
 - `RC_OPTIONS` bit 22 (`PLANE_DISABLE_MAN_BAT_COMP`)
 - `OSD_OPTIONS` bits 18 / 21 / 23 (fork OSD polish)
 - `AILERON_DIFF`, `ELEVATOR_DIFF`, `KFF_THRAT2ELEV`, `KFF_FLAP2ELEV`
 - `FS_ELAND_*` emergency-landing state machine
 - `TKOFF_THR_IDLE` family, `THR_DZ`, `RTL_ALT_HOME`
+- `MNTx_CADDX_SENS` (v2.3.0)
 - All OSD additions (loiter radius, AoA, peak rates, stats grid, etc.)
 
 …and any others described in the top-level [`README_CUSTOM.md`](../../README_CUSTOM.md).
@@ -39,20 +41,21 @@ A standalone calculator that loads `apm.pdef.json` and lets you tick bits
 to compute integer values (or paste a value to see which bits are set)
 lives at [`docs/bitmask_calculator.html`](../bitmask_calculator.html).
 It's a single self-contained HTML file — no server, no analytics, runs
-in your browser. Defaults to fetching the JSON for v2.0 from this
-branch's raw URL; can also load the v1.1 (4.6.3-base) set, a custom URL,
-or a local file.
+in your browser. Defaults to fetching the JSON for v2.3.0 from this
+branch's raw URL; can also load the v2.2, v2.1, v2.0 and v1.1 sets, a custom
+URL, or a local file.
 
 ## Stable URLs for tooling
 
 For a bitmask calculator or similar app, fetch the JSON directly:
 
 ```
-https://raw.githubusercontent.com/erwinquilloy/ardupilot/master_custom_4.7.1/docs/parameters/apm.pdef.json
+https://raw.githubusercontent.com/erwinquilloy/ardupilot/master_custom_4.7.3/docs/parameters/apm.pdef.json
 ```
 
-This covers v2.0 firmware on both release tracks. Firmware up to v1.1
-(ArduPlane 4.6.3 base) is described by the copy on `master_custom_4.6.3`.
+This covers v2.3.0 firmware on both release tracks. Older firmware is
+described by the copy at its release tag (`full-v2.2.1`, `full-v2.1`,
+`full-v2.0`, `full-v1.1`).
 
 ## Bitmask params worth knowing
 
@@ -60,7 +63,7 @@ For a calculator UI, the params most users care about toggling bit-by-bit:
 
 | Param | Description |
 |---|---|
-| `FLIGHT_OPTIONS` | Mode-specific flight behaviours (rudder mix, takeoff arming, RTL behaviours, fork bits 22/23/24) |
+| `FLIGHT_OPTIONS` | Mode-specific flight behaviours (rudder mix, takeoff arming, RTL behaviours, fork bits 18/21/22/23/24) |
 | `OSD_OPTIONS` | OSD rendering options (decimal precision, plus-code shortening, etc.) |
 | `OSD1_..OSD7` element `_EN` flags | Per-element enable / position params (use `apm.pdef.json` to enumerate) |
 | `RC_OPTIONS` | RC protocol + receiver behaviour bits (including fork bit 22 in MANUAL voltage comp) |
@@ -69,7 +72,7 @@ For a calculator UI, the params most users care about toggling bit-by-bit:
 | `LAND_OPTIONS` | Landing behaviour |
 | `AHRS_OPTIONS` | EKF / AHRS behaviour |
 | `FENCE_TYPE` | Geofence type bits |
-| `ARMING_CHECK` | Pre-arm check toggles |
+| `ARMING_SKIPCHK` | Pre-arm checks to skip (0 = run all) |
 
 …plus the fork-added `RTL_MANUAL_ALT_CONTROL` block, `FS_ELAND_*`
 family, and so on — extract from the JSON.
@@ -77,9 +80,7 @@ family, and so on — extract from the JSON.
 ## Regenerating
 
 These files should be regenerated whenever a fork commit adds /
-modifies a parameter doc block. Two compounding gotchas to avoid (see
-`README_CUSTOM.md`'s migration table and the [skip-tecs-pid-ports
-feedback memory](#)):
+modifies a parameter doc block. Two compounding gotchas to avoid:
 
 1. Every line of a `@Param:` doc block must match `// @<word>: ...`.
    No bare comments inside the block — `param_parse.py:46` regex

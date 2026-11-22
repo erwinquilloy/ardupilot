@@ -67,7 +67,9 @@ plus a few additions originating in this fork.
 
 | Area | Change | Details |
 |---|---|---|
-| Base | **Rebased onto ArduPlane 4.7.3** (was 4.7.2). A small upstream point release: no Plane flight-code changes. For Stratos users: a fix for the flight controller locking up or corrupting data during BLHeli ESC pass-through, configurable camera servo zoom / focus speeds (`CAMx_ZOM_RAT_MAX`, `CAMx_FOC_RAT_MAX`), and every filtered gyro sample logged when the rate thread decimates. TBS Lucid H7 OEM: no change (it already probed both baros) | [ArduPlane 4.7.3 release notes](https://github.com/ArduPilot/ardupilot/blob/Plane-4.7.3/ArduPlane/ReleaseNotes.txt) |
+| Base | **Rebased onto ArduPlane 4.7.3** (was 4.7.2). A small upstream point release: no changes in ArduPlane's own flight code, but one default changes in a library QuadPlanes use (next row). For Stratos users it fixes the flight controller locking up or corrupting data during BLHeli ESC pass-through and adds camera servo zoom / focus speeds (`CAMx_ZOM_RAT_MAX`, `CAMx_FOC_RAT_MAX`). TBS Lucid H7 Wing AIO now also detects a BMP390 barometer | [What ArduPlane 4.7.3 brought in](#what-arduplane-473-brought-in) |
+| VTOL | **Default change: QLOITER coordinated turns are off.** `Q_LOIT_OPTIONS` now defaults to 0 (was 1). QuadPlanes that never set it will handle differently when yawing while moving in QLOITER. Set `Q_LOIT_OPTIONS 1` to keep the v2.2.1 behaviour | [Updating to v2.3.0](#updating-to-v230) |
+| Takeoff | **No idle motor and no "ready to launch" without GPS.** In TAKEOFF and AUTO takeoff, a lost fix before launch stops the idle throttle, changes the cue to "waiting for GPS" and warns `No GPS fix - do not launch`. If the throttle stick was up meanwhile, lower and raise it once the fix is back | [GPS before launch](#gps-before-launch) |
 | Gimbal | **Caddx GM gimbals reach Horizon mode.** `RCx_OPTION 185` HIGH (roll + pitch lock) now sends Horizon (mode 2, as Caddx's own VTX does) instead of 3, which a GM3 treated as pitch stab, so HIGH never levelled roll. LOW = FPV and MID = pitch stab are unchanged. Bench-tested on a GM3 v2 (firmware 2.2.59), with the mode confirmed in the CaddxFPV tool | [Head tracking controls](#controls) |
 | Gimbal | **Caddx GM gimbal sensitivity is tunable.** New `MNT1_CADDX_SENS` (0-31, default 0) is sent to the gimbal in every mode (FPV, pitch stab and Horizon). Caddx's own VTX sends 10. The default 0 sends exactly what earlier Stratos builds did | [Head tracking controls](#controls) |
 | Gimbal | **Caddx gimbals switch into roll / pitch lock reliably after power-up.** From ArduPlane 4.7.3: for the first 5 s after the first packet the gimbal is told body frame, so it sees a mode change once it has booted (it ignored a lock mode that hadn't changed since power-up). Combined with the Stratos head-tracker centre lock, which still sends FPV mode | [Head tracking](#walksnail-headtracking-via-msp-and-serial-gimbal) |
@@ -105,7 +107,7 @@ Then flash the `.apj` from Mission Planner or QGC
 
 | Coming from | Parameters | After flashing |
 |---|---|---|
-| **Stratos v2.2, v2.1 or Custom v2.0** | Carry over unchanged | Nothing to do. On `SIYI-UniFC-6-PICO` see [its serial ports](#siyi-unifc-6-pico) if you ran stock ArduPilot on it |
+| **Stratos v2.2.1, v2.2, v2.1 or Custom v2.0** | Carry over. **Don't reset** | For v2.3.0 read [Updating to v2.3.0](#updating-to-v230): one QuadPlane default, the Caddx Horizon switch and one OSD width change. On `SIYI-UniFC-6-PICO` see [its serial ports](#siyi-unifc-6-pico) if you ran stock ArduPilot on it |
 | **Stock ArduPlane 4.7.x** | Carry over. **Don't reset** | Check the [serial ports](#serial-port-numbering-matched-to-chip-uart-numbers) and the [default changes](#behaviour-changes-vs-upstream--migration-notes). Mode 26 is Course Hold on Stratos, not AUTOLAND |
 | **Custom v1.1 or older on ArduPlane 4.6.3** (the banner reads `ArduCustom v1.1`) | Converted on first boot. **Don't reset** | Follow [Upgrading from v1.1](#upgrading-from-v11-arduplane-463-base) |
 | **Stock ArduPlane 4.6.x** | Converted on first boot. **Don't reset** | Follow [Upgrading from v1.1](#upgrading-from-v11-arduplane-463-base), plus the serial ports and default changes above |
@@ -117,6 +119,22 @@ Then flash the `.apj` from Mission Planner or QGC
 and `KakuteH7-Wing`. On these, `SERIALn` matches the `TXn/RXn` pad on Stratos,
 so saved `SERIALn_*` values can point at a different UART than on stock
 ArduPlane. Check GPS, telemetry and RC first if something stops working.
+
+### Updating to v2.3.0
+
+Parameters carry over. Check these four if they apply to your aircraft:
+
+- **Auto launch:** with no GPS fix there is no idle throttle and no ready cue.
+  After the fix returns, lower and raise the throttle stick if it was up. See
+  [GPS before launch](#gps-before-launch).
+- **QuadPlanes:** `Q_LOIT_OPTIONS` now defaults to `0`, so QLOITER no longer
+  coordinates turns. A value you set yourself is kept. If you never set it and
+  want the v2.2.1 handling, set `Q_LOIT_OPTIONS` to `1`.
+- **Caddx GM gimbals:** `RCx_OPTION 185` HIGH now gives Horizon (roll and pitch
+  level). Before, a GM3 stayed in pitch stab there; use MID if that is what you
+  want.
+- **OSD:** `OSDx_AUTO_FLP` is one character wider (6). Check that it doesn't
+  run into the element to its right.
 
 ### Coming from ArduCustom v11.3
 
@@ -189,8 +207,8 @@ turn towards home can stall at the 5° climb bank limit.
 
 ## Upgrading from v1.1 (ArduPlane 4.6.3 base)
 
-Custom v2.0 moved the fork from ArduPlane 4.6.3 to 4.7.1, and Stratos v2.1 moved
-it to 4.7.2. **Don't reset your parameters before upgrading.** Old values are
+Custom v2.0 moved the fork from ArduPlane 4.6.3 to 4.7.1, Stratos v2.1 moved
+it to 4.7.2 and v2.3.0 to 4.7.3. **Don't reset your parameters before upgrading.** Old values are
 converted on the first boot of Custom v2.0 or later, and a board that was wiped
 first has nothing to convert.
 
@@ -473,7 +491,7 @@ Built for throwing a wing off your hand safely:
 ### 🆙 On the ArduPlane 4.7 base
 
 From v2.0 the fork sits on **ArduPlane 4.7** instead of 4.6.3 (v2.0 on 4.7.1,
-v2.1 on 4.7.2), so everything
+v2.1 on 4.7.2, v2.3.0 on 4.7.3), so everything
 4.7 brings is underneath too — a leaner EKF3, fence margin warnings, EKF lane
 switching, gimbal lock switches, MAVLink signing and many driver fixes. 4.7 also
 **renamed and rescaled a number of upstream parameters**; saved values are
@@ -482,6 +500,27 @@ bug fixes only (no renames), most visibly for boards mounted upside down or
 rotated.
 
 → [Upgrading from v1.1 (ArduPlane 4.6.3 base)](#upgrading-from-v11-arduplane-463-base)
+
+#### What ArduPlane 4.7.3 brought in
+
+v2.3.0 carries every 4.7.3 change. These are the ones that can matter on a
+plane or VTOL.
+
+| What changed in 4.7.3 | Who notices | In Stratos v2.3.0 |
+|---|---|---|
+| **QLOITER coordinated turns are off by default** (`Q_LOIT_OPTIONS` 1 → 0). Upstream lists it under Copter, but QuadPlanes use the same loiter code | QuadPlanes that never set the parameter | All boards |
+| **BLHeli pass-through:** an interrupt storm that could lock up the flight controller or corrupt data is fixed, and runtime pin-mode changes are now atomic | Anyone configuring ESCs through the flight controller | All boards |
+| **Caddx gimbals** are told body frame for the first 5 s after the first packet, so they act on a lock mode afterwards | Caddx GM gimbals | Boards with gimbal support. The head-tracker centre lock still sends FPV |
+| **Servo camera zoom and focus speeds** (`CAMx_ZOM_RAT_MAX`, `CAMx_FOC_RAT_MAX`, default 5 %/s as before) | Servo-driven zoom cameras | Where the servo camera driver is built |
+| **TBS Lucid H7 barometers:** every variant probes DPS368 and BMP390 | Lucid H7 owners | `TBS_LUCID_H7_WING_AIO` gains the BMP390 probe. The OEM boards already had both |
+| **New and updated boards:** SVehicle-E2-mini, AEDROXH7 pinout, Lucid H7 Wing with MPU6000 | Owners of those boards | In the source and buildable, not in the release fleet |
+
+These 4.7.3 items don't reach Stratos builds: the gyro-logging fix for the rate
+thread (Copter only), the vibration-compensation throttle fix (Plane never turns
+that compensation on), the Aeron PLX3 external AHRS driver (external AHRS isn't
+built for 2 MB or smaller boards), and the other Copter and Sub fixes. The full
+list is in
+[ArduPlane's release notes](https://github.com/ArduPilot/ardupilot/blob/Plane-4.7.3/ArduPlane/ReleaseNotes.txt).
 
 #### What ArduPlane 4.7.2 brought in
 
@@ -806,6 +845,10 @@ Snap-to-zero when the stick is dropped is instant regardless of slew
 rate. `THR_SUPP_MAN = 1` still takes precedence (continuous manual
 passthrough) — set `THR_SUPP_MAN = 0` to let idle throttle take over.
 
+> **From v2.3.0 idle throttle needs GPS**, like the launch itself: see
+> [GPS before launch](#gps-before-launch). On older versions the motor idles
+> and the ready cue plays without a fix, and a throw then stays at idle.
+
 > ℹ️ **Since v2.0 `TKOFF_THR_IDLE` is upstream's parameter.** ArduPlane 4.7
 > added its own `TKOFF_THR_IDLE`; this firmware uses that parameter for the
 > fork's stick-gated idle, so there is still exactly one `TKOFF_THR_IDLE`. It
@@ -829,6 +872,25 @@ The timer resets whenever the stick returns to zero or the plane
 leaves the pre-launch suppressed-throttle state. A GCS text
 `TKOFF idle THR timer started` fires when the timer begins.
 
+### GPS before launch
+
+*v2.3.0.* Auto launch needs a 3D fix, so from v2.3.0 everything that says
+"ready" needs one too. This applies to TAKEOFF mode and a fixed-wing
+`NAV_TAKEOFF` in AUTO, only until the launch. There is nothing to configure.
+
+| Situation | What happens |
+|---|---|
+| No fix when you enter the mode | No idle throttle, no launch, waiting-for-GPS cue, `No GPS fix - do not launch` every 3 s |
+| Fix lost while waiting to launch | The same after 1 s. Shorter blips don't stop the motor |
+| Fix back, stick was down | Counts after 3 s steady (`GPS OK for launch`), then works as usual |
+| Fix back, stick was up, idle throttle in use | `GPS OK - lower then raise THR`. No idle and no launch until you do, so the motor can't start by itself in your hand. An RC dropout doesn't count as lowering the stick |
+| `THR_SUPP_MAN` = 1 | The throttle stays yours, but the cue doesn't say ready without a fix |
+| After launch | No effect: losing GPS doesn't touch the motor |
+
+With `TKOFF_THR_IDLE` at 0 there is no stick step: the launch is available again
+once the fix has held for 3 s. A fix is the minimum, not a quality check, so
+still look at the satellite count before you throw.
+
 ### Pre-launch audio cues
 
 The buzzer/ToneAlarm plays distinct cont tones during the pre-launch
@@ -839,6 +901,7 @@ sequence so the pilot doesn't have to watch the GCS:
 | `TKOFS_WAITING_TO_RAISE_THROTTLE` | Rapid triple-beep loop | Stick is at zero in pre-launch — raise it to start the idle ramp |
 | `TKOFS_WAITING_FOR_IDLE_THROTTLE` | Rising scale (`cdefgab`) | Stick is up, idle throttle is ramping (or `TKOFF_IDL_DELAY` timer is still running) |
 | `TKOFS_WAITING_FOR_LAUNCH` | Slow steady beep | At idle throttle, waiting for launch detection to fire |
+| `TKOFS_WAITING_FOR_GPS` | Low falling two-note, with a pause | No GPS fix: don't launch (v2.3.0) |
 | `TKOFS_IDLE` | (silent) | Default; takeoff sequence not active |
 
 Tones loop until the state changes — works the same way pre-arm and
@@ -848,7 +911,7 @@ whenever `TKOFF_THR_IDLE` is configured.
 **Plain GPIO buzzers (v1.1).** The table above needs a **ToneAlarm** output
 (a pitched buzzer on a PWM/`ALARM` pin) to play actual tones. Boards with
 only a plain on/off GPIO buzzer — `AtomRCF405NAVI` among them — previously
-got no pre-launch cues at all. They now play the same three states as
+got no pre-launch cues at all. They now play the same states as
 distinct **cadences** instead of pitches:
 
 | State | GPIO buzzer cadence |
@@ -856,8 +919,9 @@ distinct **cadences** instead of pitches:
 | `TKOFS_WAITING_TO_RAISE_THROTTLE` | Slow lone beeps |
 | `TKOFS_WAITING_FOR_IDLE_THROTTLE` | Medium double-beeps |
 | `TKOFS_WAITING_FOR_LAUNCH` | Fast continuous |
+| `TKOFS_WAITING_FOR_GPS` | One long 1 s beep, repeating (v2.3.0) |
 
-The three are deliberately far apart in rhythm so they stay tellable apart
+They are deliberately far apart in rhythm so they stay tellable apart
 by ear on a buzzer that can only be on or off. Nothing to configure — the
 cues appear automatically on boards that have a GPIO buzzer and no
 ToneAlarm; boards with a ToneAlarm are unchanged and still play the tones
@@ -867,7 +931,7 @@ in the first table.
 > patterns (32 bits × 100 ms). State-change cues bypass that gap so they
 > sound the moment the state changes — otherwise a "ready to launch" cue
 > could arrive up to 3.3 s late, well after a hand launch has happened.
-> The repeat of the launch-ready cue still respects the gap.
+> The repeats of the launch-ready and waiting-for-GPS cues still respect the gap.
 
 ### Pilot altitude control during TAKEOFF loiter
 
@@ -2000,8 +2064,16 @@ integrators drain toward zero. There are three ways to run it:
   ground and air speed both 8 m/s or more.
 - **Rate and limits:** each surface moves at most about 2 µs per second,
   never more than ±25 % of its range from centre; trims are saved every
-  10 s. Leave `SERVOx_ABS_MIN/MAX` at 0, or auto-trim also slides and saves
-  `SERVOx_MIN/MAX`.
+  10 s.
+- **Endpoints (`SERVOx_ABS_MIN` / `SERVOx_ABS_MAX`):** with both at 0 (the
+  default) auto-trim moves only the trim, so 1100/1500/1900 trimmed by +90
+  becomes 1100/1590/1900, with more throw one way than the other. With both
+  set, MIN and MAX slide and are saved with the trim (1190/1590/1990), as in
+  mf0o's fork (which defaults them to 1000/2000), and trimming stops when an
+  endpoint reaches its ABS value. An endpoint already at its ABS value can't be
+  trimmed in that direction at all, so leave room: for example 900/2100 for
+  1100/1900 endpoints. When you change a trim by hand, move MIN and MAX by the
+  same amount.
 - With `SERVO_AUTO_TRIM = 2` the switch cannot stop the trimming — set
   the parameter to 0 or 1 to use the switch.
 - GCS reports trim progress per surface: "Ailerons trim finished",
@@ -2847,12 +2919,13 @@ Servo gimbal: assign the outputs with `SERVOn_FUNCTION` = `6` (Mount1Yaw),
   ArduPilot sends 3 for HIGH, which leaves a GM3 in pitch stab. From v2.3.0 the
   gimbal is held in FPV for the first 5 s after the flight controller starts
   talking to it (from ArduPlane 4.7.3), so a switch already at MID or HIGH at
-  power-up takes effect without a toggle. Bench-tested on a GM3 v2 (firmware
-  2.2.59).
+  power-up takes effect without a toggle. That hold runs once per flight
+  controller boot: if the gimbal is powered or restarted later, flip the switch
+  to LOW and back. Bench-tested on a GM3 v2 (firmware 2.2.59).
 - **`MNT1_CADDX_SENS` — Caddx GM gimbal sensitivity (0-31, default 0).** Sent
   with every mode (FPV, pitch stab, Horizon). Caddx's own VTX sends 10; 0 is the
-  value earlier Stratos builds always sent. Change it, then switch modes or
-  power-cycle the gimbal to compare.
+  value earlier Stratos builds always sent. Change it, then switch modes to
+  compare.
 
 ## POI lock with head tracking
 
@@ -3677,7 +3750,8 @@ feature add will push against.
 > `-Buzz`. Same board ID, so the `.apj` flashes over the stock bootloader.
 > To turn it on: `SERVO_BLH_MASK` and `SERVO_BLH_BDMASK` = the motor
 > outputs, `SERVO_BLH_OTYPE` 5 (DShot300) or 6 (DShot600), `SERVO_BLH_POLES`
-> = motor magnet count. Not flown yet.
+> = motor magnet count. Flown on a v2.3.0 test build (twin, DShot300 on
+> outputs 9 and 10, RPM logged from both motors).
 
 ### Light track — 16 boards (all 1 MB F4)
 
@@ -4378,7 +4452,7 @@ in your browser — no download, no GitHub account:
 
 - **Searchable:** <https://erwinquilloy.github.io/ardupilot-tools/parameters.html>
   (filter by name or text; each parameter has its own link, e.g. `parameters.html#LAND_WIND_BIAS`)
-- <https://raw.githack.com/erwinquilloy/ardupilot/master_custom_4.7.1/docs/parameters/Parameters.html>
+- <https://raw.githack.com/erwinquilloy/ardupilot/master_custom_4.7.3/docs/parameters/Parameters.html>
 
 (`raw.githack.com` serves the HTML with the right `Content-Type` so
 your browser actually renders it. `raw.githubusercontent.com` would
@@ -4403,7 +4477,7 @@ For tooling that fetches the raw JSON / XML directly, use
 `text/plain`, which is what JSON/XML parsers expect):
 
 ```
-https://raw.githubusercontent.com/erwinquilloy/ardupilot/master_custom_4.7.1/docs/parameters/apm.pdef.json
+https://raw.githubusercontent.com/erwinquilloy/ardupilot/master_custom_4.7.3/docs/parameters/apm.pdef.json
 ```
 
 The directory's own [README](docs/parameters/README.md) lists the
@@ -4424,7 +4498,7 @@ account needed.
 Click a link below to use the calculator in your browser:
 
 - <https://erwinquilloy.github.io/ardupilot-tools/bitmask-calculator.html>
-- <https://raw.githack.com/erwinquilloy/ardupilot/master_custom_4.7.1/docs/bitmask_calculator.html>
+- <https://raw.githack.com/erwinquilloy/ardupilot/master_custom_4.7.3/docs/bitmask_calculator.html>
 
 `raw.githack.com` is a free public CDN — no account, no login. It
 just proxies GitHub raw files with the correct `Content-Type` so
@@ -4453,8 +4527,8 @@ The page also accepts a local JSON file upload, so you can keep a
 copy on a tablet for the field:
 
 ```bash
-curl -O https://raw.githubusercontent.com/erwinquilloy/ardupilot/master_custom_4.7.1/docs/bitmask_calculator.html
-curl -O https://raw.githubusercontent.com/erwinquilloy/ardupilot/master_custom_4.7.1/docs/parameters/apm.pdef.json
+curl -O https://raw.githubusercontent.com/erwinquilloy/ardupilot/master_custom_4.7.3/docs/bitmask_calculator.html
+curl -O https://raw.githubusercontent.com/erwinquilloy/ardupilot/master_custom_4.7.3/docs/parameters/apm.pdef.json
 ```
 
 Open the HTML file in your browser, then in the "Source" dropdown
@@ -4557,7 +4631,7 @@ EdgeTX widget sound path, which is not the one you would guess — are in
   legacy mainline.
 
 **Releases:** two per-board tracks built from the same commit —
-`full-v2.0` (F7 / H7 / 2 MB boards) and `light-v2.0` (1 MB F4 boards). Each
+`full-v<version>` (F7 / H7 / 2 MB boards) and `light-v<version>` (1 MB F4 boards). Each
 asset is `<board>_plane_bin_<track>-<tag>_.zip` with the 4 build products
 (`arduplane`, `.apj`, `.bin`, `_with_bl.hex`).
 

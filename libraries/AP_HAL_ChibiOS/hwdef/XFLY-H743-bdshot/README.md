@@ -1,13 +1,13 @@
-# XFLY H743 Flight Controller (ArduCustom)
+# XFLY H743 Flight Controller (Stratos)
 
 The XFLY H743 is the STM32H743 flight controller shipped in the XFly VTOL
 kits as the "Flight Controller Combo" (part XFW005-14), mounted on the kit's
-wiring board. ArduCustom ships it on the **full** track as `XFLY-H743-bdshot`
+wiring board. Stratos ships it on the **full** track as `XFLY-H743-bdshot`
 only: the same hardware definition as the plain `XFLY-H743` target, plus
 bidirectional DShot on the motor outputs.
 
 The hardware definition is the manufacturer's own, recovered from the stock
-firmware, with three ArduCustom changes: the serial port numbering (see
+firmware, with three Stratos changes: the serial port numbering (see
 below), `Q_ENABLE` / `SCHED_LOOP_RATE` moved into `defaults.parm` (they have
 no effect as hwdef `define`s), and the bidirectional DShot tagging.
 
@@ -34,13 +34,13 @@ still on its stock bootloader accepts the `.apj` from Mission Planner's
 
 ## UART mapping: read this before wiring anything
 
-ArduCustom numbers serial ports on this board so that **`SERIALn` is chip
+Stratos numbers serial ports on this board so that **`SERIALn` is chip
 UART `n`**, the same convention it uses on `MatekH743` and the TBS Lucid H7. The manufacturer's stock
 firmware numbers them differently, and **the port labels on the XFly wiring
-board ("URT1" ... "URT5") follow the stock numbering, not ArduCustom's**. Use
+board ("URT1" ... "URT5") follow the stock numbering, not Stratos's**. Use
 this table to find the right `SERIALn` for each port:
 
-| Wiring board label | Chip UART | **ArduCustom** | Stock firmware | Suggested `SERIALn_PROTOCOL` |
+| Wiring board label | Chip UART | **Stratos** | Stock firmware | Suggested `SERIALn_PROTOCOL` |
 |---|---|---|---|---|
 | USB | OTG1 | **SERIAL0** | SERIAL0 | MAVLink2 (default) |
 | GPS1 URT3 | USART1 | **SERIAL1** | SERIAL3 | 5 (GPS) |

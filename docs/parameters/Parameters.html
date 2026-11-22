@@ -18084,6 +18084,24 @@ DO NOT EDIT
 </ul>
 
 
+<h2>Camera zoom speed (CAM1_ZOM_RAT_MAX)</h2>
+
+<p>Speed at which the zoom output moves for continuous (rate) zoom commands. Only used by the Servo camera type. The default of 5%/s moves across the full range in 20 seconds</p>
+<ul>
+<li>Units: percent per second</li>
+<li>Range: 0 100</li>
+</ul>
+
+
+<h2>Camera focus speed (CAM1_FOC_RAT_MAX)</h2>
+
+<p>Speed at which the focus output moves for continuous (rate) focus commands. Only used by the Servo camera type. The default of 5%/s moves across the full range in 20 seconds</p>
+<ul>
+<li>Units: percent per second</li>
+<li>Range: 0 100</li>
+</ul>
+
+
 <h1>CAM1_RC_ Parameters</h1>
 
 
@@ -18275,6 +18293,24 @@ DO NOT EDIT
 <ul>
 <li>Units: degrees</li>
 <li>Range: 0 180</li>
+</ul>
+
+
+<h2>Camera zoom speed (CAM2_ZOM_RAT_MAX)</h2>
+
+<p>Speed at which the zoom output moves for continuous (rate) zoom commands. Only used by the Servo camera type. The default of 5%/s moves across the full range in 20 seconds</p>
+<ul>
+<li>Units: percent per second</li>
+<li>Range: 0 100</li>
+</ul>
+
+
+<h2>Camera focus speed (CAM2_FOC_RAT_MAX)</h2>
+
+<p>Speed at which the focus output moves for continuous (rate) focus commands. Only used by the Servo camera type. The default of 5%/s moves across the full range in 20 seconds</p>
+<ul>
+<li>Units: percent per second</li>
+<li>Range: 0 100</li>
 </ul>
 
 
@@ -21432,6 +21468,7 @@ DO NOT EDIT
 <tr><td>6</td><td>Trimble GSOF</td></tr>
 <tr><td>7</td><td>MicroStrain7</td></tr>
 <tr><td>8</td><td>SBG</td></tr>
+<tr><td>10</td><td>Aeron</td></tr>
 <tr><td>11</td><td>SensAItion</td></tr>
 </table>
 </ul>
@@ -32271,6 +32308,14 @@ DO NOT EDIT
 </ul>
 
 
+<h2>CADDX gimbal sensitivity (MNT1_CADDX_SENS)</h2><em>Note: This parameter is for advanced users</em><br>
+
+<p>Sensitivity sent to a CADDX GM gimbal in every mode (FPV, pitch stabilisation and Horizon). 0 leaves it unset. Caddx&#x27;s own VTX sends 10. Only used when the mount type is CADDX</p>
+<ul>
+<li>Range: 0 31</li>
+</ul>
+
+
 <h1>MNT2 Parameters</h1>
 
 
@@ -32485,6 +32530,14 @@ DO NOT EDIT
 <p>Mount options bitmask, note bit 2 only impacts RC targetting mode</p>
 <ul>
 <li>Bitmask: 0:RC lock state from previous mode, 1:Return to neutral angles on RC failsafe, 2:Force FPV (bf) lock on roll and pitch</li>
+</ul>
+
+
+<h2>CADDX gimbal sensitivity (MNT2_CADDX_SENS)</h2><em>Note: This parameter is for advanced users</em><br>
+
+<p>Sensitivity sent to a CADDX GM gimbal in every mode (FPV, pitch stabilisation and Horizon). 0 leaves it unset. Caddx&#x27;s own VTX sends 10. Only used when the mount type is CADDX</p>
+<ul>
+<li>Range: 0 31</li>
 </ul>
 
 
@@ -36345,7 +36398,7 @@ DO NOT EDIT
 
 <h2>AUTO_FLP_EN (OSD1_AUTO_FLP_EN)</h2>
 
-<p>Displays the auto-flap deployment percentage (Plane only; fork #199 stub-port of #55)</p>
+<p>Displays the flap deployment percentage as FL followed by the value (Plane only; fork #199 stub-port of #55)</p>
 <ul>
 <table><th>Value</th><th>Meaning</th>
 <tr><td>0</td><td>Disabled</td></tr>
@@ -38671,7 +38724,7 @@ DO NOT EDIT
 
 <h2>AUTO_FLP_EN (OSD2_AUTO_FLP_EN)</h2>
 
-<p>Displays the auto-flap deployment percentage (Plane only; fork #199 stub-port of #55)</p>
+<p>Displays the flap deployment percentage as FL followed by the value (Plane only; fork #199 stub-port of #55)</p>
 <ul>
 <table><th>Value</th><th>Meaning</th>
 <tr><td>0</td><td>Disabled</td></tr>
@@ -40997,7 +41050,7 @@ DO NOT EDIT
 
 <h2>AUTO_FLP_EN (OSD3_AUTO_FLP_EN)</h2>
 
-<p>Displays the auto-flap deployment percentage (Plane only; fork #199 stub-port of #55)</p>
+<p>Displays the flap deployment percentage as FL followed by the value (Plane only; fork #199 stub-port of #55)</p>
 <ul>
 <table><th>Value</th><th>Meaning</th>
 <tr><td>0</td><td>Disabled</td></tr>
@@ -43323,7 +43376,7 @@ DO NOT EDIT
 
 <h2>AUTO_FLP_EN (OSD4_AUTO_FLP_EN)</h2>
 
-<p>Displays the auto-flap deployment percentage (Plane only; fork #199 stub-port of #55)</p>
+<p>Displays the flap deployment percentage as FL followed by the value (Plane only; fork #199 stub-port of #55)</p>
 <ul>
 <table><th>Value</th><th>Meaning</th>
 <tr><td>0</td><td>Disabled</td></tr>
@@ -45649,7 +45702,7 @@ DO NOT EDIT
 
 <h2>AUTO_FLP_EN (OSD5_AUTO_FLP_EN)</h2>
 
-<p>Displays the auto-flap deployment percentage (Plane only; fork #199 stub-port of #55)</p>
+<p>Displays the flap deployment percentage as FL followed by the value (Plane only; fork #199 stub-port of #55)</p>
 <ul>
 <table><th>Value</th><th>Meaning</th>
 <tr><td>0</td><td>Disabled</td></tr>
