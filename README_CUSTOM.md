@@ -3612,24 +3612,25 @@ of them, so there is no choice to get wrong.
 
 ### Full track — 12 boards (F7 / H7, 2 MB)
 
-Measured at **v2.2.1**:
+Measured at **v2.2.1** and on the **v2.3.0** fleet compile (`19211d8`, not released yet):
 
-| Board | MCU / Flash | Free after fork features | vs v2.2 | Status |
-|---|---|---:|---:|---|
-| MatekF765-Wing | F7 / 2 MB | **546.6 KB** | −1.1 | Ships — Matek F765-WING (most flash headroom in the fleet) |
-| MatekH7A3-Wing | H7 / 2 MB | **485.8 KB** | −1.1 | Ships — Matek H7A3-WING (bidirectional DShot); most room of any H7 |
-| SIYI-UniFC-6-PICO | H7 / 2 MB | **149.3 KB** | new (v2.2.1) | Ships from v2.2.1 — SIYI UniFC 6 Pico (bidirectional DShot, Ethernet, dual CAN) |
-| AET-H743-Basic-Buzz | H7 / 2 MB | **142.4 KB** | −1.1 | Ships — AET-H743-Basic + tone buzzer on S12 (see below) |
-| AET-H743-Basic | H7 / 2 MB | **142.3 KB** | −1.1 | Ships — AeroEggTech AET-H743-Basic, hardware V1.x and V2.0 (see below) |
-| AET-H743-Buzz-bdshot | H7 / 2 MB | **138.1 KB** | new (v2.2.1) | Ships from v2.2.1 — AET-H743-Basic-Buzz + bidirectional DShot on outputs 3–10 (see below) |
-| KakuteH7-Wing | H7 / 2 MB | **137.6 KB** | −1.1 | Ships — Holybro Kakute H743 Wing |
-| TBS_LUCID_H7_WING_AIO | H7 / 2 MB | **127.1 KB** | −1.1 | Ships — TBS Lucid H7 Wing AIO |
-| TBS_LUCID_H7_OEM | H7 / 2 MB | **122.2 KB** | −1.1 | Ships — TBS Lucid H7 OEM |
-| TBS_LUCID_H7_OEM-Buzz | H7 / 2 MB | **122.1 KB** | −1.1 | Ships — TBS Lucid H7 OEM + tone buzzer on S13/LED (see below) |
-| MatekH743-bdshot | H7 / 2 MB | **120.1 KB** | −1.1 | Ships — Matek H743-WING (bidirectional DShot) |
-| XFLY-H743-bdshot | H7 / 2 MB | **108.1 KB** | −1.1 | Ships — XFly VTOL kit FC (bidirectional DShot); tightest of the full fleet |
+| Board | MCU / Flash | Free at v2.2.1 | Free at v2.3.0 (staged) | Change | Status |
+|---|---|---:|---:|---:|---|
+| MatekF765-Wing | F7 / 2 MB | 546.6 KB | **545.7 KB** | −0.9 KB | Ships — Matek F765-WING (most flash headroom in the fleet) |
+| MatekH7A3-Wing | H7 / 2 MB | 485.8 KB | **484.9 KB** | −1.0 KB | Ships — Matek H7A3-WING (bidirectional DShot); most room of any H7 |
+| SIYI-UniFC-6-PICO | H7 / 2 MB | 149.3 KB | **148.1 KB** | −1.2 KB | Ships from v2.2.1 — SIYI UniFC 6 Pico (bidirectional DShot, Ethernet, dual CAN) |
+| AET-H743-Basic-Buzz | H7 / 2 MB | 142.4 KB | **141.3 KB** | −1.0 KB | Ships — AET-H743-Basic + tone buzzer on S12 (see below) |
+| AET-H743-Basic | H7 / 2 MB | 142.3 KB | **141.2 KB** | −1.0 KB | Ships — AeroEggTech AET-H743-Basic, hardware V1.x and V2.0 (see below) |
+| AET-H743-Buzz-bdshot | H7 / 2 MB | 138.1 KB | **137.1 KB** | −1.0 KB | Ships from v2.2.1 — AET-H743-Basic-Buzz + bidirectional DShot on outputs 3–10 (see below) |
+| KakuteH7-Wing | H7 / 2 MB | 137.6 KB | **136.6 KB** | −1.0 KB | Ships — Holybro Kakute H743 Wing |
+| TBS_LUCID_H7_WING_AIO | H7 / 2 MB | 127.1 KB | **126.1 KB** | −1.0 KB | Ships — TBS Lucid H7 Wing AIO |
+| TBS_LUCID_H7_OEM | H7 / 2 MB | 122.2 KB | **121.2 KB** | −1.0 KB | Ships — TBS Lucid H7 OEM |
+| TBS_LUCID_H7_OEM-Buzz | H7 / 2 MB | 122.1 KB | **121.1 KB** | −1.0 KB | Ships — TBS Lucid H7 OEM + tone buzzer on S13/LED (see below) |
+| MatekH743-bdshot | H7 / 2 MB | 120.1 KB | **119.1 KB** | −1.0 KB | Ships — Matek H743-WING (bidirectional DShot) |
+| XFLY-H743-bdshot | H7 / 2 MB | 108.1 KB | **107.1 KB** | −1.0 KB | Ships — XFly VTOL kit FC (bidirectional DShot); tightest of the full fleet |
 
-Every board gave up 1.1 KB to v2.2.1: the
+v2.3.0 costs 0.9–1.2 KB on these boards, mostly the [GPS check before
+launch](#gps-before-launch). Every board gave up 1.1 KB to v2.2.1: the
 [parameters over CRSF](#parameters-over-crsf-mavlite) and
 [missions over MAVlite](#missions-over-mavlite) code. v2.2 had cost 2.1–2.4 KB,
 almost all of it the [LED strip segments](#addressable-led-strip-segments-v22),
@@ -3755,33 +3756,36 @@ feature add will push against.
 
 ### Light track — 16 boards (all 1 MB F4)
 
-Measured at **v2.2.1** with radar, `LAND_WIND_DIST` and `LAND_WIND_STRICT` on:
+Measured at **v2.2.1** and on the **v2.3.0** fleet compile (`19211d8`, not released yet),
+with radar, `LAND_WIND_DIST` and `LAND_WIND_STRICT` on:
 
-| Board | Flash | Free after fork features | vs v2.2 | Status |
-|---|---:|---:|---:|---|
-| KakuteF4-Wing-Buzz | 1 MB | **75.2 KB** | −1.1 | Ships — Kakute F4 Wing + tone buzzer (see below) |
-| speedybeef4v3 | 1 MB | **42.7 KB** | −1.1 | Ships — most F4 headroom with gimbal support |
-| MatekF405-STD | 1 MB | **40.2 KB** | −1.1 | Ships |
-| omnibusf4pro | 1 MB | **34.4 KB** | −1.1 | Ships — Omnibus F4 Pro FPV FC |
-| CoreWingF405WMiniV2 | 1 MB | **25.7 KB** | −1.1 | Ships — CoreWing F405 Wing Mini V2 (see below) |
-| CoreWingF405MiniV2-Buzz | 1 MB | **25.5 KB** | −1.1 | Ships — Wing Mini V2 + tone buzzer on the LED pad (see below) |
-| AtomRCF405NAVI | 1 MB | **24.4 KB** | −1.1 | Ships — AtomRC F405 Navi FPV FC |
-| AtomRCF405NAVI-Buzz | 1 MB | **24.4 KB** | −1.1 | Ships — AtomRC F405 Navi + tone buzzer on the LED pad (see below) |
-| MatekF405-TE-bdshot | 1 MB | **23.9 KB** | −1.1 | Ships — RunCam camera control compiled in; [LED strip segments](#addressable-led-strip-segments-v22) on the LED pad (new in v2.2) |
-| CoreWingF405WingV2 | 1 MB | **21.5 KB** | −1.1 | Ships — CoreWing F405 Wing V2 (see below) |
-| CoreWingF405WingV2-Buzz | 1 MB | **21.2 KB** | −1.1 | Ships — Wing V2 + tone buzzer on the LED pad (see below) |
-| SpeedyBeeF405WING | 1 MB | **19.3 KB** | −1.1 | Ships |
-| SpeedyBeeF405WING-Buzz | 1 MB | **19.0 KB** | −1.1 | Ships — SpeedyBee F405 WING + tone buzzer (see below) |
-| SpeedyBeeF405WING-LED | 1 MB | **16.6 KB** | −1.1 | Ships — SpeedyBee F405 WING + tone buzzer + [LED strip segments](#addressable-led-strip-segments-v22) (see below) |
-| MatekF405-Wing-bdshot | 1 MB | **12.4 KB** | −1.1 | Ships — RunCam camera control compiled in |
-| MatekF405-Wing-PWM10 | 1 MB | **12.2 KB** | −1.1 | Ships — Matek F405-Wing with the `LED` pad as PWM output 10 (see below); tightest of the F4 fleet |
+| Board | Flash | Free at v2.2.1 | Free at v2.3.0 (staged) | Change | Status |
+|---|---:|---:|---:|---:|---|
+| KakuteF4-Wing-Buzz | 1 MB | 75.2 KB | **74.2 KB** | −1.0 KB | Ships — Kakute F4 Wing + tone buzzer (see below) |
+| speedybeef4v3 | 1 MB | 42.7 KB | **41.5 KB** | −1.2 KB | Ships — most F4 headroom with gimbal support |
+| MatekF405-STD | 1 MB | 40.2 KB | **39.1 KB** | −1.1 KB | Ships |
+| omnibusf4pro | 1 MB | 34.4 KB | **33.4 KB** | −1.0 KB | Ships — Omnibus F4 Pro FPV FC |
+| CoreWingF405WMiniV2 | 1 MB | 25.7 KB | **24.6 KB** | −1.1 KB | Ships — CoreWing F405 Wing Mini V2 (see below) |
+| CoreWingF405MiniV2-Buzz | 1 MB | 25.5 KB | **24.4 KB** | −1.1 KB | Ships — Wing Mini V2 + tone buzzer on the LED pad (see below) |
+| AtomRCF405NAVI | 1 MB | 24.4 KB | **23.2 KB** | −1.2 KB | Ships — AtomRC F405 Navi FPV FC |
+| AtomRCF405NAVI-Buzz | 1 MB | 24.4 KB | **23.2 KB** | −1.2 KB | Ships — AtomRC F405 Navi + tone buzzer on the LED pad (see below) |
+| MatekF405-TE-bdshot | 1 MB | 23.9 KB | **22.9 KB** | −1.0 KB | Ships — RunCam camera control compiled in; [LED strip segments](#addressable-led-strip-segments-v22) on the LED pad (new in v2.2) |
+| CoreWingF405WingV2 | 1 MB | 21.5 KB | **20.5 KB** | −0.9 KB | Ships — CoreWing F405 Wing V2 (see below) |
+| CoreWingF405WingV2-Buzz | 1 MB | 21.2 KB | **20.3 KB** | −0.9 KB | Ships — Wing V2 + tone buzzer on the LED pad (see below) |
+| SpeedyBeeF405WING | 1 MB | 19.3 KB | **18.0 KB** | −1.3 KB | Ships |
+| SpeedyBeeF405WING-Buzz | 1 MB | 19.0 KB | **17.7 KB** | −1.3 KB | Ships — SpeedyBee F405 WING + tone buzzer (see below) |
+| SpeedyBeeF405WING-LED | 1 MB | 16.6 KB | **15.8 KB** | −0.7 KB | Ships — SpeedyBee F405 WING + tone buzzer + [LED strip segments](#addressable-led-strip-segments-v22) (see below) |
+| MatekF405-Wing-bdshot | 1 MB | 12.4 KB | **11.4 KB** | −1.0 KB | Ships — RunCam camera control compiled in |
+| MatekF405-Wing-PWM10 | 1 MB | 12.2 KB | **11.2 KB** | −1.0 KB | Ships — Matek F405-Wing with the `LED` pad as PWM output 10 (see below); tightest of the F4 fleet |
 
+v2.3.0 costs 0.7–1.3 KB on these boards, mostly the [GPS check before
+launch](#gps-before-launch); the tightest keeps 11.2 KB.
 v2.2.1 costs every light board 1.1 KB (parameters and missions over
 MAVlite). Before that, v2.2 cost them about 0.3 KB (the parameter-count fix and
 `MSP_DSARM_HOLD`). `MatekF405-TE-bdshot` gives up 3.8 KB, because it also
 carries the [LED strip segments](#addressable-led-strip-segments-v22) and its
-first `defaults.parm`; `SpeedyBeeF405WING-LED` has 2.4 KB less than `-Buzz`
-for the same reason. `AtomRCF405NAVI-Buzz` costs 40 bytes against stock
+first `defaults.parm`; `SpeedyBeeF405WING-LED` has 1.9 KB less than `-Buzz`
+for the same reason. `AtomRCF405NAVI-Buzz` costs 32 bytes against stock
 `AtomRCF405NAVI`. The twelve boards with gimbal support also carry the POI lock
 switch (about 1.2 KB).
 
@@ -3831,7 +3835,7 @@ routing them through the DShot ESCs. Cost is one servo output (S11 /
 channel 11); outputs 1-10 and 12 (WS2812 LED) are unchanged. Board ID
 is inherited (1106) so the `.apj` flashes over the stock SpeedyBee
 bootloader as a normal update. Flash footprint is essentially identical
-to stock `SpeedyBeeF405WING` (19.0 KB vs 19.3 KB free at v2.2.1 —
+to stock `SpeedyBeeF405WING` (17.7 KB vs 18.0 KB free at v2.3.0 —
 a 0.3 KB difference). Shipped as an extra
 asset on the light release alongside the other boards above.
 
