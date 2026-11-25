@@ -24,7 +24,7 @@
 > [Building](#building)).
 > **⬇ Download:** grab the newest build for your board from the
 > [**Releases** page](https://github.com/erwinquilloy/ardupilot/releases)
-> (every version, newest first — the current releases are `full-v2.2.1` and `light-v2.2.1`).
+> (every version, newest first — the current releases are `full-v2.3.0` and `light-v2.3.0`).
 
 A curated fork of ArduPlane, rebased onto upstream **ArduPlane 4.7.3**
 (tag `Plane-4.7.3`, commit `d9c5097c3d`). This branch carries a set of
@@ -61,14 +61,14 @@ plus a few additions originating in this fork.
 
 ---
 
-## What's new in v2.3.0 (staged, not released yet)
+## What's new in v2.3.0
 
 *Everything below is on both tracks unless the row says otherwise.*
 
 | Area | Change | Details |
 |---|---|---|
 | Base | **Rebased onto ArduPlane 4.7.3** (was 4.7.2). A small upstream point release: no changes in ArduPlane's own flight code, but one default changes in a library QuadPlanes use (next row). For Stratos users it fixes the flight controller locking up or corrupting data during BLHeli ESC pass-through and adds camera servo zoom / focus speeds (`CAMx_ZOM_RAT_MAX`, `CAMx_FOC_RAT_MAX`). TBS Lucid H7 Wing AIO now also detects a BMP390 barometer | [What ArduPlane 4.7.3 brought in](#what-arduplane-473-brought-in) |
-| VTOL | **Default change: QLOITER coordinated turns are off.** `Q_LOIT_OPTIONS` now defaults to 0 (was 1). QuadPlanes that never set it will handle differently when yawing while moving in QLOITER. Set `Q_LOIT_OPTIONS 1` to keep the v2.2.1 behaviour | [Updating to v2.3.0](#updating-to-v230) |
+| VTOL | **Default change: QLOITER coordinated turns are off.** `Q_LOIT_OPTIONS` now defaults to 0 (was 1). QuadPlanes will handle differently when yawing while moving in QLOITER and QLAND, also if their parameter list showed 1. Set `Q_LOIT_OPTIONS 1` **after updating** to keep the v2.2.1 behaviour | [Updating to v2.3.0](#updating-to-v230) |
 | Takeoff | **No idle motor and no "ready to launch" without GPS.** In TAKEOFF and AUTO takeoff, a lost fix before launch stops the idle throttle, changes the cue to "waiting for GPS" and warns `No GPS fix - do not launch`. If the throttle stick was up meanwhile, lower and raise it once the fix is back | [GPS before launch](#gps-before-launch) |
 | Gimbal | **Caddx GM gimbals reach Horizon mode.** `RCx_OPTION 185` HIGH (roll + pitch lock) now sends Horizon (mode 2, as Caddx's own VTX does) instead of 3, which a GM3 treated as pitch stab, so HIGH never levelled roll. LOW = FPV and MID = pitch stab are unchanged. Bench-tested on a GM3 v2 (firmware 2.2.59), with the mode confirmed in the CaddxFPV tool | [Head tracking controls](#controls) |
 | Gimbal | **Caddx GM gimbal sensitivity is tunable.** New `MNT1_CADDX_SENS` (0-31, default 0) is sent to the gimbal in every mode (FPV, pitch stab and Horizon). Caddx's own VTX sends 10. The default 0 sends exactly what earlier Stratos builds did | [Head tracking controls](#controls) |
@@ -127,9 +127,11 @@ Parameters carry over. Check these four if they apply to your aircraft:
 - **Auto launch:** with no GPS fix there is no idle throttle and no ready cue.
   After the fix returns, lower and raise the throttle stick if it was up. See
   [GPS before launch](#gps-before-launch).
-- **QuadPlanes:** `Q_LOIT_OPTIONS` now defaults to `0`, so QLOITER no longer
-  coordinates turns. A value you set yourself is kept. If you never set it and
-  want the v2.2.1 handling, set `Q_LOIT_OPTIONS` to `1`.
+- **QuadPlanes:** `Q_LOIT_OPTIONS` now defaults to `0`, so QLOITER and QLAND no
+  longer coordinate turns when you yaw while moving. **Expect it to read `0`
+  after updating, even if it showed `1` before:** ArduPilot doesn't store a
+  value equal to the default, so writing `1` on an older version saves nothing.
+  For the v2.2.1 handling set `Q_LOIT_OPTIONS` to `1` after flashing.
 - **Caddx GM gimbals:** `RCx_OPTION 185` HIGH now gives Horizon (roll and pitch
   level). Before, a GM3 stayed in pitch stab there; use MID if that is what you
   want.
@@ -261,7 +263,7 @@ list is in [ArduPlane's release notes](https://github.com/ArduPilot/ardupilot/bl
 
 An outline of everything this fork adds and where it is documented. Each line links to its section.
 
-- **Getting started** — [What's new in v2.3.0](#whats-new-in-v230-staged-not-released-yet), [What's new in v2.2.1](#whats-new-in-v221), [What's new in v2.2](#whats-new-in-v22), [Upgrading to Stratos v2.x](#upgrading-to-stratos-v2x), [Why flash this instead of stock ArduPlane 4.7.3?](#why-flash-this-instead-of-stock-arduplane-473), [Building](#building), [Which file in the zip do I flash?](#which-file-in-the-zip-do-i-flash), [Release fleets (full-v2.2.1 / light-v2.2.1)](#release-fleets-full-v221--light-v221), [Tone-buzzer board variant (SpeedyBeeF405WING-Buzz)](#tone-buzzer-board-variant-speedybeef405wing-buzz)
+- **Getting started** — [What's new in v2.3.0](#whats-new-in-v230), [What's new in v2.2.1](#whats-new-in-v221), [What's new in v2.2](#whats-new-in-v22), [Upgrading to Stratos v2.x](#upgrading-to-stratos-v2x), [Why flash this instead of stock ArduPlane 4.7.3?](#why-flash-this-instead-of-stock-arduplane-473), [Building](#building), [Which file in the zip do I flash?](#which-file-in-the-zip-do-i-flash), [Release fleets (full-v2.3.0 / light-v2.3.0)](#release-fleets-full-v230--light-v230), [Tone-buzzer board variant (SpeedyBeeF405WING-Buzz)](#tone-buzzer-board-variant-speedybeef405wing-buzz)
 - **[What this fork adds](#what-this-fork-adds)**
   - [Flight modes](#flight-modes)
     - [Course Hold (mode 26)](#course-hold-mode-26)
@@ -455,10 +457,10 @@ Built for throwing a wing off your hand safely:
 - **LED strip segments** (v2.2) — split a WS2812 strip into up to 8 INAV-style
   segments: nav lights, strobes, a battery bar, flight mode.
 - **Parameters from the radio over ELRS / Crossfire** (v2.2.1) — a radio
-  script (OmniDeck's Params page, coming in OmniDeck 0.4) reads and sets
+  script (OmniDeck's Params page from OmniDeck 0.4.1, or the AP Param Editor) reads and sets
   parameters by name over CRSF,
   as it could before only over FrSky S.Port / F.Port.
-- **Missions from the radio** (v2.2.1) — OmniDeck 0.4 (coming) downloads the mission onto
+- **Missions from the radio** (v2.2.1) — OmniDeck (0.4.1 or later) downloads the mission onto
   its map and its mission editor sends one back, over ELRS, Crossfire and
   S.Port / F.Port.
 
@@ -508,7 +510,7 @@ plane or VTOL.
 
 | What changed in 4.7.3 | Who notices | In Stratos v2.3.0 |
 |---|---|---|
-| **QLOITER coordinated turns are off by default** (`Q_LOIT_OPTIONS` 1 → 0). Upstream lists it under Copter, but QuadPlanes use the same loiter code | QuadPlanes that never set the parameter | All boards |
+| **QLOITER coordinated turns are off by default** (`Q_LOIT_OPTIONS` 1 → 0). Upstream lists it under Copter, but QuadPlanes use the same loiter code | QuadPlanes, also those whose parameter list showed 1 | All boards |
 | **BLHeli pass-through:** an interrupt storm that could lock up the flight controller or corrupt data is fixed, and runtime pin-mode changes are now atomic | Anyone configuring ESCs through the flight controller | All boards |
 | **Caddx gimbals** are told body frame for the first 5 s after the first packet, so they act on a lock mode afterwards | Caddx GM gimbals | Boards with gimbal support. The head-tracker centre lock still sends FPV |
 | **Servo camera zoom and focus speeds** (`CAMx_ZOM_RAT_MAX`, `CAMx_FOC_RAT_MAX`, default 5 %/s as before) | Servo-driven zoom cameras | Where the servo camera driver is built |
@@ -561,7 +563,7 @@ Identical to upstream. From a configured WSL / Linux toolchain:
 ```
 
 The branch builds clean for every board in the
-[release fleets](#release-fleets-full-v221--light-v221); SITL builds and runs cleanly.
+[release fleets](#release-fleets-full-v230--light-v230); SITL builds and runs cleanly.
 
 ### Full or light is picked by the board's flash size
 
@@ -597,7 +599,7 @@ ArduPlane V4.7.3 Stratos v2.3.0 Light (1a2b3c4)  # 1 MB board (light track)
 ```
 
 The hash is the commit the release was built from; the release notes
-print it, and the release tags (`full-v2.2.1` / `light-v2.2.1`) point at it.
+print it, and the release tags (`full-v2.3.0` / `light-v2.3.0`) point at it.
 
 The upstream `ArduPlane V4.7.3` prefix is kept so GCS tools that parse
 the upstream version string (MissionPlanner, MAVProxy, autotest
@@ -3598,13 +3600,13 @@ can actually flash.
 > first try. Boards that shipped with Betaflight, or that have been
 > flashed across firmware families, are the usual candidates.
 
-## Release fleets (`full-v2.2.1` / `light-v2.2.1`)
+## Release fleets (`full-v2.3.0` / `light-v2.3.0`)
 
 Every release ships two per-board tracks built from **the same commit**:
-`full-v2.2.1` for F7 / H7 / 2 MB boards and `light-v2.2.1` for 1 MB F4 boards.
+`full-v2.3.0` for F7 / H7 / 2 MB boards and `light-v2.3.0` for 1 MB F4 boards.
 Both carry the **identical fork feature set**; they differ only in which
 hardware backends are compiled in. A board's version string tells you which you
-flashed: the light build appends ` Light` (`... Stratos v2.2.1 Light (…)`), the
+flashed: the light build appends ` Light` (`... Stratos v2.3.0 Light (…)`), the
 full build has no suffix.
 
 Since v1.1 the two tracks don't overlap — a given board appears on exactly one
@@ -3612,9 +3614,9 @@ of them, so there is no choice to get wrong.
 
 ### Full track — 12 boards (F7 / H7, 2 MB)
 
-Measured at **v2.2.1** and on the **v2.3.0** fleet compile (`19211d8`, not released yet):
+Measured at **v2.2.1** and on the **v2.3.0** fleet compile (`19211d8`, the release build):
 
-| Board | MCU / Flash | Free at v2.2.1 | Free at v2.3.0 (staged) | Change | Status |
+| Board | MCU / Flash | Free at v2.2.1 | Free at v2.3.0 | Change | Status |
 |---|---|---:|---:|---:|---|
 | MatekF765-Wing | F7 / 2 MB | 546.6 KB | **545.7 KB** | −0.9 KB | Ships — Matek F765-WING (most flash headroom in the fleet) |
 | MatekH7A3-Wing | H7 / 2 MB | 485.8 KB | **484.9 KB** | −1.0 KB | Ships — Matek H7A3-WING (bidirectional DShot); most room of any H7 |
@@ -3756,10 +3758,10 @@ feature add will push against.
 
 ### Light track — 16 boards (all 1 MB F4)
 
-Measured at **v2.2.1** and on the **v2.3.0** fleet compile (`19211d8`, not released yet),
+Measured at **v2.2.1** and on the **v2.3.0** fleet compile (`19211d8`, the release build),
 with radar, `LAND_WIND_DIST` and `LAND_WIND_STRICT` on:
 
-| Board | Flash | Free at v2.2.1 | Free at v2.3.0 (staged) | Change | Status |
+| Board | Flash | Free at v2.2.1 | Free at v2.3.0 | Change | Status |
 |---|---:|---:|---:|---:|---|
 | KakuteF4-Wing-Buzz | 1 MB | 75.2 KB | **74.2 KB** | −1.0 KB | Ships — Kakute F4 Wing + tone buzzer (see below) |
 | speedybeef4v3 | 1 MB | 42.7 KB | **41.5 KB** | −1.2 KB | Ships — most F4 headroom with gimbal support |
@@ -4307,7 +4309,8 @@ reads its 16-bit cm distance format.
 TBS Crossfire) with the MAVlite messages FrSky passthrough already uses:
 `PARAM_REQUEST_READ`, `PARAM_SET` and the small `COMMAND_LONG` set (reboot,
 baro calibration, mode, fence). [OmniDeck](#omnideck-telemetry-display-ethos--edgetx)'s
-Params page uses it (coming in OmniDeck 0.4).
+Params page uses it (OmniDeck 0.4.1 or later), and so does the
+[AP Param Editor](https://github.com/erwinquilloy/ap-param-editor).
 
 | | |
 |---|---|
@@ -4325,7 +4328,7 @@ Proposed upstream as [ArduPilot#35160](https://github.com/ArduPilot/ardupilot/pu
 *v2.2.1.* The same MAVlite channel (CRSF as above, or FrSky S.Port / F.Port)
 also carries the mission, so a radio script can show it and send a new one.
 OmniDeck's map shows the downloaded mission; its mission editor (TX16S / MK3,
-Ethos X20 family) sends one. Both are coming in OmniDeck 0.4.
+Ethos X20 family) sends one. Both are in OmniDeck 0.4.1 and later.
 
 | | |
 |---|---|
@@ -4561,7 +4564,7 @@ With TBS Crossfire in its 50 Hz mode the radio display steps every few
 seconds, as Yaapu's does; force 150 Hz for a live horizon
 ([why](https://erwinquilloy.github.io/ardupilot-tools/omnideck.html#crossfire-50hz)).
 
-OmniDeck's **Params page** (coming in OmniDeck 0.4) reads and sets parameters
+OmniDeck's **Params page** (OmniDeck 0.4.1 and later) reads and sets parameters
 over S.Port / F.Port on any ArduPilot, and over ELRS / Crossfire from v2.2.1
 ([how](#parameters-over-crsf-mavlite)). From v2.2.1 OmniDeck also downloads
 the mission onto its map and sends missions from its editor over ELRS,
