@@ -73,6 +73,7 @@ plus a few additions originating in this fork.
 | Gimbal | **Caddx GM gimbals reach Horizon mode.** `RCx_OPTION 185` HIGH (roll + pitch lock) now sends Horizon (mode 2, as Caddx's own VTX does) instead of 3, which a GM3 treated as pitch stab, so HIGH never levelled roll. LOW = FPV and MID = pitch stab are unchanged. Bench-tested on a GM3 v2 (firmware 2.2.59), with the mode confirmed in the CaddxFPV tool | [Head tracking controls](#controls) |
 | Gimbal | **Caddx GM gimbal sensitivity is tunable.** New `MNT1_CADDX_SENS` (0-31, default 0) is sent to the gimbal in every mode (FPV, pitch stab and Horizon). Caddx's own VTX sends 10. The default 0 sends exactly what earlier Stratos builds did | [Head tracking controls](#controls) |
 | Gimbal | **Caddx gimbals switch into roll / pitch lock reliably after power-up.** From ArduPlane 4.7.3: for the first 5 s after the first packet the gimbal is told body frame, so it sees a mode change once it has booted (it ignored a lock mode that hadn't changed since power-up). Combined with the Stratos head-tracker centre lock, which still sends FPV mode | [Head tracking](#walksnail-headtracking-via-msp-and-serial-gimbal) |
+| Boards | **`MicoAir743v2`** (full, added to `full-v2.3.0` after release): the MicoAir H743 v2, on upstream ArduPilot's board definition unchanged (serial ports already `SERIALn` = chip UART `n`). Bidirectional DShot on outputs 1–8 | [MicoAir743v2](#micoair743v2) |
 | OSD | **The flaps element reads `FL` instead of a flap icon.** `OSDx_AUTO_FLP` now shows `FL 50%`, `FL100%`, and `FL---%` while disarmed. The icon was blank on DJI O4 goggles (their built-in fonts have no flap symbol) and on Walksnail's default ArduPilot fonts; letters show on every OSD. The value is the larger of the auto flap setting and the flap switch (`RCx_OPTION` 208). The element is now 6 characters wide (was 5): check it doesn't run into the element to its right | [New elements](#new-elements) |
 
 ## What's new in v2.2.1
@@ -84,7 +85,7 @@ plus a few additions originating in this fork.
 | Telemetry | **Read and set parameters from the radio over ELRS and TBS Crossfire.** A radio script, such as OmniDeck's Params page (coming in OmniDeck 0.4), can use ArduPilot's MAVlite parameter messages over CRSF, as it already could over FrSky S.Port / F.Port. 252 bytes of flash. Also proposed upstream as [ArduPilot#35160](https://github.com/ArduPilot/ardupilot/pull/35160) | [Parameters over CRSF](#parameters-over-crsf-mavlite) |
 | Telemetry | **Download and send missions from the radio**, over ELRS, TBS Crossfire and FrSky S.Port / F.Port. OmniDeck 0.4 (coming) shows the mission on its map and its mission editor sends a new one, written item by item, checked by ArduPilot like a Mission Planner upload, and read back. Sending is refused while armed. 872 bytes of flash | [Missions over MAVlite](#missions-over-mavlite) |
 | Boards | **`SIYI-UniFC-6-PICO`** (full): the SIYI UniFC 6 Pico, on upstream ArduPilot's board definition with the Stratos serial numbering (`SERIALn` = chip UART `n`). Bidirectional DShot on outputs 1–8 | [SIYI UniFC 6 Pico](#siyi-unifc-6-pico) |
-| Boards | **`AET-H743-Buzz-bdshot`** (full): the `AET-H743-Basic-Buzz` with bidirectional DShot on outputs 3–10, for ESC RPM telemetry and the RPM notch filter | [Release fleets](#full-track--12-boards-f7--h7-2-mb) |
+| Boards | **`AET-H743-Buzz-bdshot`** (full): the `AET-H743-Basic-Buzz` with bidirectional DShot on outputs 3–10, for ESC RPM telemetry and the RPM notch filter | [Release fleets](#full-track--13-boards-f7--h7-2-mb) |
 
 ## What's new in v2.2
 
@@ -2466,6 +2467,7 @@ bar, the flight mode, a failsafe flash.
 | `SpeedyBeeF405WING-LED` | LED pad, output 12 (default `SERVO12_FUNCTION 120`) |
 | `MatekF405-TE-bdshot` | LED pad, output 12 (default `SERVO12_FUNCTION 120`, `NTF_LED_TYPES 257`) |
 | Full boards with a WS2812 pad (Matek F765/H743, TBS Lucid OEM/Wing AIO, AET H743) | output 13 |
+| MicoAir743v2 | LED pad, output 11; outputs 7 and 8 then work only as LED outputs |
 | KakuteH7-Wing, MatekH7A3-Wing, XFLY-H743 (no LED pad) | any output with DMA, set `SERVOn_FUNCTION 120`; the other output on the same timer stops working as a servo |
 
 **Setup:** the quickest way is the
@@ -2668,7 +2670,7 @@ pads showing up on `SERIAL6`).
 Affected boards: `MatekF405-TE(-bdshot)`, `MatekF405-STD`, `omnibusf4pro`,
 `MatekH743(-bdshot)` since v0.3-beta, and **`MatekF765-Wing` and
 `KakuteH7-Wing` since v2.0**. Every board in both release fleets now follows
-the rule; `XFLY-H743-bdshot`, `TBS_LUCID_H7_OEM`, `MatekH7A3-Wing`, `TBS_LUCID_H7_WING_AIO` and `AET-H743-Basic` joined already numbered
+the rule; `XFLY-H743-bdshot`, `TBS_LUCID_H7_OEM`, `MatekH7A3-Wing`, `TBS_LUCID_H7_WING_AIO`, `AET-H743-Basic` and `MicoAir743v2` joined already numbered
 this way, and `SIYI-UniFC-6-PICO` was renumbered when it joined in v2.2.1. Where a UART is missing, its number is an `EMPTY` placeholder so
 the rest stay aligned: `SERIAL2`/`SERIAL5` on `omnibusf4pro`, `SERIAL4` on
 `KakuteH7-Wing` (no UART4), `SERIAL5` on `MatekH743-bdshot` and
@@ -3612,14 +3614,15 @@ full build has no suffix.
 Since v1.1 the two tracks don't overlap — a given board appears on exactly one
 of them, so there is no choice to get wrong.
 
-### Full track — 12 boards (F7 / H7, 2 MB)
+### Full track — 13 boards (F7 / H7, 2 MB)
 
-Measured at **v2.2.1** and on the **v2.3.0** fleet compile (`19211d8`, the release build):
+Measured at **v2.2.1** and on the **v2.3.0** fleet compile (`19211d8`, the release build). `MicoAir743v2` was added after release, built and measured at `f919374` (the release tag; same firmware code as `19211d8`, only README changes in between):
 
 | Board | MCU / Flash | Free at v2.2.1 | Free at v2.3.0 | Change | Status |
 |---|---|---:|---:|---:|---|
 | MatekF765-Wing | F7 / 2 MB | 546.6 KB | **545.7 KB** | −0.9 KB | Ships — Matek F765-WING (most flash headroom in the fleet) |
 | MatekH7A3-Wing | H7 / 2 MB | 485.8 KB | **484.9 KB** | −1.0 KB | Ships — Matek H7A3-WING (bidirectional DShot); most room of any H7 |
+| MicoAir743v2 | H7 / 2 MB | — | **237.5 KB** | new | Ships from v2.3.0 (added after release) — MicoAir H743 v2 (bidirectional DShot on 1–8, built-in Bluetooth) |
 | SIYI-UniFC-6-PICO | H7 / 2 MB | 149.3 KB | **148.1 KB** | −1.2 KB | Ships from v2.2.1 — SIYI UniFC 6 Pico (bidirectional DShot, Ethernet, dual CAN) |
 | AET-H743-Basic-Buzz | H7 / 2 MB | 142.4 KB | **141.3 KB** | −1.0 KB | Ships — AET-H743-Basic + tone buzzer on S12 (see below) |
 | AET-H743-Basic | H7 / 2 MB | 142.3 KB | **141.2 KB** | −1.0 KB | Ships — AeroEggTech AET-H743-Basic, hardware V1.x and V2.0 (see below) |
@@ -3631,7 +3634,7 @@ Measured at **v2.2.1** and on the **v2.3.0** fleet compile (`19211d8`, the relea
 | MatekH743-bdshot | H7 / 2 MB | 120.1 KB | **119.1 KB** | −1.0 KB | Ships — Matek H743-WING (bidirectional DShot) |
 | XFLY-H743-bdshot | H7 / 2 MB | 108.1 KB | **107.1 KB** | −1.0 KB | Ships — XFly VTOL kit FC (bidirectional DShot); tightest of the full fleet |
 
-v2.3.0 costs 0.9–1.2 KB on these boards, mostly the [GPS check before
+v2.3.0 costs 0.9–1.2 KB on the boards that were in v2.2.1, mostly the [GPS check before
 launch](#gps-before-launch). Every board gave up 1.1 KB to v2.2.1: the
 [parameters over CRSF](#parameters-over-crsf-mavlite) and
 [missions over MAVlite](#missions-over-mavlite) code. v2.2 had cost 2.1–2.4 KB,
@@ -3755,6 +3758,22 @@ feature add will push against.
 > outputs, `SERVO_BLH_OTYPE` 5 (DShot300) or 6 (DShot600), `SERVO_BLH_POLES`
 > = motor magnet count. Flown on a v2.3.0 test build (twin, DShot300 on
 > outputs 9 and 10, RPM logged from both motors).
+
+#### MicoAir743v2
+
+> **`MicoAir743v2`** (STM32H743, 2 MB, board ID 1179, by MicoAir) was
+> added to the `full-v2.3.0` release after it shipped. It uses upstream's
+> own board definition, unchanged: serial ports already follow `SERIALn` =
+> chip UART `n` with no gap, with these defaults: `SERIAL1` MAVLink2,
+> `SERIAL2` DisplayPort (HD VTX connector, pin 1 is 9 V), `SERIAL3` GPS,
+> `SERIAL4` MAVLink2, `SERIAL5` free, `SERIAL6` RC input, `SERIAL7` ESC
+> telemetry (RX only) and `SERIAL8` MAVLink2 on the built-in Bluetooth
+> module. 11 outputs: DShot on all, bidirectional DShot on 1–8. Output 11
+> is the LED pad; if it drives an LED strip, outputs 7 and 8 (same timer)
+> can only be LED outputs too. BMI088 + BMI270 IMUs, SPL06 baro, QMC5883L
+> compass, analog OSD (AT7456E), microSD. Coming from INAV or Betaflight,
+> flash `arduplane_with_bl.hex` over DFU first. Not flown on Stratos yet.
+> See [the board README](libraries/AP_HAL_ChibiOS/hwdef/MicoAir743v2/README.md).
 
 ### Light track — 16 boards (all 1 MB F4)
 
