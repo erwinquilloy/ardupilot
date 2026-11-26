@@ -458,7 +458,7 @@ Built for throwing a wing off your hand safely:
 - **LED strip segments** (v2.2) — split a WS2812 strip into up to 8 INAV-style
   segments: nav lights, strobes, a battery bar, flight mode.
 - **Parameters from the radio over ELRS / Crossfire** (v2.2.1) — a radio
-  script (OmniDeck's Params page from OmniDeck 0.4.1, or the AP Param Editor) reads and sets
+  script (OmniDeck's Params page from OmniDeck 0.4.1, or the OmniDeck Param Editor) reads and sets
   parameters by name over CRSF,
   as it could before only over FrSky S.Port / F.Port.
 - **Missions from the radio** (v2.2.1) — OmniDeck (0.4.1 or later) downloads the mission onto
@@ -4329,7 +4329,7 @@ TBS Crossfire) with the MAVlite messages FrSky passthrough already uses:
 `PARAM_REQUEST_READ`, `PARAM_SET` and the small `COMMAND_LONG` set (reboot,
 baro calibration, mode, fence). [OmniDeck](#omnideck-telemetry-display-ethos--edgetx)'s
 Params page uses it (OmniDeck 0.4.1 or later), and so does the
-[AP Param Editor](https://github.com/erwinquilloy/ap-param-editor).
+[OmniDeck Param Editor](https://github.com/erwinquilloy/param-editor).
 
 | | |
 |---|---|
