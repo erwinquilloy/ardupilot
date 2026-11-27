@@ -539,7 +539,7 @@ build tools are left out of this list.
 | **Harmonic notch, quintuple option** (`INS_HNTCH_OPTS` bit 6): the filter always has room for whole harmonics | Quintuple-notch users | All boards |
 | **EKF3 drag fusion with GPS yaw** no longer waits for compass alignment | Dual-GPS (moving-baseline) yaw | All boards |
 | **Optical flow:** the sign of the terrain height used for flow scaling is fixed | Optical flow over terrain | Where optical flow is built |
-| **Compasses:** QMC5883P is now on 1 MB boards; IIS2MDC fixed and enabled | Those compasses | All 22 fleet boards include both |
+| **Compasses:** QMC5883P is now on 1 MB boards; IIS2MDC fixed and enabled | Those compasses | All 22 boards of the v2.1 fleet include both |
 | **Barometers:** BMP581 reads corrected data; BMP390 is reset at start-up to clear an old configuration | Boards or modules with these baros | Full builds only: the light builds don't include these two drivers |
 | **LSM6DSV IMUs:** KakuteH7 / KakuteH7 Mini and Pixhawk6X support them, and the LSM6DSV heater is now driven | Those boards | All boards where the IMU is used |
 | **MAVLink:** long status messages sent in several parts by another component (gimbal, companion computer) are put back together again | GCS logs and messages | All boards |
@@ -4574,7 +4574,7 @@ firmware as it is, and it also shows INAV and Betaflight.
 
 | | |
 |---|---|
-| **Radios** | FrSky **Ethos** (X20 family, X18) and **EdgeTX** (RadioMaster TX16S MK2, MK3 / MK3 Max) |
+| **Radios** | FrSky **Ethos** (X20 family, X18) and **EdgeTX** (RadioMaster TX16S MK2, MK3 / MK3 Max). Black-and-white EdgeTX radios (TX12 MK2, GX12, Pocket, Boxer, Taranis X9D / X9D+ / X9E): [OmniDeck Mono](https://erwinquilloy.github.io/ardupilot-tools/omnideck-mono.html) |
 | **Transport** | CRSF passthrough (Crossfire, ELRS, mLRS) and FrSky S.Port / F.Port passthrough |
 | **Needs** | Passthrough telemetry already working — see the [Telemetry](#telemetry) chapter |
 | **Install** | One zip per system from the [OmniDeck releases](https://github.com/erwinquilloy/OmniDeck/releases); steps in the [guide](https://erwinquilloy.github.io/ardupilot-tools/omnideck.html#install) |
@@ -4589,6 +4589,10 @@ over S.Port / F.Port on any ArduPilot, and over ELRS / Crossfire from v2.2.1
 the mission onto its map and sends missions from its editor over ELRS,
 Crossfire and S.Port / F.Port ([how](#missions-over-mavlite)). Over mLRS both
 work on any ArduPilot through the mLRS MAVLink bridge (`Tx Ser Port` = cbridge).
+From OmniDeck 1.0.0 the same Params page also reads and sets INAV 9.1+ and
+Betaflight 4.5 / 2025.12 / 2026.6 settings. On black-and-white radios, the
+[OmniDeck Param Editor](https://github.com/erwinquilloy/param-editor) reads and
+sets parameters (ArduPilot, INAV, Betaflight) next to OmniDeck Mono.
 
 > ℹ️ Separate repository, not part of this firmware — nothing to flash.
 
